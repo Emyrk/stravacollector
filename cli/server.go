@@ -53,12 +53,14 @@ func serverCmd() *cobra.Command {
 					// Must be comma joined
 					Scopes: []string{strings.Join([]string{"read", "read_all", "profile:read_all", "activity:read"}, ",")},
 				},
+				DB:     db,
+				Logger: logger.With().Str("component", "api").Logger(),
 			})
 			if err != nil {
 				return fmt.Errorf("create server: %w", err)
 			}
 
-			url := srv.OAuthCfg.AuthCodeURL("state", oauth2.AccessTypeOffline)
+			url := srv.Opts.OAuthCfg.AuthCodeURL("state", oauth2.AccessTypeOffline)
 			logger.Info().Msg(fmt.Sprintf("Visit the URL for the auth dialog: %s", url))
 
 			hsrv := &http.Server{

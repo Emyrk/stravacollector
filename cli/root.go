@@ -21,7 +21,6 @@ func RootCmd() *cobra.Command {
 }
 
 func getLogger(cmd *cobra.Command) zerolog.Logger {
-	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
-	logger.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).With().Timestamp().Logger()
 	return logger
 }

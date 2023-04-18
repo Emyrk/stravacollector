@@ -10,6 +10,7 @@ import (
 
 type sqlcQuerier interface {
 	GetAthletes(ctx context.Context) ([]Athlete, error)
+	UpsertAthlete(ctx context.Context, arg UpsertAthleteParams) (Athlete, error)
 }
 
 var _ sqlcQuerier = (*sqlQuerier)(nil)

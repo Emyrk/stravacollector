@@ -1,8 +1,11 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
+
+	"github.com/rs/zerolog"
+
+	"github.com/Emyrk/strava/database"
 
 	"github.com/Emyrk/strava/api/httpmw"
 
@@ -12,20 +15,18 @@ import (
 
 type Options struct {
 	OAuthCfg *oauth2.Config
+	DB       database.Store
+	Logger   zerolog.Logger
 }
 
 type API struct {
-	OAuthCfg *oauth2.Config
-	Handler  http.Handler
+	Opts    *Options
+	Handler http.Handler
 }
 
 func New(opts Options) (*API, error) {
-	if opts.OAuthCfg == nil {
-		return nil, fmt.Errorf("missing oauth2 config")
-	}
-
 	api := &API{
-		OAuthCfg: opts.OAuthCfg,
+		Opts: &opts,
 	}
 	api.Handler = api.Routes()
 
@@ -36,7 +37,7 @@ func (api *API) Routes() http.Handler {
 	r := chi.NewRouter()
 
 	r.Route("/oauth2", func(r chi.Router) {
-		r.Use(httpmw.ExtractOauth2(api.OAuthCfg, nil))
+		r.Use(httpmw.ExtractOauth2(api.Opts.OAuthCfg, nil))
 		r.Get("/callback", api.stravaOAuth2)
 	})
 

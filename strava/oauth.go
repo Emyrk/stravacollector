@@ -22,6 +22,7 @@ func Oauth(ctx context.Context) {
 	}
 
 	url := conf.AuthCodeURL("state", oauth2.AccessTypeOffline)
+	url = "http://localhost:8000/oauth2/callback?redirect=%2F"
 	fmt.Printf("Visit the URL for the auth dialog: %v", url)
 
 	// Use the authorization code that is pushed to the redirect

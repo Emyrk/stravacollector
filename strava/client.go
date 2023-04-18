@@ -29,13 +29,13 @@ func New(accessToken string) *Client {
 	}
 }
 
-func (c *Client) GetAuthenticatedAthelete(ctx context.Context) (any, error) {
+func (c *Client) GetAuthenticatedAthelete(ctx context.Context) (Athlete, error) {
 	resp, err := c.Request(ctx, http.MethodGet, "/athlete", nil, nil)
 	if err != nil {
-		return nil, fmt.Errorf("request: %w", err)
+		return Athlete{}, fmt.Errorf("request: %w", err)
 	}
 
-	var athlete any
+	var athlete Athlete
 	return athlete, c.DecodeResponse(resp, &athlete, http.StatusOK)
 }
 

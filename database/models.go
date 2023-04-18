@@ -5,15 +5,26 @@
 package database
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type Athlete struct {
-	ID   int32         `db:"id" json:"id"`
-	Test sql.NullInt32 `db:"test" json:"test"`
+	ID        int64  `db:"id" json:"id"`
+	Premium   bool   `db:"premium" json:"premium"`
+	Username  string `db:"username" json:"username"`
+	Firstname string `db:"firstname" json:"firstname"`
+	Lastname  string `db:"lastname" json:"lastname"`
+	Sex       string `db:"sex" json:"sex"`
+	// Oauth app client ID
+	ProviderID        string    `db:"provider_id" json:"provider_id"`
+	CreatedAt         time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt         time.Time `db:"updated_at" json:"updated_at"`
+	OauthAccessToken  string    `db:"oauth_access_token" json:"oauth_access_token"`
+	OauthRefreshToken string    `db:"oauth_refresh_token" json:"oauth_refresh_token"`
+	OauthExpiry       time.Time `db:"oauth_expiry" json:"oauth_expiry"`
+	Raw               string    `db:"raw" json:"raw"`
 }
 
 type AthleteEffort struct {

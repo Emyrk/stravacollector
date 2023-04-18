@@ -79,7 +79,7 @@ type Athlete struct {
 	MeasurementPreference string        `json:"measurement_preference"`
 	Clubs                 []interface{} `json:"clubs"`
 	Ftp                   interface{}   `json:"ftp"`
-	Weight                int           `json:"weight"`
+	Weight                float64       `json:"weight"`
 	Bikes                 []Equipment   `json:"bikes"`
 	Shoes                 []Equipment   `json:"shoes"`
 }

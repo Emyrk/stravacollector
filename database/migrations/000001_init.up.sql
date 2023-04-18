@@ -1,8 +1,25 @@
 BEGIN;
 
 CREATE TABLE athletes (
-	id integer PRIMARY KEY
+    -- Strava Details
+	id BIGINT PRIMARY KEY,
+	premium boolean NOT NULL,
+	username text NOT NULL,
+	firstname text NOT NULL,
+	lastname text NOT NULL,
+	sex text NOT NULL,
+	-- Authentication
+	provider_id text NOT NULL,
+	created_at timestamp with time zone NOT NULL,
+	updated_at timestamp with time zone NOT NULL,
+	oauth_access_token text NOT NULL,
+	oauth_refresh_token text NOT NULL,
+	oauth_expiry timestamp with time zone NOT NULL,
+    -- Raw
+    raw text NOT NULL
 );
+
+COMMENT ON COLUMN athletes.provider_id IS 'Oauth app client ID';
 
 CREATE TABLE segments (
 	id integer PRIMARY KEY,
