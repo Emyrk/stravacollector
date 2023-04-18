@@ -16,11 +16,27 @@ type Client struct {
 	Client      *http.Client
 }
 
+func NewOAuthClient(cli *http.Client) *Client {
+	return &Client{
+		Client: cli,
+	}
+}
+
 func New(accessToken string) *Client {
 	return &Client{
 		AccessToken: accessToken,
 		Client:      http.DefaultClient,
 	}
+}
+
+func (c *Client) GetAuthenticatedAthelete(ctx context.Context) (any, error) {
+	resp, err := c.Request(ctx, http.MethodGet, "/athlete", nil, nil)
+	if err != nil {
+		return nil, fmt.Errorf("request: %w", err)
+	}
+
+	var athlete any
+	return athlete, c.DecodeResponse(resp, &athlete, http.StatusOK)
 }
 
 func (c *Client) AthleteSegmentEfforts(ctx context.Context, segmentID int, perPage int) ([]SegmentEffort, error) {
