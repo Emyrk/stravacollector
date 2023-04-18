@@ -1,51 +1,63 @@
 package strava
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
-	"io"
-
-	"github.com/Emyrk/strava/strava/stravalib"
-	"github.com/antihax/optional"
+	"net/http"
+	"net/url"
+	"strings"
 )
 
 type Client struct {
-	API         *stravalib.APIClient
 	AccessToken string
+	Client      *http.Client
 }
 
 func New(accessToken string) *Client {
-	cfg := stravalib.NewConfiguration()
-	api := stravalib.NewAPIClient(cfg)
-
 	return &Client{
-		API:         api,
 		AccessToken: accessToken,
+		Client:      http.DefaultClient,
 	}
 }
 
-func (c *Client) WithAccess(ctx context.Context) context.Context {
-	return context.WithValue(ctx, stravalib.ContextAccessToken, c.AccessToken)
-}
-func (c *Client) GetSegmentEfforts(ctx context.Context, id int64, perPage int) ([]stravalib.DetailedSegmentEffort, error) {
-	perPage32 := int32(perPage)
-	segment, resp, err := c.API.SegmentEffortsApi.GetEffortsBySegmentId(c.WithAccess(ctx), int32(id), &stravalib.SegmentEffortsApiGetEffortsBySegmentIdOpts{
-		//StartDateLocal: nil,
-		//EndDateLocal:   nil,
-		PerPage: optional.NewInt32(perPage32),
+func (c *Client) SegmentEfforts(ctx context.Context, segmentID int, perPage int) ([]SegmentEffort, error) {
+	var efforts []SegmentEffort
+	resp, err := c.Request(ctx, http.MethodGet, "/segment_efforts", nil, url.Values{
+		"segment_id": []string{fmt.Sprintf("%d", segmentID)},
+		"per_page":   []string{fmt.Sprintf("%d", perPage)},
 	})
 	if err != nil {
-		d, _ := io.ReadAll(resp.Body)
-		fmt.Println(string(d), resp.ContentLength, resp.StatusCode, resp)
-		return nil, err
+		return nil, fmt.Errorf("request: %w", err)
 	}
-	return segment, nil
+
+	return efforts, c.DecodeResponse(resp, &efforts, http.StatusOK)
 }
 
-func (c *Client) GetSegmentByID(ctx context.Context, id int64) (stravalib.DetailedSegment, error) {
-	segment, _, err := c.API.SegmentsApi.GetSegmentById(c.WithAccess(ctx), id)
-	if err != nil {
-		return stravalib.DetailedSegment{}, err
+func (c *Client) DecodeResponse(res *http.Response, v any, expectedCode int) error {
+	defer res.Body.Close()
+	if res.StatusCode != expectedCode {
+		return fmt.Errorf("status code: %d", res.StatusCode)
 	}
-	return segment, nil
+	return json.NewDecoder(res.Body).Decode(v)
+}
+
+func (c *Client) Request(ctx context.Context, method string, path string, body any, values url.Values) (*http.Response, error) {
+	data, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal body: %w", err)
+	}
+
+	u := fmt.Sprintf("https://www.strava.com/api/v3/%s", strings.TrimPrefix(path, "/"))
+	if len(values) > 0 {
+		u += "?" + values.Encode()
+	}
+	req, err := http.NewRequestWithContext(ctx, method, u, bytes.NewBuffer(data))
+	if err != nil {
+		return nil, fmt.Errorf("new request: %w", err)
+	}
+	req.Header.Add("Authorization", "Bearer "+c.AccessToken)
+
+	return c.Client.Do(req)
 }

@@ -17,7 +17,7 @@ func main() {
 		log.Fatal("STRAVA_ACCESS_TOKEN is not set")
 	}
 	client := strava.New(token)
-	segment, err := client.GetSegmentEfforts(ctx, 16659489, 1000)
+	segment, err := client.SegmentEfforts(ctx, 16659489, 1000)
 	fmt.Println(err)
 	d, _ := json.Marshal(segment)
 	fmt.Println(string(d))
