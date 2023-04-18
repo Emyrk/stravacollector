@@ -38,6 +38,7 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
 		# Append the file past the imports section into queries.sql.go.
 		tail -n "+$cut" <"$fi" >>queries.sql.go
+		echo "$fi"
 	done
 
 	# Move the files we want.
@@ -57,5 +58,5 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 	go run golang.org/x/tools/cmd/goimports@latest -w queries.sql.go
 
 	# Generate enums (e.g. unique constraints).
-	go run gen/enum/main.go
+#	go run gen/enum/main.go
 )

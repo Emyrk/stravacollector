@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"math/rand"
 	"net"
 	"os"
 	"strconv"
@@ -12,7 +13,7 @@ import (
 
 	"github.com/cenkalti/backoff"
 	"github.com/moby/moby/pkg/namesgenerator"
-	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"golang.org/x/xerrors"
 
@@ -36,10 +37,7 @@ func Open() (string, func(), error) {
 		}
 		defer db.Close()
 
-		dbName, err := strings.ToLower(namesgenerator.GetRandomName(10))
-		if err != nil {
-			return "", nil, xerrors.Errorf("generate db name: %w", err)
-		}
+		dbName := fmt.Sprintf("%s%d", strings.ToLower(namesgenerator.GetRandomName(10)), rand.Intn(1000))
 
 		dbName = "ci" + dbName
 		_, err = db.Exec("CREATE DATABASE " + dbName + " WITH TEMPLATE " + os.Getenv("DB_FROM"))
