@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -22,7 +23,7 @@ func New(accessToken string) *Client {
 	}
 }
 
-func (c *Client) SegmentEfforts(ctx context.Context, segmentID int, perPage int) ([]SegmentEffort, error) {
+func (c *Client) AthleteSegmentEfforts(ctx context.Context, segmentID int, perPage int) ([]SegmentEffort, error) {
 	var efforts []SegmentEffort
 	resp, err := c.Request(ctx, http.MethodGet, "/segment_efforts", nil, url.Values{
 		"segment_id": []string{fmt.Sprintf("%d", segmentID)},
@@ -38,7 +39,8 @@ func (c *Client) SegmentEfforts(ctx context.Context, segmentID int, perPage int)
 func (c *Client) DecodeResponse(res *http.Response, v any, expectedCode int) error {
 	defer res.Body.Close()
 	if res.StatusCode != expectedCode {
-		return fmt.Errorf("status code: %d", res.StatusCode)
+		body, _ := io.ReadAll(res.Body)
+		return fmt.Errorf("status code: %d\nbody: %s", res.StatusCode, string(body))
 	}
 	return json.NewDecoder(res.Body).Decode(v)
 }
@@ -49,7 +51,7 @@ func (c *Client) Request(ctx context.Context, method string, path string, body a
 		return nil, fmt.Errorf("failed to marshal body: %w", err)
 	}
 
-	u := fmt.Sprintf("https://www.strava.com/api/v3/%s", strings.TrimPrefix(path, "/"))
+	u := fmt.Sprintf("https://strava.com/api/v3/%s", strings.TrimPrefix(path, "/"))
 	if len(values) > 0 {
 		u += "?" + values.Encode()
 	}
@@ -58,6 +60,7 @@ func (c *Client) Request(ctx context.Context, method string, path string, body a
 		return nil, fmt.Errorf("new request: %w", err)
 	}
 	req.Header.Add("Authorization", "Bearer "+c.AccessToken)
+	fmt.Println(req.URL.String())
 
 	return c.Client.Do(req)
 }

@@ -40,7 +40,7 @@ type SegmentSummary struct {
 	Distance      float64   `json:"distance"`
 	AverageGrade  float64   `json:"average_grade"`
 	MaximumGrade  float64   `json:"maximum_grade"`
-	ElevationHigh int       `json:"elevation_high"`
+	ElevationHigh float64   `json:"elevation_high"`
 	ElevationLow  float64   `json:"elevation_low"`
 	StartLatlng   []float64 `json:"start_latlng"`
 	EndLatlng     []float64 `json:"end_latlng"`
