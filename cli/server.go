@@ -3,7 +3,8 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+
+	"github.com/Emyrk/strava/database"
 
 	"github.com/Emyrk/strava/strava"
 	"github.com/spf13/cobra"
@@ -12,15 +13,24 @@ import (
 func serverCmd() *cobra.Command {
 	var (
 		token string
+		dbURL string
 	)
 
 	cmd := &cobra.Command{
 		Use: "server",
 		Run: func(cmd *cobra.Command, args []string) {
+			logger := getLogger(cmd)
 			ctx := cmd.Context()
 			if token == "" {
-				log.Fatal("--access-token is not set")
+				logger.Fatal().Msg("--access-token is not set")
 			}
+
+			db, err := database.NewPostgresDB(ctx, logger, dbURL)
+			if err != nil {
+				logger.Fatal().Err(err).Msg("connect to postgres")
+			}
+			var _ = db
+
 			client := strava.New(token)
 			segment, err := client.AthleteSegmentEfforts(ctx, 16659489, 2)
 			fmt.Println(err)
@@ -30,6 +40,7 @@ func serverCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&token, "access-token", "", "Strava access token")
+	cmd.Flags().StringVar(&dbURL, "db-url", "postgres://postgres:postgres@localhost:5432/strava?sslmode=disable", "Database URL")
 
 	return cmd
 }

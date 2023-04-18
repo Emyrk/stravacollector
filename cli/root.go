@@ -1,6 +1,11 @@
 package cli
 
-import "github.com/spf13/cobra"
+import (
+	"os"
+
+	"github.com/rs/zerolog"
+	"github.com/spf13/cobra"
+)
 
 func RootCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -13,4 +18,10 @@ func RootCmd() *cobra.Command {
 	cmd.AddCommand(serverCmd())
 
 	return cmd
+}
+
+func getLogger(cmd *cobra.Command) zerolog.Logger {
+	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
+	logger.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	return logger
 }
