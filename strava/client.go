@@ -76,7 +76,6 @@ func (c *Client) Request(ctx context.Context, method string, path string, body a
 		return nil, fmt.Errorf("new request: %w", err)
 	}
 	req.Header.Add("Authorization", "Bearer "+c.AccessToken)
-	fmt.Println(req.URL.String())
 
 	return c.Client.Do(req)
 }
