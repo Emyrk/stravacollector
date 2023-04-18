@@ -2,23 +2,17 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 
-	"github.com/Emyrk/strava/strava"
+	"github.com/Emyrk/strava/cli"
 )
 
 func main() {
-	ctx := context.Background()
-	token := os.Getenv("STRAVA_ACCESS_TOKEN")
-	if token == "" {
-		log.Fatal("STRAVA_ACCESS_TOKEN is not set")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if err := cli.RootCmd().ExecuteContext(ctx); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
-	client := strava.New(token)
-	segment, err := client.AthleteSegmentEfforts(ctx, 16659489, 2)
-	fmt.Println(err)
-	d, _ := json.Marshal(segment)
-	fmt.Println(string(d))
 }

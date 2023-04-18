@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
-	"golang.org/x/xerrors"
-
+	"github.com/Emyrk/strava/database/migrations"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 )
 
 // Store contains all queryable database functions.
@@ -21,9 +23,51 @@ type Store interface {
 	InTx(func(Store) error, *sql.TxOptions) error
 }
 
+// DBTX represents a database connection or transaction.
+type DBTX interface {
+	ExecContext(context.Context, string, ...interface{}) (sql.Result, error)
+	PrepareContext(context.Context, string) (*sql.Stmt, error)
+	QueryContext(context.Context, string, ...interface{}) (*sql.Rows, error)
+	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
+	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+}
+
 type sqlQuerier struct {
 	sdb *sqlx.DB
 	db  DBTX
+}
+
+func NewPostgresDB(ctx context.Context, logger zerolog.Logger, dbURL string) (Store, error) {
+	logger = logger.With().Str("db_url", dbURL).Logger()
+	logger.Info().Msg("connecting to postgres database")
+	sqlDB, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		return nil, fmt.Errorf("dial postgres: %w", err)
+	}
+	ok := false
+	defer func() {
+		if !ok {
+			_ = sqlDB.Close()
+		}
+	}()
+
+	pingCtx, pingCancel := context.WithTimeout(ctx, 15*time.Second)
+	defer pingCancel()
+	err = sqlDB.PingContext(pingCtx)
+	if err != nil {
+		return nil, fmt.Errorf("ping postgres: %w", err)
+	}
+
+	err = migrations.Up(sqlDB)
+	if err != nil {
+		return nil, fmt.Errorf("migrate up: %w", err)
+	}
+
+	sqlDB.SetMaxOpenConns(10)
+	sqlDB.SetMaxIdleConns(3)
+	ok = true
+	return New(sqlDB), nil
 }
 
 // New creates a new database store using a SQL database connection.
