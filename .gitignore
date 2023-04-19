@@ -1,4 +1,4 @@
-strava.conf
+strava.yaml
 
 # Common ignore patterns, these rules applies in both root and subdirectories.
 .DS_Store

@@ -6,7 +6,11 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/spf13/pflag"
 
@@ -69,12 +73,14 @@ func serverCmd() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, cancel := context.WithCancel(cmd.Context())
+			defer cancel()
+
 			if writeConfig {
 				return v.SafeWriteConfigAs(config)
 			}
 
 			logger := getLogger(cmd)
-			ctx := cmd.Context()
 			if secret == "" || clientID == "" {
 				return fmt.Errorf("missing client id or secret")
 			}
@@ -116,7 +122,38 @@ func serverCmd() *cobra.Command {
 					return ctx
 				},
 			}
-			return hsrv.ListenAndServe()
+
+			go func() {
+				err := hsrv.ListenAndServe()
+				if err != nil {
+					logger.Error().Err(err).Msg("http server error")
+				}
+			}()
+
+			// TODO: Check for server up
+
+			time.Sleep(time.Second)
+			err = srv.StartWebhook(ctx)
+			if err != nil {
+				return fmt.Errorf("start webhook: %w", err)
+			}
+
+			c := make(chan os.Signal, 1)
+			signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+			// CLOSE
+			<-c
+			logger.Info().Msg("Gracefully shutting down...")
+			cancel()
+
+			tmp, cancel := context.WithTimeout(context.Background(), time.Second*3)
+			defer cancel()
+			err = hsrv.Shutdown(tmp)
+			if err != nil {
+				logger.Error().Err(err).Msg("http server shutdown error")
+			}
+
+			return nil
 		},
 	}
 

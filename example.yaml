@@ -1,0 +1,9 @@
+access-url: ""
+config: example.yaml
+db-url: postgres://postgres:postgres@localhost:5432/strava?sslmode=disable
+help: false
+oauth-client: 105702
+oauth-client-id: ""
+oauth-secret: ""
+port: 9090
+write-config: true

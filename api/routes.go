@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -11,6 +12,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/Emyrk/strava/api/httpmw"
+	"github.com/Emyrk/strava/api/webhooks"
 	"github.com/Emyrk/strava/database"
 )
 
@@ -31,6 +33,7 @@ type API struct {
 	Handler http.Handler
 
 	OAuthConfig *oauth2.Config
+	Events      *webhooks.ActivityEvents
 }
 
 func New(opts Options) (*API, error) {
@@ -38,7 +41,7 @@ func New(opts Options) (*API, error) {
 		Opts: &opts,
 		OAuthConfig: &oauth2.Config{
 			ClientID:     opts.OAuth.ClientID,
-			ClientSecret: opts.OAuth.ClientID,
+			ClientSecret: opts.OAuth.Secret,
 			Endpoint: oauth2.Endpoint{
 				AuthURL:   "https://www.strava.com/oauth/authorize",
 				TokenURL:  "https://www.strava.com/oauth/token",
@@ -49,12 +52,20 @@ func New(opts Options) (*API, error) {
 			Scopes: []string{strings.Join([]string{"read", "read_all", "profile:read_all", "activity:read"}, ",")},
 		},
 	}
-	api.Handler = api.Routes()
+	api.Events = webhooks.NewActivityEvents(opts.Logger, api.OAuthConfig, opts.AccessURL)
+	r := api.Routes()
+	api.Events.Attach(r)
+	api.Handler = r
 
 	return api, nil
 }
 
-func (api *API) Routes() http.Handler {
+// StartWebhook needs to be called after the API is served.
+func (api *API) StartWebhook(ctx context.Context) error {
+	return api.Events.Setup(ctx)
+}
+
+func (api *API) Routes() chi.Router {
 	r := chi.NewRouter()
 
 	r.Route("/oauth2", func(r chi.Router) {
