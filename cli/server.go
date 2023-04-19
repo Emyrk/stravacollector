@@ -5,10 +5,14 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 
+	"github.com/spf13/pflag"
+
+	"github.com/spf13/viper"
+
 	"github.com/Emyrk/strava/api"
-	"golang.org/x/oauth2"
 
 	"github.com/Emyrk/strava/database"
 
@@ -17,15 +21,58 @@ import (
 
 func serverCmd() *cobra.Command {
 	var (
-		//token string
-		dbURL    string
-		secret   string
-		clientID string
+		dbURL       string
+		secret      string
+		clientID    string
+		port        int
+		accessURL   string
+		config      string
+		writeConfig bool
 	)
 
+	v := viper.New()
 	cmd := &cobra.Command{
 		Use: "server",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			v.SetConfigType("yaml")
+			v.SetConfigName("strava.yaml")
+			v.AddConfigPath(".")
+
+			if err := v.ReadInConfig(); err != nil {
+				if config != "" {
+					return err
+				}
+				// It's okay if there isn't a config file
+				if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+					return err
+				}
+			}
+
+			// When we bind flags to environment variables expect that the
+			// environment variables are prefixed, e.g. a flag like --number
+			// binds to an environment variable STING_NUMBER. This helps
+			// avoid conflicts.
+			v.SetEnvPrefix("STRAVA")
+
+			// Environment variables can't have dashes in them, so bind them to their equivalent
+			// keys with underscores, e.g. --favorite-color to STING_FAVORITE_COLOR
+			v.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+
+			// Bind to environment variables
+			// Works great for simple config names, but needs help for names
+			// like --favorite-color which we fix in the bindFlags function
+			v.AutomaticEnv()
+
+			// Bind the current command's flags to viper
+			bindFlags(cmd, v, writeConfig)
+
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if writeConfig {
+				return v.SafeWriteConfigAs(config)
+			}
+
 			logger := getLogger(cmd)
 			ctx := cmd.Context()
 			if secret == "" || clientID == "" {
@@ -36,54 +83,74 @@ func serverCmd() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("connect to postgres: %w", err)
 			}
-			var _ = db
 
-			accessURL := "http://localhost:8000"
+			if accessURL == "" {
+				accessURL = fmt.Sprintf("http://localhost:%d", port)
+			}
+
+			u, err := url.Parse(accessURL)
+			if err != nil {
+				return fmt.Errorf("parse access url: %w", err)
+			}
+			if !(u.Scheme == "http" || u.Scheme == "https") {
+				return fmt.Errorf("access url scheme must be http or https")
+			}
 
 			srv, err := api.New(api.Options{
-				OAuthCfg: &oauth2.Config{
-					ClientID:     clientID,
-					ClientSecret: secret,
-					Endpoint: oauth2.Endpoint{
-						AuthURL:   "https://www.strava.com/oauth/authorize",
-						TokenURL:  "https://www.strava.com/oauth/token",
-						AuthStyle: 0,
-					},
-					RedirectURL: fmt.Sprintf("%s/oauth2/callback", accessURL),
-					// Must be comma joined
-					Scopes: []string{strings.Join([]string{"read", "read_all", "profile:read_all", "activity:read"}, ",")},
+				OAuth: api.OAuthOptions{
+					ClientID: clientID,
+					Secret:   secret,
 				},
-				DB:     db,
-				Logger: logger.With().Str("component", "api").Logger(),
+				DB:        db,
+				Logger:    logger.With().Str("component", "api").Logger(),
+				AccessURL: u,
 			})
 			if err != nil {
 				return fmt.Errorf("create server: %w", err)
 			}
 
-			url := srv.Opts.OAuthCfg.AuthCodeURL("state", oauth2.AccessTypeOffline)
-			logger.Info().Msg(fmt.Sprintf("Visit the URL for the auth dialog: %s", url))
-
 			hsrv := &http.Server{
-				Addr:    "0.0.0.0:8000",
+				Addr:    fmt.Sprintf("0.0.0.0:%d", port),
 				Handler: srv.Handler,
 				BaseContext: func(listener net.Listener) context.Context {
 					return ctx
 				},
 			}
 			return hsrv.ListenAndServe()
-
-			//client := strava.New(token)
-			//segment, err := client.AthleteSegmentEfforts(ctx, 16659489, 2)
-			//fmt.Println(err)
-			//d, _ := json.Marshal(segment)
-			//fmt.Println(string(d))
 		},
 	}
 
+	cmd.Flags().BoolVar(&writeConfig, "write-config", false, "Write config file and exit")
+	cmd.Flags().StringVar(&config, "config", "", "Config file")
+	cmd.Flags().StringVar(&accessURL, "access-url", "", "External url to talk with")
+	cmd.Flags().IntVar(&port, "port", 9090, "Port to listen on")
 	cmd.Flags().StringVar(&secret, "oauth-secret", "", "Strava oauth app secret")
 	cmd.Flags().StringVar(&clientID, "oauth-client-id", "", "Strava oauth app client ID")
 	//cmd.Flags().StringVar(&token, "access-token", "", "Strava access token")
 	cmd.Flags().StringVar(&dbURL, "db-url", "postgres://postgres:postgres@localhost:5432/strava?sslmode=disable", "Database URL")
 
 	return cmd
+}
+
+// Bind each cobra flag to its associated viper configuration (config file and environment variable)
+func bindFlags(cmd *cobra.Command, v *viper.Viper, always bool) {
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		// Determine the naming convention of the flags when represented in the config file
+		configName := f.Name
+		// If using camelCase in the config file, replace hyphens with a camelCased string.
+		// Since viper does case-insensitive comparisons, we don't need to bother fixing the case, and only need to remove the hyphens.
+		//if replaceHyphenWithCamelCase {
+		//	configName = strings.ReplaceAll(f.Name, "-", "")
+		//}
+
+		if always {
+			v.Set(configName, f.Value)
+		}
+
+		// Apply the viper config value to the flag when the flag is not set and viper has a value
+		if !f.Changed && v.IsSet(configName) {
+			val := v.Get(configName)
+			cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+		}
+	})
 }

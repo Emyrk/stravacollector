@@ -37,7 +37,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		Firstname:         athlete.Firstname,
 		Lastname:          athlete.Lastname,
 		Sex:               athlete.Sex,
-		ProviderID:        api.Opts.OAuthCfg.ClientID,
+		ProviderID:        api.OAuthConfig.ClientID,
 		OauthAccessToken:  state.Token.AccessToken,
 		OauthRefreshToken: state.Token.RefreshToken,
 		OauthExpiry:       state.Token.Expiry,
