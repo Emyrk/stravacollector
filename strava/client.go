@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -27,6 +28,18 @@ func New(accessToken string) *Client {
 		AccessToken: accessToken,
 		Client:      http.DefaultClient,
 	}
+}
+
+func (c *Client) GetActivity(ctx context.Context, activityID int64, includeEfforts bool) (DetailedActivity, error) {
+	resp, err := c.Request(ctx, http.MethodGet, fmt.Sprintf("/activities/%d", activityID), nil, url.Values{
+		"include_all_efforts": []string{strconv.FormatBool(includeEfforts)},
+	})
+	if err != nil {
+		return DetailedActivity{}, fmt.Errorf("request: %w", err)
+	}
+
+	var activity DetailedActivity
+	return activity, c.DecodeResponse(resp, &activity, http.StatusOK)
 }
 
 func (c *Client) GetAuthenticatedAthelete(ctx context.Context) (Athlete, error) {

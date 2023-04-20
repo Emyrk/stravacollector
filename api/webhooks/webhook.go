@@ -27,6 +27,8 @@ type ActivityEvents struct {
 	Logger      zerolog.Logger
 	DB          database.Store
 
+	eventQueue chan *WebhookEvent
+
 	ID int
 }
 
@@ -46,7 +48,12 @@ func NewActivityEvents(logger zerolog.Logger, cfg *oauth2.Config, db database.St
 		Callback:    &callback,
 		Logger:      logger,
 		DB:          db,
+		eventQueue:  make(chan *WebhookEvent, 100),
 	}
+}
+
+func (a *ActivityEvents) EventQueue() <-chan *WebhookEvent {
+	return a.eventQueue
 }
 
 func (a *ActivityEvents) Setup(ctx context.Context) error {
@@ -73,7 +80,6 @@ func (a *ActivityEvents) Setup(ctx context.Context) error {
 }
 
 func (a *ActivityEvents) Close() {
-
 }
 
 // WebhookEvent is documented https://developers.strava.com/docs/webhooks/
@@ -81,7 +87,7 @@ type WebhookEvent struct {
 	// AspectType always "create," "update," or "delete."
 	AspectType string `json:"aspect_type"`
 	// EventTime is unix seconds
-	EventTime int `json:"event_time"`
+	EventTime int64 `json:"event_time"`
 	// ObjectID is the activity's ID or athlete's ID.
 	ObjectID int64 `json:"object_id"`
 	// ObjectType either "activity" or "athlete."
@@ -111,22 +117,24 @@ func (a *ActivityEvents) handleWebhook(rw http.ResponseWriter, r *http.Request) 
 			Err(err).Msg("error unmarshalling webhook event")
 		return
 	}
+	a.eventQueue <- &event
 
-	switch event.ObjectType {
-	case "activity":
-		a.newActivity(event, logger)
-	case "athlete":
-		// Ignore these for now.
-	default:
-		logger.Warn().
-			Str("object_type", event.ObjectType).
-			Msg("Webhook event not supported")
-	}
+	//switch event.ObjectType {
+	//case "activity":
+	//	a.newActivity(event, logger)
+	//case "athlete":
+	//	// Ignore these for now.
+	//default:
+	//	logger.Warn().
+	//		Str("object_type", event.ObjectType).
+	//		Msg("Webhook event not supported")
+	//}
 }
 
 func (a *ActivityEvents) newActivity(event WebhookEvent, logger zerolog.Logger) {
 	switch event.AspectType {
 	case "create":
+		//actID := event.ObjectID
 	case "update":
 		// Updates to events we probably don't care about?
 		logger.Info().

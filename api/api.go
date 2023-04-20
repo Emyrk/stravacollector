@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/Emyrk/strava/api/queue"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog"
 	"golang.org/x/oauth2"
@@ -34,6 +36,7 @@ type API struct {
 
 	OAuthConfig *oauth2.Config
 	Events      *webhooks.ActivityEvents
+	Manager     *queue.Manager
 }
 
 func New(opts Options) (*API, error) {
@@ -61,8 +64,12 @@ func New(opts Options) (*API, error) {
 }
 
 // StartWebhook needs to be called after the API is served.
-func (api *API) StartWebhook(ctx context.Context) error {
-	return api.Events.Setup(ctx)
+func (api *API) StartWebhook(ctx context.Context) (<-chan *webhooks.WebhookEvent, error) {
+	err := api.Events.Setup(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return api.Events.EventQueue(), nil
 }
 
 func (api *API) Routes() chi.Router {

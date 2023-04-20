@@ -12,6 +12,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Emyrk/strava/api/queue"
+
 	"github.com/spf13/pflag"
 
 	"github.com/spf13/viper"
@@ -115,6 +117,19 @@ func serverCmd() *cobra.Command {
 				return fmt.Errorf("create server: %w", err)
 			}
 
+			manager, err := queue.New(ctx, queue.Options{
+				DBURL:    dbURL,
+				Logger:   logger.With().Str("component", "queue").Logger(),
+				DB:       db,
+				OAuthCfg: srv.OAuthConfig,
+			})
+
+			err = manager.Run(ctx)
+			if err != nil {
+				return fmt.Errorf("run queue: %w", err)
+			}
+			defer manager.Close()
+
 			hsrv := &http.Server{
 				Addr:    fmt.Sprintf("0.0.0.0:%d", port),
 				Handler: srv.Handler,
@@ -133,10 +148,14 @@ func serverCmd() *cobra.Command {
 			// TODO: Check for server up
 
 			time.Sleep(time.Second)
-			err = srv.StartWebhook(ctx)
+			eq, err := srv.StartWebhook(ctx)
 			if err != nil {
 				return fmt.Errorf("start webhook: %w", err)
 			}
+			go func() {
+				manager.HandleWebhookEvents(ctx, eq)
+			}()
+
 			logger.Info().Msgf("Webhook started to %s", srv.Events.Callback.String())
 
 			c := make(chan os.Signal, 1)
@@ -153,6 +172,7 @@ func serverCmd() *cobra.Command {
 			if err != nil {
 				logger.Error().Err(err).Msg("http server shutdown error")
 			}
+			manager.Close()
 
 			return nil
 		},

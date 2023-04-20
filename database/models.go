@@ -5,6 +5,7 @@
 package database
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,6 +26,7 @@ type Athlete struct {
 	OauthRefreshToken string    `db:"oauth_refresh_token" json:"oauth_refresh_token"`
 	OauthExpiry       time.Time `db:"oauth_expiry" json:"oauth_expiry"`
 	Raw               string    `db:"raw" json:"raw"`
+	OauthTokenType    string    `db:"oauth_token_type" json:"oauth_token_type"`
 }
 
 type AthleteEffort struct {
@@ -34,6 +36,19 @@ type AthleteEffort struct {
 	LastChecked  time.Time `db:"last_checked" json:"last_checked"`
 	BestEffortID int32     `db:"best_effort_id" json:"best_effort_id"`
 	KomRank      int32     `db:"kom_rank" json:"kom_rank"`
+}
+
+type GueJob struct {
+	JobID      string         `db:"job_id" json:"job_id"`
+	Priority   int16          `db:"priority" json:"priority"`
+	RunAt      time.Time      `db:"run_at" json:"run_at"`
+	JobType    string         `db:"job_type" json:"job_type"`
+	Args       []byte         `db:"args" json:"args"`
+	ErrorCount int32          `db:"error_count" json:"error_count"`
+	LastError  sql.NullString `db:"last_error" json:"last_error"`
+	Queue      string         `db:"queue" json:"queue"`
+	CreatedAt  time.Time      `db:"created_at" json:"created_at"`
+	UpdatedAt  time.Time      `db:"updated_at" json:"updated_at"`
 }
 
 type Segment struct {

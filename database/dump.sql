@@ -22,10 +22,24 @@ CREATE TABLE athletes (
     oauth_access_token text NOT NULL,
     oauth_refresh_token text NOT NULL,
     oauth_expiry timestamp with time zone NOT NULL,
-    raw text NOT NULL
+    raw text NOT NULL,
+    oauth_token_type text NOT NULL
 );
 
 COMMENT ON COLUMN athletes.provider_id IS 'Oauth app client ID';
+
+CREATE TABLE gue_jobs (
+    job_id text NOT NULL,
+    priority smallint NOT NULL,
+    run_at timestamp with time zone NOT NULL,
+    job_type text NOT NULL,
+    args bytea NOT NULL,
+    error_count integer DEFAULT 0 NOT NULL,
+    last_error text,
+    queue text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
 
 CREATE TABLE segments (
     id integer NOT NULL,
@@ -44,11 +58,16 @@ ALTER TABLE ONLY athlete_efforts
 ALTER TABLE ONLY athletes
     ADD CONSTRAINT athletes_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY gue_jobs
+    ADD CONSTRAINT gue_jobs_pkey PRIMARY KEY (job_id);
+
 ALTER TABLE ONLY segments
     ADD CONSTRAINT segments_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY webhook_dump
     ADD CONSTRAINT webhook_dump_pkey PRIMARY KEY (id);
+
+CREATE INDEX idx_gue_jobs_selector ON gue_jobs USING btree (queue, run_at, priority);
 
 ALTER TABLE ONLY athlete_efforts
     ADD CONSTRAINT athlete_efforts_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id);

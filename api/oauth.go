@@ -41,6 +41,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		OauthAccessToken:  state.Token.AccessToken,
 		OauthRefreshToken: state.Token.RefreshToken,
 		OauthExpiry:       state.Token.Expiry,
+		OauthTokenType:    state.Token.TokenType,
 		Raw:               string(raw),
 	})
 	if err != nil {

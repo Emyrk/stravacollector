@@ -9,8 +9,34 @@ import (
 	"time"
 )
 
+const getAthlete = `-- name: GetAthlete :one
+SELECT id, premium, username, firstname, lastname, sex, provider_id, created_at, updated_at, oauth_access_token, oauth_refresh_token, oauth_expiry, raw, oauth_token_type FROM athletes WHERE id = $1
+`
+
+func (q *sqlQuerier) GetAthlete(ctx context.Context, id int64) (Athlete, error) {
+	row := q.db.QueryRowContext(ctx, getAthlete, id)
+	var i Athlete
+	err := row.Scan(
+		&i.ID,
+		&i.Premium,
+		&i.Username,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Sex,
+		&i.ProviderID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.OauthAccessToken,
+		&i.OauthRefreshToken,
+		&i.OauthExpiry,
+		&i.Raw,
+		&i.OauthTokenType,
+	)
+	return i, err
+}
+
 const getAthletes = `-- name: GetAthletes :many
-SELECT id, premium, username, firstname, lastname, sex, provider_id, created_at, updated_at, oauth_access_token, oauth_refresh_token, oauth_expiry, raw FROM athletes
+SELECT id, premium, username, firstname, lastname, sex, provider_id, created_at, updated_at, oauth_access_token, oauth_refresh_token, oauth_expiry, raw, oauth_token_type FROM athletes
 `
 
 func (q *sqlQuerier) GetAthletes(ctx context.Context) ([]Athlete, error) {
@@ -36,6 +62,7 @@ func (q *sqlQuerier) GetAthletes(ctx context.Context) ([]Athlete, error) {
 			&i.OauthRefreshToken,
 			&i.OauthExpiry,
 			&i.Raw,
+			&i.OauthTokenType,
 		); err != nil {
 			return nil, err
 		}
@@ -56,11 +83,11 @@ INSERT INTO
 		created_at, updated_at,
              id,
              premium, username, firstname, lastname, sex,
-             provider_id, oauth_access_token, oauth_refresh_token, oauth_expiry,
+             provider_id, oauth_access_token, oauth_refresh_token, oauth_expiry, oauth_token_type,
              raw
 	)
 VALUES
-    (Now(), Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    (Now(), Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 ON CONFLICT
 	(id)
 DO UPDATE SET
@@ -74,8 +101,9 @@ DO UPDATE SET
 	oauth_access_token = $8,
 	oauth_refresh_token = $9,
 	oauth_expiry = $10,
+	oauth_token_type = $11,
 	raw = $11
-RETURNING id, premium, username, firstname, lastname, sex, provider_id, created_at, updated_at, oauth_access_token, oauth_refresh_token, oauth_expiry, raw
+RETURNING id, premium, username, firstname, lastname, sex, provider_id, created_at, updated_at, oauth_access_token, oauth_refresh_token, oauth_expiry, raw, oauth_token_type
 `
 
 type UpsertAthleteParams struct {
@@ -89,6 +117,7 @@ type UpsertAthleteParams struct {
 	OauthAccessToken  string    `db:"oauth_access_token" json:"oauth_access_token"`
 	OauthRefreshToken string    `db:"oauth_refresh_token" json:"oauth_refresh_token"`
 	OauthExpiry       time.Time `db:"oauth_expiry" json:"oauth_expiry"`
+	OauthTokenType    string    `db:"oauth_token_type" json:"oauth_token_type"`
 	Raw               string    `db:"raw" json:"raw"`
 }
 
@@ -104,6 +133,7 @@ func (q *sqlQuerier) UpsertAthlete(ctx context.Context, arg UpsertAthleteParams)
 		arg.OauthAccessToken,
 		arg.OauthRefreshToken,
 		arg.OauthExpiry,
+		arg.OauthTokenType,
 		arg.Raw,
 	)
 	var i Athlete
@@ -121,6 +151,7 @@ func (q *sqlQuerier) UpsertAthlete(ctx context.Context, arg UpsertAthleteParams)
 		&i.OauthRefreshToken,
 		&i.OauthExpiry,
 		&i.Raw,
+		&i.OauthTokenType,
 	)
 	return i, err
 }
