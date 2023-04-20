@@ -52,7 +52,7 @@ func New(opts Options) (*API, error) {
 			Scopes: []string{strings.Join([]string{"read", "read_all", "profile:read_all", "activity:read"}, ",")},
 		},
 	}
-	api.Events = webhooks.NewActivityEvents(opts.Logger, api.OAuthConfig, opts.AccessURL)
+	api.Events = webhooks.NewActivityEvents(opts.Logger, api.OAuthConfig, api.Opts.DB, opts.AccessURL)
 	r := api.Routes()
 	api.Events.Attach(r)
 	api.Handler = r

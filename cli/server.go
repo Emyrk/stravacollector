@@ -137,6 +137,7 @@ func serverCmd() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("start webhook: %w", err)
 			}
+			logger.Info().Msgf("Webhook started to %s", srv.Events.Callback.String())
 
 			c := make(chan os.Signal, 1)
 			signal.Notify(c, os.Interrupt, syscall.SIGTERM)

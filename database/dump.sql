@@ -32,6 +32,12 @@ CREATE TABLE segments (
     name text NOT NULL
 );
 
+CREATE TABLE webhook_dump (
+    id uuid NOT NULL,
+    recorded_at timestamp without time zone NOT NULL,
+    raw text NOT NULL
+);
+
 ALTER TABLE ONLY athlete_efforts
     ADD CONSTRAINT athlete_efforts_pkey PRIMARY KEY (id);
 
@@ -40,6 +46,9 @@ ALTER TABLE ONLY athletes
 
 ALTER TABLE ONLY segments
     ADD CONSTRAINT segments_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY webhook_dump
+    ADD CONSTRAINT webhook_dump_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY athlete_efforts
     ADD CONSTRAINT athlete_efforts_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id);

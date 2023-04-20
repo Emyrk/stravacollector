@@ -40,3 +40,9 @@ type Segment struct {
 	ID   int32  `db:"id" json:"id"`
 	Name string `db:"name" json:"name"`
 }
+
+type WebhookDump struct {
+	ID         uuid.UUID `db:"id" json:"id"`
+	RecordedAt time.Time `db:"recorded_at" json:"recorded_at"`
+	Raw        string    `db:"raw" json:"raw"`
+}
