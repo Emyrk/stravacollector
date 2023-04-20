@@ -125,16 +125,19 @@ func (q *sqlQuerier) UpsertAthlete(ctx context.Context, arg UpsertAthleteParams)
 	return i, err
 }
 
-const insertWebhookDump = `-- name: InsertWebhookDump :exec
+const insertWebhookDump = `-- name: InsertWebhookDump :one
 INSERT INTO
 	webhook_dump(
 	id, recorded_at, raw
 )
 VALUES
 	(gen_random_uuid(), Now(), $1)
+RETURNING id, recorded_at, raw
 `
 
-func (q *sqlQuerier) InsertWebhookDump(ctx context.Context, rawJson string) error {
-	_, err := q.db.ExecContext(ctx, insertWebhookDump, rawJson)
-	return err
+func (q *sqlQuerier) InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error) {
+	row := q.db.QueryRowContext(ctx, insertWebhookDump, rawJson)
+	var i WebhookDump
+	err := row.Scan(&i.ID, &i.RecordedAt, &i.Raw)
+	return i, err
 }

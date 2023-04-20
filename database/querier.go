@@ -10,7 +10,7 @@ import (
 
 type sqlcQuerier interface {
 	GetAthletes(ctx context.Context) ([]Athlete, error)
-	InsertWebhookDump(ctx context.Context, rawJson string) error
+	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
 	UpsertAthlete(ctx context.Context, arg UpsertAthleteParams) (Athlete, error)
 }
 

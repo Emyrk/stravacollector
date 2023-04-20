@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -75,16 +76,65 @@ func (a *ActivityEvents) Close() {
 
 }
 
+// WebhookEvent is documented https://developers.strava.com/docs/webhooks/
 type WebhookEvent struct {
+	// AspectType always "create," "update," or "delete."
+	AspectType string `json:"aspect_type"`
+	// EventTime is unix seconds
+	EventTime int `json:"event_time"`
+	// ObjectID is the activity's ID or athlete's ID.
+	ObjectID int64 `json:"object_id"`
+	// ObjectType either "activity" or "athlete."
+	ObjectType string `json:"object_type"`
+	// OwnerID is the athlete ID
+	OwnerID        int64             `json:"owner_id"`
+	SubscriptionID int               `json:"subscription_id"`
+	Updates        map[string]string `json:"updates"`
 }
 
 func (a *ActivityEvents) handleWebhook(rw http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	// Always save the payload
 	d, _ := io.ReadAll(r.Body)
-	err := a.DB.InsertWebhookDump(r.Context(), string(d))
+	dump, err := a.DB.InsertWebhookDump(ctx, string(d))
 	if err != nil {
 		a.Logger.Error().Err(err).Msg("error inserting webhook dump")
 	}
-	fmt.Println(string(d))
+	logger := a.Logger.With().Str("id", dump.ID.String()).Logger()
+
+	var event WebhookEvent
+	err = json.Unmarshal(d, &event)
+	if err != nil {
+		logger.Error().
+			Str("body", string(d)).
+			Err(err).Msg("error unmarshalling webhook event")
+		return
+	}
+
+	switch event.ObjectType {
+	case "activity":
+		a.newActivity(event, logger)
+	case "athlete":
+		// Ignore these for now.
+	default:
+		logger.Warn().
+			Str("object_type", event.ObjectType).
+			Msg("Webhook event not supported")
+	}
+}
+
+func (a *ActivityEvents) newActivity(event WebhookEvent, logger zerolog.Logger) {
+	switch event.AspectType {
+	case "create":
+	case "update":
+		// Updates to events we probably don't care about?
+		logger.Info().
+			Interface("updated", event.Updates).
+			Msg("'Update' webhook event to an activity")
+
+	case "delete":
+	}
 }
 
 func (a *ActivityEvents) Attach(r chi.Router) chi.Router {
