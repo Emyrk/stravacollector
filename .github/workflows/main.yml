@@ -2,14 +2,22 @@ name: MainUpdate
 
 on:
   push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
 
 jobs:
   golang-check:
-    uses: ./.github/workflows/go.yml
-  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - name: Build
+        run: go build -v ./...
+      - name: Test
+        run: go test -v ./...
+  docker-push:
     needs: golang-check
     runs-on: ubuntu-latest
     steps:
@@ -23,5 +31,5 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          push: true
+          push: ${{ github.ref_type == 'tag' }}
           tags: user/app:latest
