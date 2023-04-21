@@ -148,6 +148,7 @@ func serverCmd() *cobra.Command {
 					logger.Error().Err(err).Msg("http server error")
 				}
 			}()
+			logger.Info().Str("access_url", accessURL).Msg("Server running")
 
 			// TODO: Check for server up
 

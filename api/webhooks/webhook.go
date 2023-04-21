@@ -73,7 +73,7 @@ func (a *ActivityEvents) Setup(ctx context.Context) error {
 
 	id, err := stravawebhook.CreateWebhook(ctx, a.OauthConfig.ClientID, a.OauthConfig.ClientSecret, a.Callback.String(), a.VerifyToken)
 	if err != nil {
-		return fmt.Errorf("error creating webhook: %w", err)
+		return fmt.Errorf("error creating webhook (%s): %w", a.Callback.String(), err)
 	}
 	a.ID = id
 	return nil
