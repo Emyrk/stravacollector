@@ -85,8 +85,6 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	}, nil
 }
 
-
-
 func (m *Manager) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	m.cancel = cancel
@@ -161,7 +159,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 	}
 
 	// Only track athletes we have in our database
-	athlete, err := m.DB.GetAthlete(ctx, args.AthleteID)
+	athlete, err := m.DB.GetAthleteLogin(ctx, args.AthleteID)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Error().Err(err).Msg("athlete not found, job abandoned")
 		return nil
