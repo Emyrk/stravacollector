@@ -30,7 +30,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	err = api.Opts.DB.InTx(func(store database.Store) error {
-		_, err = api.Opts.DB.UpsertAthleteLogin(ctx, database.UpsertAthleteLoginParams{
+		_, err = store.UpsertAthleteLogin(ctx, database.UpsertAthleteLoginParams{
 			AthleteID:         athlete.ID,
 			Summit:            athlete.Premium || athlete.Summit,
 			ProviderID:        api.OAuthConfig.ClientID,
@@ -43,7 +43,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			return fmt.Errorf("upsert login: %w", err)
 		}
 
-		_, err = api.Opts.DB.UpsertAthlete(ctx, database.UpsertAthleteParams{
+		_, err = store.UpsertAthlete(ctx, database.UpsertAthleteParams{
 			ID:                    athlete.ID,
 			CreatedAt:             athlete.CreatedAt,
 			UpdatedAt:             athlete.UpdatedAt,
