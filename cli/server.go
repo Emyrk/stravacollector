@@ -188,7 +188,6 @@ func serverCmd() *cobra.Command {
 	cmd.Flags().IntVar(&port, "port", 9090, "Port to listen on")
 	cmd.Flags().StringVar(&secret, "oauth-secret", "", "Strava oauth app secret")
 	cmd.Flags().StringVar(&clientID, "oauth-client-id", "", "Strava oauth app client ID")
-	//cmd.Flags().StringVar(&token, "access-token", "", "Strava access token")
 	cmd.Flags().StringVar(&dbURL, "db-url", "postgres://postgres:postgres@localhost:5432/strava?sslmode=disable", "Database URL")
 	cmd.Flags().StringVar(&queueDBURL, "queue-db-url", "", "Defaults to '--db-url'")
 
