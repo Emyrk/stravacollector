@@ -152,13 +152,13 @@ func serverCmd() *cobra.Command {
 			// TODO: Check for server up
 
 			time.Sleep(time.Second)
-			//eq, err := srv.StartWebhook(ctx)
-			//if err != nil {
-			//	return fmt.Errorf("start webhook: %w", err)
-			//}
-			//go func() {
-			//	manager.HandleWebhookEvents(ctx, eq)
-			//}()
+			eq, err := srv.StartWebhook(ctx)
+			if err != nil {
+				return fmt.Errorf("start webhook: %w", err)
+			}
+			go func() {
+				manager.HandleWebhookEvents(ctx, eq)
+			}()
 
 			logger.Info().Msgf("Webhook started to %s", srv.Events.Callback.String())
 
