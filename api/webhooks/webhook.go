@@ -118,17 +118,7 @@ func (a *ActivityEvents) handleWebhook(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 	a.eventQueue <- &event
-
-	//switch event.ObjectType {
-	//case "activity":
-	//	a.newActivity(event, logger)
-	//case "athlete":
-	//	// Ignore these for now.
-	//default:
-	//	logger.Warn().
-	//		Str("object_type", event.ObjectType).
-	//		Msg("Webhook event not supported")
-	//}
+	_, _ = rw.Write([]byte("Thanks!"))
 }
 
 func (a *ActivityEvents) newActivity(event WebhookEvent, logger zerolog.Logger) {
