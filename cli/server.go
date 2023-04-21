@@ -170,7 +170,7 @@ func serverCmd() *cobra.Command {
 							Str("time", now.Format(time.RFC3339)).
 							Err(err).
 							Msg("Webhook failed to start, restart the server to try again")
-						time.Sleep(time.Second)
+						time.Sleep(time.Second * 10)
 					}
 				}()
 			}

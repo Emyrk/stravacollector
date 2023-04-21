@@ -12,8 +12,8 @@ import (
 func RootCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "strava",
-		Run: func(cmd *cobra.Command, args []string) {
-			// Do Stuff Here
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Help()
 		},
 	}
 
