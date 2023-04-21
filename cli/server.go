@@ -154,14 +154,26 @@ func serverCmd() *cobra.Command {
 
 			time.Sleep(time.Second)
 			eq, err := srv.StartWebhook(ctx)
-			if err != nil {
-				return fmt.Errorf("start webhook: %w", err)
+			if err == nil {
+				logger.Info().Msgf("Webhook started to %s", srv.Events.Callback.String())
+				go func() {
+					manager.HandleWebhookEvents(ctx, eq)
+				}()
 			}
-			go func() {
-				manager.HandleWebhookEvents(ctx, eq)
-			}()
-
-			logger.Info().Msgf("Webhook started to %s", srv.Events.Callback.String())
+			if err != nil {
+				now := time.Now()
+				// This sucks but prevents endless loop that uses all our api limits.
+				go func() {
+					for {
+						logger.Error().
+							Str("callback", srv.Events.Callback.String()).
+							Str("time", now.Format(time.RFC3339)).
+							Err(err).
+							Msg("Webhook failed to start, restart the server to try again")
+						time.Sleep(time.Second)
+					}
+				}()
+			}
 
 			c := make(chan os.Signal, 1)
 			signal.Notify(c, os.Interrupt, syscall.SIGTERM)

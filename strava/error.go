@@ -1,9 +1,25 @@
 package strava
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
+
+// {"message":"Rate Limit Exceeded","errors":[{"resource":"Application","field":"overall rate limit","code":"exceeded"}]}
+
+func IsRateLimitError(err error) bool {
+	if err == nil {
+		return false
+	}
+	var e Error
+	if errors.As(err, &e) {
+		if e.Message == "Rate Limit Exceeded" {
+			return true
+		}
+	}
+	return false
+}
 
 type Error struct {
 	Message string          `json:"message"`
