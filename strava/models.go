@@ -1,6 +1,9 @@
 package strava
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Map struct {
 	ID              string `json:"id"`
@@ -47,20 +50,20 @@ type DetailedActivity struct {
 	AverageSpeed         float64         `json:"average_speed"`
 	MaxSpeed             float64         `json:"max_speed"`
 	AverageCadence       float64         `json:"average_cadence"`
-	AverageTemp          int             `json:"average_temp"`
+	AverageTemp          float64         `json:"average_temp"`
 	AverageWatts         float64         `json:"average_watts"`
-	WeightedAverageWatts int             `json:"weighted_average_watts"`
+	WeightedAverageWatts float64         `json:"weighted_average_watts"`
 	Kilojoules           float64         `json:"kilojoules"`
 	DeviceWatts          bool            `json:"device_watts"`
 	HasHeartrate         bool            `json:"has_heartrate"`
-	MaxWatts             int             `json:"max_watts"`
+	MaxWatts             float64         `json:"max_watts"`
 	ElevHigh             float64         `json:"elev_high"`
 	ElevLow              float64         `json:"elev_low"`
 	PrCount              int             `json:"pr_count"`
 	TotalPhotoCount      int             `json:"total_photo_count"`
 	HasKudoed            bool            `json:"has_kudoed"`
-	WorkoutType          int             `json:"workout_type"`
-	SufferScore          interface{}     `json:"suffer_score"`
+	WorkoutType          *int            `json:"workout_type"`
+	SufferScore          *int            `json:"suffer_score"`
 	Description          string          `json:"description"`
 	Calories             float64         `json:"calories"`
 	SegmentEfforts       []SegmentEffort `json:"segment_efforts"`
@@ -136,7 +139,7 @@ type DetailedActivity struct {
 }
 
 type SegmentEffort struct {
-	ID            int    `json:"id"`
+	ID            int64  `json:"id"`
 	ResourceState int    `json:"resource_state"`
 	Name          string `json:"name"`
 	Activity      struct {
@@ -150,8 +153,8 @@ type SegmentEffort struct {
 		// 3 == Detail
 		ResourceState int `json:"resource_state"`
 	} `json:"athlete"`
-	ElapsedTime    int            `json:"elapsed_time"`
-	MovingTime     int            `json:"moving_time"`
+	ElapsedTime    float64        `json:"elapsed_time"`
+	MovingTime     float64        `json:"moving_time"`
 	StartDate      time.Time      `json:"start_date"`
 	StartDateLocal time.Time      `json:"start_date_local"`
 	Distance       float64        `json:"distance"`
@@ -166,7 +169,7 @@ type SegmentEffort struct {
 }
 
 type SegmentSummary struct {
-	ID            int       `json:"id"`
+	ID            int64     `json:"id"`
 	ResourceState int       `json:"resource_state"`
 	Name          string    `json:"name"`
 	ActivityType  string    `json:"activity_type"`
@@ -187,34 +190,35 @@ type SegmentSummary struct {
 }
 
 type Athlete struct {
-	ID                    int64         `json:"id"`
-	Username              string        `json:"username"`
-	ResourceState         int           `json:"resource_state"`
-	Firstname             string        `json:"firstname"`
-	Lastname              string        `json:"lastname"`
-	City                  string        `json:"city"`
-	State                 string        `json:"state"`
-	Country               string        `json:"country"`
-	Sex                   string        `json:"sex"`
-	Premium               bool          `json:"premium"`
-	CreatedAt             time.Time     `json:"created_at"`
-	UpdatedAt             time.Time     `json:"updated_at"`
-	BadgeTypeID           int           `json:"badge_type_id"`
-	ProfileMedium         string        `json:"profile_medium"`
-	Profile               string        `json:"profile"`
-	Friend                interface{}   `json:"friend"`
-	Follower              interface{}   `json:"follower"`
-	FollowerCount         int           `json:"follower_count"`
-	FriendCount           int           `json:"friend_count"`
-	MutualFriendCount     int           `json:"mutual_friend_count"`
-	AthleteType           int           `json:"athlete_type"`
-	DatePreference        string        `json:"date_preference"`
-	MeasurementPreference string        `json:"measurement_preference"`
-	Clubs                 []interface{} `json:"clubs"`
-	Ftp                   interface{}   `json:"ftp"`
-	Weight                float64       `json:"weight"`
-	Bikes                 []Equipment   `json:"bikes"`
-	Shoes                 []Equipment   `json:"shoes"`
+	ID                    int64           `json:"id"`
+	Username              string          `json:"username"`
+	ResourceState         int             `json:"resource_state"`
+	Firstname             string          `json:"firstname"`
+	Lastname              string          `json:"lastname"`
+	City                  string          `json:"city"`
+	State                 string          `json:"state"`
+	Country               string          `json:"country"`
+	Sex                   string          `json:"sex"`
+	Premium               bool            `json:"premium"`
+	Summit                bool            `json:"summit"`
+	CreatedAt             time.Time       `json:"created_at"`
+	UpdatedAt             time.Time       `json:"updated_at"`
+	BadgeTypeID           int             `json:"badge_type_id"`
+	ProfileMedium         string          `json:"profile_medium"`
+	Profile               string          `json:"profile"`
+	Friend                interface{}     `json:"friend"`
+	Follower              interface{}     `json:"follower"`
+	FollowerCount         int             `json:"follower_count"`
+	FriendCount           int             `json:"friend_count"`
+	MutualFriendCount     int             `json:"mutual_friend_count"`
+	AthleteType           int             `json:"athlete_type"`
+	DatePreference        string          `json:"date_preference"`
+	MeasurementPreference string          `json:"measurement_preference"`
+	Clubs                 json.RawMessage `json:"clubs"`
+	Ftp                   float64     `json:"ftp"`
+	Weight                float64         `json:"weight"`
+	Bikes                 []Equipment     `json:"bikes"`
+	Shoes                 []Equipment     `json:"shoes"`
 }
 
 type Equipment struct {

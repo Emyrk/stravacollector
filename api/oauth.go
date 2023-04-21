@@ -1,7 +1,7 @@
 package api
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/Emyrk/strava/api/httpapi"
@@ -29,21 +29,45 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	raw, _ := json.Marshal(athlete)
-	_, err = api.Opts.DB.UpsertAthlete(ctx, database.UpsertAthleteParams{
-		ID:                athlete.ID,
-		Premium:           athlete.Premium,
-		Username:          athlete.Username,
-		Firstname:         athlete.Firstname,
-		Lastname:          athlete.Lastname,
-		Sex:               athlete.Sex,
-		ProviderID:        api.OAuthConfig.ClientID,
-		OauthAccessToken:  state.Token.AccessToken,
-		OauthRefreshToken: state.Token.RefreshToken,
-		OauthExpiry:       state.Token.Expiry,
-		OauthTokenType:    state.Token.TokenType,
-		Raw:               string(raw),
-	})
+	err = api.Opts.DB.InTx(func(store database.Store) error {
+		_, err = api.Opts.DB.UpsertAthleteLogin(ctx, database.UpsertAthleteLoginParams{
+			AthleteID:         athlete.ID,
+			Summit:            athlete.Premium || athlete.Summit,
+			ProviderID:        api.OAuthConfig.ClientID,
+			OauthAccessToken:  state.Token.AccessToken,
+			OauthRefreshToken: state.Token.RefreshToken,
+			OauthExpiry:       state.Token.Expiry,
+			OauthTokenType:    state.Token.TokenType,
+		})
+		if err != nil {
+			return fmt.Errorf("upsert login: %w", err)
+		}
+
+		_, err = api.Opts.DB.UpsertAthlete(ctx, database.UpsertAthleteParams{
+			ID:                    athlete.ID,
+			CreatedAt:             athlete.CreatedAt,
+			UpdatedAt:             athlete.UpdatedAt,
+			Summit:                athlete.Summit || athlete.Premium,
+			Username:              athlete.Username,
+			Firstname:             athlete.Firstname,
+			Lastname:              athlete.Lastname,
+			Sex:                   athlete.Sex,
+			City:                  athlete.City,
+			State:                 athlete.State,
+			Country:               athlete.Country,
+			FollowCount:           int32(athlete.FollowerCount),
+			FriendCount:           int32(athlete.FriendCount),
+			MeasurementPreference: athlete.MeasurementPreference,
+			Ftp:                   athlete.Ftp,
+			Weight:                athlete.Weight,
+			Clubs:                 athlete.Clubs,
+		})
+		if err != nil {
+			return fmt.Errorf("upsert athlete: %w", err)
+		}
+
+		return nil
+	}, nil)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, httpapi.Response{
 			Message: "Failed to store athlete",

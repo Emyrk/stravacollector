@@ -6,152 +6,183 @@ package database
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 )
 
-const getAthlete = `-- name: GetAthlete :one
-SELECT id, premium, username, firstname, lastname, sex, provider_id, created_at, updated_at, oauth_access_token, oauth_refresh_token, oauth_expiry, raw, oauth_token_type FROM athletes WHERE id = $1
+const getAthleteLogin = `-- name: GetAthleteLogin :one
+SELECT athlete_id, summit, provider_id, created_at, updated_at, oauth_access_token, oauth_refresh_token, oauth_expiry, oauth_token_type, id FROM athlete_logins WHERE athlete_id = $1
 `
 
-func (q *sqlQuerier) GetAthlete(ctx context.Context, id int64) (Athlete, error) {
-	row := q.db.QueryRowContext(ctx, getAthlete, id)
-	var i Athlete
+func (q *sqlQuerier) GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error) {
+	row := q.db.QueryRowContext(ctx, getAthleteLogin, athleteID)
+	var i AthleteLogin
 	err := row.Scan(
-		&i.ID,
-		&i.Premium,
-		&i.Username,
-		&i.Firstname,
-		&i.Lastname,
-		&i.Sex,
+		&i.AthleteID,
+		&i.Summit,
 		&i.ProviderID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.OauthAccessToken,
 		&i.OauthRefreshToken,
 		&i.OauthExpiry,
-		&i.Raw,
 		&i.OauthTokenType,
+		&i.ID,
 	)
 	return i, err
 }
 
-const getAthletes = `-- name: GetAthletes :many
-SELECT id, premium, username, firstname, lastname, sex, provider_id, created_at, updated_at, oauth_access_token, oauth_refresh_token, oauth_expiry, raw, oauth_token_type FROM athletes
-`
-
-func (q *sqlQuerier) GetAthletes(ctx context.Context) ([]Athlete, error) {
-	rows, err := q.db.QueryContext(ctx, getAthletes)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Athlete
-	for rows.Next() {
-		var i Athlete
-		if err := rows.Scan(
-			&i.ID,
-			&i.Premium,
-			&i.Username,
-			&i.Firstname,
-			&i.Lastname,
-			&i.Sex,
-			&i.ProviderID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.OauthAccessToken,
-			&i.OauthRefreshToken,
-			&i.OauthExpiry,
-			&i.Raw,
-			&i.OauthTokenType,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const upsertAthlete = `-- name: UpsertAthlete :one
 INSERT INTO
-    athletes(
-		created_at, updated_at,
-             id,
-             premium, username, firstname, lastname, sex,
-             provider_id, oauth_access_token, oauth_refresh_token, oauth_expiry, oauth_token_type,
-             raw
-	)
+	athletes(
+	fetched_at, id, created_at, updated_at,
+		summit, username, firstname, lastname, sex, city, state, country,
+		follow_count, friend_count, measurement_preference, ftp, weight, clubs
+)
 VALUES
-    (Now(), Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
 ON CONFLICT
 	(id)
-DO UPDATE SET
-	updated_at = Now(),
-	premium = $2,
-	username = $3,
-	firstname = $4,
-	lastname = $5,
-	sex = $6,
-	provider_id = $7,
-	oauth_access_token = $8,
-	oauth_refresh_token = $9,
-	oauth_expiry = $10,
-	oauth_token_type = $11,
-	raw = $11
-RETURNING id, premium, username, firstname, lastname, sex, provider_id, created_at, updated_at, oauth_access_token, oauth_refresh_token, oauth_expiry, raw, oauth_token_type
+	DO UPDATE SET
+		fetched_at = Now(),
+		created_at = $2,
+		updated_at = $3,
+		summit = $4,
+		username = $5,
+		firstname = $6,
+		lastname = $7,
+		sex = $8,
+		city = $9,
+		state = $10,
+		country = $11,
+		follow_count = $12,
+		friend_count = $13,
+		measurement_preference = $14,
+		ftp = $15,
+		weight = $16,
+		clubs = $17
+
+RETURNING id, summit, username, firstname, lastname, sex, city, state, country, follow_count, friend_count, measurement_preference, ftp, weight, clubs, created_at, updated_at, fetched_at
 `
 
 type UpsertAthleteParams struct {
-	ID                int64     `db:"id" json:"id"`
-	Premium           bool      `db:"premium" json:"premium"`
-	Username          string    `db:"username" json:"username"`
-	Firstname         string    `db:"firstname" json:"firstname"`
-	Lastname          string    `db:"lastname" json:"lastname"`
-	Sex               string    `db:"sex" json:"sex"`
-	ProviderID        string    `db:"provider_id" json:"provider_id"`
-	OauthAccessToken  string    `db:"oauth_access_token" json:"oauth_access_token"`
-	OauthRefreshToken string    `db:"oauth_refresh_token" json:"oauth_refresh_token"`
-	OauthExpiry       time.Time `db:"oauth_expiry" json:"oauth_expiry"`
-	OauthTokenType    string    `db:"oauth_token_type" json:"oauth_token_type"`
-	Raw               string    `db:"raw" json:"raw"`
+	ID                    int64           `db:"id" json:"id"`
+	CreatedAt             time.Time       `db:"created_at" json:"created_at"`
+	UpdatedAt             time.Time       `db:"updated_at" json:"updated_at"`
+	Summit                bool            `db:"summit" json:"summit"`
+	Username              string          `db:"username" json:"username"`
+	Firstname             string          `db:"firstname" json:"firstname"`
+	Lastname              string          `db:"lastname" json:"lastname"`
+	Sex                   string          `db:"sex" json:"sex"`
+	City                  string          `db:"city" json:"city"`
+	State                 string          `db:"state" json:"state"`
+	Country               string          `db:"country" json:"country"`
+	FollowCount           int32           `db:"follow_count" json:"follow_count"`
+	FriendCount           int32           `db:"friend_count" json:"friend_count"`
+	MeasurementPreference string          `db:"measurement_preference" json:"measurement_preference"`
+	Ftp                   float64         `db:"ftp" json:"ftp"`
+	Weight                float64         `db:"weight" json:"weight"`
+	Clubs                 json.RawMessage `db:"clubs" json:"clubs"`
 }
 
 func (q *sqlQuerier) UpsertAthlete(ctx context.Context, arg UpsertAthleteParams) (Athlete, error) {
 	row := q.db.QueryRowContext(ctx, upsertAthlete,
 		arg.ID,
-		arg.Premium,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+		arg.Summit,
 		arg.Username,
 		arg.Firstname,
 		arg.Lastname,
 		arg.Sex,
+		arg.City,
+		arg.State,
+		arg.Country,
+		arg.FollowCount,
+		arg.FriendCount,
+		arg.MeasurementPreference,
+		arg.Ftp,
+		arg.Weight,
+		arg.Clubs,
+	)
+	var i Athlete
+	err := row.Scan(
+		&i.ID,
+		&i.Summit,
+		&i.Username,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Sex,
+		&i.City,
+		&i.State,
+		&i.Country,
+		&i.FollowCount,
+		&i.FriendCount,
+		&i.MeasurementPreference,
+		&i.Ftp,
+		&i.Weight,
+		&i.Clubs,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.FetchedAt,
+	)
+	return i, err
+}
+
+const upsertAthleteLogin = `-- name: UpsertAthleteLogin :one
+INSERT INTO
+	athlete_logins(
+		created_at, updated_at, id,
+             athlete_id, summit, provider_id, oauth_access_token,
+             oauth_refresh_token, oauth_expiry, oauth_token_type
+	)
+VALUES
+    (Now(), Now(), gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7)
+ON CONFLICT
+	(athlete_id)
+DO UPDATE SET
+	updated_at = Now(),
+	summit = $2,
+	provider_id = $3,
+	oauth_access_token = $4,
+	oauth_refresh_token = $5,
+	oauth_expiry = $6,
+	oauth_token_type = $7
+RETURNING athlete_id, summit, provider_id, created_at, updated_at, oauth_access_token, oauth_refresh_token, oauth_expiry, oauth_token_type, id
+`
+
+type UpsertAthleteLoginParams struct {
+	AthleteID         int64     `db:"athlete_id" json:"athlete_id"`
+	Summit            bool      `db:"summit" json:"summit"`
+	ProviderID        string    `db:"provider_id" json:"provider_id"`
+	OauthAccessToken  string    `db:"oauth_access_token" json:"oauth_access_token"`
+	OauthRefreshToken string    `db:"oauth_refresh_token" json:"oauth_refresh_token"`
+	OauthExpiry       time.Time `db:"oauth_expiry" json:"oauth_expiry"`
+	OauthTokenType    string    `db:"oauth_token_type" json:"oauth_token_type"`
+}
+
+func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLoginParams) (AthleteLogin, error) {
+	row := q.db.QueryRowContext(ctx, upsertAthleteLogin,
+		arg.AthleteID,
+		arg.Summit,
 		arg.ProviderID,
 		arg.OauthAccessToken,
 		arg.OauthRefreshToken,
 		arg.OauthExpiry,
 		arg.OauthTokenType,
-		arg.Raw,
 	)
-	var i Athlete
+	var i AthleteLogin
 	err := row.Scan(
-		&i.ID,
-		&i.Premium,
-		&i.Username,
-		&i.Firstname,
-		&i.Lastname,
-		&i.Sex,
+		&i.AthleteID,
+		&i.Summit,
 		&i.ProviderID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.OauthAccessToken,
 		&i.OauthRefreshToken,
 		&i.OauthExpiry,
-		&i.Raw,
 		&i.OauthTokenType,
+		&i.ID,
 	)
 	return i, err
 }
