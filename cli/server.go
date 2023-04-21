@@ -28,6 +28,7 @@ import (
 func serverCmd() *cobra.Command {
 	var (
 		dbURL       string
+		queueDBURL  string
 		secret      string
 		clientID    string
 		port        int
@@ -117,8 +118,11 @@ func serverCmd() *cobra.Command {
 				return fmt.Errorf("create server: %w", err)
 			}
 
+			if queueDBURL == "" {
+				queueDBURL = dbURL
+			}
 			manager, err := queue.New(ctx, queue.Options{
-				DBURL:    dbURL,
+				DBURL:    queueDBURL,
 				Logger:   logger.With().Str("component", "queue").Logger(),
 				DB:       db,
 				OAuthCfg: srv.OAuthConfig,
@@ -186,6 +190,7 @@ func serverCmd() *cobra.Command {
 	cmd.Flags().StringVar(&clientID, "oauth-client-id", "", "Strava oauth app client ID")
 	//cmd.Flags().StringVar(&token, "access-token", "", "Strava access token")
 	cmd.Flags().StringVar(&dbURL, "db-url", "postgres://postgres:postgres@localhost:5432/strava?sslmode=disable", "Database URL")
+	cmd.Flags().StringVar(&queueDBURL, "queue-db-url", "", "Defaults to '--db-url'")
 
 	return cmd
 }
