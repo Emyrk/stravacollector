@@ -6,6 +6,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/rs/zerolog"
 )
 
 var limiter *Limiter = New()
@@ -106,12 +108,17 @@ func Remaining() (int64, int64) {
 	return limiter.Remaining()
 }
 
-func Can(buffer int64) bool {
+func CanLogger(calls, buffer int64, logger zerolog.Logger) (bool, zerolog.Logger) {
 	i, d := Remaining()
-	if i < buffer || d < buffer {
-		return false
+	if i < buffer+calls || d < buffer+calls {
+		return false, logger.With().
+			Int64("interval_remaining", i).
+			Int64("daily_remaining", d).
+			Int64("calls", calls).
+			Int64("buffer", buffer).
+			Logger()
 	}
-	return true
+	return true, logger
 }
 
 func splitInts(s string) (int64, int64) {
