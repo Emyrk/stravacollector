@@ -1,3 +1,18 @@
+-- name: GetActivity :one
+SELECT
+	*
+FROM
+    activities
+WHERE
+    id = $1;
+
+-- name: UpdateActivityName :exec
+UPDATE activities
+SET
+    name = $2
+WHERE
+    id = $1;
+
 -- name: UpsertActivity :one
 INSERT INTO
 	activities(

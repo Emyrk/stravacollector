@@ -69,7 +69,7 @@ type Activity struct {
 	// Owner of the activity has premium account at the time of the fetch.
 	PremiumFetch bool `db:"premium_fetch" json:"premium_fetch"`
 	// The time at which the activity was last updated by the collector
-	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type Athlete struct {
@@ -143,7 +143,7 @@ type SegmentEffort struct {
 	AverageWatts float64       `db:"average_watts" json:"average_watts"`
 	KomRank      sql.NullInt32 `db:"kom_rank" json:"kom_rank"`
 	PrRank       sql.NullInt32 `db:"pr_rank" json:"pr_rank"`
-	UpdatedAt    sql.NullTime  `db:"updated_at" json:"updated_at"`
+	UpdatedAt    time.Time     `db:"updated_at" json:"updated_at"`
 }
 
 type WebhookDump struct {

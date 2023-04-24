@@ -54,7 +54,7 @@ CREATE TABLE activities (
     leaderboard_opt_out boolean NOT NULL,
     num_segment_efforts integer NOT NULL,
     premium_fetch boolean NOT NULL,
-    updated_at timestamp with time zone
+    updated_at timestamp with time zone NOT NULL
 );
 
 COMMENT ON COLUMN activities.external_id IS 'External ID refers to external source of the activity.';
@@ -130,7 +130,7 @@ CREATE TABLE segment_efforts (
     average_watts double precision NOT NULL,
     kom_rank integer,
     pr_rank integer,
-    updated_at timestamp with time zone
+    updated_at timestamp with time zone NOT NULL
 );
 
 COMMENT ON COLUMN segment_efforts.distance IS 'Distance is in meters';
@@ -157,6 +157,9 @@ ALTER TABLE ONLY athletes
 
 ALTER TABLE ONLY gue_jobs
     ADD CONSTRAINT gue_jobs_pkey PRIMARY KEY (job_id);
+
+ALTER TABLE ONLY segment_efforts
+    ADD CONSTRAINT segment_efforts_pk PRIMARY KEY (id);
 
 ALTER TABLE ONLY segments
     ADD CONSTRAINT segments_pkey PRIMARY KEY (id);

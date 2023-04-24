@@ -1,10 +1,10 @@
 BEGIN;
 
 ALTER TABLE activities
-ADD COLUMN updated_at timestamp with time zone;
+	ADD COLUMN updated_at timestamp with time zone NOT NULL;
 
 ALTER TABLE segment_efforts
-	ADD COLUMN updated_at timestamp with time zone;
+	ADD COLUMN updated_at timestamp with time zone NOT NULL;
 
 COMMENT ON COLUMN activities.updated_at IS 'The time at which the activity was last updated by the collector';
 

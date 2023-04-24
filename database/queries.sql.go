@@ -13,6 +13,95 @@ import (
 	"github.com/lib/pq"
 )
 
+const getActivity = `-- name: GetActivity :one
+SELECT
+	id, athlete_id, upload_id, external_id, name, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, start_date, start_date_local, timezone, utc_offset, start_latlng, end_latlng, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, map_polyline, map_summary_polyline, trainer, commute, manual, private, flagged, gear_id, from_accepted_tag, average_speed, max_speed, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, device_watts, has_heartrate, max_watts, elev_high, elev_low, pr_count, total_photo_count, workout_type, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at
+FROM
+    activities
+WHERE
+    id = $1
+`
+
+func (q *sqlQuerier) GetActivity(ctx context.Context, id int64) (Activity, error) {
+	row := q.db.QueryRowContext(ctx, getActivity, id)
+	var i Activity
+	err := row.Scan(
+		&i.ID,
+		&i.AthleteID,
+		&i.UploadID,
+		&i.ExternalID,
+		&i.Name,
+		&i.MovingTime,
+		&i.ElapsedTime,
+		&i.TotalElevationGain,
+		&i.ActivityType,
+		&i.SportType,
+		&i.StartDate,
+		&i.StartDateLocal,
+		&i.Timezone,
+		&i.UtcOffset,
+		pq.Array(&i.StartLatlng),
+		pq.Array(&i.EndLatlng),
+		&i.AchievementCount,
+		&i.KudosCount,
+		&i.CommentCount,
+		&i.AthleteCount,
+		&i.PhotoCount,
+		&i.MapID,
+		&i.MapPolyline,
+		&i.MapSummaryPolyline,
+		&i.Trainer,
+		&i.Commute,
+		&i.Manual,
+		&i.Private,
+		&i.Flagged,
+		&i.GearID,
+		&i.FromAcceptedTag,
+		&i.AverageSpeed,
+		&i.MaxSpeed,
+		&i.AverageCadence,
+		&i.AverageTemp,
+		&i.AverageWatts,
+		&i.WeightedAverageWatts,
+		&i.Kilojoules,
+		&i.DeviceWatts,
+		&i.HasHeartrate,
+		&i.MaxWatts,
+		&i.ElevHigh,
+		&i.ElevLow,
+		&i.PrCount,
+		&i.TotalPhotoCount,
+		&i.WorkoutType,
+		&i.SufferScore,
+		&i.Calories,
+		&i.EmbedToken,
+		&i.SegmentLeaderboardOptOut,
+		&i.LeaderboardOptOut,
+		&i.NumSegmentEfforts,
+		&i.PremiumFetch,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateActivityName = `-- name: UpdateActivityName :exec
+UPDATE activities
+SET
+    name = $2
+WHERE
+    id = $1
+`
+
+type UpdateActivityNameParams struct {
+	ID   int64  `db:"id" json:"id"`
+	Name string `db:"name" json:"name"`
+}
+
+func (q *sqlQuerier) UpdateActivityName(ctx context.Context, arg UpdateActivityNameParams) error {
+	_, err := q.db.ExecContext(ctx, updateActivityName, arg.ID, arg.Name)
+	return err
+}
+
 const upsertActivity = `-- name: UpsertActivity :one
 INSERT INTO
 	activities(

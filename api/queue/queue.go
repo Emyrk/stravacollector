@@ -19,9 +19,11 @@ import (
 )
 
 const (
-	fetchActivityJob = "fetch_activity"
+	fetchActivityJob  = "fetch_activity"
+	updateActivityJob = "update_activity"
 
-	stravaFetchQueue = "queue_strava_fetch"
+	stravaFetchQueue          = "queue_strava_fetch"
+	stravaUpdateActivityQueue = "queue_strava_update_activity"
 )
 
 type Options struct {
@@ -83,38 +85,76 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	}, nil
 }
 
+func (m *Manager) failedJobHook() func(ctx context.Context, j *gue.Job, err error) {
+	return func(ctx context.Context, j *gue.Job, err error) {
+		// TODO: If this is a strava too many requests, we need to sleep.
+		if err != nil {
+			m.Logger.Error().
+				Err(err).
+				Str("job_id", j.ID.String()).
+				Str("job", j.Type).
+				Str("queue", j.Queue).
+				Int32("err_count", j.ErrorCount).
+				Str("last_error", j.LastError.String).
+				Msg("job failed")
+		}
+	}
+}
+
 func (m *Manager) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	m.cancel = cancel
 
-	worker, err := gue.NewWorker(m.Client, m.workMap(),
-		gue.WithWorkerQueue(stravaFetchQueue),
-		gue.WithWorkerHooksJobDone(func(ctx context.Context, j *gue.Job, err error) {
-			// TODO: If this is a strava too many requests, we need to sleep.
-			if err != nil {
-				m.Logger.Error().
-					Err(err).
-					Str("job_id", j.ID.String()).
-					Str("job", j.Type).
-					Str("queue", j.Queue).
-					Int32("err_count", j.ErrorCount).
-					Str("last_error", j.LastError.String).
-					Msg("job failed")
-			}
-		}))
+	// worker for strava fetch queue
+	workers, err := m.newWorkers([]string{stravaFetchQueue, stravaUpdateActivityQueue})
 	if err != nil {
-		return fmt.Errorf("new worker: %w", err)
+		return fmt.Errorf("new workers: %w", err)
 	}
 
-	go func() {
-		err := worker.Run(ctx)
-		if err != nil {
-			m.Logger.Error().Err(err).Msg("worker error")
-		}
-		cancel()
-	}()
+	for _, w := range workers {
+		w := w
+		// TODO: Errogroup these guys
+		go func(w *gue.Worker) {
+			err := w.Run(ctx)
+			if err != nil {
+				m.Logger.Error().Err(err).Msg("worker error")
+			}
+			cancel()
+		}(w)
+	}
 
 	return nil
+}
+
+func (m *Manager) newWorkers(queues []string, opts ...gue.WorkerOption) ([]*gue.Worker, error) {
+	var workers []*gue.Worker
+	for _, q := range queues {
+		qOpts := make([]gue.WorkerOption, len(opts))
+		copy(qOpts, opts)
+
+		worker, err := m.newWorker(q, qOpts...)
+		if err != nil {
+			return nil, fmt.Errorf("new worker %s: %w", q, err)
+		}
+		workers = append(workers, worker)
+	}
+	return workers, nil
+}
+
+func (m *Manager) newWorker(queue string, opts ...gue.WorkerOption) (*gue.Worker, error) {
+	opts = append(opts,
+		gue.WithWorkerQueue(queue),
+		gue.WithWorkerHooksJobDone(m.failedJobHook()),
+	)
+	// All workers share the workmap
+	worker, err := gue.NewWorker(m.Client, m.workMap(),
+		opts...,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("new worker: %w", err)
+	}
+
+	return worker, nil
 }
 
 func (m *Manager) workMap() gue.WorkMap {
@@ -125,6 +165,9 @@ func (m *Manager) workMap() gue.WorkMap {
 		},
 		fetchActivityJob: func(ctx context.Context, j *gue.Job) error {
 			return m.fetchActivity(ctx, j)
+		},
+		updateActivityJob: func(ctx context.Context, j *gue.Job) error {
+			return m.updateActivity(ctx, j)
 		},
 	}
 }
