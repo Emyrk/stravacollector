@@ -15,6 +15,7 @@ CREATE TABLE activity_detail (
     elev_high double precision NOT NULL,
     elev_low double precision NOT NULL,
     suffer_score integer NOT NULL,
+    calories double precision NOT NULL,
     embed_token text NOT NULL,
     segment_leaderboard_opt_out boolean NOT NULL,
     leaderboard_opt_out boolean NOT NULL,
@@ -63,11 +64,27 @@ CREATE TABLE activity_summary (
     has_heartrate boolean NOT NULL,
     pr_count integer NOT NULL,
     total_photo_count integer NOT NULL,
-    calories double precision NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
 
 COMMENT ON TABLE activity_summary IS 'Activity is missing many detailed fields';
+
+CREATE TABLE athlete_load (
+    athlete_id bigint NOT NULL,
+    last_backload_activity_start timestamp with time zone NOT NULL,
+    last_load_attempt timestamp with time zone NOT NULL,
+    last_load_incomplete boolean NOT NULL,
+    last_load_error text NOT NULL,
+    activites_loaded_last_attempt integer NOT NULL
+);
+
+COMMENT ON TABLE athlete_load IS 'Tracks loading athlete activities. Must be an authenticated athlete.';
+
+COMMENT ON COLUMN athlete_load.last_backload_activity_start IS 'Timestamp start of the last activity loaded. Future ones are not loaded.';
+
+COMMENT ON COLUMN athlete_load.last_load_attempt IS 'Timestamp of the last time the athlete was attempted to be loaded.';
+
+COMMENT ON COLUMN athlete_load.last_load_incomplete IS 'True if the last load was incomplete and needs more work to catch up.';
 
 CREATE TABLE athlete_logins (
     athlete_id bigint NOT NULL,
@@ -168,6 +185,9 @@ ALTER TABLE ONLY activity_detail
 ALTER TABLE ONLY activity_summary
     ADD CONSTRAINT activity_summary_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY athlete_load
+    ADD CONSTRAINT athlete_load_pkey PRIMARY KEY (athlete_id);
+
 ALTER TABLE ONLY athlete_logins
     ADD CONSTRAINT athletes_pkey PRIMARY KEY (athlete_id);
 
@@ -202,6 +222,9 @@ ALTER TABLE ONLY activity_detail
 
 ALTER TABLE ONLY activity_summary
     ADD CONSTRAINT activity_summary_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY athlete_load
+    ADD CONSTRAINT athlete_load_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athlete_logins(athlete_id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY segment_efforts
     ADD CONSTRAINT segment_efforts_activities_id_fk FOREIGN KEY (activities_id) REFERENCES activity_detail(id) ON DELETE CASCADE;

@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/httpmw"
@@ -41,6 +42,16 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		})
 		if err != nil {
 			return fmt.Errorf("upsert login: %w", err)
+		}
+
+		_, err = store.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
+			AthleteID:                 athlete.ID,
+			LastBackloadActivityStart: time.Time{},
+			LastLoadAttempt:           time.Time{},
+			LastLoadIncomplete:        false,
+		})
+		if err != nil {
+			return fmt.Errorf("upsert load: %w", err)
 		}
 
 		_, err = store.UpsertAthlete(ctx, database.UpsertAthleteParams{

@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Emyrk/strava/strava/stravalimit"
 )
@@ -30,6 +31,36 @@ func New(accessToken string) *Client {
 		AccessToken: accessToken,
 		Client:      http.DefaultClient,
 	}
+}
+
+type GetActivitiesParams struct {
+	Before  time.Time
+	After   time.Time
+	Page    int
+	PerPage int
+}
+
+func (c *Client) GetActivities(ctx context.Context, params GetActivitiesParams) ([]ActivitySummary, error) {
+	vals := url.Values{}
+	if !params.Before.IsZero() {
+		vals.Set("before", fmt.Sprintf("%d", params.Before.Unix()))
+	}
+	if !params.After.IsZero() {
+		vals.Set("after", fmt.Sprintf("%d", params.After.Unix()))
+	}
+	if params.Page > 0 {
+		vals.Set("page", fmt.Sprintf("%d", params.Page))
+	}
+	if params.PerPage > 0 {
+		vals.Set("per_page", fmt.Sprintf("%d", params.PerPage))
+	}
+	resp, err := c.Request(ctx, http.MethodGet, "/athlete/activities", nil, vals)
+	if err != nil {
+		return nil, fmt.Errorf("request: %w", err)
+	}
+
+	var activities []ActivitySummary
+	return activities, c.DecodeResponse(resp, &activities, http.StatusOK)
 }
 
 func (c *Client) GetActivity(ctx context.Context, activityID int64, includeEfforts bool) (DetailedActivity, error) {

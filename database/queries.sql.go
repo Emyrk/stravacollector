@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
 
@@ -18,7 +19,7 @@ DELETE FROM
 	activity_summary
 WHERE
 	id = $1
-RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, calories, updated_at
+RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at
 `
 
 func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error) {
@@ -59,7 +60,6 @@ func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySumm
 		&i.HasHeartrate,
 		&i.PrCount,
 		&i.TotalPhotoCount,
-		&i.Calories,
 		&i.UpdatedAt,
 	)
 	return i, err
@@ -67,7 +67,7 @@ func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySumm
 
 const getActivitySummary = `-- name: GetActivitySummary :one
 SELECT
-	id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, calories, updated_at
+	id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at
 FROM
     activity_summary
 WHERE
@@ -112,7 +112,6 @@ func (q *sqlQuerier) GetActivitySummary(ctx context.Context, id int64) (Activity
 		&i.HasHeartrate,
 		&i.PrCount,
 		&i.TotalPhotoCount,
-		&i.Calories,
 		&i.UpdatedAt,
 	)
 	return i, err
@@ -144,11 +143,11 @@ INSERT INTO
 		average_watts, weighted_average_watts, kilojoules, max_watts,
 	    elev_high, elev_low, suffer_score, embed_token,
 	    segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts,
-	    premium_fetch, updated_at, map_id
+	    premium_fetch, updated_at, map_id, calories
 )
 VALUES
 	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-	 $18, $19, $20, $21)
+	 $18, $19, $20, $21, $22)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -172,8 +171,9 @@ ON CONFLICT
 	num_segment_efforts = $18,
 	premium_fetch = $19,
 	updated_at = $20,
-	map_id = $21
-RETURNING id, athlete_id, start_latlng, end_latlng, from_accepted_tag, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, max_watts, elev_high, elev_low, suffer_score, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at, map_id
+	map_id = $21,
+	calories = $22
+RETURNING id, athlete_id, start_latlng, end_latlng, from_accepted_tag, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, max_watts, elev_high, elev_low, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at, map_id
 `
 
 type UpsertActivityDetailParams struct {
@@ -198,6 +198,7 @@ type UpsertActivityDetailParams struct {
 	PremiumFetch             bool      `db:"premium_fetch" json:"premium_fetch"`
 	UpdatedAt                time.Time `db:"updated_at" json:"updated_at"`
 	MapID                    string    `db:"map_id" json:"map_id"`
+	Calories                 float64   `db:"calories" json:"calories"`
 }
 
 func (q *sqlQuerier) UpsertActivityDetail(ctx context.Context, arg UpsertActivityDetailParams) (ActivityDetail, error) {
@@ -223,6 +224,7 @@ func (q *sqlQuerier) UpsertActivityDetail(ctx context.Context, arg UpsertActivit
 		arg.PremiumFetch,
 		arg.UpdatedAt,
 		arg.MapID,
+		arg.Calories,
 	)
 	var i ActivityDetail
 	err := row.Scan(
@@ -240,6 +242,7 @@ func (q *sqlQuerier) UpsertActivityDetail(ctx context.Context, arg UpsertActivit
 		&i.ElevHigh,
 		&i.ElevLow,
 		&i.SufferScore,
+		&i.Calories,
 		&i.EmbedToken,
 		&i.SegmentLeaderboardOptOut,
 		&i.LeaderboardOptOut,
@@ -260,12 +263,11 @@ INSERT INTO
 	    start_date_local, timezone, utc_offset, achievement_count,
 	    kudos_count, comment_count, athlete_count, photo_count, map_id,
 	    trainer, commute, manual, private, flagged, gear_id, average_speed,
-	    max_speed, device_watts, has_heartrate, pr_count, total_photo_count,
-	    calories
+	    max_speed, device_watts, has_heartrate, pr_count, total_photo_count
 )
 VALUES
 	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-	 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35)
+	 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -302,9 +304,8 @@ ON CONFLICT
 		device_watts = $31,
 		has_heartrate = $32,
 		pr_count = $33,
-		total_photo_count = $34,
-		calories = $35
-RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, calories, updated_at
+		total_photo_count = $34
+RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at
 `
 
 type UpsertActivitySummaryParams struct {
@@ -342,7 +343,6 @@ type UpsertActivitySummaryParams struct {
 	HasHeartrate       bool      `db:"has_heartrate" json:"has_heartrate"`
 	PrCount            int32     `db:"pr_count" json:"pr_count"`
 	TotalPhotoCount    int32     `db:"total_photo_count" json:"total_photo_count"`
-	Calories           float64   `db:"calories" json:"calories"`
 }
 
 func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivitySummaryParams) (ActivitySummary, error) {
@@ -381,7 +381,6 @@ func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivi
 		arg.HasHeartrate,
 		arg.PrCount,
 		arg.TotalPhotoCount,
-		arg.Calories,
 	)
 	var i ActivitySummary
 	err := row.Scan(
@@ -419,7 +418,6 @@ func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivi
 		&i.HasHeartrate,
 		&i.PrCount,
 		&i.TotalPhotoCount,
-		&i.Calories,
 		&i.UpdatedAt,
 	)
 	return i, err
@@ -434,6 +432,64 @@ func (q *sqlQuerier) GetAthleteLogin(ctx context.Context, athleteID int64) (Athl
 	var i AthleteLogin
 	err := row.Scan(
 		&i.AthleteID,
+		&i.Summit,
+		&i.ProviderID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.OauthAccessToken,
+		&i.OauthRefreshToken,
+		&i.OauthExpiry,
+		&i.OauthTokenType,
+		&i.ID,
+	)
+	return i, err
+}
+
+const getAthleteNeedsLoad = `-- name: GetAthleteNeedsLoad :one
+SELECT
+    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id
+FROM
+	athlete_load
+INNER JOIN
+	athlete_logins
+ON
+    athlete_load.athlete_id = athlete_logins.athlete_id
+ORDER BY
+    -- Athletes with oldest load attempt first.
+	(last_load_incomplete, last_load_attempt)
+LIMIT 10
+`
+
+type GetAthleteNeedsLoadRow struct {
+	AthleteID                  int64     `db:"athlete_id" json:"athlete_id"`
+	LastBackloadActivityStart  time.Time `db:"last_backload_activity_start" json:"last_backload_activity_start"`
+	LastLoadAttempt            time.Time `db:"last_load_attempt" json:"last_load_attempt"`
+	LastLoadIncomplete         bool      `db:"last_load_incomplete" json:"last_load_incomplete"`
+	LastLoadError              string    `db:"last_load_error" json:"last_load_error"`
+	ActivitesLoadedLastAttempt int32     `db:"activites_loaded_last_attempt" json:"activites_loaded_last_attempt"`
+	AthleteID_2                int64     `db:"athlete_id_2" json:"athlete_id_2"`
+	Summit                     bool      `db:"summit" json:"summit"`
+	ProviderID                 string    `db:"provider_id" json:"provider_id"`
+	CreatedAt                  time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt                  time.Time `db:"updated_at" json:"updated_at"`
+	OauthAccessToken           string    `db:"oauth_access_token" json:"oauth_access_token"`
+	OauthRefreshToken          string    `db:"oauth_refresh_token" json:"oauth_refresh_token"`
+	OauthExpiry                time.Time `db:"oauth_expiry" json:"oauth_expiry"`
+	OauthTokenType             string    `db:"oauth_token_type" json:"oauth_token_type"`
+	ID                         uuid.UUID `db:"id" json:"id"`
+}
+
+func (q *sqlQuerier) GetAthleteNeedsLoad(ctx context.Context) (GetAthleteNeedsLoadRow, error) {
+	row := q.db.QueryRowContext(ctx, getAthleteNeedsLoad)
+	var i GetAthleteNeedsLoadRow
+	err := row.Scan(
+		&i.AthleteID,
+		&i.LastBackloadActivityStart,
+		&i.LastLoadAttempt,
+		&i.LastLoadIncomplete,
+		&i.LastLoadError,
+		&i.ActivitesLoadedLastAttempt,
+		&i.AthleteID_2,
 		&i.Summit,
 		&i.ProviderID,
 		&i.CreatedAt,
@@ -543,6 +599,59 @@ func (q *sqlQuerier) UpsertAthlete(ctx context.Context, arg UpsertAthleteParams)
 	return i, err
 }
 
+const upsertAthleteLoad = `-- name: UpsertAthleteLoad :one
+INSERT INTO
+	athlete_load(
+		athlete_id,
+		last_backload_activity_start,
+	    last_load_attempt,
+		last_load_incomplete,
+		last_load_error,
+		activites_loaded_last_attempt
+	)
+VALUES
+	($1, $2, $3, $4, $5, $6)
+ON CONFLICT
+	(athlete_id)
+DO UPDATE SET
+	last_backload_activity_start = $2,
+	last_load_attempt = $3,
+	last_load_incomplete = $4,
+	last_load_error = $5,
+	activites_loaded_last_attempt = $6
+RETURNING athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt
+`
+
+type UpsertAthleteLoadParams struct {
+	AthleteID                  int64     `db:"athlete_id" json:"athlete_id"`
+	LastBackloadActivityStart  time.Time `db:"last_backload_activity_start" json:"last_backload_activity_start"`
+	LastLoadAttempt            time.Time `db:"last_load_attempt" json:"last_load_attempt"`
+	LastLoadIncomplete         bool      `db:"last_load_incomplete" json:"last_load_incomplete"`
+	LastLoadError              string    `db:"last_load_error" json:"last_load_error"`
+	ActivitesLoadedLastAttempt int32     `db:"activites_loaded_last_attempt" json:"activites_loaded_last_attempt"`
+}
+
+func (q *sqlQuerier) UpsertAthleteLoad(ctx context.Context, arg UpsertAthleteLoadParams) (AthleteLoad, error) {
+	row := q.db.QueryRowContext(ctx, upsertAthleteLoad,
+		arg.AthleteID,
+		arg.LastBackloadActivityStart,
+		arg.LastLoadAttempt,
+		arg.LastLoadIncomplete,
+		arg.LastLoadError,
+		arg.ActivitesLoadedLastAttempt,
+	)
+	var i AthleteLoad
+	err := row.Scan(
+		&i.AthleteID,
+		&i.LastBackloadActivityStart,
+		&i.LastLoadAttempt,
+		&i.LastLoadIncomplete,
+		&i.LastLoadError,
+		&i.ActivitesLoadedLastAttempt,
+	)
+	return i, err
+}
+
 const upsertAthleteLogin = `-- name: UpsertAthleteLogin :one
 INSERT INTO
 	athlete_logins(
@@ -625,6 +734,38 @@ type UpsertMapParams struct {
 
 func (q *sqlQuerier) UpsertMap(ctx context.Context, arg UpsertMapParams) (Map, error) {
 	row := q.db.QueryRowContext(ctx, upsertMap, arg.ID, arg.Polyline, arg.SummaryPolyline)
+	var i Map
+	err := row.Scan(
+		&i.ID,
+		&i.Polyline,
+		&i.SummaryPolyline,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertMapSummary = `-- name: UpsertMapSummary :one
+INSERT INTO
+	maps(
+	updated_at, polyline, id, summary_polyline
+)
+VALUES
+	(Now(), '', $1, $2)
+ON CONFLICT
+	(id)
+	DO UPDATE SET
+	  updated_at = Now(),
+	  summary_polyline = $2
+RETURNING id, polyline, summary_polyline, updated_at
+`
+
+type UpsertMapSummaryParams struct {
+	ID              string `db:"id" json:"id"`
+	SummaryPolyline string `db:"summary_polyline" json:"summary_polyline"`
+}
+
+func (q *sqlQuerier) UpsertMapSummary(ctx context.Context, arg UpsertMapSummaryParams) (Map, error) {
+	row := q.db.QueryRowContext(ctx, upsertMapSummary, arg.ID, arg.SummaryPolyline)
 	var i Map
 	err := row.Scan(
 		&i.ID,

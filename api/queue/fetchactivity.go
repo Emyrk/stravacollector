@@ -36,7 +36,7 @@ func (m *Manager) EnqueueFetchActivity(ctx context.Context, athleteID int64, act
 }
 
 func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
-	err := m.stravaCheck(j, 1)
+	err := m.jobStravaCheck(j, 1)
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,6 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			PrCount:            activity.PrCount,
 			TotalPhotoCount:    activity.TotalPhotoCount,
 			WorkoutType:        activity.WorkoutType,
-			Calories:           activity.Calories,
 		})
 		if err != nil {
 			return fmt.Errorf("upsert activity summary: %w", err)
@@ -146,6 +145,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			EmbedToken:               activity.EmbedToken,
 			SegmentLeaderboardOptOut: activity.SegmentLeaderboardOptOut,
 			LeaderboardOptOut:        activity.LeaderboardOptOut,
+			Calories:                 activity.Calories,
 			//
 			PremiumFetch:      athlete.Summit,
 			NumSegmentEfforts: int32(len(activity.SegmentEfforts)),

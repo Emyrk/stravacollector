@@ -124,6 +124,11 @@ func (m *Manager) Run(ctx context.Context) error {
 		}(w)
 	}
 
+	// Run backloading!
+	go func() {
+		m.BackLoadAthleteRoutine(ctx)
+	}()
+
 	return nil
 }
 
@@ -176,7 +181,18 @@ func (m *Manager) workMap() gue.WorkMap {
 	}
 }
 
-func (m *Manager) stravaCheck(j *gue.Job, calls int64) error {
+func (m *Manager) jobStravaCheck(j *gue.Job, calls int64) error {
+	logger := jobLogFields(m.Logger, j)
+	ok, limitLogger := stravalimit.CanLogger(1, 100, logger)
+	if !ok {
+		limitLogger.Error().
+			Msg("hitting strava rate limit, job going to fail and try again later")
+		return fmt.Errorf("hitting strava rate limit, failing job to try later")
+	}
+	return nil
+}
+
+func (m *Manager) stravsaCheck(j *gue.Job, calls int64) error {
 	logger := jobLogFields(m.Logger, j)
 	ok, limitLogger := stravalimit.CanLogger(1, 100, logger)
 	if !ok {

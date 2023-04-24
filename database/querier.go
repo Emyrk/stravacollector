@@ -12,13 +12,16 @@ type sqlcQuerier interface {
 	DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error)
 	GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error)
 	GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error)
+	GetAthleteNeedsLoad(ctx context.Context) (GetAthleteNeedsLoadRow, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
 	UpdateActivityName(ctx context.Context, arg UpdateActivityNameParams) error
 	UpsertActivityDetail(ctx context.Context, arg UpsertActivityDetailParams) (ActivityDetail, error)
 	UpsertActivitySummary(ctx context.Context, arg UpsertActivitySummaryParams) (ActivitySummary, error)
 	UpsertAthlete(ctx context.Context, arg UpsertAthleteParams) (Athlete, error)
+	UpsertAthleteLoad(ctx context.Context, arg UpsertAthleteLoadParams) (AthleteLoad, error)
 	UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLoginParams) (AthleteLogin, error)
 	UpsertMap(ctx context.Context, arg UpsertMapParams) (Map, error)
+	UpsertMapSummary(ctx context.Context, arg UpsertMapSummaryParams) (Map, error)
 	UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentEffortParams) (SegmentEffort, error)
 }
 

@@ -30,12 +30,11 @@ INSERT INTO
 	    start_date_local, timezone, utc_offset, achievement_count,
 	    kudos_count, comment_count, athlete_count, photo_count, map_id,
 	    trainer, commute, manual, private, flagged, gear_id, average_speed,
-	    max_speed, device_watts, has_heartrate, pr_count, total_photo_count,
-	    calories
+	    max_speed, device_watts, has_heartrate, pr_count, total_photo_count
 )
 VALUES
 	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-	 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35)
+	 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -72,8 +71,7 @@ ON CONFLICT
 		device_watts = $31,
 		has_heartrate = $32,
 		pr_count = $33,
-		total_photo_count = $34,
-		calories = $35
+		total_photo_count = $34
 RETURNING *;
 
 -- name: UpsertActivityDetail :one
@@ -84,11 +82,11 @@ INSERT INTO
 		average_watts, weighted_average_watts, kilojoules, max_watts,
 	    elev_high, elev_low, suffer_score, embed_token,
 	    segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts,
-	    premium_fetch, updated_at, map_id
+	    premium_fetch, updated_at, map_id, calories
 )
 VALUES
 	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-	 $18, $19, $20, $21)
+	 $18, $19, $20, $21, $22)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -112,5 +110,6 @@ ON CONFLICT
 	num_segment_efforts = $18,
 	premium_fetch = $19,
 	updated_at = $20,
-	map_id = $21
+	map_id = $21,
+	calories = $22
 RETURNING *;

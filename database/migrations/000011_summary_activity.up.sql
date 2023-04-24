@@ -38,7 +38,6 @@ CREATE TABLE activity_summary(
 	has_heartrate boolean NOT NULL,
 	pr_count integer NOT NULL,
 	total_photo_count integer NOT NULL,
-	calories double precision NOT NULL,
 	updated_at timestamp with time zone NOT NULL
 );
 
@@ -82,7 +81,6 @@ ALTER TABLE activities
 	DROP COLUMN has_heartrate,
 	DROP COLUMN pr_count,
 	DROP COLUMN total_photo_count,
-	DROP COLUMN calories,
     DROP COLUMN map_polyline,
     DROP COLUMN map_summary_polyline,
 	ADD COLUMN map_id text NOT NULL
@@ -99,5 +97,23 @@ ALTER TABLE ONLY activity_detail
 ALTER TABLE ONLY activity_detail
 	ADD CONSTRAINT activity_detail_map_id_fk FOREIGN KEY (map_id) REFERENCES maps(id);
 
+CREATE TABLE athlete_load(
+    athlete_id BIGINT
+        PRIMARY KEY
+        REFERENCES athlete_logins(athlete_id) ON DELETE CASCADE
+        NOT NULL,
+
+	last_backload_activity_start timestamp with time zone NOT NULL,
+	last_load_attempt timestamp with time zone NOT NULL,
+	last_load_incomplete boolean NOT NULL,
+	last_load_error text NOT NULL,
+	activites_loaded_last_attempt integer NOT NULL
+);
+
+
+COMMENT ON TABLE athlete_load IS 'Tracks loading athlete activities. Must be an authenticated athlete.';
+COMMENT ON COLUMN athlete_load.last_backload_activity_start IS 'Timestamp start of the last activity loaded. Future ones are not loaded.';
+COMMENT ON COLUMN athlete_load.last_load_attempt IS 'Timestamp of the last time the athlete was attempted to be loaded.';
+COMMENT ON COLUMN athlete_load.last_load_incomplete IS 'True if the last load was incomplete and needs more work to catch up.';
 
 COMMIT;

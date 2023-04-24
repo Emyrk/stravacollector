@@ -1,3 +1,40 @@
+-- name: UpsertAthleteLoad :one
+INSERT INTO
+	athlete_load(
+		athlete_id,
+		last_backload_activity_start,
+	    last_load_attempt,
+		last_load_incomplete,
+		last_load_error,
+		activites_loaded_last_attempt
+	)
+VALUES
+	($1, $2, $3, $4, $5, $6)
+ON CONFLICT
+	(athlete_id)
+DO UPDATE SET
+	last_backload_activity_start = $2,
+	last_load_attempt = $3,
+	last_load_incomplete = $4,
+	last_load_error = $5,
+	activites_loaded_last_attempt = $6
+RETURNING *;
+;
+
+-- name: GetAthleteNeedsLoad :one
+SELECT
+    athlete_load.*, athlete_logins.*
+FROM
+	athlete_load
+INNER JOIN
+	athlete_logins
+ON
+    athlete_load.athlete_id = athlete_logins.athlete_id
+ORDER BY
+    -- Athletes with oldest load attempt first.
+	(last_load_incomplete, last_load_attempt)
+LIMIT 10;
+
 -- name: GetAthleteLogin :one
 SELECT * FROM athlete_logins WHERE athlete_id = @athlete_id;
 

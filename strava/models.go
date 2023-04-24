@@ -12,6 +12,62 @@ type Map struct {
 	SummaryPolyline string `json:"summary_polyline"`
 }
 
+type ActivitySummary struct {
+	ID         int64  `json:"id"`
+	ExternalID string `json:"external_id"`
+	UploadID   int64  `json:"upload_id"`
+	Athlete    struct {
+		ID            int64 `json:"id"`
+		ResourceState int   `json:"resource_state"`
+	} `json:"athlete"`
+	Name               string    `json:"name"`
+	Distance           float64   `json:"distance"`
+	MovingTime         float64   `json:"moving_time"`
+	ElapsedTime        float64   `json:"elapsed_time"`
+	TotalElevationGain float64   `json:"total_elevation_gain"`
+	Type               string    `json:"type"`
+	SportType          string    `json:"sport_type"`
+	StartDate          time.Time `json:"start_date"`
+	StartDateLocal     time.Time `json:"start_date_local"`
+	Timezone           string    `json:"timezone"`
+	UtcOffset          float64   `json:"utc_offset"`
+	WorkoutType        int32     `json:"workout_type"`
+	LocationCity       string    `json:"location_city"`
+	LocationState      string    `json:"location_state"`
+	LocationCountry    string    `json:"location_country"`
+	AchievementCount   int32     `json:"achievement_count"`
+	KudosCount         int32     `json:"kudos_count"`
+	CommentCount       int32     `json:"comment_count"`
+	AthleteCount       int32     `json:"athlete_count"`
+	PhotoCount         int32     `json:"photo_count"`
+	Map                struct {
+		ID              string `json:"id"`
+		SummaryPolyline string `json:"summary_polyline"`
+	} `json:"map"`
+	Trainer              bool    `json:"trainer"`
+	Commute              bool    `json:"commute"`
+	Manual               bool    `json:"manual"`
+	Private              bool    `json:"private"`
+	Flagged              bool    `json:"flagged"`
+	GearID               string  `json:"gear_id"`
+	FromAcceptedTag      bool    `json:"from_accepted_tag"`
+	AverageSpeed         float64 `json:"average_speed"`
+	MaxSpeed             float64 `json:"max_speed"`
+	AverageCadence       float64 `json:"average_cadence"`
+	AverageWatts         float64 `json:"average_watts"`
+	WeightedAverageWatts float64 `json:"weighted_average_watts"`
+	Kilojoules           float64 `json:"kilojoules"`
+	DeviceWatts          bool    `json:"device_watts"`
+	HasHeartrate         bool    `json:"has_heartrate"`
+	AverageHeartrate     float64 `json:"average_heartrate"`
+	MaxHeartrate         int32   `json:"max_heartrate"`
+	MaxWatts             float64 `json:"max_watts"`
+	PrCount              int32   `json:"pr_count"`
+	TotalPhotoCount      int32   `json:"total_photo_count"`
+	HasKudoed            bool    `json:"has_kudoed"`
+	SufferScore          int     `json:"suffer_score"`
+}
+
 type DetailedActivity struct {
 	ID            int64  `json:"id"`
 	ResourceState int    `json:"resource_state"`
@@ -21,50 +77,50 @@ type DetailedActivity struct {
 		ID            int64 `json:"id"`
 		ResourceState int   `json:"resource_state"`
 	} `json:"athlete"`
-	Name                 string          `json:"name"`
-	Distance             float64         `json:"distance"`
-	MovingTime           float64         `json:"moving_time"`
-	ElapsedTime          float64         `json:"elapsed_time"`
-	TotalElevationGain   float64         `json:"total_elevation_gain"`
-	Type                 string          `json:"type"`
-	SportType            string          `json:"sport_type"`
-	StartDate            time.Time       `json:"start_date"`
-	StartDateLocal       time.Time       `json:"start_date_local"`
-	Timezone             string          `json:"timezone"`
-	UtcOffset            float64         `json:"utc_offset"`
-	StartLatlng          []float64       `json:"start_latlng"`
-	EndLatlng            []float64       `json:"end_latlng"`
-	AchievementCount     int32           `json:"achievement_count"`
-	KudosCount           int32           `json:"kudos_count"`
-	CommentCount         int32           `json:"comment_count"`
-	AthleteCount         int32           `json:"athlete_count"`
-	PhotoCount           int32           `json:"photo_count"`
-	Map                  Map             `json:"map"`
-	Trainer              bool            `json:"trainer"`
-	Commute              bool            `json:"commute"`
-	Manual               bool            `json:"manual"`
-	Private              bool            `json:"private"`
-	Flagged              bool            `json:"flagged"`
-	GearID               string          `json:"gear_id"`
-	FromAcceptedTag      bool            `json:"from_accepted_tag"`
-	AverageSpeed         float64         `json:"average_speed"`
-	MaxSpeed             float64         `json:"max_speed"`
-	AverageCadence       float64         `json:"average_cadence"`
-	AverageTemp          float64         `json:"average_temp"`
-	AverageWatts         float64         `json:"average_watts"`
-	WeightedAverageWatts float64         `json:"weighted_average_watts"`
-	Kilojoules           float64         `json:"kilojoules"`
-	DeviceWatts          bool            `json:"device_watts"`
-	HasHeartrate         bool            `json:"has_heartrate"`
-	MaxWatts             float64         `json:"max_watts"`
-	ElevHigh             float64         `json:"elev_high"`
-	ElevLow              float64         `json:"elev_low"`
-	PrCount              int32           `json:"pr_count"`
-	TotalPhotoCount      int32           `json:"total_photo_count"`
-	HasKudoed            bool            `json:"has_kudoed"`
-	WorkoutType          int32           `json:"workout_type"`
-	SufferScore          int32           `json:"suffer_score"`
-	Description          string          `json:"description"`
+	Name                 string                  `json:"name"`
+	Distance             float64                 `json:"distance"`
+	MovingTime           float64                 `json:"moving_time"`
+	ElapsedTime          float64                 `json:"elapsed_time"`
+	TotalElevationGain   float64                 `json:"total_elevation_gain"`
+	Type                 string                  `json:"type"`
+	SportType            string                  `json:"sport_type"`
+	StartDate            time.Time               `json:"start_date"`
+	StartDateLocal       time.Time               `json:"start_date_local"`
+	Timezone             string                  `json:"timezone"`
+	UtcOffset            float64                 `json:"utc_offset"`
+	StartLatlng          []float64               `json:"start_latlng"`
+	EndLatlng            []float64               `json:"end_latlng"`
+	AchievementCount     int32                   `json:"achievement_count"`
+	KudosCount           int32                   `json:"kudos_count"`
+	CommentCount         int32                   `json:"comment_count"`
+	AthleteCount         int32                   `json:"athlete_count"`
+	PhotoCount           int32                   `json:"photo_count"`
+	Map                  Map                     `json:"map"`
+	Trainer              bool                    `json:"trainer"`
+	Commute              bool                    `json:"commute"`
+	Manual               bool                    `json:"manual"`
+	Private              bool                    `json:"private"`
+	Flagged              bool                    `json:"flagged"`
+	GearID               string                  `json:"gear_id"`
+	FromAcceptedTag      bool                    `json:"from_accepted_tag"`
+	AverageSpeed         float64                 `json:"average_speed"`
+	MaxSpeed             float64                 `json:"max_speed"`
+	AverageCadence       float64                 `json:"average_cadence"`
+	AverageTemp          float64                 `json:"average_temp"`
+	AverageWatts         float64                 `json:"average_watts"`
+	WeightedAverageWatts float64                 `json:"weighted_average_watts"`
+	Kilojoules           float64                 `json:"kilojoules"`
+	DeviceWatts          bool                    `json:"device_watts"`
+	HasHeartrate         bool                    `json:"has_heartrate"`
+	MaxWatts             float64                 `json:"max_watts"`
+	ElevHigh             float64                 `json:"elev_high"`
+	ElevLow              float64                 `json:"elev_low"`
+	PrCount              int32                   `json:"pr_count"`
+	TotalPhotoCount      int32                   `json:"total_photo_count"`
+	HasKudoed            bool                    `json:"has_kudoed"`
+	WorkoutType          int32                   `json:"workout_type"`
+	SufferScore          int32                   `json:"suffer_score"`
+	Description          string                  `json:"description"`
 	Calories             float64                 `json:"calories"`
 	SegmentEfforts       []DetailedSegmentEffort `json:"segment_efforts"`
 	SplitsMetric         []struct {
@@ -158,13 +214,13 @@ type DetailedSegmentEffort struct {
 	StartDate      time.Time      `json:"start_date"`
 	StartDateLocal time.Time      `json:"start_date_local"`
 	Distance       float64        `json:"distance"`
-	StartIndex     int32            `json:"start_index"`
-	EndIndex       int32            `json:"end_index"`
+	StartIndex     int32          `json:"start_index"`
+	EndIndex       int32          `json:"end_index"`
 	DeviceWatts    bool           `json:"device_watts"`
 	AverageWatts   float64        `json:"average_watts"`
 	Segment        SegmentSummary `json:"segment"`
-	KomRank        int32           `json:"kom_rank"`
-	PrRank         int32           `json:"pr_rank"`
+	KomRank        int32          `json:"kom_rank"`
+	PrRank         int32          `json:"pr_rank"`
 	Achievements   []interface{}  `json:"achievements"`
 }
 

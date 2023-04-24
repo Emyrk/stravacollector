@@ -27,6 +27,7 @@ type ActivityDetail struct {
 	ElevHigh                 float64   `db:"elev_high" json:"elev_high"`
 	ElevLow                  float64   `db:"elev_low" json:"elev_low"`
 	SufferScore              int32     `db:"suffer_score" json:"suffer_score"`
+	Calories                 float64   `db:"calories" json:"calories"`
 	EmbedToken               string    `db:"embed_token" json:"embed_token"`
 	SegmentLeaderboardOptOut bool      `db:"segment_leaderboard_opt_out" json:"segment_leaderboard_opt_out"`
 	LeaderboardOptOut        bool      `db:"leaderboard_opt_out" json:"leaderboard_opt_out"`
@@ -74,7 +75,6 @@ type ActivitySummary struct {
 	HasHeartrate       bool      `db:"has_heartrate" json:"has_heartrate"`
 	PrCount            int32     `db:"pr_count" json:"pr_count"`
 	TotalPhotoCount    int32     `db:"total_photo_count" json:"total_photo_count"`
-	Calories           float64   `db:"calories" json:"calories"`
 	UpdatedAt          time.Time `db:"updated_at" json:"updated_at"`
 }
 
@@ -98,6 +98,19 @@ type Athlete struct {
 	CreatedAt             time.Time       `db:"created_at" json:"created_at"`
 	UpdatedAt             time.Time       `db:"updated_at" json:"updated_at"`
 	FetchedAt             time.Time       `db:"fetched_at" json:"fetched_at"`
+}
+
+// Tracks loading athlete activities. Must be an authenticated athlete.
+type AthleteLoad struct {
+	AthleteID int64 `db:"athlete_id" json:"athlete_id"`
+	// Timestamp start of the last activity loaded. Future ones are not loaded.
+	LastBackloadActivityStart time.Time `db:"last_backload_activity_start" json:"last_backload_activity_start"`
+	// Timestamp of the last time the athlete was attempted to be loaded.
+	LastLoadAttempt time.Time `db:"last_load_attempt" json:"last_load_attempt"`
+	// True if the last load was incomplete and needs more work to catch up.
+	LastLoadIncomplete         bool   `db:"last_load_incomplete" json:"last_load_incomplete"`
+	LastLoadError              string `db:"last_load_error" json:"last_load_error"`
+	ActivitesLoadedLastAttempt int32  `db:"activites_loaded_last_attempt" json:"activites_loaded_last_attempt"`
 }
 
 type AthleteLogin struct {
