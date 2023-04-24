@@ -50,13 +50,8 @@ jobs:
         run: go build -v ./...
       - name: Test
         run: go test -v ./...
-  golang-check:
-    needs: [golangci, golang-test]
-    steps:
-      - name: Echo
-        run: echo "Links golang checks"
   docker-push:
-    needs: golang-check
+    needs: [golangci, golang-test]
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
