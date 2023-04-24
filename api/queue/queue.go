@@ -192,17 +192,6 @@ func (m *Manager) jobStravaCheck(j *gue.Job, calls int64) error {
 	return nil
 }
 
-func (m *Manager) stravsaCheck(j *gue.Job, calls int64) error {
-	logger := jobLogFields(m.Logger, j)
-	ok, limitLogger := stravalimit.CanLogger(1, 100, logger)
-	if !ok {
-		limitLogger.Error().
-			Msg("hitting strava rate limit, job going to fail and try again later")
-		return fmt.Errorf("hitting strava rate limit, failing job to try later")
-	}
-	return nil
-}
-
 func jobLogFields(logger zerolog.Logger, j *gue.Job) zerolog.Logger {
 	return logger.With().
 		Str("job_id", j.ID.String()).

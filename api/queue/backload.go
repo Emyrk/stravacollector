@@ -32,7 +32,7 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 			limitLogger.Error().
 				Msg("hitting strava rate limit, job will try again later")
 			time.Sleep(backloadWait)
-			break
+			continue
 		}
 
 		// Fetch an that needs some loading.
@@ -40,7 +40,7 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 		if athlete == nil {
 			// No athletes to load, wait a bit.
 			time.Sleep(backloadWait)
-			break
+			continue
 		}
 
 		err := m.backloadAthlete(ctx, *athlete)
@@ -58,7 +58,7 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 				AnErr("db_error", dbErr).
 				Err(err).
 				Msg("backload athlete failed")
-			break
+			continue
 		}
 	}
 
@@ -76,7 +76,7 @@ func (m *Manager) athleteToLoad(ctx context.Context) *database.GetAthleteNeedsLo
 	}
 
 	// If the athlete is incomplete, always return
-	if !athlete.LastLoadIncomplete {
+	if athlete.LastLoadIncomplete {
 		return &athlete
 	}
 
@@ -108,6 +108,15 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 		Page:    0,
 		PerPage: 50,
 	})
+	if err != nil {
+		return fmt.Errorf("get activities: %w", err)
+	}
+
+	logger.Debug().
+		Int("activities", len(activities)).
+		Time("last_backload", athlete.LastBackloadActivityStart).
+		Int64("last_backload_unix", athlete.LastBackloadActivityStart.Unix()).
+		Msg("backloading athlete")
 
 	// No activities means we are done.
 	if len(activities) == 0 {

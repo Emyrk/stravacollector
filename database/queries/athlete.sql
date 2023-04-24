@@ -33,7 +33,7 @@ ON
 ORDER BY
     -- Athletes with oldest load attempt first.
 	(last_load_incomplete, last_load_attempt)
-LIMIT 10;
+LIMIT 1;
 
 -- name: GetAthleteLogin :one
 SELECT * FROM athlete_logins WHERE athlete_id = @athlete_id;
