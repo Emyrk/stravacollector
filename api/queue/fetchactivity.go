@@ -141,7 +141,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			MaxWatts:                 activity.MaxWatts,
 			ElevHigh:                 activity.ElevHigh,
 			ElevLow:                  activity.ElevLow,
-			SufferScore:              activity.SufferScore,
+			SufferScore:              int32(activity.SufferScore),
 			EmbedToken:               activity.EmbedToken,
 			SegmentLeaderboardOptOut: activity.SegmentLeaderboardOptOut,
 			LeaderboardOptOut:        activity.LeaderboardOptOut,

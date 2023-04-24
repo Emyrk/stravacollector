@@ -65,7 +65,7 @@ type ActivitySummary struct {
 	PrCount              int32   `json:"pr_count"`
 	TotalPhotoCount      int32   `json:"total_photo_count"`
 	HasKudoed            bool    `json:"has_kudoed"`
-	SufferScore          int     `json:"suffer_score"`
+	SufferScore          float64 `json:"suffer_score"`
 }
 
 type DetailedActivity struct {
@@ -119,7 +119,7 @@ type DetailedActivity struct {
 	TotalPhotoCount      int32                   `json:"total_photo_count"`
 	HasKudoed            bool                    `json:"has_kudoed"`
 	WorkoutType          int32                   `json:"workout_type"`
-	SufferScore          int32                   `json:"suffer_score"`
+	SufferScore          float64                 `json:"suffer_score"`
 	Description          string                  `json:"description"`
 	Calories             float64                 `json:"calories"`
 	SegmentEfforts       []DetailedSegmentEffort `json:"segment_efforts"`
