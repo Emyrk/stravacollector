@@ -11,8 +11,10 @@ import (
 type sqlcQuerier interface {
 	GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
+	UpsertActivity(ctx context.Context, arg UpsertActivityParams) (Activity, error)
 	UpsertAthlete(ctx context.Context, arg UpsertAthleteParams) (Athlete, error)
 	UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLoginParams) (AthleteLogin, error)
+	UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentEffortParams) (SegmentEffort, error)
 }
 
 var _ sqlcQuerier = (*sqlQuerier)(nil)

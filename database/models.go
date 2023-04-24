@@ -23,11 +23,11 @@ type Activity struct {
 	ElapsedTime              float64   `db:"elapsed_time" json:"elapsed_time"`
 	TotalElevationGain       float64   `db:"total_elevation_gain" json:"total_elevation_gain"`
 	ActivityType             string    `db:"activity_type" json:"activity_type"`
-	SpotType                 string    `db:"spot_type" json:"spot_type"`
+	SportType                string    `db:"sport_type" json:"sport_type"`
 	StartDate                time.Time `db:"start_date" json:"start_date"`
 	StartDateLocal           time.Time `db:"start_date_local" json:"start_date_local"`
 	Timezone                 string    `db:"timezone" json:"timezone"`
-	UtcOffset                int32     `db:"utc_offset" json:"utc_offset"`
+	UtcOffset                float64   `db:"utc_offset" json:"utc_offset"`
 	StartLatlng              []float64 `db:"start_latlng" json:"start_latlng"`
 	EndLatlng                []float64 `db:"end_latlng" json:"end_latlng"`
 	AchievementCount         int32     `db:"achievement_count" json:"achievement_count"`
@@ -62,12 +62,14 @@ type Activity struct {
 	WorkoutType              int32     `db:"workout_type" json:"workout_type"`
 	SufferScore              int32     `db:"suffer_score" json:"suffer_score"`
 	Calories                 float64   `db:"calories" json:"calories"`
-	NumEfforts               int32     `db:"num_efforts" json:"num_efforts"`
 	EmbedToken               string    `db:"embed_token" json:"embed_token"`
 	SegmentLeaderboardOptOut bool      `db:"segment_leaderboard_opt_out" json:"segment_leaderboard_opt_out"`
 	LeaderboardOptOut        bool      `db:"leaderboard_opt_out" json:"leaderboard_opt_out"`
+	NumSegmentEfforts        int32     `db:"num_segment_efforts" json:"num_segment_efforts"`
 	// Owner of the activity has premium account at the time of the fetch.
 	PremiumFetch bool `db:"premium_fetch" json:"premium_fetch"`
+	// The time at which the activity was last updated by the collector
+	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
 }
 
 type Athlete struct {
@@ -141,6 +143,7 @@ type SegmentEffort struct {
 	AverageWatts float64       `db:"average_watts" json:"average_watts"`
 	KomRank      sql.NullInt32 `db:"kom_rank" json:"kom_rank"`
 	PrRank       sql.NullInt32 `db:"pr_rank" json:"pr_rank"`
+	UpdatedAt    sql.NullTime  `db:"updated_at" json:"updated_at"`
 }
 
 type WebhookDump struct {

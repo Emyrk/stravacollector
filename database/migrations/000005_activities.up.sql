@@ -2,9 +2,7 @@ BEGIN;
 
 CREATE TABLE activities (
 	id bigint NOT NULL PRIMARY KEY,
-	athlete_id bigint NOT NULL
-		constraint activities_athletes_id_fk
-			references athletes (id),
+	athlete_id bigint NOT NULL,
 	upload_id bigint NOT NULL,
 	external_id text NOT NULL,
 	name text NOT NULL,
@@ -12,7 +10,7 @@ CREATE TABLE activities (
 	elapsed_time double precision NOT NULL,
 	total_elevation_gain double precision NOT NULL,
 	activity_type text NOT NULL,
-	spot_type text NOT NULL,
+	sport_type text NOT NULL,
 	start_date timestamp with time zone NOT NULL,
 	start_date_local timestamp with time zone NOT NULL,
 	timezone text NOT NULL,
@@ -53,10 +51,10 @@ CREATE TABLE activities (
 	suffer_score integer NOT NULL,
 -- 	description text NOT NULL,
 	calories double precision NOT NULL,
-	num_efforts integer NOT NULL,
 	embed_token text NOT NULL,
 	segment_leaderboard_opt_out boolean NOT NULL,
 	leaderboard_opt_out boolean NOT NULL,
+	num_segment_efforts integer NOT NULL,
 
 	-- Custom
 	premium_fetch boolean NOT NULL
@@ -68,9 +66,7 @@ COMMENT ON COLUMN activities.premium_fetch IS 'Owner of the activity has premium
 DROP TABLE athlete_efforts;
 CREATE TABLE segment_efforts (
 	id bigint NOT NULL,
-	athlete_id bigint NOT NULL
-	 constraint activities_athletes_id_fk
-		 references athletes (id),
+	athlete_id bigint NOT NULL,
 	segment_id bigint NOT NULL,
 	name text NOT NULL,
 	elapsed_time double precision NOT NULL,
@@ -87,9 +83,5 @@ CREATE TABLE segment_efforts (
 );
 
 COMMENT ON COLUMN segment_efforts.distance IS 'Distance is in meters';
-
-CREATE TABLE segment (
-	
-);
 
 COMMIT;

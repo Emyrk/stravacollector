@@ -54,8 +54,8 @@ func (c *Client) GetAuthenticatedAthelete(ctx context.Context) (Athlete, error) 
 	return athlete, c.DecodeResponse(resp, &athlete, http.StatusOK)
 }
 
-func (c *Client) AthleteSegmentEfforts(ctx context.Context, segmentID int, perPage int) ([]SegmentEffort, error) {
-	var efforts []SegmentEffort
+func (c *Client) AthleteSegmentEfforts(ctx context.Context, segmentID int, perPage int) ([]DetailedSegmentEffort, error) {
+	var efforts []DetailedSegmentEffort
 	resp, err := c.Request(ctx, http.MethodGet, "/segment_efforts", nil, url.Values{
 		"segment_id": []string{fmt.Sprintf("%d", segmentID)},
 		"per_page":   []string{fmt.Sprintf("%d", perPage)},

@@ -18,8 +18,8 @@ type DetailedActivity struct {
 	ExternalID    string `json:"external_id"`
 	UploadID      int64  `json:"upload_id"`
 	Athlete       struct {
-		ID            int `json:"id"`
-		ResourceState int `json:"resource_state"`
+		ID            int64 `json:"id"`
+		ResourceState int   `json:"resource_state"`
 	} `json:"athlete"`
 	Name                 string          `json:"name"`
 	Distance             float64         `json:"distance"`
@@ -34,11 +34,11 @@ type DetailedActivity struct {
 	UtcOffset            float64         `json:"utc_offset"`
 	StartLatlng          []float64       `json:"start_latlng"`
 	EndLatlng            []float64       `json:"end_latlng"`
-	AchievementCount     int             `json:"achievement_count"`
-	KudosCount           int             `json:"kudos_count"`
-	CommentCount         int             `json:"comment_count"`
-	AthleteCount         int             `json:"athlete_count"`
-	PhotoCount           int             `json:"photo_count"`
+	AchievementCount     int32           `json:"achievement_count"`
+	KudosCount           int32           `json:"kudos_count"`
+	CommentCount         int32           `json:"comment_count"`
+	AthleteCount         int32           `json:"athlete_count"`
+	PhotoCount           int32           `json:"photo_count"`
 	Map                  Map             `json:"map"`
 	Trainer              bool            `json:"trainer"`
 	Commute              bool            `json:"commute"`
@@ -59,14 +59,14 @@ type DetailedActivity struct {
 	MaxWatts             float64         `json:"max_watts"`
 	ElevHigh             float64         `json:"elev_high"`
 	ElevLow              float64         `json:"elev_low"`
-	PrCount              int             `json:"pr_count"`
-	TotalPhotoCount      int             `json:"total_photo_count"`
+	PrCount              int32           `json:"pr_count"`
+	TotalPhotoCount      int32           `json:"total_photo_count"`
 	HasKudoed            bool            `json:"has_kudoed"`
-	WorkoutType          *int            `json:"workout_type"`
-	SufferScore          *int            `json:"suffer_score"`
+	WorkoutType          int32           `json:"workout_type"`
+	SufferScore          int32           `json:"suffer_score"`
 	Description          string          `json:"description"`
-	Calories             float64         `json:"calories"`
-	SegmentEfforts       []SegmentEffort `json:"segment_efforts"`
+	Calories             float64                 `json:"calories"`
+	SegmentEfforts       []DetailedSegmentEffort `json:"segment_efforts"`
 	SplitsMetric         []struct {
 		Distance            float64 `json:"distance"`
 		ElapsedTime         int     `json:"elapsed_time"`
@@ -88,14 +88,14 @@ type DetailedActivity struct {
 			ID            int `json:"id"`
 			ResourceState int `json:"resource_state"`
 		} `json:"athlete"`
-		ElapsedTime        int       `json:"elapsed_time"`
-		MovingTime         int       `json:"moving_time"`
+		ElapsedTime        float64   `json:"elapsed_time"`
+		MovingTime         float64   `json:"moving_time"`
 		StartDate          time.Time `json:"start_date"`
 		StartDateLocal     time.Time `json:"start_date_local"`
 		Distance           float64   `json:"distance"`
 		StartIndex         float64   `json:"start_index"`
 		EndIndex           int       `json:"end_index"`
-		TotalElevationGain int       `json:"total_elevation_gain"`
+		TotalElevationGain float64   `json:"total_elevation_gain"`
 		AverageSpeed       float64   `json:"average_speed"`
 		MaxSpeed           float64   `json:"max_speed"`
 		AverageCadence     float64   `json:"average_cadence"`
@@ -138,7 +138,7 @@ type DetailedActivity struct {
 	LeaderboardOptOut        bool   `json:"leaderboard_opt_out"`
 }
 
-type SegmentEffort struct {
+type DetailedSegmentEffort struct {
 	ID            int64  `json:"id"`
 	ResourceState int    `json:"resource_state"`
 	Name          string `json:"name"`
@@ -158,13 +158,13 @@ type SegmentEffort struct {
 	StartDate      time.Time      `json:"start_date"`
 	StartDateLocal time.Time      `json:"start_date_local"`
 	Distance       float64        `json:"distance"`
-	StartIndex     int            `json:"start_index"`
-	EndIndex       int            `json:"end_index"`
+	StartIndex     int32            `json:"start_index"`
+	EndIndex       int32            `json:"end_index"`
 	DeviceWatts    bool           `json:"device_watts"`
 	AverageWatts   float64        `json:"average_watts"`
 	Segment        SegmentSummary `json:"segment"`
-	KomRank        *int           `json:"kom_rank"`
-	PrRank         *int           `json:"pr_rank"`
+	KomRank        int32           `json:"kom_rank"`
+	PrRank         int32           `json:"pr_rank"`
 	Achievements   []interface{}  `json:"achievements"`
 }
 

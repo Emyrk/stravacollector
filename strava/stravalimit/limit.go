@@ -1,8 +1,6 @@
 package stravalimit
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -34,7 +32,7 @@ func New() *Limiter {
 	return &Limiter{
 		CurrentInterval: GetInterval(now),
 		CurrentDay:      GetDay(now),
-		IntervalLimit:   100,
+		IntervalLimit:   200,
 		DailyLimit:      1000,
 	}
 }
@@ -56,8 +54,6 @@ func (l *Limiter) UpdateUsage(intervalUsage, intervalLimit, dailyUsage, dailyLim
 	l.CurrentDailyUsage = dailyUsage
 	l.IntervalLimit = intervalLimit
 	l.DailyLimit = dailyLimit
-	d, _ := json.Marshal(l)
-	fmt.Println(string(d))
 }
 
 func (l *Limiter) Remaining() (int64, int64) {

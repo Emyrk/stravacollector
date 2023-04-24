@@ -51,7 +51,6 @@ ON CONFLICT
 		ftp = $15,
 		weight = $16,
 		clubs = $17
-
 RETURNING *;
 
 

@@ -10,11 +10,11 @@ CREATE TABLE activities (
     elapsed_time double precision NOT NULL,
     total_elevation_gain double precision NOT NULL,
     activity_type text NOT NULL,
-    spot_type text NOT NULL,
+    sport_type text NOT NULL,
     start_date timestamp with time zone NOT NULL,
     start_date_local timestamp with time zone NOT NULL,
     timezone text NOT NULL,
-    utc_offset integer NOT NULL,
+    utc_offset double precision NOT NULL,
     start_latlng double precision[] NOT NULL,
     end_latlng double precision[] NOT NULL,
     achievement_count integer NOT NULL,
@@ -49,16 +49,19 @@ CREATE TABLE activities (
     workout_type integer NOT NULL,
     suffer_score integer NOT NULL,
     calories double precision NOT NULL,
-    num_efforts integer NOT NULL,
     embed_token text NOT NULL,
     segment_leaderboard_opt_out boolean NOT NULL,
     leaderboard_opt_out boolean NOT NULL,
-    premium_fetch boolean NOT NULL
+    num_segment_efforts integer NOT NULL,
+    premium_fetch boolean NOT NULL,
+    updated_at timestamp with time zone
 );
 
 COMMENT ON COLUMN activities.external_id IS 'External ID refers to external source of the activity.';
 
 COMMENT ON COLUMN activities.premium_fetch IS 'Owner of the activity has premium account at the time of the fetch.';
+
+COMMENT ON COLUMN activities.updated_at IS 'The time at which the activity was last updated by the collector';
 
 CREATE TABLE athlete_logins (
     athlete_id bigint NOT NULL,
@@ -111,9 +114,6 @@ CREATE TABLE gue_jobs (
     updated_at timestamp with time zone NOT NULL
 );
 
-CREATE TABLE segment (
-);
-
 CREATE TABLE segment_efforts (
     id bigint NOT NULL,
     athlete_id bigint NOT NULL,
@@ -129,7 +129,8 @@ CREATE TABLE segment_efforts (
     device_watts boolean NOT NULL,
     average_watts double precision NOT NULL,
     kom_rank integer,
-    pr_rank integer
+    pr_rank integer,
+    updated_at timestamp with time zone
 );
 
 COMMENT ON COLUMN segment_efforts.distance IS 'Distance is in meters';
@@ -151,6 +152,9 @@ ALTER TABLE ONLY activities
 ALTER TABLE ONLY athlete_logins
     ADD CONSTRAINT athletes_pkey PRIMARY KEY (athlete_id);
 
+ALTER TABLE ONLY athletes
+    ADD CONSTRAINT athletes_pkey1 PRIMARY KEY (id);
+
 ALTER TABLE ONLY gue_jobs
     ADD CONSTRAINT gue_jobs_pkey PRIMARY KEY (job_id);
 
@@ -163,8 +167,8 @@ ALTER TABLE ONLY webhook_dump
 CREATE INDEX idx_gue_jobs_selector ON gue_jobs USING btree (queue, run_at, priority);
 
 ALTER TABLE ONLY activities
-    ADD CONSTRAINT activities_athletes_id_fk FOREIGN KEY (athlete_id) REFERENCES athlete_logins(athlete_id);
+    ADD CONSTRAINT activities_athletes_id_fk FOREIGN KEY (athlete_id) REFERENCES athletes(id);
 
 ALTER TABLE ONLY segment_efforts
-    ADD CONSTRAINT activities_athletes_id_fk FOREIGN KEY (athlete_id) REFERENCES athlete_logins(athlete_id);
+    ADD CONSTRAINT segment_efforts_athletes_id_fk FOREIGN KEY (athlete_id) REFERENCES athletes(id);
 
