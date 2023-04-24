@@ -13,6 +13,76 @@ import (
 	"github.com/lib/pq"
 )
 
+const deleteActivity = `-- name: DeleteActivity :one
+DELETE FROM
+	activities
+WHERE
+	id = $1
+RETURNING id, athlete_id, upload_id, external_id, name, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, start_date, start_date_local, timezone, utc_offset, start_latlng, end_latlng, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, map_polyline, map_summary_polyline, trainer, commute, manual, private, flagged, gear_id, from_accepted_tag, average_speed, max_speed, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, device_watts, has_heartrate, max_watts, elev_high, elev_low, pr_count, total_photo_count, workout_type, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at
+`
+
+func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (Activity, error) {
+	row := q.db.QueryRowContext(ctx, deleteActivity, id)
+	var i Activity
+	err := row.Scan(
+		&i.ID,
+		&i.AthleteID,
+		&i.UploadID,
+		&i.ExternalID,
+		&i.Name,
+		&i.MovingTime,
+		&i.ElapsedTime,
+		&i.TotalElevationGain,
+		&i.ActivityType,
+		&i.SportType,
+		&i.StartDate,
+		&i.StartDateLocal,
+		&i.Timezone,
+		&i.UtcOffset,
+		pq.Array(&i.StartLatlng),
+		pq.Array(&i.EndLatlng),
+		&i.AchievementCount,
+		&i.KudosCount,
+		&i.CommentCount,
+		&i.AthleteCount,
+		&i.PhotoCount,
+		&i.MapID,
+		&i.MapPolyline,
+		&i.MapSummaryPolyline,
+		&i.Trainer,
+		&i.Commute,
+		&i.Manual,
+		&i.Private,
+		&i.Flagged,
+		&i.GearID,
+		&i.FromAcceptedTag,
+		&i.AverageSpeed,
+		&i.MaxSpeed,
+		&i.AverageCadence,
+		&i.AverageTemp,
+		&i.AverageWatts,
+		&i.WeightedAverageWatts,
+		&i.Kilojoules,
+		&i.DeviceWatts,
+		&i.HasHeartrate,
+		&i.MaxWatts,
+		&i.ElevHigh,
+		&i.ElevLow,
+		&i.PrCount,
+		&i.TotalPhotoCount,
+		&i.WorkoutType,
+		&i.SufferScore,
+		&i.Calories,
+		&i.EmbedToken,
+		&i.SegmentLeaderboardOptOut,
+		&i.LeaderboardOptOut,
+		&i.NumSegmentEfforts,
+		&i.PremiumFetch,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getActivity = `-- name: GetActivity :one
 SELECT
 	id, athlete_id, upload_id, external_id, name, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, start_date, start_date_local, timezone, utc_offset, start_latlng, end_latlng, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, map_polyline, map_summary_polyline, trainer, commute, manual, private, flagged, gear_id, from_accepted_tag, average_speed, max_speed, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, device_watts, has_heartrate, max_watts, elev_high, elev_low, pr_count, total_photo_count, workout_type, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at
@@ -539,10 +609,10 @@ INSERT INTO
 		id, athlete_id, segment_id, name, elapsed_time,
 		moving_time, start_date, start_date_local, distance,
 		start_index, end_index, device_watts, average_watts,
-		kom_rank, pr_rank
+		kom_rank, pr_rank, activities_id
 	)
 VALUES
-	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -560,8 +630,9 @@ ON CONFLICT
 		device_watts = $12,
 		average_watts = $13,
 		kom_rank = $14,
-		pr_rank = $15
-	RETURNING id, athlete_id, segment_id, name, elapsed_time, moving_time, start_date, start_date_local, distance, start_index, end_index, device_watts, average_watts, kom_rank, pr_rank, updated_at
+		pr_rank = $15,
+		activities_id = $16
+	RETURNING id, athlete_id, segment_id, name, elapsed_time, moving_time, start_date, start_date_local, distance, start_index, end_index, device_watts, average_watts, kom_rank, pr_rank, updated_at, activities_id
 `
 
 type UpsertSegmentEffortParams struct {
@@ -580,6 +651,7 @@ type UpsertSegmentEffortParams struct {
 	AverageWatts   float64       `db:"average_watts" json:"average_watts"`
 	KomRank        sql.NullInt32 `db:"kom_rank" json:"kom_rank"`
 	PrRank         sql.NullInt32 `db:"pr_rank" json:"pr_rank"`
+	ActivitiesID   int64         `db:"activities_id" json:"activities_id"`
 }
 
 func (q *sqlQuerier) UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentEffortParams) (SegmentEffort, error) {
@@ -599,6 +671,7 @@ func (q *sqlQuerier) UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentE
 		arg.AverageWatts,
 		arg.KomRank,
 		arg.PrRank,
+		arg.ActivitiesID,
 	)
 	var i SegmentEffort
 	err := row.Scan(
@@ -618,6 +691,7 @@ func (q *sqlQuerier) UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentE
 		&i.KomRank,
 		&i.PrRank,
 		&i.UpdatedAt,
+		&i.ActivitiesID,
 	)
 	return i, err
 }

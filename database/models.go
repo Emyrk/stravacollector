@@ -144,6 +144,8 @@ type SegmentEffort struct {
 	KomRank      sql.NullInt32 `db:"kom_rank" json:"kom_rank"`
 	PrRank       sql.NullInt32 `db:"pr_rank" json:"pr_rank"`
 	UpdatedAt    time.Time     `db:"updated_at" json:"updated_at"`
+	// FK to activities table
+	ActivitiesID int64 `db:"activities_id" json:"activities_id"`
 }
 
 type WebhookDump struct {

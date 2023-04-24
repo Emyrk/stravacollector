@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Emyrk/strava/database"
+	"github.com/vgarvardt/gue/v5"
 
 	"github.com/Emyrk/strava/api/webhooks"
-	"github.com/vgarvardt/gue/v5"
+	"github.com/Emyrk/strava/database"
 )
 
 func (m *Manager) EnqueueUpdateActivity(ctx context.Context, event webhooks.WebhookEvent) error {
@@ -24,6 +24,36 @@ func (m *Manager) EnqueueUpdateActivity(ctx context.Context, event webhooks.Webh
 		Queue: stravaUpdateActivityQueue,
 		Args:  data,
 	})
+}
+
+func (m *Manager) EnqueueDeleteActivity(ctx context.Context, event webhooks.WebhookEvent) error {
+	data, err := json.Marshal(event)
+	if err != nil {
+		return fmt.Errorf("json marshal: %w", err)
+	}
+
+	return m.Client.Enqueue(ctx, &gue.Job{
+		Type:  deleteActivityJob,
+		Queue: stravaUpdateActivityQueue,
+		Args:  data,
+	})
+}
+
+func (m *Manager) deleteActivity(ctx context.Context, j *gue.Job) error {
+	logger := jobLogFields(m.Logger, j)
+
+	var args webhooks.WebhookEvent
+	err := json.Unmarshal(j.Args, &args)
+	if err != nil {
+		logger.Error().Err(err).Msg("json unmarshal, update activity job abandoned")
+		return nil
+	}
+
+	_, err = m.DB.DeleteActivity(ctx, args.ObjectID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil
+	}
+	return fmt.Errorf("delete activity: %w", err)
 }
 
 func (m *Manager) updateActivity(ctx context.Context, j *gue.Job) error {
@@ -55,8 +85,8 @@ func (m *Manager) updateActivity(ctx context.Context, j *gue.Job) error {
 			switch k {
 			case "title":
 				err := store.UpdateActivityName(ctx, database.UpdateActivityNameParams{
-					ID:   0,
-					Name: "",
+					ID:   args.ObjectID,
+					Name: v,
 				})
 				if err != nil {
 					return fmt.Errorf("update activity name: %w", err)

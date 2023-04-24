@@ -130,10 +130,13 @@ CREATE TABLE segment_efforts (
     average_watts double precision NOT NULL,
     kom_rank integer,
     pr_rank integer,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    activities_id bigint DEFAULT '8946274774'::bigint NOT NULL
 );
 
 COMMENT ON COLUMN segment_efforts.distance IS 'Distance is in meters';
+
+COMMENT ON COLUMN segment_efforts.activities_id IS 'FK to activities table';
 
 CREATE TABLE segments (
     id integer NOT NULL,
@@ -171,6 +174,9 @@ CREATE INDEX idx_gue_jobs_selector ON gue_jobs USING btree (queue, run_at, prior
 
 ALTER TABLE ONLY activities
     ADD CONSTRAINT activities_athletes_id_fk FOREIGN KEY (athlete_id) REFERENCES athletes(id);
+
+ALTER TABLE ONLY segment_efforts
+    ADD CONSTRAINT segment_efforts_activities_id_fk FOREIGN KEY (activities_id) REFERENCES activities(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY segment_efforts
     ADD CONSTRAINT segment_efforts_athletes_id_fk FOREIGN KEY (athlete_id) REFERENCES athletes(id);

@@ -5,10 +5,10 @@ INSERT INTO
 		id, athlete_id, segment_id, name, elapsed_time,
 		moving_time, start_date, start_date_local, distance,
 		start_index, end_index, device_watts, average_watts,
-		kom_rank, pr_rank
+		kom_rank, pr_rank, activities_id
 	)
 VALUES
-	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -26,5 +26,6 @@ ON CONFLICT
 		device_watts = $12,
 		average_watts = $13,
 		kom_rank = $14,
-		pr_rank = $15
+		pr_rank = $15,
+		activities_id = $16
 	RETURNING *;

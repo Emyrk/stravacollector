@@ -1,3 +1,11 @@
+-- name: DeleteActivity :one
+DELETE FROM
+	activities
+WHERE
+	id = $1
+RETURNING *
+;
+
 -- name: GetActivity :one
 SELECT
 	*

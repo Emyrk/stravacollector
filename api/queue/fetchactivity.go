@@ -163,6 +163,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 					Int32: effort.PrRank,
 					Valid: effort.PrRank != 0,
 				},
+				ActivitiesID: activity.ID,
 			})
 			if err != nil {
 				return fmt.Errorf("upsert segment effort index=%d, id=%d: %w", i, effort.ID, err)

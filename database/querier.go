@@ -9,6 +9,7 @@ import (
 )
 
 type sqlcQuerier interface {
+	DeleteActivity(ctx context.Context, id int64) (Activity, error)
 	GetActivity(ctx context.Context, id int64) (Activity, error)
 	GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)

@@ -30,12 +30,12 @@ func (m *Manager) HandleWebhookEvents(ctx context.Context, c <-chan *webhooks.We
 }
 
 func (m *Manager) newActivity(ctx context.Context, event webhooks.WebhookEvent) {
-	var err error
+	var qErr error
 	switch event.AspectType {
 	case "create":
-		err = m.EnqueueFetchActivity(ctx, event.OwnerID, event.ObjectID)
+		qErr = m.EnqueueFetchActivity(ctx, event.OwnerID, event.ObjectID)
 	case "update":
-		err = m.EnqueueUpdateActivity(ctx, event)
+		qErr = m.EnqueueUpdateActivity(ctx, event)
 	case "delete":
 		m.Logger.Info().
 			Interface("deleted", event.Updates).
@@ -45,9 +45,9 @@ func (m *Manager) newActivity(ctx context.Context, event webhooks.WebhookEvent) 
 			Str("aspect_type", event.AspectType).
 			Msg("Webhook event not supported")
 	}
-	if err != nil {
+	if qErr != nil {
 		m.Logger.Error().
-			Err(err).
+			Err(qErr).
 			Str("aspect_type", event.AspectType).
 			Int64("owner_id", event.OwnerID).
 			Int64("activity_id", event.ObjectID).
