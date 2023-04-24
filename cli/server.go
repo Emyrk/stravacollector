@@ -144,13 +144,18 @@ func serverCmd() *cobra.Command {
 					logger.Error().Err(err).Msg("http server error")
 				}
 			}()
-			logger.Info().Str("access_url", accessURL).Msg("Server running")
+			logger.Info().
+				Int("port", port).
+				Str("access_url", accessURL).Msg("Server running")
 
 			go func() {
+				logger.Debug().Msg("Will watch strava rate limits every minute.")
 				ticker := time.NewTicker(time.Minute)
 				for {
 					select {
 					case <-ctx.Done():
+						logger.Debug().Msg("Stopping strava rate limit watcher.")
+						return
 					case <-ticker.C:
 						i, d := stravalimit.Remaining()
 						logger.Debug().

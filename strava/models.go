@@ -23,15 +23,15 @@ type DetailedActivity struct {
 	} `json:"athlete"`
 	Name                 string          `json:"name"`
 	Distance             float64         `json:"distance"`
-	MovingTime           int             `json:"moving_time"`
-	ElapsedTime          int             `json:"elapsed_time"`
-	TotalElevationGain   int             `json:"total_elevation_gain"`
+	MovingTime           float64         `json:"moving_time"`
+	ElapsedTime          float64         `json:"elapsed_time"`
+	TotalElevationGain   float64         `json:"total_elevation_gain"`
 	Type                 string          `json:"type"`
 	SportType            string          `json:"sport_type"`
 	StartDate            time.Time       `json:"start_date"`
 	StartDateLocal       time.Time       `json:"start_date_local"`
 	Timezone             string          `json:"timezone"`
-	UtcOffset            int             `json:"utc_offset"`
+	UtcOffset            float64         `json:"utc_offset"`
 	StartLatlng          []float64       `json:"start_latlng"`
 	EndLatlng            []float64       `json:"end_latlng"`
 	AchievementCount     int             `json:"achievement_count"`
@@ -215,7 +215,7 @@ type Athlete struct {
 	DatePreference        string          `json:"date_preference"`
 	MeasurementPreference string          `json:"measurement_preference"`
 	Clubs                 json.RawMessage `json:"clubs"`
-	Ftp                   float64     `json:"ftp"`
+	Ftp                   float64         `json:"ftp"`
 	Weight                float64         `json:"weight"`
 	Bikes                 []Equipment     `json:"bikes"`
 	Shoes                 []Equipment     `json:"shoes"`

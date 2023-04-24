@@ -3,8 +3,9 @@ package queue
 import (
 	"context"
 	"fmt"
-	"github.com/Emyrk/strava/strava/stravalimit"
 	"time"
+
+	"github.com/Emyrk/strava/strava/stravalimit"
 
 	"golang.org/x/oauth2"
 
@@ -87,6 +88,7 @@ func (m *Manager) Run(ctx context.Context) error {
 	m.cancel = cancel
 
 	worker, err := gue.NewWorker(m.Client, m.workMap(),
+		gue.WithWorkerQueue(stravaFetchQueue),
 		gue.WithWorkerHooksJobDone(func(ctx context.Context, j *gue.Job, err error) {
 			// TODO: If this is a strava too many requests, we need to sleep.
 			if err != nil {
@@ -127,7 +129,7 @@ func (m *Manager) workMap() gue.WorkMap {
 	}
 }
 
-func (m *Manager) stravaCheck(j *gue.Job, calls int64) error{
+func (m *Manager) stravaCheck(j *gue.Job, calls int64) error {
 	logger := jobLogFields(m.Logger, j)
 	ok, limitLogger := stravalimit.CanLogger(1, 100, logger)
 	if !ok {

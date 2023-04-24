@@ -1,6 +1,8 @@
 package stravalimit
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -24,7 +26,7 @@ type Limiter struct {
 	IntervalLimit int64
 	DailyLimit    int64
 
-	sync.RWMutex
+	sync.Mutex
 }
 
 func New() *Limiter {
@@ -54,20 +56,19 @@ func (l *Limiter) UpdateUsage(intervalUsage, intervalLimit, dailyUsage, dailyLim
 	l.CurrentDailyUsage = dailyUsage
 	l.IntervalLimit = intervalLimit
 	l.DailyLimit = dailyLimit
+	d, _ := json.Marshal(l)
+	fmt.Println(string(d))
 }
 
 func (l *Limiter) Remaining() (int64, int64) {
-	l.RLock()
-	defer l.RUnlock()
+	l.Lock()
+	defer l.Unlock()
 	l.updateInterval()
 
 	return l.IntervalLimit - l.CurrentIntervalUsage, l.DailyLimit - l.CurrentDailyUsage
 }
 
 func (l *Limiter) updateInterval() {
-	l.Lock()
-	defer l.Unlock()
-
 	now := time.Now()
 	interval := GetInterval(now)
 	day := GetDay(now)
@@ -93,7 +94,7 @@ func (l *Limiter) Update(headers http.Header) {
 		return
 	}
 
-	l.UpdateUsage(uInt, uDay, lInt, lDay)
+	l.UpdateUsage(uInt, lInt, uDay, lDay)
 }
 
 func Update(headers http.Header) {
@@ -110,12 +111,18 @@ func Remaining() (int64, int64) {
 
 func CanLogger(calls, buffer int64, logger zerolog.Logger) (bool, zerolog.Logger) {
 	i, d := Remaining()
+
 	if i < buffer+calls || d < buffer+calls {
 		return false, logger.With().
 			Int64("interval_remaining", i).
 			Int64("daily_remaining", d).
 			Int64("calls", calls).
 			Int64("buffer", buffer).
+			// Remove
+			Int64("interval_limit", limiter.IntervalLimit).
+			Int64("daily_limit", limiter.DailyLimit).
+			Int64("interval_usage", limiter.CurrentIntervalUsage).
+			Int64("daily_usage", limiter.CurrentDailyUsage).
 			Logger()
 	}
 	return true, logger

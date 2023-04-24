@@ -17,6 +17,9 @@ func (m *Manager) HandleWebhookEvents(ctx context.Context, c <-chan *webhooks.We
 				m.newActivity(ctx, *event)
 			case "athlete":
 				// Ignore these for now.
+				m.Logger.Warn().
+					Interface("event", event).
+					Msg("Webhook event to an athlete not handled")
 			default:
 				m.Logger.Warn().
 					Str("object_type", event.ObjectType).
@@ -44,5 +47,12 @@ func (m *Manager) newActivity(ctx context.Context, event webhooks.WebhookEvent) 
 			Interface("updated", event.Updates).
 			Msg("'Update' webhook event to an activity")
 	case "delete":
+		m.Logger.Info().
+			Interface("deleted", event.Updates).
+			Msg("'Delete' webhook event to an activity")
+	default:
+		m.Logger.Warn().
+			Str("aspect_type", event.AspectType).
+			Msg("Webhook event not supported")
 	}
 }

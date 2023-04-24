@@ -50,7 +50,7 @@ func New(opts Options) (*API, error) {
 				TokenURL:  "https://www.strava.com/oauth/token",
 				AuthStyle: 0,
 			},
-			RedirectURL: fmt.Sprintf("%s/oauth2/callback", opts.AccessURL.String()),
+			RedirectURL: fmt.Sprintf("%s/oauth2/callback", strings.TrimSuffix(opts.AccessURL.String(), "/")),
 			// Must be comma joined
 			Scopes: []string{strings.Join([]string{"read", "read_all", "profile:read_all", "activity:read"}, ",")},
 		},
