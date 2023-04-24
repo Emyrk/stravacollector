@@ -19,9 +19,9 @@ import (
 )
 
 const (
-	fetchActivityJob  = "fetch_activity"
-	updateActivityJob = "update_activity"
-	deleteActivityJob = "delete_activity"
+	fetchActivityJob    = "fetch_activity"
+	updateActivityField = "update_activity"
+	deleteActivityJob   = "delete_activity"
 
 	stravaFetchQueue          = "queue_strava_fetch"
 	stravaUpdateActivityQueue = "queue_strava_update_activity"
@@ -167,7 +167,7 @@ func (m *Manager) workMap() gue.WorkMap {
 		fetchActivityJob: func(ctx context.Context, j *gue.Job) error {
 			return m.fetchActivity(ctx, j)
 		},
-		updateActivityJob: func(ctx context.Context, j *gue.Job) error {
+		updateActivityField: func(ctx context.Context, j *gue.Job) error {
 			return m.updateActivity(ctx, j)
 		},
 		deleteActivityJob: func(ctx context.Context, j *gue.Job) error {

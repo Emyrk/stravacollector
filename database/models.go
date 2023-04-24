@@ -12,56 +12,21 @@ import (
 	"github.com/google/uuid"
 )
 
-type Activity struct {
-	ID        int64 `db:"id" json:"id"`
-	AthleteID int64 `db:"athlete_id" json:"athlete_id"`
-	UploadID  int64 `db:"upload_id" json:"upload_id"`
-	// External ID refers to external source of the activity.
-	ExternalID               string    `db:"external_id" json:"external_id"`
-	Name                     string    `db:"name" json:"name"`
-	MovingTime               float64   `db:"moving_time" json:"moving_time"`
-	ElapsedTime              float64   `db:"elapsed_time" json:"elapsed_time"`
-	TotalElevationGain       float64   `db:"total_elevation_gain" json:"total_elevation_gain"`
-	ActivityType             string    `db:"activity_type" json:"activity_type"`
-	SportType                string    `db:"sport_type" json:"sport_type"`
-	StartDate                time.Time `db:"start_date" json:"start_date"`
-	StartDateLocal           time.Time `db:"start_date_local" json:"start_date_local"`
-	Timezone                 string    `db:"timezone" json:"timezone"`
-	UtcOffset                float64   `db:"utc_offset" json:"utc_offset"`
+type ActivityDetail struct {
+	ID                       int64     `db:"id" json:"id"`
+	AthleteID                int64     `db:"athlete_id" json:"athlete_id"`
 	StartLatlng              []float64 `db:"start_latlng" json:"start_latlng"`
 	EndLatlng                []float64 `db:"end_latlng" json:"end_latlng"`
-	AchievementCount         int32     `db:"achievement_count" json:"achievement_count"`
-	KudosCount               int32     `db:"kudos_count" json:"kudos_count"`
-	CommentCount             int32     `db:"comment_count" json:"comment_count"`
-	AthleteCount             int32     `db:"athlete_count" json:"athlete_count"`
-	PhotoCount               int32     `db:"photo_count" json:"photo_count"`
-	MapID                    string    `db:"map_id" json:"map_id"`
-	MapPolyline              string    `db:"map_polyline" json:"map_polyline"`
-	MapSummaryPolyline       string    `db:"map_summary_polyline" json:"map_summary_polyline"`
-	Trainer                  bool      `db:"trainer" json:"trainer"`
-	Commute                  bool      `db:"commute" json:"commute"`
-	Manual                   bool      `db:"manual" json:"manual"`
-	Private                  bool      `db:"private" json:"private"`
-	Flagged                  bool      `db:"flagged" json:"flagged"`
-	GearID                   string    `db:"gear_id" json:"gear_id"`
 	FromAcceptedTag          bool      `db:"from_accepted_tag" json:"from_accepted_tag"`
-	AverageSpeed             float64   `db:"average_speed" json:"average_speed"`
-	MaxSpeed                 float64   `db:"max_speed" json:"max_speed"`
 	AverageCadence           float64   `db:"average_cadence" json:"average_cadence"`
 	AverageTemp              float64   `db:"average_temp" json:"average_temp"`
 	AverageWatts             float64   `db:"average_watts" json:"average_watts"`
 	WeightedAverageWatts     float64   `db:"weighted_average_watts" json:"weighted_average_watts"`
 	Kilojoules               float64   `db:"kilojoules" json:"kilojoules"`
-	DeviceWatts              bool      `db:"device_watts" json:"device_watts"`
-	HasHeartrate             bool      `db:"has_heartrate" json:"has_heartrate"`
 	MaxWatts                 float64   `db:"max_watts" json:"max_watts"`
 	ElevHigh                 float64   `db:"elev_high" json:"elev_high"`
 	ElevLow                  float64   `db:"elev_low" json:"elev_low"`
-	PrCount                  int32     `db:"pr_count" json:"pr_count"`
-	TotalPhotoCount          int32     `db:"total_photo_count" json:"total_photo_count"`
-	WorkoutType              int32     `db:"workout_type" json:"workout_type"`
 	SufferScore              int32     `db:"suffer_score" json:"suffer_score"`
-	Calories                 float64   `db:"calories" json:"calories"`
 	EmbedToken               string    `db:"embed_token" json:"embed_token"`
 	SegmentLeaderboardOptOut bool      `db:"segment_leaderboard_opt_out" json:"segment_leaderboard_opt_out"`
 	LeaderboardOptOut        bool      `db:"leaderboard_opt_out" json:"leaderboard_opt_out"`
@@ -70,6 +35,47 @@ type Activity struct {
 	PremiumFetch bool `db:"premium_fetch" json:"premium_fetch"`
 	// The time at which the activity was last updated by the collector
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	MapID     string    `db:"map_id" json:"map_id"`
+}
+
+// Activity is missing many detailed fields
+type ActivitySummary struct {
+	ID                 int64     `db:"id" json:"id"`
+	AthleteID          int64     `db:"athlete_id" json:"athlete_id"`
+	UploadID           int64     `db:"upload_id" json:"upload_id"`
+	ExternalID         string    `db:"external_id" json:"external_id"`
+	Name               string    `db:"name" json:"name"`
+	Distance           float64   `db:"distance" json:"distance"`
+	MovingTime         float64   `db:"moving_time" json:"moving_time"`
+	ElapsedTime        float64   `db:"elapsed_time" json:"elapsed_time"`
+	TotalElevationGain float64   `db:"total_elevation_gain" json:"total_elevation_gain"`
+	ActivityType       string    `db:"activity_type" json:"activity_type"`
+	SportType          string    `db:"sport_type" json:"sport_type"`
+	WorkoutType        int32     `db:"workout_type" json:"workout_type"`
+	StartDate          time.Time `db:"start_date" json:"start_date"`
+	StartDateLocal     time.Time `db:"start_date_local" json:"start_date_local"`
+	Timezone           string    `db:"timezone" json:"timezone"`
+	UtcOffset          float64   `db:"utc_offset" json:"utc_offset"`
+	AchievementCount   int32     `db:"achievement_count" json:"achievement_count"`
+	KudosCount         int32     `db:"kudos_count" json:"kudos_count"`
+	CommentCount       int32     `db:"comment_count" json:"comment_count"`
+	AthleteCount       int32     `db:"athlete_count" json:"athlete_count"`
+	PhotoCount         int32     `db:"photo_count" json:"photo_count"`
+	MapID              string    `db:"map_id" json:"map_id"`
+	Trainer            bool      `db:"trainer" json:"trainer"`
+	Commute            bool      `db:"commute" json:"commute"`
+	Manual             bool      `db:"manual" json:"manual"`
+	Private            bool      `db:"private" json:"private"`
+	Flagged            bool      `db:"flagged" json:"flagged"`
+	GearID             string    `db:"gear_id" json:"gear_id"`
+	AverageSpeed       float64   `db:"average_speed" json:"average_speed"`
+	MaxSpeed           float64   `db:"max_speed" json:"max_speed"`
+	DeviceWatts        bool      `db:"device_watts" json:"device_watts"`
+	HasHeartrate       bool      `db:"has_heartrate" json:"has_heartrate"`
+	PrCount            int32     `db:"pr_count" json:"pr_count"`
+	TotalPhotoCount    int32     `db:"total_photo_count" json:"total_photo_count"`
+	Calories           float64   `db:"calories" json:"calories"`
+	UpdatedAt          time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type Athlete struct {
@@ -119,6 +125,13 @@ type GueJob struct {
 	Queue      string         `db:"queue" json:"queue"`
 	CreatedAt  time.Time      `db:"created_at" json:"created_at"`
 	UpdatedAt  time.Time      `db:"updated_at" json:"updated_at"`
+}
+
+type Map struct {
+	ID              string    `db:"id" json:"id"`
+	Polyline        string    `db:"polyline" json:"polyline"`
+	SummaryPolyline string    `db:"summary_polyline" json:"summary_polyline"`
+	UpdatedAt       time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type Segment struct {

@@ -15,147 +15,111 @@ import (
 
 const deleteActivity = `-- name: DeleteActivity :one
 DELETE FROM
-	activities
+	activity_summary
 WHERE
 	id = $1
-RETURNING id, athlete_id, upload_id, external_id, name, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, start_date, start_date_local, timezone, utc_offset, start_latlng, end_latlng, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, map_polyline, map_summary_polyline, trainer, commute, manual, private, flagged, gear_id, from_accepted_tag, average_speed, max_speed, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, device_watts, has_heartrate, max_watts, elev_high, elev_low, pr_count, total_photo_count, workout_type, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at
+RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, calories, updated_at
 `
 
-func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (Activity, error) {
+func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error) {
 	row := q.db.QueryRowContext(ctx, deleteActivity, id)
-	var i Activity
+	var i ActivitySummary
 	err := row.Scan(
 		&i.ID,
 		&i.AthleteID,
 		&i.UploadID,
 		&i.ExternalID,
 		&i.Name,
+		&i.Distance,
 		&i.MovingTime,
 		&i.ElapsedTime,
 		&i.TotalElevationGain,
 		&i.ActivityType,
 		&i.SportType,
+		&i.WorkoutType,
 		&i.StartDate,
 		&i.StartDateLocal,
 		&i.Timezone,
 		&i.UtcOffset,
-		pq.Array(&i.StartLatlng),
-		pq.Array(&i.EndLatlng),
 		&i.AchievementCount,
 		&i.KudosCount,
 		&i.CommentCount,
 		&i.AthleteCount,
 		&i.PhotoCount,
 		&i.MapID,
-		&i.MapPolyline,
-		&i.MapSummaryPolyline,
 		&i.Trainer,
 		&i.Commute,
 		&i.Manual,
 		&i.Private,
 		&i.Flagged,
 		&i.GearID,
-		&i.FromAcceptedTag,
 		&i.AverageSpeed,
 		&i.MaxSpeed,
-		&i.AverageCadence,
-		&i.AverageTemp,
-		&i.AverageWatts,
-		&i.WeightedAverageWatts,
-		&i.Kilojoules,
 		&i.DeviceWatts,
 		&i.HasHeartrate,
-		&i.MaxWatts,
-		&i.ElevHigh,
-		&i.ElevLow,
 		&i.PrCount,
 		&i.TotalPhotoCount,
-		&i.WorkoutType,
-		&i.SufferScore,
 		&i.Calories,
-		&i.EmbedToken,
-		&i.SegmentLeaderboardOptOut,
-		&i.LeaderboardOptOut,
-		&i.NumSegmentEfforts,
-		&i.PremiumFetch,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const getActivity = `-- name: GetActivity :one
+const getActivitySummary = `-- name: GetActivitySummary :one
 SELECT
-	id, athlete_id, upload_id, external_id, name, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, start_date, start_date_local, timezone, utc_offset, start_latlng, end_latlng, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, map_polyline, map_summary_polyline, trainer, commute, manual, private, flagged, gear_id, from_accepted_tag, average_speed, max_speed, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, device_watts, has_heartrate, max_watts, elev_high, elev_low, pr_count, total_photo_count, workout_type, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at
+	id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, calories, updated_at
 FROM
-    activities
+    activity_summary
 WHERE
     id = $1
 `
 
-func (q *sqlQuerier) GetActivity(ctx context.Context, id int64) (Activity, error) {
-	row := q.db.QueryRowContext(ctx, getActivity, id)
-	var i Activity
+func (q *sqlQuerier) GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error) {
+	row := q.db.QueryRowContext(ctx, getActivitySummary, id)
+	var i ActivitySummary
 	err := row.Scan(
 		&i.ID,
 		&i.AthleteID,
 		&i.UploadID,
 		&i.ExternalID,
 		&i.Name,
+		&i.Distance,
 		&i.MovingTime,
 		&i.ElapsedTime,
 		&i.TotalElevationGain,
 		&i.ActivityType,
 		&i.SportType,
+		&i.WorkoutType,
 		&i.StartDate,
 		&i.StartDateLocal,
 		&i.Timezone,
 		&i.UtcOffset,
-		pq.Array(&i.StartLatlng),
-		pq.Array(&i.EndLatlng),
 		&i.AchievementCount,
 		&i.KudosCount,
 		&i.CommentCount,
 		&i.AthleteCount,
 		&i.PhotoCount,
 		&i.MapID,
-		&i.MapPolyline,
-		&i.MapSummaryPolyline,
 		&i.Trainer,
 		&i.Commute,
 		&i.Manual,
 		&i.Private,
 		&i.Flagged,
 		&i.GearID,
-		&i.FromAcceptedTag,
 		&i.AverageSpeed,
 		&i.MaxSpeed,
-		&i.AverageCadence,
-		&i.AverageTemp,
-		&i.AverageWatts,
-		&i.WeightedAverageWatts,
-		&i.Kilojoules,
 		&i.DeviceWatts,
 		&i.HasHeartrate,
-		&i.MaxWatts,
-		&i.ElevHigh,
-		&i.ElevLow,
 		&i.PrCount,
 		&i.TotalPhotoCount,
-		&i.WorkoutType,
-		&i.SufferScore,
 		&i.Calories,
-		&i.EmbedToken,
-		&i.SegmentLeaderboardOptOut,
-		&i.LeaderboardOptOut,
-		&i.NumSegmentEfforts,
-		&i.PremiumFetch,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const updateActivityName = `-- name: UpdateActivityName :exec
-UPDATE activities
+UPDATE activity_summary
 SET
     name = $2
 WHERE
@@ -172,255 +136,290 @@ func (q *sqlQuerier) UpdateActivityName(ctx context.Context, arg UpdateActivityN
 	return err
 }
 
-const upsertActivity = `-- name: UpsertActivity :one
+const upsertActivityDetail = `-- name: UpsertActivityDetail :one
 INSERT INTO
-	activities(
-	updated_at,
-	id, athlete_id, upload_id, external_id, name,
-	moving_time, elapsed_time, total_elevation_gain, activity_type,
-	sport_type, start_date, start_date_local, timezone, utc_offset,
-	start_latlng, end_latlng, achievement_count, kudos_count,
-	comment_count, athlete_count, photo_count, map_id, map_polyline,
-	map_summary_polyline, trainer, commute, manual, private, flagged,
-	gear_id, from_accepted_tag, average_speed, max_speed, average_cadence,
-	average_temp, average_watts, weighted_average_watts, kilojoules,
-	device_watts, has_heartrate, max_watts, elev_high, elev_low, pr_count,
-	total_photo_count, workout_type, suffer_score, calories,
-	embed_token, segment_leaderboard_opt_out, leaderboard_opt_out,
-	num_segment_efforts, premium_fetch
-
+	activity_detail(
+		updated_at, id, athlete_id, start_latlng,
+		end_latlng, from_accepted_tag, average_cadence, average_temp,
+		average_watts, weighted_average_watts, kilojoules, max_watts,
+	    elev_high, elev_low, suffer_score, embed_token,
+	    segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts,
+	    premium_fetch, updated_at, map_id
 )
 VALUES
 	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-	 $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33,
-	 $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49,
-	 $50, $51, $52, $53)
+	 $18, $19, $20, $21)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
 	updated_at = Now(),
 	athlete_id = $2,
-	upload_id = $3,
-	external_id = $4,
-	name = $5,
-	moving_time = $6,
-	elapsed_time = $7,
-	total_elevation_gain = $8,
-	activity_type = $9,
-	sport_type = $10,
-	start_date = $11,
-	start_date_local = $12,
-	timezone = $13,
-	utc_offset = $14,
-	start_latlng = $15,
-	end_latlng = $16,
-	achievement_count = $17,
-	kudos_count = $18,
-	comment_count = $19,
-	athlete_count = $20,
-	photo_count = $21,
-	map_id = $22,
-	map_polyline = $23,
-	map_summary_polyline = $24,
-	trainer = $25,
-	commute = $26,
-	manual = $27,
-	private = $28,
-	flagged = $29,
-	gear_id = $30,
-	from_accepted_tag = $31,
-	average_speed = $32,
-	max_speed = $33,
-	average_cadence = $34,
-	average_temp = $35,
-	average_watts = $36,
-	weighted_average_watts = $37,
-	kilojoules = $38,
-	device_watts = $39,
-	has_heartrate = $40,
-	max_watts = $41,
-	elev_high = $42,
-	elev_low = $43,
-	pr_count = $44,
-	total_photo_count = $45,
-	workout_type = $46,
-	suffer_score = $47,
-	calories = $48,
-	embed_token = $49,
-	segment_leaderboard_opt_out = $50,
-	leaderboard_opt_out = $51,
-	num_segment_efforts = $52,
-	premium_fetch = $53
-RETURNING id, athlete_id, upload_id, external_id, name, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, start_date, start_date_local, timezone, utc_offset, start_latlng, end_latlng, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, map_polyline, map_summary_polyline, trainer, commute, manual, private, flagged, gear_id, from_accepted_tag, average_speed, max_speed, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, device_watts, has_heartrate, max_watts, elev_high, elev_low, pr_count, total_photo_count, workout_type, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at
+	start_latlng = $3,
+	end_latlng = $4,
+	from_accepted_tag = $5,
+	average_cadence = $6,
+	average_temp = $7,
+	average_watts = $8,
+	weighted_average_watts = $9,
+	kilojoules = $10,
+	max_watts = $11,
+	elev_high = $12,
+	elev_low = $13,
+	suffer_score = $14,
+	embed_token = $15,
+	segment_leaderboard_opt_out = $16,
+	leaderboard_opt_out = $17,
+	num_segment_efforts = $18,
+	premium_fetch = $19,
+	updated_at = $20,
+	map_id = $21
+RETURNING id, athlete_id, start_latlng, end_latlng, from_accepted_tag, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, max_watts, elev_high, elev_low, suffer_score, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at, map_id
 `
 
-type UpsertActivityParams struct {
+type UpsertActivityDetailParams struct {
 	ID                       int64     `db:"id" json:"id"`
 	AthleteID                int64     `db:"athlete_id" json:"athlete_id"`
-	UploadID                 int64     `db:"upload_id" json:"upload_id"`
-	ExternalID               string    `db:"external_id" json:"external_id"`
-	Name                     string    `db:"name" json:"name"`
-	MovingTime               float64   `db:"moving_time" json:"moving_time"`
-	ElapsedTime              float64   `db:"elapsed_time" json:"elapsed_time"`
-	TotalElevationGain       float64   `db:"total_elevation_gain" json:"total_elevation_gain"`
-	ActivityType             string    `db:"activity_type" json:"activity_type"`
-	SportType                string    `db:"sport_type" json:"sport_type"`
-	StartDate                time.Time `db:"start_date" json:"start_date"`
-	StartDateLocal           time.Time `db:"start_date_local" json:"start_date_local"`
-	Timezone                 string    `db:"timezone" json:"timezone"`
-	UtcOffset                float64   `db:"utc_offset" json:"utc_offset"`
 	StartLatlng              []float64 `db:"start_latlng" json:"start_latlng"`
 	EndLatlng                []float64 `db:"end_latlng" json:"end_latlng"`
-	AchievementCount         int32     `db:"achievement_count" json:"achievement_count"`
-	KudosCount               int32     `db:"kudos_count" json:"kudos_count"`
-	CommentCount             int32     `db:"comment_count" json:"comment_count"`
-	AthleteCount             int32     `db:"athlete_count" json:"athlete_count"`
-	PhotoCount               int32     `db:"photo_count" json:"photo_count"`
-	MapID                    string    `db:"map_id" json:"map_id"`
-	MapPolyline              string    `db:"map_polyline" json:"map_polyline"`
-	MapSummaryPolyline       string    `db:"map_summary_polyline" json:"map_summary_polyline"`
-	Trainer                  bool      `db:"trainer" json:"trainer"`
-	Commute                  bool      `db:"commute" json:"commute"`
-	Manual                   bool      `db:"manual" json:"manual"`
-	Private                  bool      `db:"private" json:"private"`
-	Flagged                  bool      `db:"flagged" json:"flagged"`
-	GearID                   string    `db:"gear_id" json:"gear_id"`
 	FromAcceptedTag          bool      `db:"from_accepted_tag" json:"from_accepted_tag"`
-	AverageSpeed             float64   `db:"average_speed" json:"average_speed"`
-	MaxSpeed                 float64   `db:"max_speed" json:"max_speed"`
 	AverageCadence           float64   `db:"average_cadence" json:"average_cadence"`
 	AverageTemp              float64   `db:"average_temp" json:"average_temp"`
 	AverageWatts             float64   `db:"average_watts" json:"average_watts"`
 	WeightedAverageWatts     float64   `db:"weighted_average_watts" json:"weighted_average_watts"`
 	Kilojoules               float64   `db:"kilojoules" json:"kilojoules"`
-	DeviceWatts              bool      `db:"device_watts" json:"device_watts"`
-	HasHeartrate             bool      `db:"has_heartrate" json:"has_heartrate"`
 	MaxWatts                 float64   `db:"max_watts" json:"max_watts"`
 	ElevHigh                 float64   `db:"elev_high" json:"elev_high"`
 	ElevLow                  float64   `db:"elev_low" json:"elev_low"`
-	PrCount                  int32     `db:"pr_count" json:"pr_count"`
-	TotalPhotoCount          int32     `db:"total_photo_count" json:"total_photo_count"`
-	WorkoutType              int32     `db:"workout_type" json:"workout_type"`
 	SufferScore              int32     `db:"suffer_score" json:"suffer_score"`
-	Calories                 float64   `db:"calories" json:"calories"`
 	EmbedToken               string    `db:"embed_token" json:"embed_token"`
 	SegmentLeaderboardOptOut bool      `db:"segment_leaderboard_opt_out" json:"segment_leaderboard_opt_out"`
 	LeaderboardOptOut        bool      `db:"leaderboard_opt_out" json:"leaderboard_opt_out"`
 	NumSegmentEfforts        int32     `db:"num_segment_efforts" json:"num_segment_efforts"`
 	PremiumFetch             bool      `db:"premium_fetch" json:"premium_fetch"`
+	UpdatedAt                time.Time `db:"updated_at" json:"updated_at"`
+	MapID                    string    `db:"map_id" json:"map_id"`
 }
 
-func (q *sqlQuerier) UpsertActivity(ctx context.Context, arg UpsertActivityParams) (Activity, error) {
-	row := q.db.QueryRowContext(ctx, upsertActivity,
+func (q *sqlQuerier) UpsertActivityDetail(ctx context.Context, arg UpsertActivityDetailParams) (ActivityDetail, error) {
+	row := q.db.QueryRowContext(ctx, upsertActivityDetail,
+		arg.ID,
+		arg.AthleteID,
+		pq.Array(arg.StartLatlng),
+		pq.Array(arg.EndLatlng),
+		arg.FromAcceptedTag,
+		arg.AverageCadence,
+		arg.AverageTemp,
+		arg.AverageWatts,
+		arg.WeightedAverageWatts,
+		arg.Kilojoules,
+		arg.MaxWatts,
+		arg.ElevHigh,
+		arg.ElevLow,
+		arg.SufferScore,
+		arg.EmbedToken,
+		arg.SegmentLeaderboardOptOut,
+		arg.LeaderboardOptOut,
+		arg.NumSegmentEfforts,
+		arg.PremiumFetch,
+		arg.UpdatedAt,
+		arg.MapID,
+	)
+	var i ActivityDetail
+	err := row.Scan(
+		&i.ID,
+		&i.AthleteID,
+		pq.Array(&i.StartLatlng),
+		pq.Array(&i.EndLatlng),
+		&i.FromAcceptedTag,
+		&i.AverageCadence,
+		&i.AverageTemp,
+		&i.AverageWatts,
+		&i.WeightedAverageWatts,
+		&i.Kilojoules,
+		&i.MaxWatts,
+		&i.ElevHigh,
+		&i.ElevLow,
+		&i.SufferScore,
+		&i.EmbedToken,
+		&i.SegmentLeaderboardOptOut,
+		&i.LeaderboardOptOut,
+		&i.NumSegmentEfforts,
+		&i.PremiumFetch,
+		&i.UpdatedAt,
+		&i.MapID,
+	)
+	return i, err
+}
+
+const upsertActivitySummary = `-- name: UpsertActivitySummary :one
+INSERT INTO
+	activity_summary(
+		updated_at, id, athlete_id, upload_id, external_id, name,
+	    distance, moving_time, elapsed_time, total_elevation_gain,
+	    activity_type, sport_type, workout_type, start_date,
+	    start_date_local, timezone, utc_offset, achievement_count,
+	    kudos_count, comment_count, athlete_count, photo_count, map_id,
+	    trainer, commute, manual, private, flagged, gear_id, average_speed,
+	    max_speed, device_watts, has_heartrate, pr_count, total_photo_count,
+	    calories
+)
+VALUES
+	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
+	 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35)
+ON CONFLICT
+	(id)
+	DO UPDATE SET
+		updated_at = Now(),
+		athlete_id = $2,
+		upload_id = $3,
+		external_id = $4,
+		name = $5,
+		distance = $6,
+		moving_time = $7,
+		elapsed_time = $8,
+		total_elevation_gain = $9,
+		activity_type = $10,
+		sport_type = $11,
+		workout_type = $12,
+		start_date = $13,
+		start_date_local = $14,
+		timezone = $15,
+		utc_offset = $16,
+		achievement_count = $17,
+		kudos_count = $18,
+		comment_count = $19,
+		athlete_count = $20,
+		photo_count = $21,
+		map_id = $22,
+		trainer = $23,
+		commute = $24,
+		manual = $25,
+		private = $26,
+		flagged = $27,
+		gear_id = $28,
+		average_speed = $29,
+		max_speed = $30,
+		device_watts = $31,
+		has_heartrate = $32,
+		pr_count = $33,
+		total_photo_count = $34,
+		calories = $35
+RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, calories, updated_at
+`
+
+type UpsertActivitySummaryParams struct {
+	ID                 int64     `db:"id" json:"id"`
+	AthleteID          int64     `db:"athlete_id" json:"athlete_id"`
+	UploadID           int64     `db:"upload_id" json:"upload_id"`
+	ExternalID         string    `db:"external_id" json:"external_id"`
+	Name               string    `db:"name" json:"name"`
+	Distance           float64   `db:"distance" json:"distance"`
+	MovingTime         float64   `db:"moving_time" json:"moving_time"`
+	ElapsedTime        float64   `db:"elapsed_time" json:"elapsed_time"`
+	TotalElevationGain float64   `db:"total_elevation_gain" json:"total_elevation_gain"`
+	ActivityType       string    `db:"activity_type" json:"activity_type"`
+	SportType          string    `db:"sport_type" json:"sport_type"`
+	WorkoutType        int32     `db:"workout_type" json:"workout_type"`
+	StartDate          time.Time `db:"start_date" json:"start_date"`
+	StartDateLocal     time.Time `db:"start_date_local" json:"start_date_local"`
+	Timezone           string    `db:"timezone" json:"timezone"`
+	UtcOffset          float64   `db:"utc_offset" json:"utc_offset"`
+	AchievementCount   int32     `db:"achievement_count" json:"achievement_count"`
+	KudosCount         int32     `db:"kudos_count" json:"kudos_count"`
+	CommentCount       int32     `db:"comment_count" json:"comment_count"`
+	AthleteCount       int32     `db:"athlete_count" json:"athlete_count"`
+	PhotoCount         int32     `db:"photo_count" json:"photo_count"`
+	MapID              string    `db:"map_id" json:"map_id"`
+	Trainer            bool      `db:"trainer" json:"trainer"`
+	Commute            bool      `db:"commute" json:"commute"`
+	Manual             bool      `db:"manual" json:"manual"`
+	Private            bool      `db:"private" json:"private"`
+	Flagged            bool      `db:"flagged" json:"flagged"`
+	GearID             string    `db:"gear_id" json:"gear_id"`
+	AverageSpeed       float64   `db:"average_speed" json:"average_speed"`
+	MaxSpeed           float64   `db:"max_speed" json:"max_speed"`
+	DeviceWatts        bool      `db:"device_watts" json:"device_watts"`
+	HasHeartrate       bool      `db:"has_heartrate" json:"has_heartrate"`
+	PrCount            int32     `db:"pr_count" json:"pr_count"`
+	TotalPhotoCount    int32     `db:"total_photo_count" json:"total_photo_count"`
+	Calories           float64   `db:"calories" json:"calories"`
+}
+
+func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivitySummaryParams) (ActivitySummary, error) {
+	row := q.db.QueryRowContext(ctx, upsertActivitySummary,
 		arg.ID,
 		arg.AthleteID,
 		arg.UploadID,
 		arg.ExternalID,
 		arg.Name,
+		arg.Distance,
 		arg.MovingTime,
 		arg.ElapsedTime,
 		arg.TotalElevationGain,
 		arg.ActivityType,
 		arg.SportType,
+		arg.WorkoutType,
 		arg.StartDate,
 		arg.StartDateLocal,
 		arg.Timezone,
 		arg.UtcOffset,
-		pq.Array(arg.StartLatlng),
-		pq.Array(arg.EndLatlng),
 		arg.AchievementCount,
 		arg.KudosCount,
 		arg.CommentCount,
 		arg.AthleteCount,
 		arg.PhotoCount,
 		arg.MapID,
-		arg.MapPolyline,
-		arg.MapSummaryPolyline,
 		arg.Trainer,
 		arg.Commute,
 		arg.Manual,
 		arg.Private,
 		arg.Flagged,
 		arg.GearID,
-		arg.FromAcceptedTag,
 		arg.AverageSpeed,
 		arg.MaxSpeed,
-		arg.AverageCadence,
-		arg.AverageTemp,
-		arg.AverageWatts,
-		arg.WeightedAverageWatts,
-		arg.Kilojoules,
 		arg.DeviceWatts,
 		arg.HasHeartrate,
-		arg.MaxWatts,
-		arg.ElevHigh,
-		arg.ElevLow,
 		arg.PrCount,
 		arg.TotalPhotoCount,
-		arg.WorkoutType,
-		arg.SufferScore,
 		arg.Calories,
-		arg.EmbedToken,
-		arg.SegmentLeaderboardOptOut,
-		arg.LeaderboardOptOut,
-		arg.NumSegmentEfforts,
-		arg.PremiumFetch,
 	)
-	var i Activity
+	var i ActivitySummary
 	err := row.Scan(
 		&i.ID,
 		&i.AthleteID,
 		&i.UploadID,
 		&i.ExternalID,
 		&i.Name,
+		&i.Distance,
 		&i.MovingTime,
 		&i.ElapsedTime,
 		&i.TotalElevationGain,
 		&i.ActivityType,
 		&i.SportType,
+		&i.WorkoutType,
 		&i.StartDate,
 		&i.StartDateLocal,
 		&i.Timezone,
 		&i.UtcOffset,
-		pq.Array(&i.StartLatlng),
-		pq.Array(&i.EndLatlng),
 		&i.AchievementCount,
 		&i.KudosCount,
 		&i.CommentCount,
 		&i.AthleteCount,
 		&i.PhotoCount,
 		&i.MapID,
-		&i.MapPolyline,
-		&i.MapSummaryPolyline,
 		&i.Trainer,
 		&i.Commute,
 		&i.Manual,
 		&i.Private,
 		&i.Flagged,
 		&i.GearID,
-		&i.FromAcceptedTag,
 		&i.AverageSpeed,
 		&i.MaxSpeed,
-		&i.AverageCadence,
-		&i.AverageTemp,
-		&i.AverageWatts,
-		&i.WeightedAverageWatts,
-		&i.Kilojoules,
 		&i.DeviceWatts,
 		&i.HasHeartrate,
-		&i.MaxWatts,
-		&i.ElevHigh,
-		&i.ElevLow,
 		&i.PrCount,
 		&i.TotalPhotoCount,
-		&i.WorkoutType,
-		&i.SufferScore,
 		&i.Calories,
-		&i.EmbedToken,
-		&i.SegmentLeaderboardOptOut,
-		&i.LeaderboardOptOut,
-		&i.NumSegmentEfforts,
-		&i.PremiumFetch,
 		&i.UpdatedAt,
 	)
 	return i, err
@@ -598,6 +597,40 @@ func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLo
 		&i.OauthExpiry,
 		&i.OauthTokenType,
 		&i.ID,
+	)
+	return i, err
+}
+
+const upsertMap = `-- name: UpsertMap :one
+INSERT INTO
+	maps(
+	updated_at, id, polyline, summary_polyline
+)
+VALUES
+	(Now(), $1, $2, $3)
+ON CONFLICT
+	(id)
+	DO UPDATE SET
+		updated_at = Now(),
+		polyline = $2,
+		summary_polyline = $3
+RETURNING id, polyline, summary_polyline, updated_at
+`
+
+type UpsertMapParams struct {
+	ID              string `db:"id" json:"id"`
+	Polyline        string `db:"polyline" json:"polyline"`
+	SummaryPolyline string `db:"summary_polyline" json:"summary_polyline"`
+}
+
+func (q *sqlQuerier) UpsertMap(ctx context.Context, arg UpsertMapParams) (Map, error) {
+	row := q.db.QueryRowContext(ctx, upsertMap, arg.ID, arg.Polyline, arg.SummaryPolyline)
+	var i Map
+	err := row.Scan(
+		&i.ID,
+		&i.Polyline,
+		&i.SummaryPolyline,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

@@ -78,55 +78,71 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 
 	// Parse the activity, save all efforts.
 	err = m.DB.InTx(func(store database.Store) error {
-		_, err := store.UpsertActivity(ctx, database.UpsertActivityParams{
+		_, err := store.UpsertMap(ctx, database.UpsertMapParams{
+			ID:              activity.Map.ID,
+			Polyline:        activity.Map.Polyline,
+			SummaryPolyline: activity.Map.SummaryPolyline,
+		})
+		if err != nil {
+			return fmt.Errorf("upsert map: %w", err)
+		}
+
+		_, err = store.UpsertActivitySummary(ctx, database.UpsertActivitySummaryParams{
+			ID:                 activity.ID,
+			AthleteID:          activity.Athlete.ID,
+			UploadID:           activity.UploadID,
+			ExternalID:         activity.ExternalID,
+			Name:               activity.Name,
+			MovingTime:         activity.MovingTime,
+			ElapsedTime:        activity.ElapsedTime,
+			TotalElevationGain: activity.TotalElevationGain,
+			ActivityType:       activity.Type,
+			SportType:          activity.SportType,
+			StartDate:          activity.StartDate,
+			StartDateLocal:     activity.StartDateLocal,
+			Timezone:           activity.Timezone,
+			UtcOffset:          activity.UtcOffset,
+			AchievementCount:   activity.AchievementCount,
+			KudosCount:         activity.KudosCount,
+			CommentCount:       activity.CommentCount,
+			AthleteCount:       activity.AthleteCount,
+			PhotoCount:         activity.PhotoCount,
+			MapID:              activity.Map.ID,
+			Trainer:            activity.Trainer,
+			Commute:            activity.Commute,
+			Manual:             activity.Manual,
+			Private:            activity.Private,
+			Flagged:            activity.Flagged,
+			GearID:             activity.GearID,
+			AverageSpeed:       activity.AverageSpeed,
+			MaxSpeed:           activity.MaxSpeed,
+			DeviceWatts:        activity.DeviceWatts,
+			HasHeartrate:       activity.HasHeartrate,
+			PrCount:            activity.PrCount,
+			TotalPhotoCount:    activity.TotalPhotoCount,
+			WorkoutType:        activity.WorkoutType,
+			Calories:           activity.Calories,
+		})
+		if err != nil {
+			return fmt.Errorf("upsert activity summary: %w", err)
+		}
+
+		_, err = store.UpsertActivityDetail(ctx, database.UpsertActivityDetailParams{
 			ID:                       activity.ID,
 			AthleteID:                activity.Athlete.ID,
-			UploadID:                 activity.UploadID,
-			ExternalID:               activity.ExternalID,
-			Name:                     activity.Name,
-			MovingTime:               activity.MovingTime,
-			ElapsedTime:              activity.ElapsedTime,
-			TotalElevationGain:       activity.TotalElevationGain,
-			ActivityType:             activity.Type,
-			SportType:                activity.SportType,
-			StartDate:                activity.StartDate,
-			StartDateLocal:           activity.StartDateLocal,
-			Timezone:                 activity.Timezone,
-			UtcOffset:                activity.UtcOffset,
 			StartLatlng:              activity.StartLatlng,
 			EndLatlng:                activity.EndLatlng,
-			AchievementCount:         activity.AchievementCount,
-			KudosCount:               activity.KudosCount,
-			CommentCount:             activity.CommentCount,
-			AthleteCount:             activity.AthleteCount,
-			PhotoCount:               activity.PhotoCount,
 			MapID:                    activity.Map.ID,
-			MapPolyline:              activity.Map.Polyline,
-			MapSummaryPolyline:       activity.Map.SummaryPolyline,
-			Trainer:                  activity.Trainer,
-			Commute:                  activity.Commute,
-			Manual:                   activity.Manual,
-			Private:                  activity.Private,
-			Flagged:                  activity.Flagged,
-			GearID:                   activity.GearID,
 			FromAcceptedTag:          activity.FromAcceptedTag,
-			AverageSpeed:             activity.AverageSpeed,
-			MaxSpeed:                 activity.MaxSpeed,
 			AverageCadence:           activity.AverageCadence,
 			AverageTemp:              activity.AverageTemp,
 			AverageWatts:             activity.AverageWatts,
 			WeightedAverageWatts:     activity.WeightedAverageWatts,
 			Kilojoules:               activity.Kilojoules,
-			DeviceWatts:              activity.DeviceWatts,
-			HasHeartrate:             activity.HasHeartrate,
 			MaxWatts:                 activity.MaxWatts,
 			ElevHigh:                 activity.ElevHigh,
 			ElevLow:                  activity.ElevLow,
-			PrCount:                  activity.PrCount,
-			TotalPhotoCount:          activity.TotalPhotoCount,
-			WorkoutType:              activity.WorkoutType,
 			SufferScore:              activity.SufferScore,
-			Calories:                 activity.Calories,
 			EmbedToken:               activity.EmbedToken,
 			SegmentLeaderboardOptOut: activity.SegmentLeaderboardOptOut,
 			LeaderboardOptOut:        activity.LeaderboardOptOut,
@@ -134,9 +150,8 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			PremiumFetch:      athlete.Summit,
 			NumSegmentEfforts: int32(len(activity.SegmentEfforts)),
 		})
-
 		if err != nil {
-			return fmt.Errorf("upsert activity: %w", err)
+			return fmt.Errorf("upsert activity details: %w", err)
 		}
 
 		// Insert efforts.

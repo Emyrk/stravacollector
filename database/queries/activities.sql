@@ -1,103 +1,116 @@
 -- name: DeleteActivity :one
 DELETE FROM
-	activities
+	activity_summary
 WHERE
 	id = $1
 RETURNING *
 ;
 
--- name: GetActivity :one
+-- name: GetActivitySummary :one
 SELECT
 	*
 FROM
-    activities
+    activity_summary
 WHERE
     id = $1;
 
 -- name: UpdateActivityName :exec
-UPDATE activities
+UPDATE activity_summary
 SET
     name = $2
 WHERE
     id = $1;
 
--- name: UpsertActivity :one
+-- name: UpsertActivitySummary :one
 INSERT INTO
-	activities(
-	updated_at,
-	id, athlete_id, upload_id, external_id, name,
-	moving_time, elapsed_time, total_elevation_gain, activity_type,
-	sport_type, start_date, start_date_local, timezone, utc_offset,
-	start_latlng, end_latlng, achievement_count, kudos_count,
-	comment_count, athlete_count, photo_count, map_id, map_polyline,
-	map_summary_polyline, trainer, commute, manual, private, flagged,
-	gear_id, from_accepted_tag, average_speed, max_speed, average_cadence,
-	average_temp, average_watts, weighted_average_watts, kilojoules,
-	device_watts, has_heartrate, max_watts, elev_high, elev_low, pr_count,
-	total_photo_count, workout_type, suffer_score, calories,
-	embed_token, segment_leaderboard_opt_out, leaderboard_opt_out,
-	num_segment_efforts, premium_fetch
+	activity_summary(
+		updated_at, id, athlete_id, upload_id, external_id, name,
+	    distance, moving_time, elapsed_time, total_elevation_gain,
+	    activity_type, sport_type, workout_type, start_date,
+	    start_date_local, timezone, utc_offset, achievement_count,
+	    kudos_count, comment_count, athlete_count, photo_count, map_id,
+	    trainer, commute, manual, private, flagged, gear_id, average_speed,
+	    max_speed, device_watts, has_heartrate, pr_count, total_photo_count,
+	    calories
+)
+VALUES
+	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
+	 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35)
+ON CONFLICT
+	(id)
+	DO UPDATE SET
+		updated_at = Now(),
+		athlete_id = $2,
+		upload_id = $3,
+		external_id = $4,
+		name = $5,
+		distance = $6,
+		moving_time = $7,
+		elapsed_time = $8,
+		total_elevation_gain = $9,
+		activity_type = $10,
+		sport_type = $11,
+		workout_type = $12,
+		start_date = $13,
+		start_date_local = $14,
+		timezone = $15,
+		utc_offset = $16,
+		achievement_count = $17,
+		kudos_count = $18,
+		comment_count = $19,
+		athlete_count = $20,
+		photo_count = $21,
+		map_id = $22,
+		trainer = $23,
+		commute = $24,
+		manual = $25,
+		private = $26,
+		flagged = $27,
+		gear_id = $28,
+		average_speed = $29,
+		max_speed = $30,
+		device_watts = $31,
+		has_heartrate = $32,
+		pr_count = $33,
+		total_photo_count = $34,
+		calories = $35
+RETURNING *;
 
+-- name: UpsertActivityDetail :one
+INSERT INTO
+	activity_detail(
+		updated_at, id, athlete_id, start_latlng,
+		end_latlng, from_accepted_tag, average_cadence, average_temp,
+		average_watts, weighted_average_watts, kilojoules, max_watts,
+	    elev_high, elev_low, suffer_score, embed_token,
+	    segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts,
+	    premium_fetch, updated_at, map_id
 )
 VALUES
 	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-	 $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33,
-	 $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49,
-	 $50, $51, $52, $53)
+	 $18, $19, $20, $21)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
 	updated_at = Now(),
 	athlete_id = $2,
-	upload_id = $3,
-	external_id = $4,
-	name = $5,
-	moving_time = $6,
-	elapsed_time = $7,
-	total_elevation_gain = $8,
-	activity_type = $9,
-	sport_type = $10,
-	start_date = $11,
-	start_date_local = $12,
-	timezone = $13,
-	utc_offset = $14,
-	start_latlng = $15,
-	end_latlng = $16,
-	achievement_count = $17,
-	kudos_count = $18,
-	comment_count = $19,
-	athlete_count = $20,
-	photo_count = $21,
-	map_id = $22,
-	map_polyline = $23,
-	map_summary_polyline = $24,
-	trainer = $25,
-	commute = $26,
-	manual = $27,
-	private = $28,
-	flagged = $29,
-	gear_id = $30,
-	from_accepted_tag = $31,
-	average_speed = $32,
-	max_speed = $33,
-	average_cadence = $34,
-	average_temp = $35,
-	average_watts = $36,
-	weighted_average_watts = $37,
-	kilojoules = $38,
-	device_watts = $39,
-	has_heartrate = $40,
-	max_watts = $41,
-	elev_high = $42,
-	elev_low = $43,
-	pr_count = $44,
-	total_photo_count = $45,
-	workout_type = $46,
-	suffer_score = $47,
-	calories = $48,
-	embed_token = $49,
-	segment_leaderboard_opt_out = $50,
-	leaderboard_opt_out = $51,
-	num_segment_efforts = $52,
-	premium_fetch = $53
+	start_latlng = $3,
+	end_latlng = $4,
+	from_accepted_tag = $5,
+	average_cadence = $6,
+	average_temp = $7,
+	average_watts = $8,
+	weighted_average_watts = $9,
+	kilojoules = $10,
+	max_watts = $11,
+	elev_high = $12,
+	elev_low = $13,
+	suffer_score = $14,
+	embed_token = $15,
+	segment_leaderboard_opt_out = $16,
+	leaderboard_opt_out = $17,
+	num_segment_efforts = $18,
+	premium_fetch = $19,
+	updated_at = $20,
+	map_id = $21
 RETURNING *;

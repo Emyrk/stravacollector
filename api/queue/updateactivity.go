@@ -20,7 +20,7 @@ func (m *Manager) EnqueueUpdateActivity(ctx context.Context, event webhooks.Webh
 	}
 
 	return m.Client.Enqueue(ctx, &gue.Job{
-		Type:  updateActivityJob,
+		Type:  updateActivityField,
 		Queue: stravaUpdateActivityQueue,
 		Args:  data,
 	})
@@ -68,7 +68,7 @@ func (m *Manager) updateActivity(ctx context.Context, j *gue.Job) error {
 
 	// This updates an activity.
 	err = m.DB.InTx(func(store database.Store) error {
-		_, err := store.GetActivity(ctx, args.ObjectID)
+		_, err := store.GetActivitySummary(ctx, args.ObjectID)
 		if errors.Is(err, sql.ErrNoRows) {
 			logger.Warn().Err(err).Msg("activity not found, update activity job abandoned")
 			return nil
