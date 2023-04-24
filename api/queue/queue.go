@@ -124,6 +124,9 @@ func (m *Manager) workMap() gue.WorkMap {
 			m.Logger.Info().Msg("worker online")
 			return nil
 		},
+		fetchActivityJob: func(ctx context.Context, j *gue.Job) error {
+			return m.fetchActivity(ctx, j)
+		},
 	}
 }
 

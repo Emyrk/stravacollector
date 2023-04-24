@@ -10,13 +10,14 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/Emyrk/strava/database"
-
-	"github.com/Emyrk/strava/api/httpapi"
-	"github.com/Emyrk/strava/strava/stravawebhook"
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog"
 	"golang.org/x/oauth2"
+
+	"github.com/Emyrk/strava/api/httpapi"
+	"github.com/Emyrk/strava/database"
+	"github.com/Emyrk/strava/strava/stravalimit"
+	"github.com/Emyrk/strava/strava/stravawebhook"
 )
 
 type ActivityEvents struct {
@@ -121,25 +122,13 @@ func (a *ActivityEvents) handleWebhook(rw http.ResponseWriter, r *http.Request) 
 	_, _ = rw.Write([]byte("Thanks!"))
 }
 
-func (a *ActivityEvents) newActivity(event WebhookEvent, logger zerolog.Logger) {
-	switch event.AspectType {
-	case "create":
-		//actID := event.ObjectID
-	case "update":
-		// Updates to events we probably don't care about?
-		logger.Info().
-			Interface("updated", event.Updates).
-			Msg("'Update' webhook event to an activity")
-
-	case "delete":
-	}
-}
-
 func (a *ActivityEvents) Attach(r chi.Router) chi.Router {
 	r.Route("/webhooks/strava", func(r chi.Router) {
 		r.Use(
 			func(next http.Handler) http.Handler {
 				return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+					stravalimit.Update(r.Header)
+
 					a.Logger.Info().
 						Str("remote_addr", r.RemoteAddr).
 						Msg("Strava webhook received")

@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/Emyrk/strava/strava/stravalimit"
+
 	"github.com/Emyrk/strava/strava"
 )
 
@@ -92,6 +94,8 @@ func DeleteWebhook(ctx context.Context, clientID string, clientSecret string, id
 }
 
 func WebhookResponse(expectedCode int, resp *http.Response, into any) error {
+	stravalimit.Update(resp.Header)
+
 	if resp.StatusCode != expectedCode {
 		standardErr := fmt.Errorf("status code not ok: %d", resp.StatusCode)
 		var e strava.Error

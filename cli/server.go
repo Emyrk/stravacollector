@@ -12,17 +12,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Emyrk/strava/api/queue"
-
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-
 	"github.com/spf13/viper"
 
 	"github.com/Emyrk/strava/api"
-
+	"github.com/Emyrk/strava/api/queue"
 	"github.com/Emyrk/strava/database"
-
-	"github.com/spf13/cobra"
+	"github.com/Emyrk/strava/strava/stravalimit"
 )
 
 func serverCmd() *cobra.Command {
@@ -123,6 +120,9 @@ func serverCmd() *cobra.Command {
 				DB:       db,
 				OAuthCfg: srv.OAuthConfig,
 			})
+			if err != nil {
+				return fmt.Errorf("create queue manager: %w", err)
+			}
 
 			err = manager.Run(ctx)
 			if err != nil {
@@ -145,6 +145,21 @@ func serverCmd() *cobra.Command {
 				}
 			}()
 			logger.Info().Str("access_url", accessURL).Msg("Server running")
+
+			go func() {
+				ticker := time.NewTicker(time.Minute)
+				for {
+					select {
+					case <-ctx.Done():
+					case <-ticker.C:
+						i, d := stravalimit.Remaining()
+						logger.Debug().
+							Int64("IntervalLeft", i).
+							Int64("DailyLeft", d).
+							Msg("Strava Rate Limits")
+					}
+				}
+			}()
 
 			// TODO: Check for server up
 
@@ -220,7 +235,7 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper, always bool) {
 		// Apply the viper config value to the flag when the flag is not set and viper has a value
 		if !f.Changed && v.IsSet(configName) {
 			val := v.Get(configName)
-			cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+			_ = cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
 		}
 	})
 }

@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/Emyrk/strava/strava/stravalimit"
 )
 
 type Client struct {
@@ -67,6 +69,9 @@ func (c *Client) AthleteSegmentEfforts(ctx context.Context, segmentID int, perPa
 
 func (c *Client) DecodeResponse(res *http.Response, v any, expectedCode int) error {
 	defer res.Body.Close()
+
+	stravalimit.Update(res.Header)
+
 	if res.StatusCode != expectedCode {
 		body, _ := io.ReadAll(res.Body)
 		return fmt.Errorf("status code: %d\nbody: %s", res.StatusCode, string(body))
