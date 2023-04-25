@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/hirosassa/zerodriver"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 )
@@ -23,11 +24,19 @@ func RootCmd() *cobra.Command {
 }
 
 func getLogger(cmd *cobra.Command) zerolog.Logger {
+	useStackDriver, _ := cmd.Flags().GetBool("stack-driver")
+
 	var out io.Writer = zerolog.ConsoleWriter{Out: os.Stderr}
 	if ok, _ := strconv.ParseBool(os.Getenv("STRAVA_JSON_LOGS")); ok {
 		out = os.Stderr
 	}
 
-	logger := zerolog.New(out).With().Timestamp().Logger()
+	var logger zerolog.Logger
+	if useStackDriver {
+		logger = *(zerodriver.NewDevelopmentLogger().Logger)
+		logger.Output(out)
+	} else {
+		logger = zerolog.New(out).With().Timestamp().Logger()
+	}
 	return logger
 }

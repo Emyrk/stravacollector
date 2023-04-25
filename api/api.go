@@ -75,6 +75,9 @@ func (api *API) StartWebhook(ctx context.Context) (<-chan *webhooks.WebhookEvent
 func (api *API) Routes() chi.Router {
 	r := chi.NewRouter()
 
+	r.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("ok"))
+	})
 	r.Route("/oauth2", func(r chi.Router) {
 		r.Use(httpmw.ExtractOauth2(api.OAuthConfig, nil))
 		r.Get("/callback", api.stravaOAuth2)

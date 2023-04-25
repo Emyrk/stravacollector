@@ -31,6 +31,7 @@ func serverCmd() *cobra.Command {
 		accessURL   string
 		config      string
 		writeConfig bool
+		stackDriver bool
 	)
 
 	v := viper.New()
@@ -168,7 +169,24 @@ func serverCmd() *cobra.Command {
 
 			// TODO: Check for server up
 
-			time.Sleep(time.Second)
+			timeoutCtx, timeoutCtxCancel := context.WithTimeout(ctx, time.Second*10)
+			defer timeoutCtxCancel()
+			for {
+				select {
+				case <-timeoutCtx.Done():
+					return fmt.Errorf("server did not start in time")
+				default:
+				}
+
+				resp, err := http.Get(fmt.Sprintf("%s/healthz", strings.TrimSuffix(accessURL, "/")))
+				if err == nil && resp.StatusCode == http.StatusOK {
+					break
+				}
+				time.Sleep(time.Millisecond * 100)
+			}
+			timeoutCtxCancel()
+
+			logger.Info().Msg("Server is up, starting webhook")
 			eq, err := srv.StartWebhook(ctx)
 			if err == nil {
 				logger.Info().Msgf("Webhook started to %s", srv.Events.Callback.String())
@@ -218,6 +236,7 @@ func serverCmd() *cobra.Command {
 	cmd.Flags().StringVar(&secret, "oauth-secret", "", "Strava oauth app secret")
 	cmd.Flags().StringVar(&clientID, "oauth-client-id", "", "Strava oauth app client ID")
 	cmd.Flags().StringVar(&dbURL, "db-url", "postgres://postgres:postgres@localhost:5432/strava?sslmode=disable", "Database URL")
+	cmd.Flags().BoolVar(&stackDriver, "stack-driver", false, "Export stack driver logs")
 
 	return cmd
 }
