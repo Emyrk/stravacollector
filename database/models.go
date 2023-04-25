@@ -113,6 +113,10 @@ type AthleteLoad struct {
 	LastLoadIncomplete         bool   `db:"last_load_incomplete" json:"last_load_incomplete"`
 	LastLoadError              string `db:"last_load_error" json:"last_load_error"`
 	ActivitesLoadedLastAttempt int32  `db:"activites_loaded_last_attempt" json:"activites_loaded_last_attempt"`
+	// The earliest activity found for the athlete
+	EarliestActivity time.Time `db:"earliest_activity" json:"earliest_activity"`
+	// Loading backwards is done
+	EarliestActivityDone bool `db:"earliest_activity_done" json:"earliest_activity_done"`
 }
 
 type AthleteLogin struct {

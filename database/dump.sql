@@ -77,7 +77,9 @@ CREATE TABLE athlete_load (
     last_load_attempt timestamp with time zone NOT NULL,
     last_load_incomplete boolean NOT NULL,
     last_load_error text NOT NULL,
-    activites_loaded_last_attempt integer NOT NULL
+    activites_loaded_last_attempt integer NOT NULL,
+    earliest_activity timestamp with time zone DEFAULT (now())::timestamp without time zone NOT NULL,
+    earliest_activity_done boolean DEFAULT false NOT NULL
 );
 
 COMMENT ON TABLE athlete_load IS 'Tracks loading athlete activities. Must be an authenticated athlete.';
@@ -87,6 +89,10 @@ COMMENT ON COLUMN athlete_load.last_backload_activity_start IS 'Timestamp start 
 COMMENT ON COLUMN athlete_load.last_load_attempt IS 'Timestamp of the last time the athlete was attempted to be loaded.';
 
 COMMENT ON COLUMN athlete_load.last_load_incomplete IS 'True if the last load was incomplete and needs more work to catch up.';
+
+COMMENT ON COLUMN athlete_load.earliest_activity IS 'The earliest activity found for the athlete';
+
+COMMENT ON COLUMN athlete_load.earliest_activity_done IS 'Loading backwards is done';
 
 CREATE TABLE athlete_logins (
     athlete_id bigint NOT NULL,

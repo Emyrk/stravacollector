@@ -102,12 +102,19 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 		Expiry:       athlete.OauthExpiry,
 	}))
 
-	activities, err := cli.GetActivities(ctx, strava.GetActivitiesParams{
-		// Load everything after the last backload activity we have saved.
-		After:   athlete.LastBackloadActivityStart,
+	params := strava.GetActivitiesParams{
 		Page:    0,
 		PerPage: 50,
-	})
+	}
+	backloadingHistory := false
+	if !athlete.EarliestActivityDone {
+		params.Before = athlete.EarliestActivity.Add(time.Second * -1)
+		backloadingHistory = true
+	} else {
+		params.After = athlete.LastBackloadActivityStart
+	}
+
+	activities, err := cli.GetActivities(ctx, params)
 	if err != nil {
 		return fmt.Errorf("get activities: %w", err)
 	}
@@ -126,7 +133,10 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 			LastBackloadActivityStart:  athlete.LastBackloadActivityStart,
 			LastLoadAttempt:            time.Now(),
 			LastLoadIncomplete:         false,
+			LastLoadError:              "",
 			ActivitesLoadedLastAttempt: 0,
+			EarliestActivity:           athlete.EarliestActivity,
+			EarliestActivityDone:       true,
 		})
 		if err != nil {
 			return fmt.Errorf("update athlete load: %w", err)
@@ -191,15 +201,24 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 				return fmt.Errorf("enqueue fetch activity: %w", err)
 			}
 		}
-		lastAct := activities[len(activities)-1]
+		first := activities[len(activities)-1]
+		lastActStart := activities[0].StartDate
+		if athlete.LastBackloadActivityStart.After(lastActStart) {
+			lastActStart = athlete.LastBackloadActivityStart
+		}
 
-		_, err := store.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
+		params := database.UpsertAthleteLoadParams{
 			AthleteID:                  athlete.AthleteID,
-			LastBackloadActivityStart:  lastAct.StartDate,
+			LastBackloadActivityStart:  lastActStart,
 			LastLoadAttempt:            time.Now(),
 			LastLoadIncomplete:         true,
 			ActivitesLoadedLastAttempt: int32(len(activities)),
-		})
+		}
+		if backloadingHistory {
+			params.EarliestActivity = first.StartDate
+			params.EarliestActivityDone = false
+		}
+		_, err := store.UpsertAthleteLoad(ctx, params)
 		if err != nil {
 			return fmt.Errorf("update athlete load after loading: %w", err)
 		}

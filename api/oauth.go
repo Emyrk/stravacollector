@@ -44,14 +44,22 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			return fmt.Errorf("upsert login: %w", err)
 		}
 
-		_, err = store.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
-			AthleteID:                 athlete.ID,
-			LastBackloadActivityStart: time.Time{},
-			LastLoadAttempt:           time.Time{},
-			LastLoadIncomplete:        false,
-		})
-		if err != nil {
-			return fmt.Errorf("upsert load: %w", err)
+		// Insert a load if we don't have one
+		if _, err := store.GetAthleteLoad(ctx, athlete.ID); err != nil {
+			_, err = store.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
+				AthleteID:                  athlete.ID,
+				LastBackloadActivityStart:  time.Time{},
+				LastLoadAttempt:            time.Time{},
+				LastLoadIncomplete:         false,
+				LastLoadError:              "",
+				ActivitesLoadedLastAttempt: 0,
+				// Start from the future
+				EarliestActivity:     time.Now().Add(time.Hour * 360),
+				EarliestActivityDone: false,
+			})
+			if err != nil {
+				return fmt.Errorf("upsert load: %w", err)
+			}
 		}
 
 		_, err = store.UpsertAthlete(ctx, database.UpsertAthleteParams{

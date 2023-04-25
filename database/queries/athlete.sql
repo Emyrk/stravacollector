@@ -1,3 +1,6 @@
+-- name: GetAthleteLoad :one
+SELECT * FROM athlete_load WHERE athlete_id = @athlete_id;
+
 -- name: UpsertAthleteLoad :one
 INSERT INTO
 	athlete_load(
@@ -6,10 +9,12 @@ INSERT INTO
 	    last_load_attempt,
 		last_load_incomplete,
 		last_load_error,
-		activites_loaded_last_attempt
+		activites_loaded_last_attempt,
+		earliest_activity,
+		earliest_activity_done
 	)
 VALUES
-	($1, $2, $3, $4, $5, $6)
+	($1, $2, $3, $4, $5, $6, $7, $8)
 ON CONFLICT
 	(athlete_id)
 DO UPDATE SET
@@ -17,7 +22,9 @@ DO UPDATE SET
 	last_load_attempt = $3,
 	last_load_incomplete = $4,
 	last_load_error = $5,
-	activites_loaded_last_attempt = $6
+	activites_loaded_last_attempt = $6,
+	earliest_activity = $7,
+	earliest_activity_done = $8
 RETURNING *;
 ;
 

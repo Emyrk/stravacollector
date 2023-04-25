@@ -11,6 +11,7 @@ import (
 type sqlcQuerier interface {
 	DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error)
 	GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error)
+	GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteLoad, error)
 	GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error)
 	GetAthleteNeedsLoad(ctx context.Context) (GetAthleteNeedsLoadRow, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
