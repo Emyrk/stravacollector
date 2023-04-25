@@ -75,7 +75,7 @@ func (api *API) StartWebhook(ctx context.Context) (<-chan *webhooks.WebhookEvent
 func (api *API) Routes() chi.Router {
 	r := chi.NewRouter()
 
-	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/myhealthz", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("ok"))
 	})
 	r.Route("/oauth2", func(r chi.Router) {

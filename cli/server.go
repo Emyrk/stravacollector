@@ -171,7 +171,7 @@ func serverCmd() *cobra.Command {
 
 			lastPrint := time.Time{}
 			for {
-				health := fmt.Sprintf("%s/healthz", strings.TrimSuffix(accessURL, "/"))
+				health := fmt.Sprintf("%s/myhealthz", strings.TrimSuffix(accessURL, "/"))
 				select {
 				case <-ctx.Done():
 					return fmt.Errorf("server did not start in time: %s", health)
