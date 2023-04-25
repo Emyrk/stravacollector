@@ -183,7 +183,12 @@ func (m *Manager) workMap() gue.WorkMap {
 
 func (m *Manager) jobStravaCheck(j *gue.Job, calls int64) error {
 	logger := jobLogFields(m.Logger, j)
-	ok, limitLogger := stravalimit.CanLogger(1, 100, logger)
+	iBuf, dBuf := int64(100), int64(500)
+	if stravalimit.NextDailyReset(time.Now()) < time.Hour*3 {
+		iBuf, dBuf = int64(50), int64(100)
+	}
+
+	ok, limitLogger := stravalimit.CanLogger(1, iBuf, dBuf, logger)
 	if !ok {
 		limitLogger.Error().
 			Msg("hitting strava rate limit, job going to fail and try again later")

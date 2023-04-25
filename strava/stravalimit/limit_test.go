@@ -1,6 +1,7 @@
 package stravalimit
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -33,4 +34,9 @@ func TestDay(t *testing.T) {
 		require.Truef(t, next != start, "next: %d, start: %d", next, start)
 		start = next
 	}
+}
+
+func TestTimeToMidnight(t *testing.T) {
+	now := time.Now()
+	fmt.Println(NextDailyReset(now))
 }

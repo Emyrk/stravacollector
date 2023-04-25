@@ -105,15 +105,17 @@ func Remaining() (int64, int64) {
 	return limiter.Remaining()
 }
 
-func CanLogger(calls, buffer int64, logger zerolog.Logger) (bool, zerolog.Logger) {
+func CanLogger(calls, buffer int64, dailyBuffer int64, logger zerolog.Logger) (bool, zerolog.Logger) {
 	i, d := Remaining()
 
-	if i < buffer+calls || d < buffer+calls {
+	if i < buffer+calls || d < dailyBuffer+calls {
 		return false, logger.With().
 			Int64("interval_remaining", i).
 			Int64("daily_remaining", d).
 			Int64("calls", calls).
-			Int64("buffer", buffer).
+			Int64("interval_buffer", buffer).
+			Int64("daily_buffer", dailyBuffer).
+
 			// Remove
 			Int64("interval_limit", limiter.IntervalLimit).
 			Int64("daily_limit", limiter.DailyLimit).
@@ -138,4 +140,10 @@ func splitInts(s string) (int64, int64) {
 		b = -1
 	}
 	return a, b
+}
+
+func NextDailyReset(now time.Time) time.Duration {
+	midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	midnight = midnight.AddDate(0, 0, 1)
+	return midnight.Sub(now)
 }

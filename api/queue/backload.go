@@ -27,7 +27,12 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 		default:
 		}
 
-		if ok, limitLogger := stravalimit.CanLogger(1, 100, logger); !ok {
+		iBuf, dBuf := int64(100), int64(500)
+		if stravalimit.NextDailyReset(time.Now()) < time.Hour*3 {
+			iBuf, dBuf = 50, 100
+		}
+
+		if ok, limitLogger := stravalimit.CanLogger(1, iBuf, dBuf, logger); !ok {
 			// Do not nuke our api rate limits
 			limitLogger.Error().
 				Msg("hitting strava rate limit, job will try again later")
