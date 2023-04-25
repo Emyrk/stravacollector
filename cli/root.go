@@ -5,6 +5,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/google/uuid"
+
 	"github.com/hirosassa/zerodriver"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
@@ -38,5 +40,6 @@ func getLogger(cmd *cobra.Command) zerolog.Logger {
 	} else {
 		logger = zerolog.New(out).With().Timestamp().Logger()
 	}
+	logger = logger.With().Str("deployment_id", uuid.NewString()).Logger()
 	return logger
 }
