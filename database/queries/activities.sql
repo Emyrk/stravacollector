@@ -85,11 +85,11 @@ INSERT INTO
 		average_watts, weighted_average_watts, kilojoules, max_watts,
 	    elev_high, elev_low, suffer_score, embed_token,
 	    segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts,
-	    premium_fetch, updated_at, map_id, calories
+	    premium_fetch, map_id, calories
 )
 VALUES
 	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-	 $18, $19, $20, $21, $22)
+	 $18, $19, $20, $21)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -112,7 +112,6 @@ ON CONFLICT
 	leaderboard_opt_out = $17,
 	num_segment_efforts = $18,
 	premium_fetch = $19,
-	updated_at = $20,
-	map_id = $21,
-	calories = $22
+	map_id = $20,
+	calories = $21
 RETURNING *;
