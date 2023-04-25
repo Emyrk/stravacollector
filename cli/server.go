@@ -184,7 +184,7 @@ func serverCmd() *cobra.Command {
 				logger.Info().
 					Str("url", health).
 					Msg("Server not responding, cannot start webhook")
-				time.Sleep(time.Millisecond * 100)
+				time.Sleep(time.Second * 1)
 			}
 
 			logger.Info().Msg("Server is up, starting webhook")
