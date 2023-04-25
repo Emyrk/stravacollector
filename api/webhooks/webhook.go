@@ -132,10 +132,12 @@ func (a *ActivityEvents) Attach(r chi.Router) chi.Router {
 				return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 					stravalimit.Update(r.Header)
 
+					challenge := r.URL.Query().Get("hub.challenge")
 					a.Logger.Info().
 						Str("remote_addr", r.RemoteAddr).
+						Str("challenge", challenge).
+						Interface("query", r.URL.Query()).
 						Msg("Strava webhook received")
-					challenge := r.URL.Query().Get("hub.challenge")
 					if challenge != "" {
 						token := r.URL.Query().Get("hub.verify_token")
 						if token != a.VerifyToken {
