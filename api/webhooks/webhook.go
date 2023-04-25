@@ -33,11 +33,14 @@ type ActivityEvents struct {
 	ID int
 }
 
-func NewActivityEvents(logger zerolog.Logger, cfg *oauth2.Config, db database.Store, accessURL *url.URL) *ActivityEvents {
-	vData := make([]byte, 32)
-	_, err := rand.Read(vData)
-	if err != nil {
-		panic(err)
+func NewActivityEvents(logger zerolog.Logger, cfg *oauth2.Config, db database.Store, accessURL *url.URL, verifyToken string) *ActivityEvents {
+	if verifyToken == "" {
+		vData := make([]byte, 32)
+		_, err := rand.Read(vData)
+		if err != nil {
+			panic(err)
+		}
+		hex.EncodeToString(vData)
 	}
 	callback := *accessURL
 	callback.Path = "/webhooks/strava"
@@ -45,7 +48,7 @@ func NewActivityEvents(logger zerolog.Logger, cfg *oauth2.Config, db database.St
 	return &ActivityEvents{
 		OauthConfig: cfg,
 		AccessURL:   accessURL,
-		VerifyToken: hex.EncodeToString(vData),
+		VerifyToken: verifyToken,
 		Callback:    &callback,
 		Logger:      logger,
 		DB:          db,

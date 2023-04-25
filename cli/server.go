@@ -32,6 +32,7 @@ func serverCmd() *cobra.Command {
 		config      string
 		writeConfig bool
 		stackDriver bool
+		verifyToken string
 	)
 
 	v := viper.New()
@@ -107,9 +108,10 @@ func serverCmd() *cobra.Command {
 					ClientID: clientID,
 					Secret:   secret,
 				},
-				DB:        db,
-				Logger:    logger.With().Str("component", "api").Logger(),
-				AccessURL: u,
+				DB:          db,
+				Logger:      logger.With().Str("component", "api").Logger(),
+				AccessURL:   u,
+				VerifyToken: verifyToken,
 			})
 			if err != nil {
 				return fmt.Errorf("create server: %w", err)
@@ -242,6 +244,7 @@ func serverCmd() *cobra.Command {
 	cmd.Flags().StringVar(&clientID, "oauth-client-id", "", "Strava oauth app client ID")
 	cmd.Flags().StringVar(&dbURL, "db-url", "postgres://postgres:postgres@localhost:5432/strava?sslmode=disable", "Database URL")
 	cmd.Flags().BoolVar(&stackDriver, "stack-driver", false, "Export stack driver logs")
+	cmd.Flags().StringVar(&verifyToken, "verify-token", "", "Strava webhook verify token")
 
 	return cmd
 }

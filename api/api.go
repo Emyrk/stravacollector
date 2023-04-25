@@ -19,10 +19,11 @@ import (
 )
 
 type Options struct {
-	OAuth     OAuthOptions
-	DB        database.Store
-	Logger    zerolog.Logger
-	AccessURL *url.URL
+	OAuth       OAuthOptions
+	DB          database.Store
+	Logger      zerolog.Logger
+	AccessURL   *url.URL
+	VerifyToken string
 }
 
 type OAuthOptions struct {
@@ -55,7 +56,7 @@ func New(opts Options) (*API, error) {
 			Scopes: []string{strings.Join([]string{"read", "read_all", "profile:read_all", "activity:read"}, ",")},
 		},
 	}
-	api.Events = webhooks.NewActivityEvents(opts.Logger, api.OAuthConfig, api.Opts.DB, opts.AccessURL)
+	api.Events = webhooks.NewActivityEvents(opts.Logger, api.OAuthConfig, api.Opts.DB, opts.AccessURL, opts.VerifyToken)
 	r := api.Routes()
 	r = api.Events.Attach(r)
 	api.Handler = r
