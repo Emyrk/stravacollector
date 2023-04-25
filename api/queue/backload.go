@@ -53,6 +53,8 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 				LastLoadIncomplete:         false,
 				LastLoadError:              err.Error(),
 				ActivitesLoadedLastAttempt: 0,
+				EarliestActivity:           athlete.EarliestActivity,
+				EarliestActivityDone:       athlete.EarliestActivityDone,
 			})
 			logger.Error().
 				AnErr("db_error", dbErr).
@@ -77,6 +79,10 @@ func (m *Manager) athleteToLoad(ctx context.Context) *database.GetAthleteNeedsLo
 
 	// If the athlete is incomplete, always return
 	if athlete.LastLoadIncomplete {
+		return &athlete
+	}
+
+	if !athlete.EarliestActivityDone {
 		return &athlete
 	}
 
