@@ -93,7 +93,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			UploadID:           activity.UploadID,
 			ExternalID:         activity.ExternalID,
 			Name:               activity.Name,
-			Distance:           0,
+			Distance:           activity.Distance,
 			MovingTime:         activity.MovingTime,
 			ElapsedTime:        activity.ElapsedTime,
 			TotalElevationGain: activity.TotalElevationGain,
