@@ -169,12 +169,10 @@ func serverCmd() *cobra.Command {
 
 			// TODO: Check for server up
 
-			timeoutCtx, timeoutCtxCancel := context.WithTimeout(ctx, time.Second*10)
-			defer timeoutCtxCancel()
 			for {
 				health := fmt.Sprintf("%s/healthz", strings.TrimSuffix(accessURL, "/"))
 				select {
-				case <-timeoutCtx.Done():
+				case <-ctx.Done():
 					return fmt.Errorf("server did not start in time: %s", health)
 				default:
 				}
@@ -183,9 +181,11 @@ func serverCmd() *cobra.Command {
 				if err == nil && resp.StatusCode == http.StatusOK {
 					break
 				}
+				logger.Info().
+					Str("url", health).
+					Msg("Server not responding, cannot start webhook")
 				time.Sleep(time.Millisecond * 100)
 			}
-			timeoutCtxCancel()
 
 			logger.Info().Msg("Server is up, starting webhook")
 			eq, err := srv.StartWebhook(ctx)
