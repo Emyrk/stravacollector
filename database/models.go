@@ -76,6 +76,8 @@ type ActivitySummary struct {
 	PrCount            int32     `db:"pr_count" json:"pr_count"`
 	TotalPhotoCount    int32     `db:"total_photo_count" json:"total_photo_count"`
 	UpdatedAt          time.Time `db:"updated_at" json:"updated_at"`
+	AverageHeartrate   float64   `db:"average_heartrate" json:"average_heartrate"`
+	MaxHeartrate       float64   `db:"max_heartrate" json:"max_heartrate"`
 }
 
 type Athlete struct {

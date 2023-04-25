@@ -179,6 +179,8 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 				HasHeartrate:       act.HasHeartrate,
 				PrCount:            act.PrCount,
 				TotalPhotoCount:    act.TotalPhotoCount,
+				AverageHeartrate:   act.AverageHeartrate,
+				MaxHeartrate:       act.MaxHeartrate,
 			})
 			if err != nil {
 				return fmt.Errorf("upsert activity summary (%d): %w", act.ID, err)

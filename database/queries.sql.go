@@ -19,7 +19,7 @@ DELETE FROM
 	activity_summary
 WHERE
 	id = $1
-RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at
+RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate
 `
 
 func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error) {
@@ -61,13 +61,15 @@ func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySumm
 		&i.PrCount,
 		&i.TotalPhotoCount,
 		&i.UpdatedAt,
+		&i.AverageHeartrate,
+		&i.MaxHeartrate,
 	)
 	return i, err
 }
 
 const getActivitySummary = `-- name: GetActivitySummary :one
 SELECT
-	id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at
+	id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate
 FROM
     activity_summary
 WHERE
@@ -113,6 +115,8 @@ func (q *sqlQuerier) GetActivitySummary(ctx context.Context, id int64) (Activity
 		&i.PrCount,
 		&i.TotalPhotoCount,
 		&i.UpdatedAt,
+		&i.AverageHeartrate,
+		&i.MaxHeartrate,
 	)
 	return i, err
 }
@@ -263,11 +267,12 @@ INSERT INTO
 	    start_date_local, timezone, utc_offset, achievement_count,
 	    kudos_count, comment_count, athlete_count, photo_count, map_id,
 	    trainer, commute, manual, private, flagged, gear_id, average_speed,
-	    max_speed, device_watts, has_heartrate, pr_count, total_photo_count
+	    max_speed, device_watts, has_heartrate, pr_count, total_photo_count,
+	    average_heartrate, max_heartrate
 )
 VALUES
 	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-	 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34)
+	 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -304,8 +309,10 @@ ON CONFLICT
 		device_watts = $31,
 		has_heartrate = $32,
 		pr_count = $33,
-		total_photo_count = $34
-RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at
+		total_photo_count = $34,
+		average_heartrate = $35,
+		max_heartrate = $36
+RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate
 `
 
 type UpsertActivitySummaryParams struct {
@@ -343,6 +350,8 @@ type UpsertActivitySummaryParams struct {
 	HasHeartrate       bool      `db:"has_heartrate" json:"has_heartrate"`
 	PrCount            int32     `db:"pr_count" json:"pr_count"`
 	TotalPhotoCount    int32     `db:"total_photo_count" json:"total_photo_count"`
+	AverageHeartrate   float64   `db:"average_heartrate" json:"average_heartrate"`
+	MaxHeartrate       float64   `db:"max_heartrate" json:"max_heartrate"`
 }
 
 func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivitySummaryParams) (ActivitySummary, error) {
@@ -381,6 +390,8 @@ func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivi
 		arg.HasHeartrate,
 		arg.PrCount,
 		arg.TotalPhotoCount,
+		arg.AverageHeartrate,
+		arg.MaxHeartrate,
 	)
 	var i ActivitySummary
 	err := row.Scan(
@@ -419,6 +430,8 @@ func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivi
 		&i.PrCount,
 		&i.TotalPhotoCount,
 		&i.UpdatedAt,
+		&i.AverageHeartrate,
+		&i.MaxHeartrate,
 	)
 	return i, err
 }
@@ -457,7 +470,7 @@ ON
 ORDER BY
     -- Athletes with oldest load attempt first.
 	(last_load_incomplete, last_load_attempt)
-LIMIT 10
+LIMIT 1
 `
 
 type GetAthleteNeedsLoadRow struct {

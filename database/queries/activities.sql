@@ -30,11 +30,12 @@ INSERT INTO
 	    start_date_local, timezone, utc_offset, achievement_count,
 	    kudos_count, comment_count, athlete_count, photo_count, map_id,
 	    trainer, commute, manual, private, flagged, gear_id, average_speed,
-	    max_speed, device_watts, has_heartrate, pr_count, total_photo_count
+	    max_speed, device_watts, has_heartrate, pr_count, total_photo_count,
+	    average_heartrate, max_heartrate
 )
 VALUES
 	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-	 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34)
+	 $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -71,7 +72,9 @@ ON CONFLICT
 		device_watts = $31,
 		has_heartrate = $32,
 		pr_count = $33,
-		total_photo_count = $34
+		total_photo_count = $34,
+		average_heartrate = $35,
+		max_heartrate = $36
 RETURNING *;
 
 -- name: UpsertActivityDetail :one

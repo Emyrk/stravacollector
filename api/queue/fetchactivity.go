@@ -93,11 +93,13 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			UploadID:           activity.UploadID,
 			ExternalID:         activity.ExternalID,
 			Name:               activity.Name,
+			Distance:           0,
 			MovingTime:         activity.MovingTime,
 			ElapsedTime:        activity.ElapsedTime,
 			TotalElevationGain: activity.TotalElevationGain,
 			ActivityType:       activity.Type,
 			SportType:          activity.SportType,
+			WorkoutType:        activity.WorkoutType,
 			StartDate:          activity.StartDate,
 			StartDateLocal:     activity.StartDateLocal,
 			Timezone:           activity.Timezone,
@@ -120,7 +122,8 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			HasHeartrate:       activity.HasHeartrate,
 			PrCount:            activity.PrCount,
 			TotalPhotoCount:    activity.TotalPhotoCount,
-			WorkoutType:        activity.WorkoutType,
+			AverageHeartrate:   activity.AverageHeartrate,
+			MaxHeartrate:       activity.MaxHeartrate,
 		})
 		if err != nil {
 			return fmt.Errorf("upsert activity summary: %w", err)

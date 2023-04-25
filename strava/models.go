@@ -60,7 +60,7 @@ type ActivitySummary struct {
 	DeviceWatts          bool    `json:"device_watts"`
 	HasHeartrate         bool    `json:"has_heartrate"`
 	AverageHeartrate     float64 `json:"average_heartrate"`
-	MaxHeartrate         int32   `json:"max_heartrate"`
+	MaxHeartrate         float64 `json:"max_heartrate"`
 	MaxWatts             float64 `json:"max_watts"`
 	PrCount              int32   `json:"pr_count"`
 	TotalPhotoCount      int32   `json:"total_photo_count"`
@@ -112,6 +112,8 @@ type DetailedActivity struct {
 	Kilojoules           float64                 `json:"kilojoules"`
 	DeviceWatts          bool                    `json:"device_watts"`
 	HasHeartrate         bool                    `json:"has_heartrate"`
+	AverageHeartrate     float64                 `json:"average_heartrate"`
+	MaxHeartrate         float64                 `json:"max_heartrate"`
 	MaxWatts             float64                 `json:"max_watts"`
 	ElevHigh             float64                 `json:"elev_high"`
 	ElevLow              float64                 `json:"elev_low"`

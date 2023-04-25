@@ -64,7 +64,9 @@ CREATE TABLE activity_summary (
     has_heartrate boolean NOT NULL,
     pr_count integer NOT NULL,
     total_photo_count integer NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    average_heartrate double precision NOT NULL,
+    max_heartrate double precision NOT NULL
 );
 
 COMMENT ON TABLE activity_summary IS 'Activity is missing many detailed fields';
