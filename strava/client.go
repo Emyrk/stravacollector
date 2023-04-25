@@ -41,7 +41,6 @@ type GetActivitiesParams struct {
 }
 
 func (c *Client) GetActivities(ctx context.Context, params GetActivitiesParams) ([]ActivitySummary, error) {
-	fmt.Println("Get activities")
 	vals := url.Values{}
 	if !params.Before.IsZero() && params.Before.Unix() > 0 {
 		vals.Set("before", fmt.Sprintf("%d", params.Before.Unix()))
@@ -65,7 +64,6 @@ func (c *Client) GetActivities(ctx context.Context, params GetActivitiesParams) 
 }
 
 func (c *Client) GetActivity(ctx context.Context, activityID int64, includeEfforts bool) (DetailedActivity, error) {
-	fmt.Println("Get activity")
 	resp, err := c.Request(ctx, http.MethodGet, fmt.Sprintf("/activities/%d", activityID), nil, url.Values{
 		"include_all_efforts": []string{strconv.FormatBool(includeEfforts)},
 	})
@@ -78,7 +76,6 @@ func (c *Client) GetActivity(ctx context.Context, activityID int64, includeEffor
 }
 
 func (c *Client) GetAuthenticatedAthelete(ctx context.Context) (Athlete, error) {
-	fmt.Println("Get athlete")
 	resp, err := c.Request(ctx, http.MethodGet, "/athlete", nil, nil)
 	if err != nil {
 		return Athlete{}, fmt.Errorf("request: %w", err)
@@ -89,7 +86,6 @@ func (c *Client) GetAuthenticatedAthelete(ctx context.Context) (Athlete, error) 
 }
 
 func (c *Client) AthleteSegmentEfforts(ctx context.Context, segmentID int, perPage int) ([]DetailedSegmentEffort, error) {
-	fmt.Println("Get athlete segment efforts")
 	var efforts []DetailedSegmentEffort
 	resp, err := c.Request(ctx, http.MethodGet, "/segment_efforts", nil, url.Values{
 		"segment_id": []string{fmt.Sprintf("%d", segmentID)},

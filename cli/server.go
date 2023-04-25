@@ -172,13 +172,14 @@ func serverCmd() *cobra.Command {
 			timeoutCtx, timeoutCtxCancel := context.WithTimeout(ctx, time.Second*10)
 			defer timeoutCtxCancel()
 			for {
+				health := fmt.Sprintf("%s/healthz", strings.TrimSuffix(accessURL, "/"))
 				select {
 				case <-timeoutCtx.Done():
-					return fmt.Errorf("server did not start in time")
+					return fmt.Errorf("server did not start in time: %s", health)
 				default:
 				}
 
-				resp, err := http.Get(fmt.Sprintf("%s/healthz", strings.TrimSuffix(accessURL, "/")))
+				resp, err := http.Get(health)
 				if err == nil && resp.StatusCode == http.StatusOK {
 					break
 				}
