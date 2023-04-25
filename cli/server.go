@@ -169,6 +169,7 @@ func serverCmd() *cobra.Command {
 
 			// TODO: Check for server up
 
+			lastPrint := time.Time{}
 			for {
 				health := fmt.Sprintf("%s/healthz", strings.TrimSuffix(accessURL, "/"))
 				select {
@@ -181,9 +182,12 @@ func serverCmd() *cobra.Command {
 				if err == nil && resp.StatusCode == http.StatusOK {
 					break
 				}
-				logger.Info().
-					Str("url", health).
-					Msg("Server not responding, cannot start webhook")
+				if time.Since(lastPrint) > time.Second*10 {
+					logger.Info().
+						Str("url", health).
+						Msg("Server not responding, cannot start webhook")
+					lastPrint = time.Now()
+				}
 				time.Sleep(time.Second * 1)
 			}
 

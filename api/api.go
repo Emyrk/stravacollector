@@ -57,7 +57,7 @@ func New(opts Options) (*API, error) {
 	}
 	api.Events = webhooks.NewActivityEvents(opts.Logger, api.OAuthConfig, api.Opts.DB, opts.AccessURL)
 	r := api.Routes()
-	api.Events.Attach(r)
+	r = api.Events.Attach(r)
 	api.Handler = r
 
 	return api, nil
@@ -75,7 +75,7 @@ func (api *API) StartWebhook(ctx context.Context) (<-chan *webhooks.WebhookEvent
 func (api *API) Routes() chi.Router {
 	r := chi.NewRouter()
 
-	r.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("ok"))
 	})
 	r.Route("/oauth2", func(r chi.Router) {
