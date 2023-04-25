@@ -2,7 +2,9 @@ package queue
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"sync/atomic"
 	"time"
 
 	"github.com/Emyrk/strava/strava/stravalimit"
@@ -27,6 +29,10 @@ const (
 	stravaUpdateActivityQueue = "queue_strava_update_activity"
 )
 
+var (
+	rateLimitJobFail = errors.New("hitting strava rate limit, failing job to try later")
+)
+
 type Options struct {
 	DBURL    string
 	Logger   zerolog.Logger
@@ -47,7 +53,8 @@ type Manager struct {
 	Logger   zerolog.Logger
 	OAuthCfg *oauth2.Config
 
-	cancel context.CancelFunc
+	cancel              context.CancelFunc
+	stravaLimitDebounce atomic.Pointer[time.Time]
 }
 
 func New(ctx context.Context, opts Options) (*Manager, error) {
@@ -90,6 +97,9 @@ func (m *Manager) failedJobHook() func(ctx context.Context, j *gue.Job, err erro
 	return func(ctx context.Context, j *gue.Job, err error) {
 		// TODO: If this is a strava too many requests, we need to sleep.
 		if err != nil {
+			if errors.Is(err, rateLimitJobFail) {
+				return
+			}
 			m.Logger.Error().
 				Err(err).
 				Str("job_id", j.ID.String()).
@@ -190,9 +200,14 @@ func (m *Manager) jobStravaCheck(j *gue.Job, calls int64) error {
 
 	ok, limitLogger := stravalimit.CanLogger(1, iBuf, dBuf, logger)
 	if !ok {
-		limitLogger.Error().
-			Msg("hitting strava rate limit, job going to fail and try again later")
-		return fmt.Errorf("hitting strava rate limit, failing job to try later")
+		last := m.stravaLimitDebounce.Load()
+		now := time.Now()
+		if last == nil || now.Sub(*last) > time.Minute*5 {
+			limitLogger.Error().
+				Msg("hitting strava rate limit, job going to fail and try again later")
+			m.stravaLimitDebounce.Store(&now)
+		}
+		return rateLimitJobFail
 	}
 	return nil
 }
