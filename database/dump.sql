@@ -132,6 +132,13 @@ CREATE TABLE athletes (
 
 COMMENT ON COLUMN athletes.measurement_preference IS 'feet or meters';
 
+CREATE TABLE competitive_routes (
+    name text NOT NULL,
+    display_name text NOT NULL,
+    description text NOT NULL,
+    segments bigint[] NOT NULL
+);
+
 CREATE TABLE gue_jobs (
     job_id text NOT NULL,
     priority smallint NOT NULL,
@@ -142,13 +149,6 @@ CREATE TABLE gue_jobs (
     last_error text,
     queue text NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
-);
-
-CREATE TABLE maps (
-    id text NOT NULL,
-    polyline text NOT NULL,
-    summary_polyline text NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
 
@@ -176,6 +176,51 @@ COMMENT ON COLUMN segment_efforts.distance IS 'Distance is in meters';
 
 COMMENT ON COLUMN segment_efforts.activities_id IS 'FK to activities table';
 
+CREATE VIEW hugel_activities AS
+ SELECT merged.activities_id,
+    merged.segment_ids,
+    merged.sum,
+    merged.json_agg
+   FROM ( SELECT hugel_efforts.activities_id,
+            array_agg(hugel_efforts.segment_id) AS segment_ids,
+            sum(hugel_efforts.elapsed_time) AS sum,
+            json_agg(json_build_object('effort_id', hugel_efforts.id, 'start_date', hugel_efforts.start_date, 'segment_id', hugel_efforts.segment_id, 'elapsed_time', hugel_efforts.elapsed_time, 'moving_time', hugel_efforts.moving_time, 'device_watts', hugel_efforts.device_watts, 'average_watts', hugel_efforts.average_watts)) AS json_agg
+           FROM ( SELECT DISTINCT ON (segment_efforts.activities_id, segment_efforts.segment_id) segment_efforts.id,
+                    segment_efforts.athlete_id,
+                    segment_efforts.segment_id,
+                    segment_efforts.name,
+                    segment_efforts.elapsed_time,
+                    segment_efforts.moving_time,
+                    segment_efforts.start_date,
+                    segment_efforts.start_date_local,
+                    segment_efforts.distance,
+                    segment_efforts.start_index,
+                    segment_efforts.end_index,
+                    segment_efforts.device_watts,
+                    segment_efforts.average_watts,
+                    segment_efforts.kom_rank,
+                    segment_efforts.pr_rank,
+                    segment_efforts.updated_at,
+                    segment_efforts.activities_id
+                   FROM segment_efforts
+                  WHERE (segment_efforts.segment_id = ANY (ARRAY( SELECT competitive_routes.segments
+                           FROM competitive_routes
+                          WHERE (competitive_routes.name = 'das-hugel'::text))))
+                  ORDER BY segment_efforts.activities_id, segment_efforts.segment_id, segment_efforts.elapsed_time) hugel_efforts
+          GROUP BY hugel_efforts.activities_id) merged
+  WHERE (merged.segment_ids @> ARRAY( SELECT competitive_routes.segments
+           FROM competitive_routes
+          WHERE (competitive_routes.name = 'das-hugel'::text)));
+
+COMMENT ON VIEW hugel_activities IS 'This view contains all activities that classify as a "hugel" and their best efforts on each segment.';
+
+CREATE TABLE maps (
+    id text NOT NULL,
+    polyline text NOT NULL,
+    summary_polyline text NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
 CREATE TABLE segments (
     id integer NOT NULL,
     name text NOT NULL
@@ -201,6 +246,9 @@ ALTER TABLE ONLY athlete_logins
 
 ALTER TABLE ONLY athletes
     ADD CONSTRAINT athletes_pkey1 PRIMARY KEY (id);
+
+ALTER TABLE ONLY competitive_routes
+    ADD CONSTRAINT competitive_routes_pkey PRIMARY KEY (name);
 
 ALTER TABLE ONLY gue_jobs
     ADD CONSTRAINT gue_jobs_pkey PRIMARY KEY (job_id);

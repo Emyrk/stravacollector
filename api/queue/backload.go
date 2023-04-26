@@ -157,7 +157,7 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 
 	err = m.DB.InTx(func(store database.Store) error {
 		for _, act := range activities {
-			_, err := m.DB.UpsertMapSummary(ctx, database.UpsertMapSummaryParams{
+			_, err := store.UpsertMapSummary(ctx, database.UpsertMapSummaryParams{
 				ID:              act.Map.ID,
 				SummaryPolyline: act.Map.SummaryPolyline,
 			})
@@ -165,7 +165,7 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 				return fmt.Errorf("upsert map summary (%d): %w", act.ID, err)
 			}
 
-			_, err = m.DB.UpsertActivitySummary(ctx, database.UpsertActivitySummaryParams{
+			_, err = store.UpsertActivitySummary(ctx, database.UpsertActivitySummaryParams{
 				ID:                 act.ID,
 				AthleteID:          act.Athlete.ID,
 				UploadID:           act.UploadID,

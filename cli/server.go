@@ -24,15 +24,16 @@ import (
 
 func serverCmd() *cobra.Command {
 	var (
-		dbURL       string
-		secret      string
-		clientID    string
-		port        int
-		accessURL   string
-		config      string
-		writeConfig bool
-		stackDriver bool
-		verifyToken string
+		dbURL           string
+		secret          string
+		clientID        string
+		port            int
+		accessURL       string
+		config          string
+		writeConfig     bool
+		stackDriver     bool
+		verifyToken     string
+		disableWebhooks bool
 	)
 
 	v := viper.New()
@@ -169,51 +170,51 @@ func serverCmd() *cobra.Command {
 				}
 			}()
 
-			// TODO: Check for server up
-
-			lastPrint := time.Time{}
-			for {
-				health := fmt.Sprintf("%s/myhealthz", strings.TrimSuffix(accessURL, "/"))
-				select {
-				case <-ctx.Done():
-					return fmt.Errorf("server did not start in time: %s", health)
-				default:
-				}
-
-				resp, err := http.Get(health)
-				if err == nil && resp.StatusCode == http.StatusOK {
-					break
-				}
-				if time.Since(lastPrint) > time.Second*10 {
-					logger.Info().
-						Str("url", health).
-						Msg("Server not responding, cannot start webhook")
-					lastPrint = time.Now()
-				}
-				time.Sleep(time.Second * 1)
-			}
-
-			logger.Info().Msg("Server is up, starting webhook")
-			eq, err := srv.StartWebhook(ctx)
-			if err == nil {
-				logger.Info().Msgf("Webhook started to %s", srv.Events.Callback.String())
-				go func() {
-					manager.HandleWebhookEvents(ctx, eq)
-				}()
-			}
-			if err != nil {
-				now := time.Now()
-				// This sucks but prevents endless loop that uses all our api limits.
-				go func() {
-					for {
-						logger.Error().
-							Str("callback", srv.Events.Callback.String()).
-							Str("time", now.Format(time.RFC3339)).
-							Err(err).
-							Msg("Webhook failed to start, restart the server to try again")
-						time.Sleep(time.Second * 10)
+			if !disableWebhooks {
+				lastPrint := time.Time{}
+				for {
+					health := fmt.Sprintf("%s/myhealthz", strings.TrimSuffix(accessURL, "/"))
+					select {
+					case <-ctx.Done():
+						return fmt.Errorf("server did not start in time: %s", health)
+					default:
 					}
-				}()
+
+					resp, err := http.Get(health)
+					if err == nil && resp.StatusCode == http.StatusOK {
+						break
+					}
+					if time.Since(lastPrint) > time.Second*10 {
+						logger.Info().
+							Str("url", health).
+							Msg("Server not responding, cannot start webhook")
+						lastPrint = time.Now()
+					}
+					time.Sleep(time.Second * 1)
+				}
+
+				logger.Info().Msg("Server is up, starting webhook")
+				eq, err := srv.StartWebhook(ctx)
+				if err == nil {
+					logger.Info().Msgf("Webhook started to %s", srv.Events.Callback.String())
+					go func() {
+						manager.HandleWebhookEvents(ctx, eq)
+					}()
+				}
+				if err != nil {
+					now := time.Now()
+					// This sucks but prevents endless loop that uses all our api limits.
+					go func() {
+						for {
+							logger.Error().
+								Str("callback", srv.Events.Callback.String()).
+								Str("time", now.Format(time.RFC3339)).
+								Err(err).
+								Msg("Webhook failed to start, restart the server to try again")
+							time.Sleep(time.Second * 10)
+						}
+					}()
+				}
 			}
 
 			c := make(chan os.Signal, 1)
@@ -245,6 +246,7 @@ func serverCmd() *cobra.Command {
 	cmd.Flags().StringVar(&dbURL, "db-url", "postgres://postgres:postgres@localhost:5432/strava?sslmode=disable", "Database URL")
 	cmd.Flags().BoolVar(&stackDriver, "stack-driver", false, "Export stack driver logs")
 	cmd.Flags().StringVar(&verifyToken, "verify-token", "", "Strava webhook verify token")
+	cmd.Flags().BoolVar(&disableWebhooks, "disable-webhooks", false, "Useful for running a server without a public url")
 
 	return cmd
 }
