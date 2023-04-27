@@ -14,10 +14,14 @@ database/querier.go: database/sqlc.yaml database/dump.sql $(wildcard database/qu
 site-install:
 	cd site/strava-frontend && npm install
 
-site: site/strava-frontend/package.json $(shell find ./site/strava-frontend $(FIND_EXCLUSIONS) -type f \( -name '*.ts' -o -name '*.tsx' \))
+site: site/strava-frontend/src/api/typesGenerated.ts site/strava-frontend/package.json $(shell find ./site/strava-frontend $(FIND_EXCLUSIONS) -type f \( -name '*.ts' -o -name '*.tsx' \))
 	cd site/strava-frontend && npm run build
 
 .PHONY: site site-install
+
+site/strava-frontend/src/api/typesGenerated.ts: scripts/apitypings/main.go $(shell find ./api/modelsdk $(FIND_EXCLUSIONS) -type f -name '*.go')
+	go run scripts/apitypings/main.go > site/strava-frontend/src/api/typesGenerated.ts
+	cd site
 
 build:
 	go build -o bin/strava
