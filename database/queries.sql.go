@@ -820,6 +820,154 @@ func (q *sqlQuerier) UpsertMapSummary(ctx context.Context, arg UpsertMapSummaryP
 	return i, err
 }
 
+const bestRouteEfforts = `-- name: BestRouteEfforts :many
+SELECT
+	merged.activities_id, segment_ids, sum, json_agg, hugel_efforts.id, hugel_efforts.athlete_id, hugel_efforts.segment_id, hugel_efforts.name, hugel_efforts.elapsed_time, hugel_efforts.moving_time, hugel_efforts.start_date, hugel_efforts.start_date_local, hugel_efforts.distance, hugel_efforts.start_index, hugel_efforts.end_index, hugel_efforts.device_watts, hugel_efforts.average_watts, hugel_efforts.kom_rank, hugel_efforts.pr_rank, hugel_efforts.updated_at, hugel_efforts.activities_id, segment_efforts.id, segment_efforts.athlete_id, segment_efforts.segment_id, segment_efforts.name, segment_efforts.elapsed_time, segment_efforts.moving_time, segment_efforts.start_date, segment_efforts.start_date_local, segment_efforts.distance, segment_efforts.start_index, segment_efforts.end_index, segment_efforts.device_watts, segment_efforts.average_watts, segment_efforts.kom_rank, segment_efforts.pr_rank, segment_efforts.updated_at, segment_efforts.activities_id
+FROM
+	(
+		SELECT
+			hugel_efforts.activities_id,
+			-- segment_ids is all the segments this activity has efforts on.
+			-- Only segments in the provided list are considered.
+			array_agg(segment_id) AS segment_ids,
+			-- Sum is the total time of all the efforts.
+			sum(elapsed_time),
+			-- A json struct containing each effort details.
+			json_agg(
+					json_build_object(
+					    	'effort_id', id,
+							'segment_id', segment_id,
+							'elapsed_time', elapsed_time,
+							'device_watts', device_watts,
+					    	'average_watts', average_watts
+						)
+				)
+		FROM
+			(
+				-- This query returns only the best effort per (segment_id, activity_id)
+				SELECT DISTINCT ON (activities_id, segment_id)
+					id, athlete_id, segment_id, name, elapsed_time, moving_time, start_date, start_date_local, distance, start_index, end_index, device_watts, average_watts, kom_rank, pr_rank, updated_at, activities_id
+				FROM
+					segment_efforts
+				WHERE
+				    -- ARRAY[629046, 6744304, 910045, 628785, 629546, 628842]
+					segment_id = any($1 :: bigint[])
+				ORDER BY
+					activities_id, segment_id, elapsed_time ASC
+			) as hugel_efforts
+			-- Each activity will now be represented by a single aggregated row
+		GROUP BY
+			hugel_efforts.activities_id
+	) AS merged
+WHERE
+	segment_ids @> $1 :: bigint[]
+`
+
+type BestRouteEffortsRow struct {
+	ActivitiesID     int64           `db:"activities_id" json:"activities_id"`
+	SegmentIds       interface{}     `db:"segment_ids" json:"segment_ids"`
+	Sum              int64           `db:"sum" json:"sum"`
+	JsonAgg          json.RawMessage `db:"json_agg" json:"json_agg"`
+	ID               int64           `db:"id" json:"id"`
+	AthleteID        int64           `db:"athlete_id" json:"athlete_id"`
+	SegmentID        int64           `db:"segment_id" json:"segment_id"`
+	Name             string          `db:"name" json:"name"`
+	ElapsedTime      float64         `db:"elapsed_time" json:"elapsed_time"`
+	MovingTime       float64         `db:"moving_time" json:"moving_time"`
+	StartDate        time.Time       `db:"start_date" json:"start_date"`
+	StartDateLocal   time.Time       `db:"start_date_local" json:"start_date_local"`
+	Distance         float64         `db:"distance" json:"distance"`
+	StartIndex       int32           `db:"start_index" json:"start_index"`
+	EndIndex         int32           `db:"end_index" json:"end_index"`
+	DeviceWatts      bool            `db:"device_watts" json:"device_watts"`
+	AverageWatts     float64         `db:"average_watts" json:"average_watts"`
+	KomRank          sql.NullInt32   `db:"kom_rank" json:"kom_rank"`
+	PrRank           sql.NullInt32   `db:"pr_rank" json:"pr_rank"`
+	UpdatedAt        time.Time       `db:"updated_at" json:"updated_at"`
+	ActivitiesID_2   int64           `db:"activities_id_2" json:"activities_id_2"`
+	ID_2             int64           `db:"id_2" json:"id_2"`
+	AthleteID_2      int64           `db:"athlete_id_2" json:"athlete_id_2"`
+	SegmentID_2      int64           `db:"segment_id_2" json:"segment_id_2"`
+	Name_2           string          `db:"name_2" json:"name_2"`
+	ElapsedTime_2    float64         `db:"elapsed_time_2" json:"elapsed_time_2"`
+	MovingTime_2     float64         `db:"moving_time_2" json:"moving_time_2"`
+	StartDate_2      time.Time       `db:"start_date_2" json:"start_date_2"`
+	StartDateLocal_2 time.Time       `db:"start_date_local_2" json:"start_date_local_2"`
+	Distance_2       float64         `db:"distance_2" json:"distance_2"`
+	StartIndex_2     int32           `db:"start_index_2" json:"start_index_2"`
+	EndIndex_2       int32           `db:"end_index_2" json:"end_index_2"`
+	DeviceWatts_2    bool            `db:"device_watts_2" json:"device_watts_2"`
+	AverageWatts_2   float64         `db:"average_watts_2" json:"average_watts_2"`
+	KomRank_2        sql.NullInt32   `db:"kom_rank_2" json:"kom_rank_2"`
+	PrRank_2         sql.NullInt32   `db:"pr_rank_2" json:"pr_rank_2"`
+	UpdatedAt_2      time.Time       `db:"updated_at_2" json:"updated_at_2"`
+	ActivitiesID_3   int64           `db:"activities_id_3" json:"activities_id_3"`
+}
+
+// BestRouteEfforts returns all activities that have efforts on all the provided segments.
+// The returned activities include the best effort for each segment.
+func (q *sqlQuerier) BestRouteEfforts(ctx context.Context, expectedSegments []int64) ([]BestRouteEffortsRow, error) {
+	rows, err := q.db.QueryContext(ctx, bestRouteEfforts, pq.Array(expectedSegments))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []BestRouteEffortsRow
+	for rows.Next() {
+		var i BestRouteEffortsRow
+		if err := rows.Scan(
+			&i.ActivitiesID,
+			&i.SegmentIds,
+			&i.Sum,
+			&i.JsonAgg,
+			&i.ID,
+			&i.AthleteID,
+			&i.SegmentID,
+			&i.Name,
+			&i.ElapsedTime,
+			&i.MovingTime,
+			&i.StartDate,
+			&i.StartDateLocal,
+			&i.Distance,
+			&i.StartIndex,
+			&i.EndIndex,
+			&i.DeviceWatts,
+			&i.AverageWatts,
+			&i.KomRank,
+			&i.PrRank,
+			&i.UpdatedAt,
+			&i.ActivitiesID_2,
+			&i.ID_2,
+			&i.AthleteID_2,
+			&i.SegmentID_2,
+			&i.Name_2,
+			&i.ElapsedTime_2,
+			&i.MovingTime_2,
+			&i.StartDate_2,
+			&i.StartDateLocal_2,
+			&i.Distance_2,
+			&i.StartIndex_2,
+			&i.EndIndex_2,
+			&i.DeviceWatts_2,
+			&i.AverageWatts_2,
+			&i.KomRank_2,
+			&i.PrRank_2,
+			&i.UpdatedAt_2,
+			&i.ActivitiesID_3,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const upsertSegmentEffort = `-- name: UpsertSegmentEffort :one
 INSERT INTO
 	segment_efforts(
@@ -910,6 +1058,128 @@ func (q *sqlQuerier) UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentE
 		&i.PrRank,
 		&i.UpdatedAt,
 		&i.ActivitiesID,
+	)
+	return i, err
+}
+
+const deleteToken = `-- name: DeleteToken :exec
+DELETE FROM api_tokens
+WHERE
+	id = $1
+`
+
+func (q *sqlQuerier) DeleteToken(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteToken, id)
+	return err
+}
+
+const getToken = `-- name: GetToken :one
+SELECT
+	id, name, athlete_id, hashed_token, created_at, updated_at, last_used_at, expires_at, lifetime_seconds
+FROM
+    api_tokens
+WHERE
+	id = $1
+`
+
+func (q *sqlQuerier) GetToken(ctx context.Context, id uuid.UUID) (ApiToken, error) {
+	row := q.db.QueryRowContext(ctx, getToken, id)
+	var i ApiToken
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.AthleteID,
+		&i.HashedToken,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.LastUsedAt,
+		&i.ExpiresAt,
+		&i.LifetimeSeconds,
+	)
+	return i, err
+}
+
+const insertAPIToken = `-- name: InsertAPIToken :one
+INSERT INTO
+    api_tokens (
+		created_at,
+		updated_at,
+		last_used_at,
+		id,
+		name,
+		athlete_id,
+		hashed_token,
+		expires_at,
+		lifetime_seconds
+	)
+VALUES (Now(), Now(), Now(), $1, $2, $3, $4, $5, $6)
+RETURNING id, name, athlete_id, hashed_token, created_at, updated_at, last_used_at, expires_at, lifetime_seconds
+`
+
+type InsertAPITokenParams struct {
+	ID              uuid.UUID `db:"id" json:"id"`
+	Name            string    `db:"name" json:"name"`
+	AthleteID       int64     `db:"athlete_id" json:"athlete_id"`
+	HashedToken     string    `db:"hashed_token" json:"hashed_token"`
+	ExpiresAt       time.Time `db:"expires_at" json:"expires_at"`
+	LifetimeSeconds int64     `db:"lifetime_seconds" json:"lifetime_seconds"`
+}
+
+func (q *sqlQuerier) InsertAPIToken(ctx context.Context, arg InsertAPITokenParams) (ApiToken, error) {
+	row := q.db.QueryRowContext(ctx, insertAPIToken,
+		arg.ID,
+		arg.Name,
+		arg.AthleteID,
+		arg.HashedToken,
+		arg.ExpiresAt,
+		arg.LifetimeSeconds,
+	)
+	var i ApiToken
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.AthleteID,
+		&i.HashedToken,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.LastUsedAt,
+		&i.ExpiresAt,
+		&i.LifetimeSeconds,
+	)
+	return i, err
+}
+
+const renewToken = `-- name: RenewToken :one
+UPDATE api_tokens
+SET
+	updated_at = Now(),
+	last_used_at = Now(),
+	expires_at = $1,
+	lifetime_seconds = $2
+WHERE
+    id = $3
+RETURNING id, name, athlete_id, hashed_token, created_at, updated_at, last_used_at, expires_at, lifetime_seconds
+`
+
+type RenewTokenParams struct {
+	ExpiresAt       time.Time `db:"expires_at" json:"expires_at"`
+	LifetimeSeconds int64     `db:"lifetime_seconds" json:"lifetime_seconds"`
+	ID              uuid.UUID `db:"id" json:"id"`
+}
+
+func (q *sqlQuerier) RenewToken(ctx context.Context, arg RenewTokenParams) (ApiToken, error) {
+	row := q.db.QueryRowContext(ctx, renewToken, arg.ExpiresAt, arg.LifetimeSeconds, arg.ID)
+	var i ApiToken
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.AthleteID,
+		&i.HashedToken,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.LastUsedAt,
+		&i.ExpiresAt,
+		&i.LifetimeSeconds,
 	)
 	return i, err
 }

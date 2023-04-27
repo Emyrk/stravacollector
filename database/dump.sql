@@ -71,6 +71,20 @@ CREATE TABLE activity_summary (
 
 COMMENT ON TABLE activity_summary IS 'Activity is missing many detailed fields';
 
+CREATE TABLE api_tokens (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    athlete_id bigint NOT NULL,
+    hashed_token text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    last_used_at timestamp with time zone NOT NULL,
+    expires_at timestamp without time zone NOT NULL,
+    lifetime_seconds bigint DEFAULT 604800 NOT NULL
+);
+
+COMMENT ON COLUMN api_tokens.lifetime_seconds IS 'The amount of time to renew the token for.';
+
 CREATE TABLE athlete_load (
     athlete_id bigint NOT NULL,
     last_backload_activity_start timestamp with time zone NOT NULL,
@@ -238,6 +252,9 @@ ALTER TABLE ONLY activity_detail
 ALTER TABLE ONLY activity_summary
     ADD CONSTRAINT activity_summary_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY api_tokens
+    ADD CONSTRAINT api_tokens_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY athlete_load
     ADD CONSTRAINT athlete_load_pkey PRIMARY KEY (athlete_id);
 
@@ -278,6 +295,9 @@ ALTER TABLE ONLY activity_detail
 
 ALTER TABLE ONLY activity_summary
     ADD CONSTRAINT activity_summary_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY api_tokens
+    ADD CONSTRAINT api_tokens_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athlete_logins(athlete_id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY athlete_load
     ADD CONSTRAINT athlete_load_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athlete_logins(athlete_id) ON DELETE CASCADE;

@@ -6,7 +6,7 @@ SELECT
 FROM
 	(
 		SELECT
-			activities_id,
+			hugel_efforts.activities_id,
 			-- segment_ids is all the segments this activity has efforts on.
 			-- Only segments in the provided list are considered.
 			array_agg(segment_id) AS segment_ids,
@@ -37,7 +37,7 @@ FROM
 			) as hugel_efforts
 			-- Each activity will now be represented by a single aggregated row
 		GROUP BY
-			activities_id
+			hugel_efforts.activities_id
 	) AS merged
 WHERE
 	segment_ids @> @expected_segments :: bigint[]

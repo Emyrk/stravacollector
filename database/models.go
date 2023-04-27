@@ -80,6 +80,19 @@ type ActivitySummary struct {
 	MaxHeartrate       float64   `db:"max_heartrate" json:"max_heartrate"`
 }
 
+type ApiToken struct {
+	ID          uuid.UUID `db:"id" json:"id"`
+	Name        string    `db:"name" json:"name"`
+	AthleteID   int64     `db:"athlete_id" json:"athlete_id"`
+	HashedToken string    `db:"hashed_token" json:"hashed_token"`
+	CreatedAt   time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt   time.Time `db:"updated_at" json:"updated_at"`
+	LastUsedAt  time.Time `db:"last_used_at" json:"last_used_at"`
+	ExpiresAt   time.Time `db:"expires_at" json:"expires_at"`
+	// The amount of time to renew the token for.
+	LifetimeSeconds int64 `db:"lifetime_seconds" json:"lifetime_seconds"`
+}
+
 type Athlete struct {
 	ID          int64  `db:"id" json:"id"`
 	Summit      bool   `db:"summit" json:"summit"`
@@ -133,6 +146,13 @@ type AthleteLogin struct {
 	ID                uuid.UUID `db:"id" json:"id"`
 }
 
+type CompetitiveRoute struct {
+	Name        string  `db:"name" json:"name"`
+	DisplayName string  `db:"display_name" json:"display_name"`
+	Description string  `db:"description" json:"description"`
+	Segments    []int64 `db:"segments" json:"segments"`
+}
+
 type GueJob struct {
 	JobID      string         `db:"job_id" json:"job_id"`
 	Priority   int16          `db:"priority" json:"priority"`
@@ -144,6 +164,13 @@ type GueJob struct {
 	Queue      string         `db:"queue" json:"queue"`
 	CreatedAt  time.Time      `db:"created_at" json:"created_at"`
 	UpdatedAt  time.Time      `db:"updated_at" json:"updated_at"`
+}
+
+type HugelActivity struct {
+	ActivitiesID int64           `db:"activities_id" json:"activities_id"`
+	SegmentIds   interface{}     `db:"segment_ids" json:"segment_ids"`
+	Sum          int64           `db:"sum" json:"sum"`
+	JsonAgg      json.RawMessage `db:"json_agg" json:"json_agg"`
 }
 
 type Map struct {
