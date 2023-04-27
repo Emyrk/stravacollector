@@ -11,10 +11,13 @@ database/dump.sql: $(wildcard database/migrations/*.sql)
 database/querier.go: database/sqlc.yaml database/dump.sql $(wildcard database/queries/*.sql)
 	./database/generate.sh
 
+site-install:
+	cd site/strava-frontend && npm install
+
 site: site/strava-frontend/package.json $(shell find ./site/strava-frontend $(FIND_EXCLUSIONS) -type f \( -name '*.ts' -o -name '*.tsx' \))
 	cd site/strava-frontend && npm run build
 
-.PHONY: site
+.PHONY: site site-install
 
 build:
 	go build -o bin/strava

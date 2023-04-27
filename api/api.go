@@ -7,13 +7,14 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Emyrk/strava/api/queue"
+	server "github.com/Emyrk/strava/site"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog"
 	"golang.org/x/oauth2"
 
 	"github.com/Emyrk/strava/api/httpmw"
+	"github.com/Emyrk/strava/api/queue"
 	"github.com/Emyrk/strava/api/webhooks"
 	"github.com/Emyrk/strava/database"
 )
@@ -83,6 +84,7 @@ func (api *API) Routes() chi.Router {
 		r.Use(httpmw.ExtractOauth2(api.OAuthConfig, nil))
 		r.Get("/callback", api.stravaOAuth2)
 	})
+	r.NotFound(server.Handler(server.FS()).ServeHTTP)
 
 	return r
 }
