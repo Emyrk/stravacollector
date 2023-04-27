@@ -1,3 +1,6 @@
+FIND_EXCLUSIONS= \
+	-not \( \( -path '*/.git/*' -o -path './build/*' -o -path './vendor/*' -o -path './.coderv2/*' -o -path '*/node_modules/*' -o -path './site/out/*' \) -prune \)
+
 gen: database/dump.sql database/querier.go
 
 .PHONY: gen
@@ -7,6 +10,11 @@ database/dump.sql: $(wildcard database/migrations/*.sql)
 
 database/querier.go: database/sqlc.yaml database/dump.sql $(wildcard database/queries/*.sql)
 	./database/generate.sh
+
+site: site/strava-frontend/package.json $(shell find ./site/strava-frontend $(FIND_EXCLUSIONS) -type f \( -name '*.ts' -o -name '*.tsx' \))
+	cd site/strava-frontend && npm run build
+
+.PHONY: site
 
 build:
 	go build -o bin/strava
