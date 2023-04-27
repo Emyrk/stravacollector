@@ -106,7 +106,7 @@ func serverCmd() *cobra.Command {
 				return fmt.Errorf("access url scheme must be http or https")
 			}
 
-			secPem, err := base64.StdEncoding.DecodeString(signingSecret)
+			secPem, err := base64.StdEncoding.DecodeString(strings.TrimSpace(signingSecret))
 			if err != nil {
 				return fmt.Errorf("decode signing key: %w", err)
 			}
