@@ -12,7 +12,7 @@ var staticFiles embed.FS
 func FS() fs.FS {
 	static, err := fs.Sub(fs.FS(staticFiles), "strava-frontend/build")
 	if err != nil {
-		log.Fatalf("failed to get static files: %w", err)
+		log.Fatalf("failed to get static files: %s", err.Error())
 	}
 	return static
 }
