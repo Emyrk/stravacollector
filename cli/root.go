@@ -20,7 +20,10 @@ func RootCmd() *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(serverCmd())
+	cmd.AddCommand(
+		serverCmd(),
+		generateKey(),
+	)
 
 	return cmd
 }

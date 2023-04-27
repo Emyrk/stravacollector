@@ -95,12 +95,26 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	session, err := api.Auth.CreateSession(ctx, athlete.ID)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, httpapi.Response{
+			Message: "Failed to create session",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	http.SetCookie(rw, &http.Cookie{
+		Name:     httpmw.StravaAuthJWTCookie,
+		Value:    session,
+		HttpOnly: true,
+	})
+
 	logger.Info().
 		Str("username", athlete.Username).
 		Str("firstname", athlete.Firstname).
 		Str("lastname", athlete.Lastname).
 		Int64("id", athlete.ID).
 		Msg("Authenticated Athlete")
-
 	httpapi.Write(ctx, rw, http.StatusOK, athlete)
 }

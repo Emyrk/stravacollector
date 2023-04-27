@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"net"
 	"net/http"
@@ -34,6 +35,7 @@ func serverCmd() *cobra.Command {
 		stackDriver     bool
 		verifyToken     string
 		disableWebhooks bool
+		signingSecret   string
 	)
 
 	v := viper.New()
@@ -104,15 +106,20 @@ func serverCmd() *cobra.Command {
 				return fmt.Errorf("access url scheme must be http or https")
 			}
 
+			secPem, err := base64.StdEncoding.DecodeString(signingSecret)
+			if err != nil {
+				return fmt.Errorf("decode signing key: %w", err)
+			}
 			srv, err := api.New(api.Options{
 				OAuth: api.OAuthOptions{
 					ClientID: clientID,
 					Secret:   secret,
 				},
-				DB:          db,
-				Logger:      logger.With().Str("component", "api").Logger(),
-				AccessURL:   u,
-				VerifyToken: verifyToken,
+				DB:            db,
+				Logger:        logger.With().Str("component", "api").Logger(),
+				AccessURL:     u,
+				VerifyToken:   verifyToken,
+				SigningKeyPEM: secPem,
 			})
 			if err != nil {
 				return fmt.Errorf("create server: %w", err)
@@ -247,6 +254,7 @@ func serverCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&stackDriver, "stack-driver", false, "Export stack driver logs")
 	cmd.Flags().StringVar(&verifyToken, "verify-token", "", "Strava webhook verify token")
 	cmd.Flags().BoolVar(&disableWebhooks, "disable-webhooks", false, "Useful for running a server without a public url")
+	cmd.Flags().StringVar(&signingSecret, "signing-secret", "", "RSA signing key base64 encoded")
 
 	return cmd
 }

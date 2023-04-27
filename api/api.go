@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
+
+	"github.com/Emyrk/strava/api/auth"
 
 	server "github.com/Emyrk/strava/site"
 
@@ -20,11 +23,12 @@ import (
 )
 
 type Options struct {
-	OAuth       OAuthOptions
-	DB          database.Store
-	Logger      zerolog.Logger
-	AccessURL   *url.URL
-	VerifyToken string
+	OAuth         OAuthOptions
+	DB            database.Store
+	Logger        zerolog.Logger
+	AccessURL     *url.URL
+	VerifyToken   string
+	SigningKeyPEM []byte
 }
 
 type OAuthOptions struct {
@@ -36,6 +40,7 @@ type API struct {
 	Opts    *Options
 	Handler http.Handler
 
+	Auth        *auth.Authentication
 	OAuthConfig *oauth2.Config
 	Events      *webhooks.ActivityEvents
 	Manager     *queue.Manager
@@ -57,6 +62,16 @@ func New(opts Options) (*API, error) {
 			Scopes: []string{strings.Join([]string{"read", "read_all", "profile:read_all", "activity:read"}, ",")},
 		},
 	}
+	ath, err := auth.New(auth.Options{
+		Lifetime:  time.Hour * 24 * 7,
+		SecretPEM: opts.SigningKeyPEM,
+		Issuer:    "Strava-Hugel",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("create auth: %w", err)
+	}
+	api.Auth = ath
+
 	api.Events = webhooks.NewActivityEvents(opts.Logger, api.OAuthConfig, api.Opts.DB, opts.AccessURL, opts.VerifyToken)
 	r := api.Routes()
 	r = api.Events.Attach(r)
@@ -83,6 +98,9 @@ func (api *API) Routes() chi.Router {
 	r.Route("/oauth2", func(r chi.Router) {
 		r.Use(httpmw.ExtractOauth2(api.OAuthConfig, nil))
 		r.Get("/callback", api.stravaOAuth2)
+	})
+	r.Route("/api/v1", func(r chi.Router) {
+		r.Get("/whoami", api.whoAmI)
 	})
 	r.NotFound(server.Handler(server.FS()).ServeHTTP)
 

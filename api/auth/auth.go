@@ -2,82 +2,90 @@ package auth
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
+	"strconv"
 	"time"
 
-	"github.com/Emyrk/strava/database"
+	"github.com/go-jose/go-jose/v3"
+	"github.com/go-jose/go-jose/v3/jwt"
 	"github.com/google/uuid"
+
+	"github.com/Emyrk/strava/api/auth/authkeys"
 )
 
+type Options struct {
+	Lifetime  time.Duration
+	SecretPEM []byte
+	Issuer    string
+}
+
 type Authentication struct {
-	DB database.Store
+	Lifetime time.Duration
+	Signer   jose.Signer
+	Issuer   string
 }
 
-func New(db database.Store) *Authentication {
+func New(opts Options) (*Authentication, error) {
+	secretKey, err := authkeys.ParsePrivateKey(opts.SecretPEM)
+	if err != nil {
+		return nil, fmt.Errorf("parse private key: %w", err)
+	}
+
+	// Instantiate a signer using RSASSA-PSS (SHA512) with the given private key.
+	signer, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.PS512, Key: secretKey}, nil)
+	if err != nil {
+		return nil, fmt.Errorf("create signer: %w", err)
+	}
+
 	return &Authentication{
-		DB: db,
-	}
+		Lifetime: opts.Lifetime,
+		Signer:   signer,
+		Issuer:   opts.Issuer,
+	}, nil
 }
 
-func (a *Authentication) ValidateSession(ctx context.Context, now time.Time, id uuid.UUID, secret string) (*database.ApiToken, error) {
-	secretBytes, err := hex.DecodeString(secret)
+// ValidateSession returns the athlete ID if the session is valid
+func (a *Authentication) ValidateSession(payload string) (int64, error) {
+	token, err := jwt.ParseSigned(payload)
 	if err != nil {
-		return nil, fmt.Errorf("decode secret from hex: %w", err)
+		return -1, fmt.Errorf("parse token: %w", err)
 	}
 
-	token, err := a.DB.GetToken(ctx, id)
+	claims := jwt.Claims{}
+	err = token.Claims(a.Signer, &claims)
 	if err != nil {
-		return nil, fmt.Errorf("get api token: %w", err)
+		return -1, fmt.Errorf("parse claims: %w", err)
 	}
 
-	hashed := HashSecret(id, secretBytes)
+	err = claims.Validate(jwt.Expected{
+		Issuer: a.Issuer,
+		Time:   time.Now(),
+	})
+	if err != nil {
+		return -1, fmt.Errorf("validate claims: %w", err)
+	}
 
-	return nil
+	id, err := strconv.ParseInt(claims.Subject, 10, 64)
+	if err != nil {
+		return -1, fmt.Errorf("parse subject: %w", err)
+	}
+	return id, nil
 }
 
-func (a *Authentication) CreateSession(ctx context.Context, tokenName string, athlete *database.AthleteLogin) (string, database.ApiToken, error) {
-	id := uuid.New()
-	secret, token, err := GenerateToken(id)
-	if err != nil {
-		return "", database.ApiToken{}, fmt.Errorf("create token: %w", err)
+func (a *Authentication) CreateSession(ctx context.Context, athleteID int64) (string, error) {
+	c := &jwt.Claims{
+		Issuer:    a.Issuer,
+		Subject:   fmt.Sprintf("%d", athleteID),
+		Audience:  []string{a.Issuer},
+		Expiry:    jwt.NewNumericDate(time.Now().Add(a.Lifetime)),
+		NotBefore: jwt.NewNumericDate(time.Now().Add(time.Minute * -1)),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ID:        uuid.NewString(),
 	}
-	lifetime := time.Hour * 24 * 7
-	time.Now().Add(lifetime)
-	apiToken, err := a.DB.InsertAPIToken(ctx,
-		database.InsertAPITokenParams{
-			ID:              id,
-			Name:            tokenName,
-			AthleteID:       athlete.AthleteID,
-			HashedToken:     token,
-			ExpiresAt:       time.Now().Add(lifetime),
-			LifetimeSeconds: int64(lifetime.Seconds()),
-		})
+	payload, err := jwt.Signed(a.Signer).Claims(c).CompactSerialize()
 	if err != nil {
-		return "", apiToken, err
+		return "", fmt.Errorf("sign session: %w", err)
 	}
 
-	return secret, apiToken, nil
-}
-
-// GenerateToken uses id as a salt.
-func GenerateToken(id uuid.UUID) (string, string, error) {
-	secret := make([]byte, 32)
-	_, err := rand.Read(secret)
-	if err != nil {
-		return "", "", err
-	}
-	hashed := HashSecret(id, secret)
-	return hex.EncodeToString(secret), hex.EncodeToString(hashed[:]), nil
-}
-
-func HashSecret(id uuid.UUID, secret []byte) []byte {
-	hashed := sha256.Sum256(append([]byte(id.String()), secret...))
-	return hashed[:]
-}
-
-func TokenString(id uuid.UUID, hashed string) string {
-	return fmt.Sprintf("%s:%s", id.String(), hashed)
+	return payload, nil
 }
