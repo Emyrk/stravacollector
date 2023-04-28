@@ -15,6 +15,7 @@ import {
   useBreakpointValue,
   useDisclosure,
   useToast,
+  Avatar,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -93,10 +94,15 @@ export default function Navbar() {
           direction={'row'}
           spacing={6}>
 
-          {!authenticatedUser && <IconButton
-            aria-label={"strava sign in"}
-            icon={<StravaConnect />}
-          />}
+          {authenticatedUser ?
+            <Avatar
+
+            />
+            :
+            <IconButton
+              aria-label={"strava sign in"}
+              icon={<StravaConnect />}
+            />}
         </Stack>
       </Flex>
 

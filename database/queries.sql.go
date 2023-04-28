@@ -437,6 +437,38 @@ func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivi
 	return i, err
 }
 
+const getAthlete = `-- name: GetAthlete :one
+SELECT id, summit, username, firstname, lastname, sex, city, state, country, follow_count, friend_count, measurement_preference, ftp, weight, clubs, created_at, updated_at, fetched_at, profile_pic_link, profile_pic_link_medium FROM athletes WHERE id = $1
+`
+
+func (q *sqlQuerier) GetAthlete(ctx context.Context, athleteID int64) (Athlete, error) {
+	row := q.db.QueryRowContext(ctx, getAthlete, athleteID)
+	var i Athlete
+	err := row.Scan(
+		&i.ID,
+		&i.Summit,
+		&i.Username,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Sex,
+		&i.City,
+		&i.State,
+		&i.Country,
+		&i.FollowCount,
+		&i.FriendCount,
+		&i.MeasurementPreference,
+		&i.Ftp,
+		&i.Weight,
+		&i.Clubs,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.FetchedAt,
+		&i.ProfilePicLink,
+		&i.ProfilePicLinkMedium,
+	)
+	return i, err
+}
+
 const getAthleteLoad = `-- name: GetAthleteLoad :one
 SELECT athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done FROM athlete_load WHERE athlete_id = $1
 `

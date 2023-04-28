@@ -45,6 +45,9 @@ LIMIT 1;
 -- name: GetAthleteLogin :one
 SELECT * FROM athlete_logins WHERE athlete_id = @athlete_id;
 
+-- name: GetAthlete :one
+SELECT * FROM athletes WHERE id = @athlete_id;
+
 -- name: UpsertAthleteLogin :one
 INSERT INTO
 	athlete_logins(

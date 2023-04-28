@@ -14,6 +14,7 @@ type sqlcQuerier interface {
 	BestRouteEfforts(ctx context.Context, expectedSegments []int64) ([]BestRouteEffortsRow, error)
 	DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error)
 	GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error)
+	GetAthlete(ctx context.Context, athleteID int64) (Athlete, error)
 	GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteLoad, error)
 	GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error)
 	GetAthleteNeedsLoad(ctx context.Context) (GetAthleteNeedsLoadRow, error)
