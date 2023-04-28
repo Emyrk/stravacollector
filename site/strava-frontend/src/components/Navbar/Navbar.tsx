@@ -260,41 +260,41 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: 'Inspiration',
+    label: 'Das Hugel',
     children: [
       {
-        label: 'Explore Design Work',
-        subLabel: 'Trending Design to inspire you',
+        label: 'All Hugels',
+        subLabel: 'See how you stack up in the Das Hugel Leaderboard',
         href: '#',
       },
       {
-        label: 'New & Noteworthy',
-        subLabel: 'Up-and-coming Designers',
+        label: 'All Hugel Super Scores',
+        subLabel: 'Have not done a Das Hugel?',
         href: '#',
       },
     ],
   },
-  {
-    label: 'Find Work',
-    children: [
-      {
-        label: 'Job Board',
-        subLabel: 'Find your dream design job',
-        href: '#',
-      },
-      {
-        label: 'Freelance Projects',
-        subLabel: 'An exclusive list for contract work',
-        href: '#',
-      },
-    ],
-  },
-  {
-    label: 'Learn Design',
-    href: '#',
-  },
-  {
-    label: 'Hire Designers',
-    href: '#',
-  },
+  // {
+  //   label: 'Find Work',
+  //   children: [
+  //     {
+  //       label: 'Job Board',
+  //       subLabel: 'Find your dream design job',
+  //       href: '#',
+  //     },
+  //     {
+  //       label: 'Freelance Projects',
+  //       subLabel: 'An exclusive list for contract work',
+  //       href: '#',
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: 'Learn Design',
+  //   href: '#',
+  // },
+  // {
+  //   label: 'Hire Designers',
+  //   href: '#',
+  // },
 ];
