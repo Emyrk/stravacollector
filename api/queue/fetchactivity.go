@@ -15,7 +15,7 @@ import (
 )
 
 type fetchActivityJobArgs struct {
-	Source     database.ActivityDetailSource `json:"source""`
+	Source     database.ActivityDetailSource `json:"source"`
 	ActivityID int64                         `json:"activity_id"`
 	AthleteID  int64                         `json:"athlete_id"`
 }
