@@ -19,6 +19,9 @@ import {
   Image,
 } from '@chakra-ui/react';
 import {
+  Link as RouteLink,
+} from "react-router-dom";
+import {
   HamburgerIcon,
   CloseIcon,
   ChevronDownIcon,
@@ -79,9 +82,11 @@ export default function Navbar() {
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
           <Box>
-            {/* https://chakra-ui.com/docs/components/image/usage */}
-            <Image height={"80px"} src="/logos/mountainwheeltype.jpeg" alt="Hugel Ranker">
-            </Image>
+            <RouteLink to="/">
+              {/* https://chakra-ui.com/docs/components/image/usage */}
+              <Image height={"80px"} src="/logos/mountainwheeltype.jpeg" alt="Hugel Ranker">
+              </Image>
+            </RouteLink>
           </Box>
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
