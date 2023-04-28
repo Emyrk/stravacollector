@@ -11,8 +11,10 @@ jobs:
     steps:
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.20'
+          go-version: "1.20"
           cache: false
+      - name: EnsureBuildDir
+        run: mkdir -p site/strava-frontend/build/ && touch site/strava-frontend/build/placeholder
       - uses: actions/checkout@v3
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
@@ -70,21 +72,21 @@ jobs:
     if: github.ref_type == 'tag'
     needs: docker-push
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
     runs-on: ubuntu-latest
     steps:
-      - uses: 'actions/checkout@v3'
+      - uses: "actions/checkout@v3"
 
-      - uses: 'google-github-actions/auth@v1'
+      - uses: "google-github-actions/auth@v1"
         with:
-          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
 
-      - id: 'deploy'
-        uses: 'google-github-actions/deploy-cloudrun@v1'
+      - id: "deploy"
+        uses: "google-github-actions/deploy-cloudrun@v1"
         with:
-          service: 'strava'
-          image: 'emyrk/strava:latest'
+          service: "strava"
+          image: "emyrk/strava:latest"
 
-      - name: 'Print URL'
+      - name: "Print URL"
         run: 'echo "${{ steps.deploy.outputs.url }}"'
