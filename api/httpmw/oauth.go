@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Emyrk/strava/api/modelsdk"
+
 	"golang.org/x/oauth2"
 
 	"github.com/Emyrk/strava/api/httpapi"
@@ -60,7 +62,7 @@ func ExtractOauth2(config *oauth2.Config, authURLOpts map[string]string) func(ht
 					errorDescription = fmt.Sprintf("%s, error_uri: %s", errorDescription, errorURI)
 				}
 				oidcError = fmt.Sprintf("Encountered error in oidc process: %s", oidcError)
-				httpapi.Write(ctx, rw, http.StatusBadRequest, httpapi.Response{
+				httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
 					Message: oidcError,
 					// This message might be blank. This is ok.
 					Detail: errorDescription,
@@ -74,7 +76,7 @@ func ExtractOauth2(config *oauth2.Config, authURLOpts map[string]string) func(ht
 				// If the code isn't provided, we'll redirect!
 				state, err := cryptorand.String(32)
 				if err != nil {
-					httpapi.Write(ctx, rw, http.StatusInternalServerError, httpapi.Response{
+					httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 						Message: "Internal error generating state string.",
 						Detail:  err.Error(),
 					})
@@ -104,7 +106,7 @@ func ExtractOauth2(config *oauth2.Config, authURLOpts map[string]string) func(ht
 			}
 
 			if state == "" {
-				httpapi.Write(ctx, rw, http.StatusBadRequest, httpapi.Response{
+				httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
 					Message: "State must be provided.",
 				})
 				return
@@ -112,13 +114,13 @@ func ExtractOauth2(config *oauth2.Config, authURLOpts map[string]string) func(ht
 
 			stateCookie, err := r.Cookie(OAuth2StateCookie)
 			if err != nil {
-				httpapi.Write(ctx, rw, http.StatusUnauthorized, httpapi.Response{
+				httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
 					Message: fmt.Sprintf("Cookie %q must be provided.", OAuth2StateCookie),
 				})
 				return
 			}
 			if stateCookie.Value != state {
-				httpapi.Write(ctx, rw, http.StatusUnauthorized, httpapi.Response{
+				httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
 					Message: "State mismatched.",
 				})
 				return
@@ -132,7 +134,7 @@ func ExtractOauth2(config *oauth2.Config, authURLOpts map[string]string) func(ht
 
 			oauthToken, err := config.Exchange(ctx, code)
 			if err != nil {
-				httpapi.Write(ctx, rw, http.StatusInternalServerError, httpapi.Response{
+				httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 					Message: "Internal error exchanging Oauth code.",
 					Detail:  err.Error(),
 				})

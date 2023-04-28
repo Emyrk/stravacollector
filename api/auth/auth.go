@@ -32,7 +32,6 @@ func New(opts Options) (*Authentication, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse private key: %w", err)
 	}
-	secretKey.Public()
 
 	if opts.Lifetime <= 0 {
 		opts.Lifetime = time.Hour * 24 * 7

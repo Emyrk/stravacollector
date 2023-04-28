@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Emyrk/strava/api/modelsdk"
+
 	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/httpmw"
 	"github.com/Emyrk/strava/database"
@@ -23,7 +25,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 	scli := strava.NewOAuthClient(oauthClient)
 	athlete, err := scli.GetAuthenticatedAthelete(ctx)
 	if err != nil {
-		httpapi.Write(ctx, rw, http.StatusInternalServerError, httpapi.Response{
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 			Message: "Failed to get authenticated athlete",
 			Detail:  err.Error(),
 		})
@@ -88,7 +90,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		return nil
 	}, nil)
 	if err != nil {
-		httpapi.Write(ctx, rw, http.StatusInternalServerError, httpapi.Response{
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 			Message: "Failed to store athlete",
 			Detail:  err.Error(),
 		})
@@ -97,7 +99,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 
 	session, err := api.Auth.CreateSession(ctx, athlete.ID)
 	if err != nil {
-		httpapi.Write(ctx, rw, http.StatusInternalServerError, httpapi.Response{
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 			Message: "Failed to create session",
 			Detail:  err.Error(),
 		})

@@ -6,3 +6,9 @@ export interface AthleteLogin {
   readonly athlete_id: number
   readonly summit: boolean
 }
+
+// From codersdk/response.go
+export interface Response {
+  readonly message: string
+  readonly detail?: string
+}

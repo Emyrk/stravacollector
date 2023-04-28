@@ -14,6 +14,7 @@ import {
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -23,10 +24,30 @@ import {
 } from '@chakra-ui/icons';
 import { StravaConnect } from './StravaConnect';
 import { useAuthenticated } from '../../contexts/Authenticated';
+import { getErrorMessage, getErrorDetail } from '../../api/rest';
+import { useEffect } from 'react';
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
-  const { authenticatedUser, isFetched } = useAuthenticated()
+  const { authenticatedUser, fetchError } = useAuthenticated()
+
+  // TODO: Probably want to factor this toast better?
+  const toast = useToast()
+  const toastID = "authenticated-user-toast"
+  useEffect(() => {
+    if (fetchError) {
+      const title = getErrorMessage(fetchError, "Authentication Error")
+      const description = getErrorDetail(fetchError)
+      toast({
+        id: toastID,
+        title: <>{title}</>,
+        description: <>{description ? description : "Unkown error getting authenticated user"}</>,
+        position: "bottom-right",
+        isClosable: true,
+        status: "error",
+      })
+    }
+  }, [toast, authenticatedUser, fetchError]);
 
   return (
     <Box>

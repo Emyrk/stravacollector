@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/Emyrk/strava/api/modelsdk"
+
 	"github.com/Emyrk/strava/api/httpapi"
 
 	"github.com/Emyrk/strava/api/auth"
@@ -32,7 +34,7 @@ func Authenticated(a *auth.Authentication) func(next http.Handler) http.Handler 
 			if payload == "" {
 				cookie, err := r.Cookie(StravaAuthJWTCookie)
 				if err != nil {
-					httpapi.Write(ctx, rw, http.StatusUnauthorized, httpapi.Response{
+					httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
 						Message: "No valid authentication provided",
 						Detail:  err.Error(),
 					})
@@ -48,7 +50,7 @@ func Authenticated(a *auth.Authentication) func(next http.Handler) http.Handler 
 					Name:   StravaAuthJWTCookie,
 					MaxAge: -1,
 				})
-				httpapi.Write(ctx, rw, http.StatusUnauthorized, httpapi.Response{
+				httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
 					Message: "Authentication failed",
 					Detail:  err.Error(),
 				})
