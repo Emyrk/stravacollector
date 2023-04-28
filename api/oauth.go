@@ -115,6 +115,8 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		Str("firstname", athlete.Firstname).
 		Str("lastname", athlete.Lastname).
 		Int64("id", athlete.ID).
+		Str("redirect", state.Redirect).
 		Msg("Authenticated Athlete")
-	httpapi.Write(ctx, rw, http.StatusOK, athlete)
+
+	http.Redirect(rw, r, state.Redirect, http.StatusSeeOther)
 }

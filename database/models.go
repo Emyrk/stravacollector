@@ -6,11 +6,81 @@ package database
 
 import (
 	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+// The source of the activity fetching.
+type ActivityDetailSource string
+
+const (
+	ActivityDetailSourceWebhook   ActivityDetailSource = "webhook"
+	ActivityDetailSourceBackload  ActivityDetailSource = "backload"
+	ActivityDetailSourceRequested ActivityDetailSource = "requested"
+	ActivityDetailSourceManual    ActivityDetailSource = "manual"
+	ActivityDetailSourceUnknown   ActivityDetailSource = "unknown"
+)
+
+func (e *ActivityDetailSource) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ActivityDetailSource(s)
+	case string:
+		*e = ActivityDetailSource(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ActivityDetailSource: %T", src)
+	}
+	return nil
+}
+
+type NullActivityDetailSource struct {
+	ActivityDetailSource ActivityDetailSource
+	Valid                bool // Valid is true if ActivityDetailSource is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullActivityDetailSource) Scan(value interface{}) error {
+	if value == nil {
+		ns.ActivityDetailSource, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ActivityDetailSource.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullActivityDetailSource) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ActivityDetailSource), nil
+}
+
+func (e ActivityDetailSource) Valid() bool {
+	switch e {
+	case ActivityDetailSourceWebhook,
+		ActivityDetailSourceBackload,
+		ActivityDetailSourceRequested,
+		ActivityDetailSourceManual,
+		ActivityDetailSourceUnknown:
+		return true
+	}
+	return false
+}
+
+func AllActivityDetailSourceValues() []ActivityDetailSource {
+	return []ActivityDetailSource{
+		ActivityDetailSourceWebhook,
+		ActivityDetailSourceBackload,
+		ActivityDetailSourceRequested,
+		ActivityDetailSourceManual,
+		ActivityDetailSourceUnknown,
+	}
+}
 
 type ActivityDetail struct {
 	ID                       int64     `db:"id" json:"id"`
@@ -35,8 +105,9 @@ type ActivityDetail struct {
 	// Owner of the activity has premium account at the time of the fetch.
 	PremiumFetch bool `db:"premium_fetch" json:"premium_fetch"`
 	// The time at which the activity was last updated by the collector
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
-	MapID     string    `db:"map_id" json:"map_id"`
+	UpdatedAt time.Time            `db:"updated_at" json:"updated_at"`
+	MapID     string               `db:"map_id" json:"map_id"`
+	Source    ActivityDetailSource `db:"source" json:"source"`
 }
 
 // Activity is missing many detailed fields
@@ -78,19 +149,6 @@ type ActivitySummary struct {
 	UpdatedAt          time.Time `db:"updated_at" json:"updated_at"`
 	AverageHeartrate   float64   `db:"average_heartrate" json:"average_heartrate"`
 	MaxHeartrate       float64   `db:"max_heartrate" json:"max_heartrate"`
-}
-
-type ApiToken struct {
-	ID          uuid.UUID `db:"id" json:"id"`
-	Name        string    `db:"name" json:"name"`
-	AthleteID   int64     `db:"athlete_id" json:"athlete_id"`
-	HashedToken string    `db:"hashed_token" json:"hashed_token"`
-	CreatedAt   time.Time `db:"created_at" json:"created_at"`
-	UpdatedAt   time.Time `db:"updated_at" json:"updated_at"`
-	LastUsedAt  time.Time `db:"last_used_at" json:"last_used_at"`
-	ExpiresAt   time.Time `db:"expires_at" json:"expires_at"`
-	// The amount of time to renew the token for.
-	LifetimeSeconds int64 `db:"lifetime_seconds" json:"lifetime_seconds"`
 }
 
 type Athlete struct {

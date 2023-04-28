@@ -15,14 +15,16 @@ import (
 )
 
 type fetchActivityJobArgs struct {
-	ActivityID int64 `json:"activity_id"`
-	AthleteID  int64 `json:"athlete_id"`
+	Source     database.ActivityDetailSource `json:"source""`
+	ActivityID int64                         `json:"activity_id"`
+	AthleteID  int64                         `json:"athlete_id"`
 }
 
-func (m *Manager) EnqueueFetchActivity(ctx context.Context, athleteID int64, activityID int64) error {
+func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64) error {
 	data, err := json.Marshal(fetchActivityJobArgs{
 		ActivityID: activityID,
 		AthleteID:  athleteID,
+		Source:     source,
 	})
 	if err != nil {
 		return fmt.Errorf("json marshal: %w", err)
@@ -48,6 +50,9 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 	if err != nil {
 		logger.Error().Err(err).Msg("json unmarshal, job abandoned")
 		return nil
+	}
+	if args.Source == "" {
+		args.Source = database.ActivityDetailSourceUnknown
 	}
 
 	// Only track athletes we have in our database
@@ -149,6 +154,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			SegmentLeaderboardOptOut: activity.SegmentLeaderboardOptOut,
 			LeaderboardOptOut:        activity.LeaderboardOptOut,
 			Calories:                 activity.Calories,
+			Source:                   args.Source,
 			//
 			PremiumFetch:      athlete.Summit,
 			NumSegmentEfforts: int32(len(activity.SegmentEfforts)),

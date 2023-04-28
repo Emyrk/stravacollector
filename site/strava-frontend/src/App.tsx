@@ -19,9 +19,11 @@ import {
 } from "react-router-dom";
 import { HugelBoard } from "./pages/HugelBoard";
 import { Landing } from "./pages/Landing/Landing";
+import Navbar from "./components/Navbar/Navbar";
 
 export const App = () => (
   <ChakraProvider theme={theme}>
+    <Navbar />
     <Router>
       <Routes>
         {/* Navbar and statics */}

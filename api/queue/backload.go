@@ -207,7 +207,7 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 				return fmt.Errorf("upsert activity summary (%d): %w", act.ID, err)
 			}
 
-			err = m.EnqueueFetchActivity(ctx, athlete.AthleteID, act.ID)
+			err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athlete.AthleteID, act.ID)
 			if err != nil {
 				return fmt.Errorf("enqueue fetch activity: %w", err)
 			}

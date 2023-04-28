@@ -147,11 +147,11 @@ INSERT INTO
 		average_watts, weighted_average_watts, kilojoules, max_watts,
 	    elev_high, elev_low, suffer_score, embed_token,
 	    segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts,
-	    premium_fetch, map_id, calories
+	    premium_fetch, map_id, calories, source
 )
 VALUES
 	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-	 $18, $19, $20, $21)
+	 $18, $19, $20, $21, $22)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -175,32 +175,34 @@ ON CONFLICT
 	num_segment_efforts = $18,
 	premium_fetch = $19,
 	map_id = $20,
-	calories = $21
-RETURNING id, athlete_id, start_latlng, end_latlng, from_accepted_tag, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, max_watts, elev_high, elev_low, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at, map_id
+	calories = $21,
+	source = $22
+RETURNING id, athlete_id, start_latlng, end_latlng, from_accepted_tag, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, max_watts, elev_high, elev_low, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at, map_id, source
 `
 
 type UpsertActivityDetailParams struct {
-	ID                       int64     `db:"id" json:"id"`
-	AthleteID                int64     `db:"athlete_id" json:"athlete_id"`
-	StartLatlng              []float64 `db:"start_latlng" json:"start_latlng"`
-	EndLatlng                []float64 `db:"end_latlng" json:"end_latlng"`
-	FromAcceptedTag          bool      `db:"from_accepted_tag" json:"from_accepted_tag"`
-	AverageCadence           float64   `db:"average_cadence" json:"average_cadence"`
-	AverageTemp              float64   `db:"average_temp" json:"average_temp"`
-	AverageWatts             float64   `db:"average_watts" json:"average_watts"`
-	WeightedAverageWatts     float64   `db:"weighted_average_watts" json:"weighted_average_watts"`
-	Kilojoules               float64   `db:"kilojoules" json:"kilojoules"`
-	MaxWatts                 float64   `db:"max_watts" json:"max_watts"`
-	ElevHigh                 float64   `db:"elev_high" json:"elev_high"`
-	ElevLow                  float64   `db:"elev_low" json:"elev_low"`
-	SufferScore              int32     `db:"suffer_score" json:"suffer_score"`
-	EmbedToken               string    `db:"embed_token" json:"embed_token"`
-	SegmentLeaderboardOptOut bool      `db:"segment_leaderboard_opt_out" json:"segment_leaderboard_opt_out"`
-	LeaderboardOptOut        bool      `db:"leaderboard_opt_out" json:"leaderboard_opt_out"`
-	NumSegmentEfforts        int32     `db:"num_segment_efforts" json:"num_segment_efforts"`
-	PremiumFetch             bool      `db:"premium_fetch" json:"premium_fetch"`
-	MapID                    string    `db:"map_id" json:"map_id"`
-	Calories                 float64   `db:"calories" json:"calories"`
+	ID                       int64                `db:"id" json:"id"`
+	AthleteID                int64                `db:"athlete_id" json:"athlete_id"`
+	StartLatlng              []float64            `db:"start_latlng" json:"start_latlng"`
+	EndLatlng                []float64            `db:"end_latlng" json:"end_latlng"`
+	FromAcceptedTag          bool                 `db:"from_accepted_tag" json:"from_accepted_tag"`
+	AverageCadence           float64              `db:"average_cadence" json:"average_cadence"`
+	AverageTemp              float64              `db:"average_temp" json:"average_temp"`
+	AverageWatts             float64              `db:"average_watts" json:"average_watts"`
+	WeightedAverageWatts     float64              `db:"weighted_average_watts" json:"weighted_average_watts"`
+	Kilojoules               float64              `db:"kilojoules" json:"kilojoules"`
+	MaxWatts                 float64              `db:"max_watts" json:"max_watts"`
+	ElevHigh                 float64              `db:"elev_high" json:"elev_high"`
+	ElevLow                  float64              `db:"elev_low" json:"elev_low"`
+	SufferScore              int32                `db:"suffer_score" json:"suffer_score"`
+	EmbedToken               string               `db:"embed_token" json:"embed_token"`
+	SegmentLeaderboardOptOut bool                 `db:"segment_leaderboard_opt_out" json:"segment_leaderboard_opt_out"`
+	LeaderboardOptOut        bool                 `db:"leaderboard_opt_out" json:"leaderboard_opt_out"`
+	NumSegmentEfforts        int32                `db:"num_segment_efforts" json:"num_segment_efforts"`
+	PremiumFetch             bool                 `db:"premium_fetch" json:"premium_fetch"`
+	MapID                    string               `db:"map_id" json:"map_id"`
+	Calories                 float64              `db:"calories" json:"calories"`
+	Source                   ActivityDetailSource `db:"source" json:"source"`
 }
 
 func (q *sqlQuerier) UpsertActivityDetail(ctx context.Context, arg UpsertActivityDetailParams) (ActivityDetail, error) {
@@ -226,6 +228,7 @@ func (q *sqlQuerier) UpsertActivityDetail(ctx context.Context, arg UpsertActivit
 		arg.PremiumFetch,
 		arg.MapID,
 		arg.Calories,
+		arg.Source,
 	)
 	var i ActivityDetail
 	err := row.Scan(
@@ -251,6 +254,7 @@ func (q *sqlQuerier) UpsertActivityDetail(ctx context.Context, arg UpsertActivit
 		&i.PremiumFetch,
 		&i.UpdatedAt,
 		&i.MapID,
+		&i.Source,
 	)
 	return i, err
 }
@@ -1058,128 +1062,6 @@ func (q *sqlQuerier) UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentE
 		&i.PrRank,
 		&i.UpdatedAt,
 		&i.ActivitiesID,
-	)
-	return i, err
-}
-
-const deleteToken = `-- name: DeleteToken :exec
-DELETE FROM api_tokens
-WHERE
-	id = $1
-`
-
-func (q *sqlQuerier) DeleteToken(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deleteToken, id)
-	return err
-}
-
-const getToken = `-- name: GetToken :one
-SELECT
-	id, name, athlete_id, hashed_token, created_at, updated_at, last_used_at, expires_at, lifetime_seconds
-FROM
-    api_tokens
-WHERE
-	id = $1
-`
-
-func (q *sqlQuerier) GetToken(ctx context.Context, id uuid.UUID) (ApiToken, error) {
-	row := q.db.QueryRowContext(ctx, getToken, id)
-	var i ApiToken
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.AthleteID,
-		&i.HashedToken,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.LastUsedAt,
-		&i.ExpiresAt,
-		&i.LifetimeSeconds,
-	)
-	return i, err
-}
-
-const insertAPIToken = `-- name: InsertAPIToken :one
-INSERT INTO
-    api_tokens (
-		created_at,
-		updated_at,
-		last_used_at,
-		id,
-		name,
-		athlete_id,
-		hashed_token,
-		expires_at,
-		lifetime_seconds
-	)
-VALUES (Now(), Now(), Now(), $1, $2, $3, $4, $5, $6)
-RETURNING id, name, athlete_id, hashed_token, created_at, updated_at, last_used_at, expires_at, lifetime_seconds
-`
-
-type InsertAPITokenParams struct {
-	ID              uuid.UUID `db:"id" json:"id"`
-	Name            string    `db:"name" json:"name"`
-	AthleteID       int64     `db:"athlete_id" json:"athlete_id"`
-	HashedToken     string    `db:"hashed_token" json:"hashed_token"`
-	ExpiresAt       time.Time `db:"expires_at" json:"expires_at"`
-	LifetimeSeconds int64     `db:"lifetime_seconds" json:"lifetime_seconds"`
-}
-
-func (q *sqlQuerier) InsertAPIToken(ctx context.Context, arg InsertAPITokenParams) (ApiToken, error) {
-	row := q.db.QueryRowContext(ctx, insertAPIToken,
-		arg.ID,
-		arg.Name,
-		arg.AthleteID,
-		arg.HashedToken,
-		arg.ExpiresAt,
-		arg.LifetimeSeconds,
-	)
-	var i ApiToken
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.AthleteID,
-		&i.HashedToken,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.LastUsedAt,
-		&i.ExpiresAt,
-		&i.LifetimeSeconds,
-	)
-	return i, err
-}
-
-const renewToken = `-- name: RenewToken :one
-UPDATE api_tokens
-SET
-	updated_at = Now(),
-	last_used_at = Now(),
-	expires_at = $1,
-	lifetime_seconds = $2
-WHERE
-    id = $3
-RETURNING id, name, athlete_id, hashed_token, created_at, updated_at, last_used_at, expires_at, lifetime_seconds
-`
-
-type RenewTokenParams struct {
-	ExpiresAt       time.Time `db:"expires_at" json:"expires_at"`
-	LifetimeSeconds int64     `db:"lifetime_seconds" json:"lifetime_seconds"`
-	ID              uuid.UUID `db:"id" json:"id"`
-}
-
-func (q *sqlQuerier) RenewToken(ctx context.Context, arg RenewTokenParams) (ApiToken, error) {
-	row := q.db.QueryRowContext(ctx, renewToken, arg.ExpiresAt, arg.LifetimeSeconds, arg.ID)
-	var i ApiToken
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.AthleteID,
-		&i.HashedToken,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.LastUsedAt,
-		&i.ExpiresAt,
-		&i.LifetimeSeconds,
 	)
 	return i, err
 }

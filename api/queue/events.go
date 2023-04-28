@@ -3,6 +3,8 @@ package queue
 import (
 	"context"
 
+	"github.com/Emyrk/strava/database"
+
 	"github.com/Emyrk/strava/api/webhooks"
 )
 
@@ -33,7 +35,7 @@ func (m *Manager) newActivity(ctx context.Context, event webhooks.WebhookEvent) 
 	var qErr error
 	switch event.AspectType {
 	case "create":
-		qErr = m.EnqueueFetchActivity(ctx, event.OwnerID, event.ObjectID)
+		qErr = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceWebhook, event.OwnerID, event.ObjectID)
 	case "update":
 		qErr = m.EnqueueUpdateActivity(ctx, event)
 	case "delete":

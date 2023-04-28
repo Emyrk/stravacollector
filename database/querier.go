@@ -6,8 +6,6 @@ package database
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 type sqlcQuerier interface {
@@ -15,15 +13,11 @@ type sqlcQuerier interface {
 	// The returned activities include the best effort for each segment.
 	BestRouteEfforts(ctx context.Context, expectedSegments []int64) ([]BestRouteEffortsRow, error)
 	DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error)
-	DeleteToken(ctx context.Context, id uuid.UUID) error
 	GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error)
 	GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteLoad, error)
 	GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error)
 	GetAthleteNeedsLoad(ctx context.Context) (GetAthleteNeedsLoadRow, error)
-	GetToken(ctx context.Context, id uuid.UUID) (ApiToken, error)
-	InsertAPIToken(ctx context.Context, arg InsertAPITokenParams) (ApiToken, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
-	RenewToken(ctx context.Context, arg RenewTokenParams) (ApiToken, error)
 	UpdateActivityName(ctx context.Context, arg UpdateActivityNameParams) error
 	UpsertActivityDetail(ctx context.Context, arg UpsertActivityDetailParams) (ActivityDetail, error)
 	UpsertActivitySummary(ctx context.Context, arg UpsertActivitySummaryParams) (ActivitySummary, error)
