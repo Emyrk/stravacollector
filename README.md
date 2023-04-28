@@ -10,3 +10,6 @@ Old activities have KOM rank for subscribers only.
 - Bullick Hollow: https://www.strava.com/segments/628785
 - Jester: https://www.strava.com/segments/629546
 - Big view: https://www.strava.com/segments/628842
+
+https://pro.chakra-ui.com/components/application/tables
+https://choc-ui.com/docs/packages/pagination

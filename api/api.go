@@ -100,6 +100,9 @@ func (api *API) Routes() chi.Router {
 		r.Get("/callback", api.stravaOAuth2)
 	})
 	r.Route("/api/v1", func(r chi.Router) {
+		r.Use(
+			httpmw.Authenticated(api.Auth),
+		)
 		r.Get("/whoami", api.whoAmI)
 	})
 	r.NotFound(server.Handler(server.FS()).ServeHTTP)
