@@ -4,7 +4,7 @@ import { getAuthenticatedUser } from "../api/rest";
 import { useQuery } from "@tanstack/react-query";
 
 interface AuthenticatedContextValue {
-  authenticatedUser?: TypesGen.AthleteLogin
+  authenticatedUser?: TypesGen.AthleteSummary
   fetchError?: Error | unknown
   isFetched: boolean
   isLoading: boolean

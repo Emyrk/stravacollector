@@ -16,6 +16,7 @@ import {
   useDisclosure,
   useToast,
   Avatar,
+  Image,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -27,10 +28,11 @@ import { StravaConnect } from './StravaConnect';
 import { useAuthenticated } from '../../contexts/Authenticated';
 import { getErrorMessage, getErrorDetail } from '../../api/rest';
 import { useEffect } from 'react';
+import { AthleteAvatar } from '../AthleteAvatar/AthleteAvatar';
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
-  const { authenticatedUser, fetchError } = useAuthenticated()
+  const { authenticatedUser, fetchError, isFetched: athleteFetched } = useAuthenticated()
 
   // TODO: Probably want to factor this toast better?
   const toast = useToast()
@@ -76,12 +78,11 @@ export default function Navbar() {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-          <Text
-            textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-            fontFamily={'heading'}
-            color={useColorModeValue('gray.800', 'white')}>
-            Logo
-          </Text>
+          <Box>
+            {/* https://chakra-ui.com/docs/components/image/usage */}
+            <Image height={"80px"} src="/logos/mountainwheeltype.jpeg" alt="Hugel Ranker">
+            </Image>
+          </Box>
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
             <DesktopNav />
@@ -93,13 +94,10 @@ export default function Navbar() {
           justify={'flex-end'}
           direction={'row'}
           spacing={6}>
-
           {authenticatedUser ?
-            <Avatar
-
-            />
+            <AthleteAvatar athlete={authenticatedUser} />
             :
-            <IconButton
+            athleteFetched && <IconButton
               aria-label={"strava sign in"}
               icon={<StravaConnect />}
             />}
@@ -109,7 +107,7 @@ export default function Navbar() {
       <Collapse in={isOpen} animateOpacity>
         <MobileNav />
       </Collapse>
-    </Box>
+    </Box >
   );
 }
 

@@ -7,6 +7,19 @@ export interface AthleteLogin {
   readonly summit: boolean
 }
 
+// From codersdk/athlete.go
+export interface AthleteSummary {
+  readonly athlete_id: number
+  readonly summit: boolean
+  readonly username: string
+  readonly firstname: string
+  readonly lastname: string
+  readonly sex: string
+  readonly profile_pic_link: string
+  readonly profile_pic_link_medium: string
+  readonly updated_at: string
+}
+
 // From codersdk/response.go
 export interface Response {
   readonly message: string

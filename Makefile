@@ -1,7 +1,7 @@
 FIND_EXCLUSIONS= \
 	-not \( \( -path '*/.git/*' -o -path './build/*' -o -path './vendor/*' -o -path './.coderv2/*' -o -path '*/node_modules/*' -o -path './site/out/*' \) -prune \)
 
-gen: database/dump.sql database/querier.go
+gen: database/dump.sql database/querier.go site/strava-frontend/src/api/typesGenerated.ts
 
 .PHONY: gen
 

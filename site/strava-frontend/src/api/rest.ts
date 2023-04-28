@@ -6,10 +6,10 @@ export type ApiError = AxiosError<TypesGen.Response> & {
 }
 
 export const getAuthenticatedUser = async (): Promise<
-  TypesGen.AthleteLogin | undefined
+  TypesGen.AthleteSummary | undefined
 > => {
   try {
-    const response = await axios.get<TypesGen.AthleteLogin>("/api/v1/whoami")
+    const response = await axios.get<TypesGen.AthleteSummary>("/api/v1/whoami")
     return response.data
   } catch (error) {
     throw error
