@@ -82,6 +82,8 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			Ftp:                   athlete.Ftp,
 			Weight:                athlete.Weight,
 			Clubs:                 athlete.Clubs,
+			ProfilePicLink:        athlete.Profile,
+			ProfilePicLinkMedium:  athlete.ProfileMedium,
 		})
 		if err != nil {
 			return fmt.Errorf("upsert athlete: %w", err)

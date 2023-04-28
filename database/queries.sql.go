@@ -546,10 +546,11 @@ INSERT INTO
 	athletes(
 	fetched_at, id, created_at, updated_at,
 		summit, username, firstname, lastname, sex, city, state, country,
-		follow_count, friend_count, measurement_preference, ftp, weight, clubs
+		follow_count, friend_count, measurement_preference, ftp, weight, clubs,
+		profile_pic_link, profile_pic_link_medium
 )
 VALUES
-	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -569,8 +570,10 @@ ON CONFLICT
 		measurement_preference = $14,
 		ftp = $15,
 		weight = $16,
-		clubs = $17
-RETURNING id, summit, username, firstname, lastname, sex, city, state, country, follow_count, friend_count, measurement_preference, ftp, weight, clubs, created_at, updated_at, fetched_at
+		clubs = $17,
+		profile_pic_link = $18,
+		profile_pic_link_medium = $19
+RETURNING id, summit, username, firstname, lastname, sex, city, state, country, follow_count, friend_count, measurement_preference, ftp, weight, clubs, created_at, updated_at, fetched_at, profile_pic_link, profile_pic_link_medium
 `
 
 type UpsertAthleteParams struct {
@@ -591,6 +594,8 @@ type UpsertAthleteParams struct {
 	Ftp                   float64         `db:"ftp" json:"ftp"`
 	Weight                float64         `db:"weight" json:"weight"`
 	Clubs                 json.RawMessage `db:"clubs" json:"clubs"`
+	ProfilePicLink        string          `db:"profile_pic_link" json:"profile_pic_link"`
+	ProfilePicLinkMedium  string          `db:"profile_pic_link_medium" json:"profile_pic_link_medium"`
 }
 
 func (q *sqlQuerier) UpsertAthlete(ctx context.Context, arg UpsertAthleteParams) (Athlete, error) {
@@ -612,6 +617,8 @@ func (q *sqlQuerier) UpsertAthlete(ctx context.Context, arg UpsertAthleteParams)
 		arg.Ftp,
 		arg.Weight,
 		arg.Clubs,
+		arg.ProfilePicLink,
+		arg.ProfilePicLinkMedium,
 	)
 	var i Athlete
 	err := row.Scan(
@@ -633,6 +640,8 @@ func (q *sqlQuerier) UpsertAthlete(ctx context.Context, arg UpsertAthleteParams)
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.FetchedAt,
+		&i.ProfilePicLink,
+		&i.ProfilePicLinkMedium,
 	)
 	return i, err
 }

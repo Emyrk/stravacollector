@@ -71,10 +71,11 @@ INSERT INTO
 	athletes(
 	fetched_at, id, created_at, updated_at,
 		summit, username, firstname, lastname, sex, city, state, country,
-		follow_count, friend_count, measurement_preference, ftp, weight, clubs
+		follow_count, friend_count, measurement_preference, ftp, weight, clubs,
+		profile_pic_link, profile_pic_link_medium
 )
 VALUES
-	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+	(Now(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
 ON CONFLICT
 	(id)
 	DO UPDATE SET
@@ -94,7 +95,9 @@ ON CONFLICT
 		measurement_preference = $14,
 		ftp = $15,
 		weight = $16,
-		clubs = $17
+		clubs = $17,
+		profile_pic_link = $18,
+		profile_pic_link_medium = $19
 RETURNING *;
 
 

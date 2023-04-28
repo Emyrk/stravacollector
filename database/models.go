@@ -171,6 +171,8 @@ type Athlete struct {
 	CreatedAt             time.Time       `db:"created_at" json:"created_at"`
 	UpdatedAt             time.Time       `db:"updated_at" json:"updated_at"`
 	FetchedAt             time.Time       `db:"fetched_at" json:"fetched_at"`
+	ProfilePicLink        string          `db:"profile_pic_link" json:"profile_pic_link"`
+	ProfilePicLinkMedium  string          `db:"profile_pic_link_medium" json:"profile_pic_link_medium"`
 }
 
 // Tracks loading athlete activities. Must be an authenticated athlete.

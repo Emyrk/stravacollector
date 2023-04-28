@@ -138,7 +138,9 @@ CREATE TABLE athletes (
     clubs json NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    fetched_at timestamp with time zone NOT NULL
+    fetched_at timestamp with time zone NOT NULL,
+    profile_pic_link text DEFAULT ''::text NOT NULL,
+    profile_pic_link_medium text DEFAULT ''::text NOT NULL
 );
 
 COMMENT ON COLUMN athletes.measurement_preference IS 'feet or meters';
