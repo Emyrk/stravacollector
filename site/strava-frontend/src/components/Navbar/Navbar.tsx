@@ -22,9 +22,11 @@ import {
   ChevronRightIcon,
 } from '@chakra-ui/icons';
 import { StravaConnect } from './StravaConnect';
+import { useAuthenticated } from '../../contexts/Authenticated';
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
+  const { authenticatedUser, isFetched } = useAuthenticated()
 
   return (
     <Box>
@@ -69,31 +71,11 @@ export default function Navbar() {
           justify={'flex-end'}
           direction={'row'}
           spacing={6}>
-          <IconButton
+
+          {!authenticatedUser && <IconButton
             aria-label={"strava sign in"}
             icon={<StravaConnect />}
-          />
-          {/* <Button
-            as={'a'}
-            fontSize={'sm'}
-            fontWeight={400}
-            variant={'link'}
-            href={'#'}>
-            Sign In
-          </Button>
-          <Button
-            as={'a'}
-            display={{ base: 'none', md: 'inline-flex' }}
-            fontSize={'sm'}
-            fontWeight={600}
-            color={'white'}
-            bg={'pink.400'}
-            href={'#'}
-            _hover={{
-              bg: 'pink.300',
-            }}>
-            Sign Up
-          </Button> */}
+          />}
         </Stack>
       </Flex>
 

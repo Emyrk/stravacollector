@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"crypto"
 	"fmt"
 	"strconv"
 	"time"
@@ -20,15 +21,21 @@ type Options struct {
 }
 
 type Authentication struct {
-	Lifetime time.Duration
-	Signer   jose.Signer
-	Issuer   string
+	Lifetime  time.Duration
+	Signer    jose.Signer
+	Validator crypto.PublicKey
+	Issuer    string
 }
 
 func New(opts Options) (*Authentication, error) {
 	secretKey, err := authkeys.ParsePrivateKey(opts.SecretPEM)
 	if err != nil {
 		return nil, fmt.Errorf("parse private key: %w", err)
+	}
+	secretKey.Public()
+
+	if opts.Lifetime <= 0 {
+		opts.Lifetime = time.Hour * 24 * 7
 	}
 
 	// Instantiate a signer using RSASSA-PSS (SHA512) with the given private key.
@@ -38,9 +45,10 @@ func New(opts Options) (*Authentication, error) {
 	}
 
 	return &Authentication{
-		Lifetime: opts.Lifetime,
-		Signer:   signer,
-		Issuer:   opts.Issuer,
+		Lifetime:  opts.Lifetime,
+		Signer:    signer,
+		Validator: secretKey.Public(),
+		Issuer:    opts.Issuer,
 	}, nil
 }
 
@@ -52,7 +60,7 @@ func (a *Authentication) ValidateSession(payload string) (int64, error) {
 	}
 
 	claims := jwt.Claims{}
-	err = token.Claims(a.Signer, &claims)
+	err = token.Claims(a.Validator, &claims)
 	if err != nil {
 		return -1, fmt.Errorf("parse claims: %w", err)
 	}

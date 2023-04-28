@@ -20,16 +20,34 @@ import {
 import { HugelBoard } from "./pages/HugelBoard";
 import { Landing } from "./pages/Landing/Landing";
 import Navbar from "./components/Navbar/Navbar";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthenticatedProvider } from "./contexts/Authenticated";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      cacheTime: 0,
+      refetchOnWindowFocus: false,
+      networkMode: "offlineFirst",
+    },
+  },
+})
+
 
 export const App = () => (
-  <ChakraProvider theme={theme}>
-    <Navbar />
-    <Router>
-      <Routes>
-        {/* Navbar and statics */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/hugelboard" element={<HugelBoard />} />
-      </Routes>
-    </Router>
-  </ChakraProvider>
+  <QueryClientProvider client={queryClient}>
+    <AuthenticatedProvider>
+      <ChakraProvider theme={theme}>
+        <Navbar />
+        <Router>
+          <Routes>
+            {/* Navbar and statics */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/hugelboard" element={<HugelBoard />} />
+          </Routes>
+        </Router>
+      </ChakraProvider>
+    </AuthenticatedProvider>
+  </QueryClientProvider>
 )

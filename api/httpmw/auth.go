@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	StravaAuthJWTCookie = "strava-auth-jwt"
+	StravaAuthJWTCookie = "strava_auth_jwt"
 	StravaAuthJWTHeader = "Strava-Auth-JWT"
 )
 

@@ -106,8 +106,10 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(rw, &http.Cookie{
 		Name:     httpmw.StravaAuthJWTCookie,
+		Path:     "/",
 		Value:    session,
 		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
 	})
 
 	logger.Info().
