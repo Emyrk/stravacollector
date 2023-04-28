@@ -161,7 +161,7 @@ func serverCmd() *cobra.Command {
 
 			go func() {
 				logger.Debug().Msg("Will watch strava rate limits every minute.")
-				ticker := time.NewTicker(time.Minute)
+				ticker := time.NewTicker(time.Minute * 10)
 				for {
 					select {
 					case <-ctx.Done():
