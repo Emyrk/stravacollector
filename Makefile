@@ -24,5 +24,5 @@ site/strava-frontend/src/api/typesGenerated.ts: scripts/apitypings/main.go $(she
 	cd site
 
 build:
-	go build -o bin/strava
+	go build -o bin/strava --tags=static
 	# -ldflags="-X 'main.Version=$(VERSION)' -X 'main.BuildTime=$(BUILD_TIME)'" -o bin/$(BINARY_NAME) ./cmd/$(BINARY_NAME)
