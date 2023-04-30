@@ -134,5 +134,6 @@ func (api *API) logout(rw http.ResponseWriter, r *http.Request) {
 		MaxAge: -1,
 	})
 
+	// TODO: Pull redirect url from query param if present.
 	http.Redirect(rw, r, "/signed-out", http.StatusSeeOther)
 }
