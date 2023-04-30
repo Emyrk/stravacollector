@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { AthleteSummary } from "../../api/typesGenerated"
-import { Menu, MenuList, MenuItem, MenuButton, Button, useTheme, Container } from "@chakra-ui/react"
+import { Text, Menu, MenuList, MenuItem, MenuButton, Button, useTheme, Container, Link } from "@chakra-ui/react"
 import { AthleteAvatar } from "../AthleteAvatar/AthleteAvatar"
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -20,12 +20,12 @@ export const AthleteAvatarDropdown: FC<{
       <AthleteAvatar athlete={athlete} size="lg" />
     </MenuButton>
     <MenuList>
-      <MenuItem>
-        <RouteLink to="/logout">
+      <Link href="/logout" style={{ textDecoration: 'none' }}>
+        <MenuItem>
           <FontAwesomeIcon icon={faArrowRightFromBracket} />
-          <Container paddingLeft={"10px"}>Logout</Container>
-        </RouteLink>
-      </MenuItem>
+          <Text as="span" paddingLeft={"10px"}>Logout</Text>
+        </MenuItem>
+      </Link>
       <MenuItem>
         <FontAwesomeIcon icon={faGear} />
         <Container paddingLeft={"10px"}>Settings</Container>
