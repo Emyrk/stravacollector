@@ -9,6 +9,10 @@ import {
   Grid,
   theme,
   extendTheme,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
 } from "@chakra-ui/react"
 import { ColorModeSwitcher } from "./ColorModeSwitcher"
 import { Logo } from "./Logo"
@@ -26,6 +30,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthenticatedProvider } from "./contexts/Authenticated";
 import { FC } from "react";
 import { NotFound } from "./pages/404/404";
+import { SignedOut } from "./pages/SignedOut/SignedOut";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,6 +64,7 @@ export const App = () => {
               {/* Navbar and statics */}
               <Route path="/" element={<Landing />} />
               <Route path="/hugelboard" element={<HugelBoard />} />
+              <Route path="/signed-out" element={<SignedOut />} />
             </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>

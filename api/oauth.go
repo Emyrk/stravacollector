@@ -126,3 +126,13 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(rw, r, state.Redirect, http.StatusSeeOther)
 }
+
+func (api *API) logout(rw http.ResponseWriter, r *http.Request) {
+	http.SetCookie(rw, &http.Cookie{
+		Name:   httpmw.StravaAuthJWTCookie,
+		Path:   "/",
+		MaxAge: -1,
+	})
+
+	http.Redirect(rw, r, "/signed-out", http.StatusSeeOther)
+}

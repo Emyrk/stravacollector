@@ -105,6 +105,7 @@ func (api *API) Routes() chi.Router {
 		)
 		r.Get("/whoami", api.whoAmI)
 	})
+	r.Get("/logout", api.logout)
 	r.NotFound(server.Handler(server.FS()).ServeHTTP)
 
 	return r

@@ -32,6 +32,7 @@ import { useAuthenticated } from '../../contexts/Authenticated';
 import { getErrorMessage, getErrorDetail } from '../../api/rest';
 import { useEffect } from 'react';
 import { AthleteAvatar } from '../AthleteAvatar/AthleteAvatar';
+import { AthleteAvatarDropdown } from './AthleteAvatarDropdown';
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
@@ -55,6 +56,8 @@ export default function Navbar() {
     }
   }, [toast, authenticatedUser, fetchError]);
 
+  const connectURL = "oauth2/callback?redirect=" +
+    (window.location.pathname ? encodeURIComponent(window.location.pathname) : "/")
   return (
     <Box>
       <Flex
@@ -84,7 +87,7 @@ export default function Navbar() {
           <Box>
             <RouteLink to="/">
               {/* https://chakra-ui.com/docs/components/image/usage */}
-              <Image height={"80px"} src="/logos/mountainwheeltype.jpeg" alt="Hugel Ranker">
+              <Image height={"80px"} src="/logos/LogoTypeColor.jpeg" alt="Hugel Ranker">
               </Image>
             </RouteLink>
           </Box>
@@ -100,12 +103,15 @@ export default function Navbar() {
           direction={'row'}
           spacing={6}>
           {authenticatedUser ?
-            <AthleteAvatar athlete={authenticatedUser} />
+            <AthleteAvatarDropdown athlete={authenticatedUser} />
             :
-            athleteFetched && <IconButton
-              aria-label={"strava sign in"}
-              icon={<StravaConnect />}
-            />}
+            <RouteLink to={connectURL}>
+              <IconButton
+                aria-label={"strava sign in"}
+                icon={<StravaConnect />}
+              />
+            </RouteLink>
+          }
         </Stack>
       </Flex>
 
