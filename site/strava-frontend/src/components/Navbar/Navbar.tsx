@@ -105,12 +105,12 @@ export default function Navbar() {
           {authenticatedUser ?
             <AthleteAvatarDropdown athlete={authenticatedUser} />
             :
-            <RouteLink to={connectURL}>
+            <Link href={connectURL}>
               <IconButton
                 aria-label={"strava sign in"}
                 icon={<StravaConnect />}
               />
-            </RouteLink>
+            </Link>
           }
         </Stack>
       </Flex>
