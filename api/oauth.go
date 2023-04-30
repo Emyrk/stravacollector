@@ -1,6 +1,8 @@
 package api
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -32,6 +34,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	doLoad := false
 	err = api.Opts.DB.InTx(func(store database.Store) error {
 		_, err = store.UpsertAthleteLogin(ctx, database.UpsertAthleteLoginParams{
 			AthleteID:         athlete.ID,
@@ -47,7 +50,10 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		// Insert a load if we don't have one
-		if _, err := store.GetAthleteLoad(ctx, athlete.ID); err != nil {
+		_, err := store.GetAthleteLoad(ctx, athlete.ID)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			doLoad = true
+			// No load means we need to insert one
 			_, err = store.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
 				AthleteID:                  athlete.ID,
 				LastBackloadActivityStart:  time.Time{},
@@ -62,6 +68,9 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				return fmt.Errorf("upsert load: %w", err)
 			}
+		}
+		if err != nil {
+			return fmt.Errorf("get load: %w", err)
 		}
 
 		_, err = store.UpsertAthlete(ctx, database.UpsertAthleteParams{
@@ -122,6 +131,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		Str("lastname", athlete.Lastname).
 		Int64("id", athlete.ID).
 		Str("redirect", state.Redirect).
+		Bool("do_load", doLoad).
 		Msg("Authenticated Athlete")
 
 	http.Redirect(rw, r, state.Redirect, http.StatusSeeOther)
