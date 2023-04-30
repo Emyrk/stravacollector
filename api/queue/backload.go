@@ -223,7 +223,10 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 			LastBackloadActivityStart:  lastActStart,
 			LastLoadAttempt:            time.Now(),
 			LastLoadIncomplete:         true,
+			LastLoadError:              "",
 			ActivitesLoadedLastAttempt: int32(len(activities)),
+			EarliestActivity:           athlete.EarliestActivity,
+			EarliestActivityDone:       athlete.EarliestActivityDone,
 		}
 		if backloadingHistory {
 			params.EarliestActivity = first.StartDate
