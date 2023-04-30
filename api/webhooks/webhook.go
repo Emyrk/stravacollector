@@ -173,10 +173,14 @@ func (a *ActivityEvents) Attach(r chi.Router) chi.Router {
 }
 
 func (a *ActivityEvents) ViewWebhook(ctx context.Context) ([]stravawebhook.Webhook, error) {
+	a.Logger.Debug().
+		Msg("view webhook api call")
 	return stravawebhook.ViewWebhook(ctx, a.OauthConfig.ClientID, a.OauthConfig.ClientSecret)
 }
 
 func (a *ActivityEvents) CreateWebhook(ctx context.Context) (int, error) {
+	a.Logger.Debug().
+		Msg("create webhook api call")
 	return stravawebhook.CreateWebhook(ctx,
 		a.OauthConfig.ClientID,
 		a.OauthConfig.ClientSecret,
@@ -186,6 +190,8 @@ func (a *ActivityEvents) CreateWebhook(ctx context.Context) (int, error) {
 }
 
 func (a *ActivityEvents) DeleteWebhook(ctx context.Context, id int) error {
+	a.Logger.Debug().
+		Msg("delete webhook api call")
 	return stravawebhook.DeleteWebhook(ctx,
 		a.OauthConfig.ClientID,
 		a.OauthConfig.ClientSecret,
