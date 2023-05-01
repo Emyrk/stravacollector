@@ -2,8 +2,6 @@ import {
   Box,
   Flex,
   Text,
-  IconButton,
-  Button,
   Stack,
   Collapse,
   Icon,
@@ -12,19 +10,15 @@ import {
   PopoverTrigger,
   PopoverContent,
   useColorModeValue,
-  useBreakpointValue,
   useDisclosure,
-  useToast,
-  Avatar,
   Image,
   Container,
+  Tag,
 } from '@chakra-ui/react';
 import {
   Link as RouteLink,
 } from "react-router-dom";
 import {
-  HamburgerIcon,
-  CloseIcon,
   ChevronDownIcon,
   ChevronRightIcon,
 } from '@chakra-ui/icons';
@@ -34,104 +28,44 @@ import { getErrorMessage, getErrorDetail } from '../../api/rest';
 import { useEffect } from 'react';
 import { AthleteAvatar } from '../AthleteAvatar/AthleteAvatar';
 import { AthleteAvatarDropdown } from './AthleteAvatarDropdown';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrophy } from '@fortawesome/free-solid-svg-icons'
+import { ColorModeSwitcher } from '../ColorModeSwitcher/ColorModeSwitcher';
 
-export default function Navbar() {
+const Navbar: React.FC = () => {
   const { isOpen, onToggle } = useDisclosure();
-  const { authenticatedUser, isFetched: athleteFetched } = useAuthenticated()
+  // const theme = useTheme()
 
-  // TODO: Probably want to factor this toast better?
-  // const toast = useToast()
-  // const toastID = "authenticated-user-toast"
-  // useEffect(() => {
-  //   if (fetchError) {
-  //     const title = getErrorMessage(fetchError, "Authentication Error")
-  //     const description = getErrorDetail(fetchError)
-  //     toast({
-  //       id: toastID,
-  //       title: <>{title}</>,
-  //       description: <>{description ? description : "Unkown error getting authenticated user"}</>,
-  //       position: "bottom-right",
-  //       isClosable: true,
-  //       status: "error",
-  //     })
-  //   }
-  // }, [toast, authenticatedUser, fetchError]);
-
-  const connectURL = "oauth2/callback?redirect=" +
-    (window.location.pathname ? encodeURIComponent(window.location.pathname) : "/")
-  return (
-    <Box>
-      <Flex
-        bg={useColorModeValue('white', 'gray.800')}
-        color={useColorModeValue('gray.600', 'white')}
-        minH={'60px'}
-        py={{ base: 2 }}
-        px={{ base: 4 }}
-        borderBottom={1}
-        borderStyle={'solid'}
-        borderColor={useColorModeValue('gray.200', 'gray.900')}
-        align={'center'}>
-        <Flex
-          flex={{ base: 1, md: 'auto' }}
-          ml={{ base: -2 }}
-          display={{ base: 'flex', md: 'none' }}>
-          <IconButton
-            onClick={onToggle}
-            icon={
-              isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
-            }
-            variant={'ghost'}
-            aria-label={'Toggle Navigation'}
-          />
-        </Flex>
-        <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-          <Box>
-            <RouteLink to="/">
-              {/* https://chakra-ui.com/docs/components/image/usage */}
-              <Image maxHeight={"80px"} src="/logos/LogoTypeColorSquare.png" alt="Hugel Ranker" display={{ base: 'block', md: 'none' }} />
-              <Image maxHeight={"80px"} src="/logos/LogoTypeColor.png" alt="Hugel Ranker" display={{ base: 'none', md: 'block' }} />
-            </RouteLink>
-          </Box>
-
-          <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <DesktopNav />
-          </Flex>
-        </Flex>
-
-        <Stack
-          flex={{ base: 1, md: 0 }}
-          justify={'flex-end'}
-          direction={'row'}
-          spacing={6}>
-          {authenticatedUser ?
-            <AthleteAvatarDropdown athlete={authenticatedUser} />
-            :
-            <Link href={connectURL}>
-              <IconButton
-                aria-label={"strava sign in"}
-                icon={<StravaConnect />}
-                bg="transparent"
-              />
-            </Link>
-          }
-        </Stack>
+  return <>
+    <Flex w='100%' maxW={'7xl'} m={'1rem auto 0'} justifyContent='space-between' alignItems={'center'} p={3} pb={0}>
+      <Box>
+        <RouteLink to="/">
+          {/* https://chakra-ui.com/docs/components/image/usage */}
+          <Image maxHeight={"80px"} src="/logos/LogoTypeColorSquare.png" alt="Hugel Ranker" display={{ base: 'block', md: 'none' }} />
+          <Image maxHeight={"80px"} src="/logos/LogoTypeColor.png" alt="Hugel Ranker" display={{ base: 'none', md: 'block' }} />
+        </RouteLink>
+      </Box>
+      <ColorModeSwitcher justifySelf="flex-end" />
+      <Flex alignItems={'center'} gap={2}>
+        <DesktopNav display={{ base: 'none', md: 'block' }} />
+        <StravaConnect />
       </Flex>
-
-      <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
-      </Collapse>
-    </Box >
-  );
+    </Flex>
+    <MobileNav display={{ base: 'block', md: 'none' }} />
+  </>
 }
 
-const DesktopNav = () => {
+export default Navbar
+
+
+const DesktopNav: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
   const linkColor = useColorModeValue('gray.600', 'gray.200');
   const linkHoverColor = useColorModeValue('gray.800', 'white');
   const popoverContentBgColor = useColorModeValue('white', 'gray.800');
 
   return (
-    <Stack direction={'row'} spacing={4}>
-      {NAV_ITEMS.map((navItem) => (
+    <Stack direction={'row'} spacing={4} display={display}>
+      {NAV_ITEMS.map((navItem, index) => (
         <Box key={navItem.label}>
           <Popover trigger={'hover'} placement={'bottom-start'}>
             <PopoverTrigger>
@@ -145,7 +79,10 @@ const DesktopNav = () => {
                   color: linkHoverColor,
                 }}>
                 <RouteLink to={navItem.href ?? '#'}>
-                  {navItem.label}
+                  <Tag p={3} display={'flex'} gap={2}>
+                    <FontAwesomeIcon icon={faTrophy} />
+                    {navItem.label}
+                  </Tag>
                 </RouteLink>
               </Container>
             </PopoverTrigger>
@@ -210,12 +147,12 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   );
 };
 
-const MobileNav = () => {
+const MobileNav: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
   return (
     <Stack
       bg={useColorModeValue('white', 'gray.800')}
       p={4}
-      display={{ md: 'none' }}>
+      display={display}>
       {NAV_ITEMS.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
@@ -233,7 +170,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         as={Link}
         href={href ?? '#'}
         justify={'space-between'}
-        align={'center'}
+        alignItems={'center'}
         _hover={{
           textDecoration: 'none',
         }}>

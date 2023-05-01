@@ -7,14 +7,13 @@ import {
   VStack,
   Code,
   Grid,
-  theme,
   extendTheme,
   Alert,
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  useColorModeValue,
 } from "@chakra-ui/react"
-import { ColorModeSwitcher } from "./ColorModeSwitcher"
 import { Logo } from "./Logo"
 import {
   BrowserRouter as Router,
@@ -44,17 +43,27 @@ const queryClient = new QueryClient({
 })
 
 
+const theme = extendTheme({
+  components: {
+    Tabs: {
+      baseStyle: {
+        tab: {
+          _selected: {
+            color: "#fc4c02",
+          }
+        }
+      },
+    }
+  },
+  colors: {
+    brand: {
+      primary: "#ebebeb",
+      stravaOrange: "#fc4c02",
+    },
+  },
+})
 
 export const App = () => {
-  const theme = extendTheme({
-    colors: {
-      brand: {
-        primary: "#ebebeb",
-        secondary: "#fc4c02",
-      },
-    },
-  })
-
   return <QueryClientProvider client={queryClient}>
     <AuthenticatedProvider>
       <ChakraProvider theme={theme}>
@@ -75,8 +84,11 @@ export const App = () => {
 }
 
 export const IncludeNavbar: FC = () => {
+  const bgSrc = useColorModeValue("dark", "light")
   return <>
-    <Navbar />
-    <Outlet />
+    <Box h={'100svh'} background={`url(/hugel_route_lines_${bgSrc}.svg)`} backgroundPosition={'center'} backgroundRepeat={'no-repeat'} backgroundSize='cover'  >
+      <Navbar />
+      <Outlet />
+    </Box>
   </>
 }

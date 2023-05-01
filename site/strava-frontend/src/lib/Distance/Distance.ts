@@ -1,3 +1,7 @@
+export const DistanceToLocalElevation = (distance: number): number => {
+  return DistanceToMiles(distance)*5280
+}
+
 export const DistanceToLocal = (distance: number): number => {
   return DistanceToMiles(distance)
 }
