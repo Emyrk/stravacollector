@@ -110,7 +110,8 @@ const GalleryCard: React.FC<{
   const elapsed = `${Math.floor(activity.elapsed / 3600)}:${Math.floor(activity.elapsed / 60) % 60}:${activity.elapsed % 60}`
   const totalElapsed = `${Math.floor(activity.activity_elapsed_time / 3600)}:${Math.floor(activity.activity_elapsed_time / 60) % 60}`
   const elevation = `${Math.floor(DistanceToLocalElevation(activity.activity_total_elevation_gain) / 100) / 10}k`
-  const avgWatts = activity.efforts.reduce((acc, effort) => acc + effort.average_watts, 0) / activity.efforts.length
+  const showWatts = activity.efforts.every(effort => effort.average_watts > 0 && effort.device_watts)
+  const avgWatts = Math.floor(activity.efforts.reduce((acc, effort) => acc + effort.average_watts * effort.elapsed_time, 0) / activity.elapsed).toString()
 
   return <Box w='100%' maxW='350px' h='300px' bg={bgColor} borderRadius={'1rem'}
     filter={`drop-shadow(2px 2px 2px rgba(${shadowColorRGB}, 0.25))`}
@@ -151,8 +152,8 @@ const GalleryCard: React.FC<{
       <StatBox stat={Math.floor(DistanceToLocal(activity.activity_distance)).toString()} label={"miles"} />
     </Grid>
     <Grid gridTemplateColumns='1fr 1fr 1fr' gap={3} px={4}>
-      <StatBox stat={totalElapsed} label={"total time"} />
-      <StatBox />
+      <StatBox stat={totalElapsed} label={"total hours"} />
+      <StatBox stat={showWatts ? avgWatts : "--"} label={"watts"} />
       <StatBox stat={elevation} label={"feet"} />
     </Grid>
 
@@ -167,7 +168,7 @@ const StatBox: React.FC<{
 }) => {
     return <Flex flexDir={'column'} justifyContent={'center'} alignItems={'center'} textAlign={'center'} bg={'antiquewhite'} h={'4rem'} borderRadius={3} color={'black'}>
       <Text fontWeight={700} fontFamily='monospace' fontSize='1rem'>{stat || "123"}</Text>
-      <Text>{label || "miles"}</Text>
+      <Text opacity={.5}>{label || "miles"}</Text>
     </Flex >
   }
 
