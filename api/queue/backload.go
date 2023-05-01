@@ -10,7 +10,6 @@ import (
 	"github.com/Emyrk/strava/strava/stravalimit"
 
 	"github.com/Emyrk/strava/database"
-	"golang.org/x/oauth2"
 
 	"github.com/Emyrk/strava/strava"
 )
@@ -52,19 +51,20 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 		if err != nil {
 			// This could be bad
 			_, dbErr := m.DB.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
-				AthleteID:                  athlete.AthleteID,
-				LastBackloadActivityStart:  athlete.LastBackloadActivityStart,
+				AthleteID:                  athlete.AthleteLoad.AthleteID,
+				LastBackloadActivityStart:  athlete.AthleteLoad.LastBackloadActivityStart,
 				LastLoadAttempt:            time.Now(),
 				LastLoadIncomplete:         false,
 				LastLoadError:              err.Error(),
 				ActivitesLoadedLastAttempt: 0,
-				EarliestActivity:           athlete.EarliestActivity,
-				EarliestActivityDone:       athlete.EarliestActivityDone,
+				EarliestActivity:           athlete.AthleteLoad.EarliestActivity,
+				EarliestActivityDone:       athlete.AthleteLoad.EarliestActivityDone,
 			})
 			logger.Error().
 				AnErr("db_error", dbErr).
 				Err(err).
 				Msg("backload athlete failed")
+			time.Sleep(backloadWait)
 			continue
 		}
 	}
@@ -83,16 +83,16 @@ func (m *Manager) athleteToLoad(ctx context.Context) *database.GetAthleteNeedsLo
 	}
 
 	// If the athlete is incomplete, always return
-	if athlete.LastLoadIncomplete {
+	if athlete.AthleteLoad.LastLoadIncomplete {
 		return &athlete
 	}
 
-	if !athlete.EarliestActivityDone {
+	if !athlete.AthleteLoad.EarliestActivityDone {
 		return &athlete
 	}
 
 	// If it has been over 24 hours, return it
-	if time.Since(athlete.LastLoadAttempt) > time.Hour*24 {
+	if time.Since(athlete.AthleteLoad.LastLoadAttempt) > time.Hour*24 {
 		return &athlete
 	}
 
@@ -101,28 +101,24 @@ func (m *Manager) athleteToLoad(ctx context.Context) *database.GetAthleteNeedsLo
 
 // backloadAthlete tries to make progress backloading activities for some athlete.
 func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthleteNeedsLoadRow) error {
-	logger := m.Logger.With().Int64("athlete_id", athlete.AthleteID).Logger()
+	logger := m.Logger.With().Int64("athlete_id", athlete.AthleteLogin.AthleteID).Logger()
 
 	// Make progress on the athlete
-	logger = logger.With().Int64("athlete_id", athlete.AthleteID).Logger()
+	logger = logger.With().Int64("athlete_id", athlete.AthleteLogin.AthleteID).Logger()
 
-	cli := strava.NewOAuthClient(m.OAuthCfg.Client(ctx, &oauth2.Token{
-		AccessToken:  athlete.OauthAccessToken,
-		TokenType:    athlete.OauthTokenType,
-		RefreshToken: athlete.OauthRefreshToken,
-		Expiry:       athlete.OauthExpiry,
-	}))
+	cli := strava.NewOAuthClient(m.OAuthCfg.Client(ctx, athlete.AthleteLogin.OAuthToken()))
 
 	params := strava.GetActivitiesParams{
 		Page:    0,
 		PerPage: 50,
 	}
 	backloadingHistory := false
-	if !athlete.EarliestActivityDone {
-		params.Before = athlete.EarliestActivity.Add(time.Second * -1)
+	athleteLoad := athlete.AthleteLoad
+	if !athleteLoad.EarliestActivityDone {
+		params.Before = athleteLoad.EarliestActivity.Add(time.Second * -1)
 		backloadingHistory = true
 	} else {
-		params.After = athlete.LastBackloadActivityStart
+		params.After = athleteLoad.LastBackloadActivityStart
 	}
 
 	activities, err := cli.GetActivities(ctx, params)
@@ -132,21 +128,21 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 
 	logger.Debug().
 		Int("activities", len(activities)).
-		Time("last_backload", athlete.LastBackloadActivityStart).
-		Int64("last_backload_unix", athlete.LastBackloadActivityStart.Unix()).
+		Time("last_backload", athleteLoad.LastBackloadActivityStart).
+		Int64("last_backload_unix", athleteLoad.LastBackloadActivityStart.Unix()).
 		Msg("backloading athlete")
 
 	// No activities means we are done.
 	if len(activities) == 0 {
 		_, err := m.DB.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
-			AthleteID: athlete.AthleteID,
+			AthleteID: athleteLoad.AthleteID,
 			// This did not change
-			LastBackloadActivityStart:  athlete.LastBackloadActivityStart,
+			LastBackloadActivityStart:  athleteLoad.LastBackloadActivityStart,
 			LastLoadAttempt:            time.Now(),
 			LastLoadIncomplete:         false,
 			LastLoadError:              "",
 			ActivitesLoadedLastAttempt: 0,
-			EarliestActivity:           athlete.EarliestActivity,
+			EarliestActivity:           athleteLoad.EarliestActivity,
 			EarliestActivityDone:       true,
 		})
 		if err != nil {
@@ -157,7 +153,7 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 
 	err = m.DB.InTx(func(store database.Store) error {
 		for _, act := range activities {
-			_, err := store.UpsertMapSummary(ctx, database.UpsertMapSummaryParams{
+			_, err := store.UpsertMapData(ctx, database.UpsertMapDataParams{
 				ID:              act.Map.ID,
 				SummaryPolyline: act.Map.SummaryPolyline,
 			})
@@ -207,26 +203,26 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 				return fmt.Errorf("upsert activity summary (%d): %w", act.ID, err)
 			}
 
-			err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athlete.AthleteID, act.ID)
+			err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID)
 			if err != nil {
 				return fmt.Errorf("enqueue fetch activity: %w", err)
 			}
 		}
 		first := activities[len(activities)-1]
 		lastActStart := activities[0].StartDate
-		if athlete.LastBackloadActivityStart.After(lastActStart) {
-			lastActStart = athlete.LastBackloadActivityStart
+		if athleteLoad.LastBackloadActivityStart.After(lastActStart) {
+			lastActStart = athleteLoad.LastBackloadActivityStart
 		}
 
 		params := database.UpsertAthleteLoadParams{
-			AthleteID:                  athlete.AthleteID,
+			AthleteID:                  athleteLoad.AthleteID,
 			LastBackloadActivityStart:  lastActStart,
 			LastLoadAttempt:            time.Now(),
 			LastLoadIncomplete:         true,
 			LastLoadError:              "",
 			ActivitesLoadedLastAttempt: int32(len(activities)),
-			EarliestActivity:           athlete.EarliestActivity,
-			EarliestActivityDone:       athlete.EarliestActivityDone,
+			EarliestActivity:           athleteLoad.EarliestActivity,
+			EarliestActivityDone:       athleteLoad.EarliestActivityDone,
 		}
 		if backloadingHistory {
 			params.EarliestActivity = first.StartDate

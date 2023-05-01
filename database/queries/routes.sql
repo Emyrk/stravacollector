@@ -42,3 +42,6 @@ FROM
 WHERE
 	segment_ids @> @expected_segments :: bigint[]
 ;
+
+-- name: AllCompetitiveRoutes :many
+SELECT * FROM competitive_routes;

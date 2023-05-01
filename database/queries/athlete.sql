@@ -30,7 +30,7 @@ RETURNING *;
 
 -- name: GetAthleteNeedsLoad :one
 SELECT
-    athlete_load.*, athlete_logins.*
+    sqlc.embed(athlete_load), sqlc.embed(athlete_logins)
 FROM
 	athlete_load
 INNER JOIN

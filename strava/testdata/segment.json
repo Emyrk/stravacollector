@@ -1,0 +1,66 @@
+{
+  "id":629046,
+  "resource_state":3,
+  "name":"Terrace Mountain",
+  "activity_type":"Ride",
+  "distance":1967.92,
+  "average_grade":4.4,
+  "maximum_grade":25,
+  "elevation_high":216.6,
+  "elevation_low":122,
+  "start_latlng":[
+    30.301174,
+    -97.797044
+  ],
+  "end_latlng":[
+    30.301139,
+    -97.808322
+  ],
+  "elevation_profile":"https://d3o5xota0a1fcr.cloudfront.net/v6/charts/2QNT3JG4IVIXMMW5DHI3AGCU6K7DPQPP6E4V6LEGFXORZVXZ4CZPNYLXLVPAUV5ZVSTUCOB3BXRUZ3SGPSF74===",
+  "climb_category":1,
+  "city":"West Lake Hills",
+  "state":"TX",
+  "country":"United States",
+  "private":false,
+  "hazardous":false,
+  "starred":false,
+  "created_at":"2010-11-06T03:18:01Z",
+  "updated_at":"2021-05-20T08:02:03Z",
+  "total_elevation_gain":101.961,
+  "map":{
+    "id":"s629046",
+    "polyline":"ie}wDp~{sQsARs@N[NKHWZi@dAOd@QdAi@nEGPKNODMAIEwA_Bo@g@U[CS?m@K_@OQGCSCI@_@JsAr@SN[XMVKXUxAMZSTo@VMJGFEVGj@?T@TBJx@vALb@Hr@DbAHx@d@zBDXAVKb@U`@a@h@MXCZD\\Pd@h@l@f@Zt@ZZPRNRXFX@`@MfAAp@Fr@Nd@T`@^VjCh@h@Ph@V~BfBtAv@nA|@n@n@PL",
+    "resource_state":3
+  },
+  "effort_count":23909,
+  "athlete_count":2976,
+  "star_count":149,
+  "athlete_segment_stats":{
+    "pr_elapsed_time":null,
+    "pr_date":null,
+    "pr_activity_id":null,
+    "effort_count":0
+  },
+  "xoms":{
+    "kom":"3:44",
+    "qom":"4:54",
+    "overall":"3:44",
+    "destination":{
+      "href":"strava://segments/629046/leaderboard",
+      "type":"overall",
+      "name":"All-Time"
+    }
+  },
+  "local_legend":{
+    "athlete_id":788469,
+    "title":"South Austin  Cyclist",
+    "profile":"https://dgalywyr863hv.cloudfront.net/pictures/athletes/788469/201879/1/large.jpg",
+    "effort_description":"18 efforts in the last 90 days",
+    "effort_count":"18",
+    "effort_counts":{
+      "overall":"18 efforts",
+      "female":"10 efforts"
+    },
+    "destination":"strava://segments/629046/local_legend?categories%5B%5D=overall"
+  }
+}

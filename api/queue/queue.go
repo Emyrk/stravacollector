@@ -139,6 +139,10 @@ func (m *Manager) Run(ctx context.Context) error {
 		m.BackLoadAthleteRoutine(ctx)
 	}()
 
+	go func() {
+		m.BackLoadRouteSegments(ctx)
+	}()
+
 	return nil
 }
 

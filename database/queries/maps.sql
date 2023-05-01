@@ -1,4 +1,4 @@
--- name: UpsertMap :one
+-- name: UpsertMapData :one
 INSERT INTO
 	maps(
 	updated_at, id, polyline, summary_polyline
@@ -9,21 +9,15 @@ ON CONFLICT
 	(id)
 	DO UPDATE SET
 		updated_at = Now(),
-		polyline = $2,
-		summary_polyline = $3
-RETURNING *;
-
--- name: UpsertMapSummary :one
-INSERT INTO
-	maps(
-	updated_at, polyline, id, summary_polyline
-)
-VALUES
-	(Now(), '', $1, $2)
-ON CONFLICT
-	(id)
-	DO UPDATE SET
-	  updated_at = Now(),
-	  summary_polyline = $2
+		polyline =
+		    CASE
+				WHEN $2 != '' THEN $2
+		        ELSE maps.polyline
+			END,
+		summary_polyline =
+			CASE
+				WHEN $3 != '' THEN $3
+				ELSE maps.summary_polyline
+			END
 RETURNING *;
 

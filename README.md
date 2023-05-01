@@ -14,3 +14,5 @@ Old activities have KOM rank for subscribers only.
 https://pro.chakra-ui.com/components/application/tables
 https://choc-ui.com/docs/packages/pagination
 Icons: https://fontawesome.com/search
+
+https://jessicasalbert.medium.com/holding-your-hand-through-stravas-api-e642d15695f2

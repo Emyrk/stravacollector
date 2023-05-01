@@ -235,9 +235,36 @@ CREATE TABLE maps (
 );
 
 CREATE TABLE segments (
-    id integer NOT NULL,
-    name text NOT NULL
+    id bigint NOT NULL,
+    name text NOT NULL,
+    activity_type text NOT NULL,
+    distance double precision NOT NULL,
+    average_grade double precision NOT NULL,
+    maximum_grade double precision NOT NULL,
+    elevation_high double precision NOT NULL,
+    elevation_low double precision NOT NULL,
+    start_latlng double precision[] NOT NULL,
+    end_latlng double precision[] NOT NULL,
+    elevation_profile text NOT NULL,
+    climb_category integer NOT NULL,
+    city text NOT NULL,
+    state text NOT NULL,
+    country text NOT NULL,
+    private boolean NOT NULL,
+    hazardous boolean NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    total_elevation_gain double precision NOT NULL,
+    map_id text NOT NULL,
+    total_effort_count integer NOT NULL,
+    total_athlete_count integer NOT NULL,
+    total_star_count integer NOT NULL,
+    fetched_at timestamp without time zone NOT NULL
 );
+
+COMMENT ON COLUMN segments.elevation_profile IS 'A small image of the elevation profile of this segment.';
+
+COMMENT ON COLUMN segments.fetched_at IS 'The time at which this segment was fetched from the Strava API.';
 
 CREATE TABLE webhook_dump (
     id uuid NOT NULL,
@@ -300,4 +327,7 @@ ALTER TABLE ONLY segment_efforts
 
 ALTER TABLE ONLY segment_efforts
     ADD CONSTRAINT segment_efforts_athletes_id_fk FOREIGN KEY (athlete_id) REFERENCES athletes(id);
+
+ALTER TABLE ONLY segments
+    ADD CONSTRAINT segments_map_id_fkey FOREIGN KEY (map_id) REFERENCES maps(id);
 

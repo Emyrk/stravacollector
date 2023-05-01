@@ -85,6 +85,16 @@ func (c *Client) GetAuthenticatedAthelete(ctx context.Context) (Athlete, error) 
 	return athlete, c.DecodeResponse(resp, &athlete, http.StatusOK)
 }
 
+func (c *Client) GetSegment(ctx context.Context, segmentID int64) (SegmentDetailed, error) {
+	resp, err := c.Request(ctx, http.MethodGet, fmt.Sprintf("/segments/%d", segmentID), nil, nil)
+	if err != nil {
+		return SegmentDetailed{}, fmt.Errorf("request: %w", err)
+	}
+
+	var segment SegmentDetailed
+	return segment, c.DecodeResponse(resp, &segment, http.StatusOK)
+}
+
 func (c *Client) AthleteSegmentEfforts(ctx context.Context, segmentID int, perPage int) ([]DetailedSegmentEffort, error) {
 	var efforts []DetailedSegmentEffort
 	resp, err := c.Request(ctx, http.MethodGet, "/segment_efforts", nil, url.Values{

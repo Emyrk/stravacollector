@@ -286,3 +286,60 @@ type Equipment struct {
 	ResourceState int    `json:"resource_state"`
 	Distance      int    `json:"distance"`
 }
+
+type SegmentDetailed struct {
+	ID                  int64     `json:"id"`
+	ResourceState       int       `json:"resource_state"`
+	Name                string    `json:"name"`
+	ActivityType        string    `json:"activity_type"`
+	Distance            float64   `json:"distance"`
+	AverageGrade        float64   `json:"average_grade"`
+	MaximumGrade        float64   `json:"maximum_grade"`
+	ElevationHigh       float64   `json:"elevation_high"`
+	ElevationLow        float64   `json:"elevation_low"`
+	StartLatlng         []float64 `json:"start_latlng"`
+	EndLatlng           []float64 `json:"end_latlng"`
+	ElevationProfile    string    `json:"elevation_profile"`
+	ClimbCategory       int32     `json:"climb_category"`
+	City                string    `json:"city"`
+	State               string    `json:"state"`
+	Country             string    `json:"country"`
+	Private             bool      `json:"private"`
+	Hazardous           bool      `json:"hazardous"`
+	Starred             bool      `json:"starred"`
+	CreatedAt           time.Time `json:"created_at"`
+	UpdatedAt           time.Time `json:"updated_at"`
+	TotalElevationGain  float64   `json:"total_elevation_gain"`
+	Map                 Map       `json:"map"`
+	EffortCount         int32     `json:"effort_count"`
+	AthleteCount        int32     `json:"athlete_count"`
+	StarCount           int32     `json:"star_count"`
+	AthleteSegmentStats struct {
+		PrElapsedTime interface{} `json:"pr_elapsed_time"`
+		PrDate        interface{} `json:"pr_date"`
+		PrActivityID  interface{} `json:"pr_activity_id"`
+		EffortCount   int         `json:"effort_count"`
+	} `json:"athlete_segment_stats"`
+	Xoms struct {
+		Kom         string `json:"kom"`
+		Qom         string `json:"qom"`
+		Overall     string `json:"overall"`
+		Destination struct {
+			Href string `json:"href"`
+			Type string `json:"type"`
+			Name string `json:"name"`
+		} `json:"destination"`
+	} `json:"xoms"`
+	LocalLegend struct {
+		AthleteID         int    `json:"athlete_id"`
+		Title             string `json:"title"`
+		Profile           string `json:"profile"`
+		EffortDescription string `json:"effort_description"`
+		EffortCount       string `json:"effort_count"`
+		EffortCounts      struct {
+			Overall string `json:"overall"`
+			Female  string `json:"female"`
+		} `json:"effort_counts"`
+		Destination string `json:"destination"`
+	} `json:"local_legend"`
+}

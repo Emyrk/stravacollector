@@ -8,10 +8,8 @@ import (
 	"fmt"
 
 	"github.com/Emyrk/strava/database"
-	"github.com/vgarvardt/gue/v5"
-	"golang.org/x/oauth2"
-
 	"github.com/Emyrk/strava/strava"
+	"github.com/vgarvardt/gue/v5"
 )
 
 type fetchActivityJobArgs struct {
@@ -67,12 +65,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 	}
 	logger = logger.With().Int64("athlete_id", athlete.AthleteID).Logger()
 
-	cli := strava.NewOAuthClient(m.OAuthCfg.Client(ctx, &oauth2.Token{
-		AccessToken:  athlete.OauthAccessToken,
-		TokenType:    athlete.OauthTokenType,
-		RefreshToken: athlete.OauthRefreshToken,
-		Expiry:       athlete.OauthExpiry,
-	}))
+	cli := strava.NewOAuthClient(m.OAuthCfg.Client(ctx, athlete.OAuthToken()))
 
 	activity, err := cli.GetActivity(ctx, args.ActivityID, true)
 	if err != nil {
@@ -83,7 +76,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 
 	// Parse the activity, save all efforts.
 	err = m.DB.InTx(func(store database.Store) error {
-		_, err := store.UpsertMap(ctx, database.UpsertMapParams{
+		_, err := store.UpsertMapData(ctx, database.UpsertMapDataParams{
 			ID:              activity.Map.ID,
 			Polyline:        activity.Map.Polyline,
 			SummaryPolyline: activity.Map.SummaryPolyline,
