@@ -14,7 +14,6 @@ import {
   AlertTitle,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { ColorModeSwitcher } from "./ColorModeSwitcher"
 import { Logo } from "./Logo"
 import {
   BrowserRouter as Router,

@@ -30,6 +30,7 @@ import { AthleteAvatar } from '../AthleteAvatar/AthleteAvatar';
 import { AthleteAvatarDropdown } from './AthleteAvatarDropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons'
+import { ColorModeSwitcher } from '../ColorModeSwitcher/ColorModeSwitcher';
 
 const Navbar: React.FC = () => {
   const { isOpen, onToggle } = useDisclosure();
@@ -44,6 +45,7 @@ const Navbar: React.FC = () => {
           <Image maxHeight={"80px"} src="/logos/LogoTypeColor.png" alt="Hugel Ranker" display={{ base: 'none', md: 'block' }} />
         </RouteLink>
       </Box>
+      <ColorModeSwitcher justifySelf="flex-end" />
       <Flex alignItems={'center'} gap={2}>
         <DesktopNav display={{ base: 'none', md: 'block' }} />
         <StravaConnect />
