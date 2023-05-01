@@ -23,7 +23,7 @@ import {
   Link as RouteLink,
   Outlet
 } from "react-router-dom";
-import { HugelBoard } from "./pages/HugelBoard";
+import { HugelBoard } from "./pages/HugelBoard/HugelBoard";
 import { Landing } from "./pages/Landing/Landing";
 import Navbar from "./components/Navbar/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

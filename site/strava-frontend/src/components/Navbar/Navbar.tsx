@@ -17,6 +17,7 @@ import {
   useToast,
   Avatar,
   Image,
+  Container,
 } from '@chakra-ui/react';
 import {
   Link as RouteLink,
@@ -133,9 +134,8 @@ const DesktopNav = () => {
         <Box key={navItem.label}>
           <Popover trigger={'hover'} placement={'bottom-start'}>
             <PopoverTrigger>
-              <Link
+              <Container
                 p={2}
-                href={navItem.href ?? '#'}
                 fontSize={'sm'}
                 fontWeight={500}
                 color={linkColor}
@@ -143,8 +143,10 @@ const DesktopNav = () => {
                   textDecoration: 'none',
                   color: linkHoverColor,
                 }}>
-                {navItem.label}
-              </Link>
+                <RouteLink to={navItem.href ?? '#'}>
+                  {navItem.label}
+                </RouteLink>
+              </Container>
             </PopoverTrigger>
 
             {navItem.children && (
@@ -171,35 +173,39 @@ const DesktopNav = () => {
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   return (
-    <Link
-      href={href}
+    <Container
       role={'group'}
       display={'block'}
       p={2}
       rounded={'md'}
-      _hover={{ bg: useColorModeValue('pink.50', 'gray.900') }}>
-      <Stack direction={'row'} align={'center'}>
-        <Box>
-          <Text
+      _hover={{ bg: useColorModeValue('pink.50', 'gray.900') }}
+    >
+      <RouteLink
+        to={href || '#'}
+      >
+        <Stack direction={'row'} align={'center'}>
+          <Box>
+            <Text
+              transition={'all .3s ease'}
+              _groupHover={{ color: 'pink.400' }}
+              fontWeight={500}>
+              {label}
+            </Text>
+            <Text fontSize={'sm'}>{subLabel}</Text>
+          </Box>
+          <Flex
             transition={'all .3s ease'}
-            _groupHover={{ color: 'pink.400' }}
-            fontWeight={500}>
-            {label}
-          </Text>
-          <Text fontSize={'sm'}>{subLabel}</Text>
-        </Box>
-        <Flex
-          transition={'all .3s ease'}
-          transform={'translateX(-10px)'}
-          opacity={0}
-          _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
-          justify={'flex-end'}
-          align={'center'}
-          flex={1}>
-          <Icon color={'pink.400'} w={5} h={5} as={ChevronRightIcon} />
-        </Flex>
-      </Stack>
-    </Link>
+            transform={'translateX(-10px)'}
+            opacity={0}
+            _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
+            justify={'flex-end'}
+            align={'center'}
+            flex={1}>
+            <Icon color={'pink.400'} w={5} h={5} as={ChevronRightIcon} />
+          </Flex>
+        </Stack>
+      </RouteLink>
+    </Container >
   );
 };
 
@@ -256,9 +262,11 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
           align={'start'}>
           {children &&
             children.map((child) => (
-              <Link key={child.label} py={2} href={child.href}>
-                {child.label}
-              </Link>
+              <Container py={2}>
+                <RouteLink key={child.label} to={child.href || '#'}>
+                  {child.label}
+                </RouteLink>
+              </Container>
             ))}
         </Stack>
       </Collapse>
@@ -280,7 +288,7 @@ const NAV_ITEMS: Array<NavItem> = [
       {
         label: 'All Hugels',
         subLabel: 'See how you stack up in the Das Hugel Leaderboard',
-        href: '#',
+        href: '/hugelboard',
       },
       {
         label: 'All Hugel Super Scores',

@@ -16,6 +16,17 @@ export const getAuthenticatedUser = async (): Promise<
   }
 }
 
+export const getHugelLeaderBoard = async (): Promise<
+  TypesGen.HugelLeaderBoard | undefined
+> => {
+  try {
+    const response = await axios.get<TypesGen.HugelLeaderBoard>("/api/v1/hugelboard")
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
 export const isAPIError = (err: unknown): err is ApiError => {
   if (axios.isAxiosError(err)) {
     const response = err.response?.data

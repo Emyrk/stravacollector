@@ -3,9 +3,14 @@ SELECT
 	ROW_NUMBER() over(ORDER BY total_time_seconds ASC) AS rank,
 	athlete_bests.activity_id,
 	athlete_bests.athlete_id,
--- 	athlete_bests.segment_ids :: BIGINT[],
 	athlete_bests.total_time_seconds,
-	athlete_bests.efforts
+	athlete_bests.efforts,
+
+	athletes.firstname,
+	athletes.lastname,
+	athletes.username,
+	athletes.profile_pic_link,
+	athletes.sex
 FROM
 	(
 		SELECT DISTINCT ON (athlete_id)
@@ -15,6 +20,8 @@ FROM
 		ORDER BY
 			athlete_id, total_time_seconds ASC
 	) AS athlete_bests
+INNER JOIN
+	athletes ON athlete_bests.athlete_id = athletes.id
 WHERE
     CASE WHEN @athlete_id > 0 THEN athlete_bests.athlete_id = @athlete_id ELSE TRUE END
 ORDER BY

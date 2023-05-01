@@ -33,6 +33,17 @@ export interface HugelLeaderBoardActivity {
   readonly elapsed: number
   readonly rank: number
   readonly efforts: SegmentEffort[]
+  readonly athlete: MinAthlete
+}
+
+// From codersdk/athlete.go
+export interface MinAthlete {
+  readonly athlete_id: number
+  readonly username: string
+  readonly firstname: string
+  readonly lastname: string
+  readonly sex: string
+  readonly profile_pic_link: string
 }
 
 // From codersdk/response.go

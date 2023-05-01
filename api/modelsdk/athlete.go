@@ -32,6 +32,7 @@ type HugelLeaderBoardActivity struct {
 	Elapsed    int64           `json:"elapsed"`
 	Rank       int64           `json:"rank"`
 	Efforts    []SegmentEffort `json:"efforts"`
+	Athlete    MinAthlete      `json:"athlete"`
 }
 
 type SegmentEffort struct {
@@ -42,4 +43,13 @@ type SegmentEffort struct {
 	MovingTime   int64     `json:"moving_time"`
 	DeviceWatts  bool      `json:"device_watts"`
 	AverageWatts float64   `json:"average_watts"`
+}
+
+type MinAthlete struct {
+	AthleteID      int64  `db:"athlete_id" json:"athlete_id"`
+	Username       string `json:"username"`
+	Firstname      string `json:"firstname"`
+	Lastname       string `json:"lastname"`
+	Sex            string `json:"sex"`
+	ProfilePicLink string `json:"profile_pic_link"`
 }

@@ -11,12 +11,25 @@ import {
   TableContainer,
   Box,
 } from '@chakra-ui/react'
+import { getHugelLeaderBoard } from "../../api/rest"
+import { useQuery } from "@tanstack/react-query";
 
 export const HugelBoard: FC = () => {
+  const queryKey = ["hugel-leaderboard"]
+  const {
+    data: hugelLeaderboard,
+    error: hugelLeaderboardError,
+    isLoading: hugelLoading,
+    isFetched: hugelFetched,
+  } = useQuery({
+    queryKey,
+    queryFn: getHugelLeaderBoard,
+  })
+
   return <Box>
     <TableContainer>
       <Table variant='simple'>
-        <TableCaption>Imperial to metric conversion factors</TableCaption>
+        <TableCaption>Das Hugel Leaderboad</TableCaption>
         <Thead>
           <Tr>
             <Th>To convert</Th>

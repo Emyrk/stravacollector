@@ -68,5 +68,13 @@ func convertHugelActivity(activity database.HugelLeaderboardRow) modelsdk.HugelL
 		Elapsed:    activity.TotalTimeSeconds,
 		Rank:       activity.Rank,
 		Efforts:    efforts,
+		Athlete: modelsdk.MinAthlete{
+			AthleteID:      activity.AthleteID,
+			Username:       activity.Username,
+			Firstname:      activity.Firstname,
+			Lastname:       activity.Lastname,
+			Sex:            activity.Sex,
+			ProfilePicLink: activity.ProfilePicLink,
+		},
 	}
 }
