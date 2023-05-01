@@ -13,6 +13,7 @@ import {
   useDisclosure,
   Image,
   Container,
+  Tag,
 } from '@chakra-ui/react';
 import {
   Link as RouteLink,
@@ -27,12 +28,15 @@ import { getErrorMessage, getErrorDetail } from '../../api/rest';
 import { useEffect } from 'react';
 import { AthleteAvatar } from '../AthleteAvatar/AthleteAvatar';
 import { AthleteAvatarDropdown } from './AthleteAvatarDropdown';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrophy } from '@fortawesome/free-solid-svg-icons'
 
 const Navbar: React.FC = () => {
   const { isOpen, onToggle } = useDisclosure();
+  // const theme = useTheme()
 
   return <>
-    <Flex w='100%' justifyContent='space-between' alignItems={'center'} p={3}>
+    <Flex w='100%' maxW={'7xl'} m={'1rem auto 0'} justifyContent='space-between' alignItems={'center'} p={3} pb={0}>
       <Box>
         <RouteLink to="/">
           {/* https://chakra-ui.com/docs/components/image/usage */}
@@ -73,7 +77,10 @@ const DesktopNav: React.FC<{ display: { base: string, md: string } }> = ({ displ
                   color: linkHoverColor,
                 }}>
                 <RouteLink to={navItem.href ?? '#'}>
-                  {navItem.label}
+                  <Tag p={3} display={'flex'} gap={2}>
+                    <FontAwesomeIcon icon={faTrophy} />
+                    {navItem.label}
+                  </Tag>
                 </RouteLink>
               </Container>
             </PopoverTrigger>

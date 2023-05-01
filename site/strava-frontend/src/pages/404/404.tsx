@@ -6,7 +6,6 @@ import {
 
 export const NotFound: FC = () => {
   const theme = useTheme()
-  console.log(theme.colors.brand)
 
   return (
     <Box
@@ -26,7 +25,7 @@ export const NotFound: FC = () => {
         The page you’re looking for doesn’t exist.
       </Typography>
       <Button variant="contained">Back Home</Button> */}
-      <Heading color={theme.colors.brand.secondary}>404 Not Found</Heading>
+      <Heading color={theme.colors.brand.stravaOrange}>404 Not Found</Heading>
 
       <RouteLink to="/">
         <Button size={"lg"} textColor={theme.colors.brand.primary} marginTop={7} backgroundColor={theme.colors.brand.secondary}>Back Home</Button>
