@@ -2,8 +2,6 @@ import {
   Box,
   Flex,
   Text,
-  IconButton,
-  Button,
   Stack,
   Collapse,
   Icon,
@@ -12,10 +10,7 @@ import {
   PopoverTrigger,
   PopoverContent,
   useColorModeValue,
-  useBreakpointValue,
   useDisclosure,
-  useToast,
-  Avatar,
   Image,
   Container,
 } from '@chakra-ui/react';
@@ -23,8 +18,6 @@ import {
   Link as RouteLink,
 } from "react-router-dom";
 import {
-  HamburgerIcon,
-  CloseIcon,
   ChevronDownIcon,
   ChevronRightIcon,
 } from '@chakra-ui/icons';
@@ -58,110 +51,6 @@ const Navbar: React.FC = () => {
 
 export default Navbar
 
-export const HamburgerTray: React.FC<{ onToggle: () => void, isOpen: boolean }> = ({ onToggle, isOpen }) => {
-  return <IconButton
-    onClick={onToggle}
-    icon={
-      isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
-    }
-    variant={'ghost'}
-    aria-label={'Toggle Navigation'}
-  />
-
-}
-
-
-export function OldNavbar() {
-  const { isOpen, onToggle } = useDisclosure();
-  const { authenticatedUser, isFetched: athleteFetched } = useAuthenticated()
-
-  // TODO: Probably want to factor this toast better?
-  // const toast = useToast()
-  // const toastID = "authenticated-user-toast"
-  // useEffect(() => {
-  //   if (fetchError) {
-  //     const title = getErrorMessage(fetchError, "Authentication Error")
-  //     const description = getErrorDetail(fetchError)
-  //     toast({
-  //       id: toastID,
-  //       title: <>{title}</>,
-  //       description: <>{description ? description : "Unkown error getting authenticated user"}</>,
-  //       position: "bottom-right",
-  //       isClosable: true,
-  //       status: "error",
-  //     })
-  //   }
-  // }, [toast, authenticatedUser, fetchError]);
-
-  const connectURL = "oauth2/callback?redirect=" +
-    (window.location.pathname ? encodeURIComponent(window.location.pathname) : "/")
-  return (
-    <Box>
-      <Flex
-        bg={useColorModeValue('white', 'gray.800')}
-        color={useColorModeValue('gray.600', 'white')}
-        minH={'60px'}
-        py={{ base: 2 }}
-        px={{ base: 4 }}
-        borderBottom={1}
-        borderStyle={'solid'}
-        borderColor={useColorModeValue('gray.200', 'gray.900')}
-        align={'center'}
-        justifyContent={'center'}
-      >
-
-        <Flex
-          flex={{ base: 1, md: 'auto' }}
-          ml={{ base: -2 }}
-          display={{ base: 'flex', md: 'none' }}>
-          <IconButton
-            onClick={onToggle}
-            icon={
-              isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
-            }
-            variant={'ghost'}
-            aria-label={'Toggle Navigation'}
-          />
-        </Flex>
-        <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-          <Box>
-            <RouteLink to="/">
-              {/* https://chakra-ui.com/docs/components/image/usage */}
-              <Image maxHeight={"80px"} src="/logos/LogoTypeColorSquare.png" alt="Hugel Ranker" display={{ base: 'block', md: 'none' }} />
-              <Image maxHeight={"80px"} src="/logos/LogoTypeColor.png" alt="Hugel Ranker" display={{ base: 'none', md: 'block' }} />
-            </RouteLink>
-          </Box>
-
-          <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            {/* <DesktopNav /> */}
-          </Flex>
-        </Flex>
-
-        <Stack
-          flex={{ base: 1, md: 0 }}
-          justify={'flex-end'}
-          direction={'row'}
-          spacing={6}>
-          {authenticatedUser ?
-            <AthleteAvatarDropdown athlete={authenticatedUser} />
-            :
-            <Link href={connectURL}>
-              <IconButton
-                aria-label={"strava sign in"}
-                icon={<StravaConnect />}
-                bg="transparent"
-              />
-            </Link>
-          }
-        </Stack>
-      </Flex>
-
-      <Collapse in={isOpen} animateOpacity>
-        {/* <MobileNav /> */}
-      </Collapse>
-    </Box >
-  );
-}
 
 const DesktopNav: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
   const linkColor = useColorModeValue('gray.600', 'gray.200');
