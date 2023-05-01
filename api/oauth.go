@@ -51,7 +51,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 
 		// Insert a load if we don't have one
 		_, err := store.GetAthleteLoad(ctx, athlete.ID)
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		if err != nil && errors.Is(err, sql.ErrNoRows) {
 			doLoad = true
 			// No load means we need to insert one
 			_, err = store.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
@@ -68,8 +68,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				return fmt.Errorf("upsert load: %w", err)
 			}
-		}
-		if err != nil {
+		} else if err != nil {
 			return fmt.Errorf("get load: %w", err)
 		}
 
