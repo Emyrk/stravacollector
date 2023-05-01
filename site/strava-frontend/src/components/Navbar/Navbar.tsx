@@ -37,25 +37,25 @@ import { AthleteAvatarDropdown } from './AthleteAvatarDropdown';
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
-  const { authenticatedUser, fetchError, isFetched: athleteFetched } = useAuthenticated()
+  const { authenticatedUser, isFetched: athleteFetched } = useAuthenticated()
 
   // TODO: Probably want to factor this toast better?
-  const toast = useToast()
-  const toastID = "authenticated-user-toast"
-  useEffect(() => {
-    if (fetchError) {
-      const title = getErrorMessage(fetchError, "Authentication Error")
-      const description = getErrorDetail(fetchError)
-      toast({
-        id: toastID,
-        title: <>{title}</>,
-        description: <>{description ? description : "Unkown error getting authenticated user"}</>,
-        position: "bottom-right",
-        isClosable: true,
-        status: "error",
-      })
-    }
-  }, [toast, authenticatedUser, fetchError]);
+  // const toast = useToast()
+  // const toastID = "authenticated-user-toast"
+  // useEffect(() => {
+  //   if (fetchError) {
+  //     const title = getErrorMessage(fetchError, "Authentication Error")
+  //     const description = getErrorDetail(fetchError)
+  //     toast({
+  //       id: toastID,
+  //       title: <>{title}</>,
+  //       description: <>{description ? description : "Unkown error getting authenticated user"}</>,
+  //       position: "bottom-right",
+  //       isClosable: true,
+  //       status: "error",
+  //     })
+  //   }
+  // }, [toast, authenticatedUser, fetchError]);
 
   const connectURL = "oauth2/callback?redirect=" +
     (window.location.pathname ? encodeURIComponent(window.location.pathname) : "/")
@@ -88,8 +88,8 @@ export default function Navbar() {
           <Box>
             <RouteLink to="/">
               {/* https://chakra-ui.com/docs/components/image/usage */}
-              <Image height={"80px"} src="/logos/LogoTypeColor.jpeg" alt="Hugel Ranker">
-              </Image>
+              <Image maxHeight={"80px"} src="/logos/LogoTypeColorSquare.png" alt="Hugel Ranker" display={{ base: 'block', md: 'none' }} />
+              <Image maxHeight={"80px"} src="/logos/LogoTypeColor.png" alt="Hugel Ranker" display={{ base: 'none', md: 'block' }} />
             </RouteLink>
           </Box>
 
@@ -110,6 +110,7 @@ export default function Navbar() {
               <IconButton
                 aria-label={"strava sign in"}
                 icon={<StravaConnect />}
+                bg="transparent"
               />
             </Link>
           }

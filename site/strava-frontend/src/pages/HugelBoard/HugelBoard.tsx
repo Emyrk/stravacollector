@@ -76,11 +76,11 @@ export const HugelBoard: FC = () => {
 
   let tbody = <TableLoading />
   if (hugelLeaderboard) {
-    tbody = <Tbody>{hugelLeaderboard.activities.map((activity) => {
+    tbody = <Tbody>{hugelLeaderboard.activities.map((activity, index) => {
       const elapsedDuration = moment.duration(activity.elapsed * 1000)
 
       // TODO: Idk why this hover does not override the striped columns
-      return <LinkBox as="tr" _hover={{ background: "yellow !important" }} key={activity.activity_id}>
+      return <LinkBox key={activity.athlete_id + index} as="tr" _hover={{ background: "yellow !important" }} >
         <Td>
           <LinkOverlay href={"https://www.strava.com/activities/" + activity.activity_id} target="_blank">
             <Box>
