@@ -8,6 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Emyrk/strava/api/httpapi"
+	"github.com/Emyrk/strava/api/modelsdk"
+
+	"github.com/Emyrk/strava/database/gencache"
+
 	"github.com/Emyrk/strava/api/auth"
 
 	server "github.com/Emyrk/strava/site"
@@ -44,6 +49,8 @@ type API struct {
 	OAuthConfig *oauth2.Config
 	Events      *webhooks.ActivityEvents
 	Manager     *queue.Manager
+
+	HugelBoardCache *gencache.LazyCache[[]database.HugelLeaderboardRow]
 }
 
 func New(opts Options) (*API, error) {
@@ -77,6 +84,10 @@ func New(opts Options) (*API, error) {
 	r = api.Events.Attach(r)
 	api.Handler = r
 
+	api.HugelBoardCache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+		return api.Opts.DB.HugelLeaderboard(ctx, 0)
+	})
+
 	return api, nil
 }
 
@@ -100,13 +111,31 @@ func (api *API) Routes() chi.Router {
 		r.Get("/callback", api.stravaOAuth2)
 	})
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Use(
-			httpmw.Authenticated(api.Auth),
-		)
-		r.Get("/whoami", api.whoAmI)
+		r.Group(func(r chi.Router) {
+			// Authenticated routes
+			r.Use(
+				httpmw.Authenticated(api.Auth, false),
+			)
+			r.Get("/whoami", api.whoAmI)
+		})
+		r.Group(func(r chi.Router) {
+			// Unauthenticated routes
+			r.Use(
+				httpmw.Authenticated(api.Auth, true),
+			)
+			r.Get("/hugelboard", api.hugelboard)
+		})
+		r.NotFound(api.apiNotFound)
 	})
 	r.Get("/logout", api.logout)
 	r.NotFound(server.Handler(server.FS()).ServeHTTP)
 
 	return r
+}
+
+func (api *API) apiNotFound(w http.ResponseWriter, r *http.Request) {
+	httpapi.Write(r.Context(), w, http.StatusNotFound, modelsdk.Response{
+		Message: "Not found",
+		Detail:  "api route not found",
+	})
 }

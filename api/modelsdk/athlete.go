@@ -20,3 +20,26 @@ type AthleteSummary struct {
 	ProfilePicLinkMedium string    `json:"profile_pic_link_medium"`
 	UpdatedAt            time.Time `db:"updated_at" json:"updated_at"`
 }
+
+type HugelLeaderBoard struct {
+	PersonalBest *HugelLeaderBoardActivity  `json:"personal_best,omitempty"`
+	Activities   []HugelLeaderBoardActivity `json:"activities"`
+}
+
+type HugelLeaderBoardActivity struct {
+	ActivityID int64           `json:"activity_id"`
+	AthleteID  int64           `json:"athlete_id"`
+	Elapsed    int64           `json:"elapsed"`
+	Rank       int64           `json:"rank"`
+	Efforts    []SegmentEffort `json:"efforts"`
+}
+
+type SegmentEffort struct {
+	EffortID     int64     `json:"effort_id"`
+	StartDate    time.Time `json:"start_date"`
+	SegmentID    int64     `json:"segment_id"`
+	ElapsedTime  int64     `json:"elapsed_time"`
+	MovingTime   int64     `json:"moving_time"`
+	DeviceWatts  bool      `json:"device_watts"`
+	AverageWatts float64   `json:"average_watts"`
+}

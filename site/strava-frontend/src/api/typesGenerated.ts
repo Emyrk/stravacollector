@@ -20,8 +20,34 @@ export interface AthleteSummary {
   readonly updated_at: string
 }
 
+// From codersdk/athlete.go
+export interface HugelLeaderBoard {
+  readonly personal_best?: HugelLeaderBoardActivity
+  readonly activities: HugelLeaderBoardActivity[]
+}
+
+// From codersdk/athlete.go
+export interface HugelLeaderBoardActivity {
+  readonly activity_id: number
+  readonly athlete_id: number
+  readonly elapsed: number
+  readonly rank: number
+  readonly efforts: SegmentEffort[]
+}
+
 // From codersdk/response.go
 export interface Response {
   readonly message: string
   readonly detail?: string
+}
+
+// From codersdk/athlete.go
+export interface SegmentEffort {
+  readonly effort_id: number
+  readonly start_date: string
+  readonly segment_id: number
+  readonly elapsed_time: number
+  readonly moving_time: number
+  readonly device_watts: boolean
+  readonly average_watts: number
 }

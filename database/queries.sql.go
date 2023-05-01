@@ -816,33 +816,37 @@ func (q *sqlQuerier) GetCompetitiveRoute(ctx context.Context, routeName string) 
 
 const hugelLeaderboard = `-- name: HugelLeaderboard :many
 SELECT
-	ROW_NUMBER() over(ORDER BY sum ASC), athlete_bests.activities_id, athlete_bests.segment_ids, athlete_bests.sum, athlete_bests.json_agg, hugel_activities.activities_id, hugel_activities.segment_ids, hugel_activities.sum, hugel_activities.json_agg
+	ROW_NUMBER() over(ORDER BY total_time_seconds ASC) AS rank,
+	athlete_bests.activity_id,
+	athlete_bests.athlete_id,
+	athlete_bests.total_time_seconds,
+	athlete_bests.efforts
 FROM
 	(
 		SELECT DISTINCT ON (athlete_id)
-			activities_id, segment_ids, sum, json_agg
+			activity_id, athlete_id, segment_ids, total_time_seconds, efforts
 		FROM
 			hugel_activities
 		ORDER BY
-			athlete_id, sum ASC
+			athlete_id, total_time_seconds ASC
 	) AS athlete_bests
-ORDER BY sum ASC
+WHERE
+    CASE WHEN $1 > 0 THEN athlete_bests.athlete_id = $1 ELSE TRUE END
+ORDER BY
+    total_time_seconds ASC
 `
 
 type HugelLeaderboardRow struct {
-	RowNumber      int64           `db:"row_number" json:"row_number"`
-	ActivitiesID   int64           `db:"activities_id" json:"activities_id"`
-	SegmentIds     interface{}     `db:"segment_ids" json:"segment_ids"`
-	Sum            int64           `db:"sum" json:"sum"`
-	JsonAgg        json.RawMessage `db:"json_agg" json:"json_agg"`
-	ActivitiesID_2 int64           `db:"activities_id_2" json:"activities_id_2"`
-	SegmentIds_2   interface{}     `db:"segment_ids_2" json:"segment_ids_2"`
-	Sum_2          int64           `db:"sum_2" json:"sum_2"`
-	JsonAgg_2      json.RawMessage `db:"json_agg_2" json:"json_agg_2"`
+	Rank             int64           `db:"rank" json:"rank"`
+	ActivityID       int64           `db:"activity_id" json:"activity_id"`
+	AthleteID        int64           `db:"athlete_id" json:"athlete_id"`
+	TotalTimeSeconds int64           `db:"total_time_seconds" json:"total_time_seconds"`
+	Efforts          json.RawMessage `db:"efforts" json:"efforts"`
 }
 
-func (q *sqlQuerier) HugelLeaderboard(ctx context.Context) ([]HugelLeaderboardRow, error) {
-	rows, err := q.db.QueryContext(ctx, hugelLeaderboard)
+// athlete_bests.segment_ids :: BIGINT[],
+func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, athleteID interface{}) ([]HugelLeaderboardRow, error) {
+	rows, err := q.db.QueryContext(ctx, hugelLeaderboard, athleteID)
 	if err != nil {
 		return nil, err
 	}
@@ -851,15 +855,11 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context) ([]HugelLeaderboardRo
 	for rows.Next() {
 		var i HugelLeaderboardRow
 		if err := rows.Scan(
-			&i.RowNumber,
-			&i.ActivitiesID,
-			&i.SegmentIds,
-			&i.Sum,
-			&i.JsonAgg,
-			&i.ActivitiesID_2,
-			&i.SegmentIds_2,
-			&i.Sum_2,
-			&i.JsonAgg_2,
+			&i.Rank,
+			&i.ActivityID,
+			&i.AthleteID,
+			&i.TotalTimeSeconds,
+			&i.Efforts,
 		); err != nil {
 			return nil, err
 		}
@@ -1150,19 +1150,19 @@ ON CONFLICT
 	maximum_grade = CASE WHEN $6 != 0 THEN $6 ELSE segments.maximum_grade END,
 	elevation_high = CASE WHEN $7 != 0 THEN $7 ELSE segments.elevation_high END,
 	elevation_low = CASE WHEN $8 != 0 THEN $8 ELSE segments.elevation_low END,
-	start_latlng = CASE WHEN $9 != '{}' THEN $9 ELSE segments.start_latlng END,
-	end_latlng = CASE WHEN $10 != '{}' THEN $10 ELSE segments.end_latlng END,
-	elevation_profile = CASE WHEN $11 != '{}' THEN $11 ELSE segments.elevation_profile END,
+	start_latlng = $9,
+	end_latlng = $10,
+	elevation_profile = CASE WHEN $11 != '' THEN $11 ELSE segments.elevation_profile END,
 	climb_category = CASE WHEN $12 != 0 THEN $12 ELSE segments.climb_category END,
 	city = CASE WHEN $13 != '' THEN $13 ELSE segments.city END,
 	state = CASE WHEN $14 != '' THEN $14 ELSE segments.state END,
 	country = CASE WHEN $15 != '' THEN $15 ELSE segments.country END,
 	private = $16,
 	hazardous = $17,
-	created_at = CASE WHEN $18 != '0001-01-01 00:00:00 +0000 UTC' THEN $18 ELSE segments.created_at END,
-	updated_at = CASE WHEN $19 != '0001-01-01 00:00:00 +0000 UTC' THEN $18 ELSE segments.updated_at END,
+	created_at = CASE WHEN $18 != '0001-01-01 00:00:00+00' THEN $18 ELSE segments.created_at END,
+	updated_at = CASE WHEN $19 != '0001-01-01 00:00:00+00' THEN $18 ELSE segments.updated_at END,
 	total_elevation_gain = CASE WHEN $20 != 0 THEN $20 ELSE segments.total_elevation_gain END,
-	map_id = CASE WHEN $21 != 0 THEN $21 ELSE segments.map_id END,
+	map_id = CASE WHEN $21 != '' THEN $21 ELSE segments.map_id END,
 	total_effort_count = CASE WHEN $22 != 0 THEN $22 ELSE segments.total_effort_count END,
 	total_athlete_count = CASE WHEN $23 != 0 THEN $23 ELSE segments.total_athlete_count END,
 	total_star_count = CASE WHEN $24 != 0 THEN $24 ELSE segments.total_star_count END,

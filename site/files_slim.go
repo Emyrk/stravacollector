@@ -13,7 +13,7 @@ import (
 var staticFiles embed.FS
 
 func FS() fs.FS {
-	static, err := fs.Sub(fs.FS(staticFiles), "")
+	static, err := fs.Sub(fs.FS(staticFiles), "slim")
 	if err != nil {
 		log.Fatalf("failed to get static files: %s", err.Error())
 	}
