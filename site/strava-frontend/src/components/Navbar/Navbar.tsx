@@ -35,7 +35,43 @@ import { useEffect } from 'react';
 import { AthleteAvatar } from '../AthleteAvatar/AthleteAvatar';
 import { AthleteAvatarDropdown } from './AthleteAvatarDropdown';
 
-export default function Navbar() {
+const Navbar: React.FC = () => {
+  const { isOpen, onToggle } = useDisclosure();
+
+  return <>
+    <Flex w='100%' justifyContent='space-between' alignItems={'center'} p={3}>
+      <Box>
+        <RouteLink to="/">
+          {/* https://chakra-ui.com/docs/components/image/usage */}
+          <Image maxHeight={"80px"} src="/logos/LogoTypeColorSquare.png" alt="Hugel Ranker" display={{ base: 'block', md: 'none' }} />
+          <Image maxHeight={"80px"} src="/logos/LogoTypeColor.png" alt="Hugel Ranker" display={{ base: 'none', md: 'block' }} />
+        </RouteLink>
+      </Box>
+      <Flex alignItems={'center'} gap={2}>
+        <DesktopNav display={{ base: 'none', md: 'block' }} />
+        <StravaConnect />
+      </Flex>
+    </Flex>
+    <MobileNav display={{ base: 'block', md: 'none' }} />
+  </>
+}
+
+export default Navbar
+
+export const HamburgerTray: React.FC<{ onToggle: () => void, isOpen: boolean }> = ({ onToggle, isOpen }) => {
+  return <IconButton
+    onClick={onToggle}
+    icon={
+      isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
+    }
+    variant={'ghost'}
+    aria-label={'Toggle Navigation'}
+  />
+
+}
+
+
+export function OldNavbar() {
   const { isOpen, onToggle } = useDisclosure();
   const { authenticatedUser, isFetched: athleteFetched } = useAuthenticated()
 
@@ -70,7 +106,10 @@ export default function Navbar() {
         borderBottom={1}
         borderStyle={'solid'}
         borderColor={useColorModeValue('gray.200', 'gray.900')}
-        align={'center'}>
+        align={'center'}
+        justifyContent={'center'}
+      >
+
         <Flex
           flex={{ base: 1, md: 'auto' }}
           ml={{ base: -2 }}
@@ -94,7 +133,7 @@ export default function Navbar() {
           </Box>
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <DesktopNav />
+            {/* <DesktopNav /> */}
           </Flex>
         </Flex>
 
@@ -118,20 +157,20 @@ export default function Navbar() {
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        {/* <MobileNav /> */}
       </Collapse>
     </Box >
   );
 }
 
-const DesktopNav = () => {
+const DesktopNav: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
   const linkColor = useColorModeValue('gray.600', 'gray.200');
   const linkHoverColor = useColorModeValue('gray.800', 'white');
   const popoverContentBgColor = useColorModeValue('white', 'gray.800');
 
   return (
-    <Stack direction={'row'} spacing={4}>
-      {NAV_ITEMS.map((navItem) => (
+    <Stack direction={'row'} spacing={4} display={display}>
+      {NAV_ITEMS.map((navItem, index) => (
         <Box key={navItem.label}>
           <Popover trigger={'hover'} placement={'bottom-start'}>
             <PopoverTrigger>
@@ -210,12 +249,12 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   );
 };
 
-const MobileNav = () => {
+const MobileNav: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
   return (
     <Stack
       bg={useColorModeValue('white', 'gray.800')}
       p={4}
-      display={{ md: 'none' }}>
+      display={display}>
       {NAV_ITEMS.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
@@ -233,7 +272,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         as={Link}
         href={href ?? '#'}
         justify={'space-between'}
-        align={'center'}
+        alignItems={'center'}
         _hover={{
           textDecoration: 'none',
         }}>
