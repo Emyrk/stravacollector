@@ -33,6 +33,14 @@ type HugelLeaderBoardActivity struct {
 	Rank       int64           `json:"rank"`
 	Efforts    []SegmentEffort `json:"efforts"`
 	Athlete    MinAthlete      `json:"athlete"`
+
+	// Activity info
+	ActivityName               string    `json:"activity_name"`
+	ActivityDistance           float64   `json:"activity_distance"`
+	ActivityMovingTime         int64     `json:"activity_moving_time"`
+	ActivityElapsedTime        int64     `json:"activity_elapsed_time"`
+	ActivityStartDate          time.Time `json:"activity_start_date"`
+	ActivityTotalElevationGain float64   `json:"activity_total_elevation_gain"`
 }
 
 type SegmentEffort struct {

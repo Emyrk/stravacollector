@@ -76,5 +76,11 @@ func convertHugelActivity(activity database.HugelLeaderboardRow) modelsdk.HugelL
 			Sex:            activity.Sex,
 			ProfilePicLink: activity.ProfilePicLink,
 		},
+		ActivityName:               activity.Name,
+		ActivityDistance:           activity.Distance,
+		ActivityMovingTime:         int64(activity.MovingTime),
+		ActivityElapsedTime:        int64(activity.ElapsedTime),
+		ActivityStartDate:          activity.StartDate,
+		ActivityTotalElevationGain: activity.TotalElevationGain,
 	}
 }

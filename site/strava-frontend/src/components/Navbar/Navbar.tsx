@@ -262,8 +262,8 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
           align={'start'}>
           {children &&
             children.map((child) => (
-              <Container py={2}>
-                <RouteLink key={child.label} to={child.href || '#'}>
+              <Container py={2} key={child.label}>
+                <RouteLink to={child.href || '#'}>
                   {child.label}
                 </RouteLink>
               </Container>

@@ -17,7 +17,14 @@ export const AthleteAvatarDropdown: FC<{
   return <Menu>
     {/* as={Button} rightIcon={<ChevronDownIcon />} */}
     <MenuButton>
-      <AthleteAvatar athlete={athlete} size="lg" />
+      <AthleteAvatar
+        firstName={athlete.firstname}
+        lastName={athlete.lastname}
+        athleteID={athlete.athlete_id}
+        username={athlete.username}
+        profilePicLink={athlete.profile_pic_link}
+        size="lg"
+      />
     </MenuButton>
     <MenuList>
       <Link href="/logout" style={{ textDecoration: 'none' }}>

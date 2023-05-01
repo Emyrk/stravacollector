@@ -822,6 +822,13 @@ SELECT
 	athlete_bests.total_time_seconds,
 	athlete_bests.efforts,
 
+	activity_summary.name,
+	activity_summary.distance,
+	activity_summary.moving_time,
+	activity_summary.elapsed_time,
+	activity_summary.total_elevation_gain,
+	activity_summary.start_date,
+
 	athletes.firstname,
 	athletes.lastname,
 	athletes.username,
@@ -838,6 +845,8 @@ FROM
 	) AS athlete_bests
 INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id
+INNER JOIN
+	activity_summary ON athlete_bests.activity_id = activity_summary.id
 WHERE
     CASE WHEN $1 > 0 THEN athlete_bests.athlete_id = $1 ELSE TRUE END
 ORDER BY
@@ -845,16 +854,22 @@ ORDER BY
 `
 
 type HugelLeaderboardRow struct {
-	Rank             int64           `db:"rank" json:"rank"`
-	ActivityID       int64           `db:"activity_id" json:"activity_id"`
-	AthleteID        int64           `db:"athlete_id" json:"athlete_id"`
-	TotalTimeSeconds int64           `db:"total_time_seconds" json:"total_time_seconds"`
-	Efforts          json.RawMessage `db:"efforts" json:"efforts"`
-	Firstname        string          `db:"firstname" json:"firstname"`
-	Lastname         string          `db:"lastname" json:"lastname"`
-	Username         string          `db:"username" json:"username"`
-	ProfilePicLink   string          `db:"profile_pic_link" json:"profile_pic_link"`
-	Sex              string          `db:"sex" json:"sex"`
+	Rank               int64           `db:"rank" json:"rank"`
+	ActivityID         int64           `db:"activity_id" json:"activity_id"`
+	AthleteID          int64           `db:"athlete_id" json:"athlete_id"`
+	TotalTimeSeconds   int64           `db:"total_time_seconds" json:"total_time_seconds"`
+	Efforts            json.RawMessage `db:"efforts" json:"efforts"`
+	Name               string          `db:"name" json:"name"`
+	Distance           float64         `db:"distance" json:"distance"`
+	MovingTime         float64         `db:"moving_time" json:"moving_time"`
+	ElapsedTime        float64         `db:"elapsed_time" json:"elapsed_time"`
+	TotalElevationGain float64         `db:"total_elevation_gain" json:"total_elevation_gain"`
+	StartDate          time.Time       `db:"start_date" json:"start_date"`
+	Firstname          string          `db:"firstname" json:"firstname"`
+	Lastname           string          `db:"lastname" json:"lastname"`
+	Username           string          `db:"username" json:"username"`
+	ProfilePicLink     string          `db:"profile_pic_link" json:"profile_pic_link"`
+	Sex                string          `db:"sex" json:"sex"`
 }
 
 func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, athleteID interface{}) ([]HugelLeaderboardRow, error) {
@@ -872,6 +887,12 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, athleteID interface{}
 			&i.AthleteID,
 			&i.TotalTimeSeconds,
 			&i.Efforts,
+			&i.Name,
+			&i.Distance,
+			&i.MovingTime,
+			&i.ElapsedTime,
+			&i.TotalElevationGain,
+			&i.StartDate,
 			&i.Firstname,
 			&i.Lastname,
 			&i.Username,

@@ -34,6 +34,12 @@ export interface HugelLeaderBoardActivity {
   readonly rank: number
   readonly efforts: SegmentEffort[]
   readonly athlete: MinAthlete
+  readonly activity_name: string
+  readonly activity_distance: number
+  readonly activity_moving_time: number
+  readonly activity_elapsed_time: number
+  readonly activity_start_date: string
+  readonly activity_total_elevation_gain: number
 }
 
 // From codersdk/athlete.go

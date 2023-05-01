@@ -3,13 +3,20 @@ import { AthleteSummary } from "../../api/typesGenerated";
 import { Avatar, AvatarBadge } from "@chakra-ui/react";
 
 export const AthleteAvatar: FC<{
-  athlete: AthleteSummary
+  firstName: string
+  lastName: string
+  athleteID: number
+  profilePicLink: string
+  username: string
   size?: string
-}> = ({ athlete, size = "md" }) => {
-  const name = athlete.firstname + " " + athlete.lastname
+}> = ({ firstName, lastName, athleteID, username, profilePicLink, size = "md" }) => {
+  let name = firstName + " " + lastName
+  if (name === "") {
+    name = username
+  }
   return <Avatar
     name={name}
-    src={athlete.profile_pic_link}
+    src={profilePicLink}
     size={size}
   >
     {/* <AvatarBadge boxSize='1.25em' bg='green.500' /> */}
