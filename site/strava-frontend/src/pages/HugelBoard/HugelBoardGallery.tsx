@@ -29,7 +29,7 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
     </SecondPlaceContainer>
 
     <RemainingPlacesContainer>
-      {data?.activities.map((activity, index) =>
+      {data?.activities.slice(3).map((activity, index) =>
         <GalleryCard activity={activity} position={index + 4} />
       )}
     </RemainingPlacesContainer>
@@ -55,7 +55,7 @@ const RemainingPlacesContainer: React.FC<React.PropsWithChildren> = ({ children 
 const SkeletonGalleryCard: React.FC<{
   position: number
 }> = ({}) => {
-  return <Box w='100%' maxW='350px' h='300px' bg='brown' />
+  return <Box w='100%' maxW='350px' h='300px' bg='transparent' />
 }
 
 // https://www.color-hex.com/color-palette/50061
@@ -90,7 +90,7 @@ const GalleryCard: React.FC<{
 
   if (!activity) {
     // Return empty
-    return <Box w='100%' maxW='350px' h='300px' bg='brown' />
+    return <Box w='100%' maxW='350px' h='300px' bg={"transparent"} borderRadius={'1rem'} />
   }
 
   console.log({ activity })
