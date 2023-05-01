@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Emyrk/strava/strava/stravalimit"
@@ -203,9 +204,12 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 				return fmt.Errorf("upsert activity summary (%d): %w", act.ID, err)
 			}
 
-			err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID)
-			if err != nil {
-				return fmt.Errorf("enqueue fetch activity: %w", err)
+			// Backload bike rides for more deets
+			if isBikeRide(act.Type) || isBikeRide(act.SportType) {
+				err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID)
+				if err != nil {
+					return fmt.Errorf("enqueue fetch activity: %w", err)
+				}
 			}
 		}
 		first := activities[len(activities)-1]
@@ -239,4 +243,16 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 	}
 
 	return nil
+}
+
+// isBikeRide covers the weird stuff like "VirtualRide", "EBikeRide", "MountainBikeRide"
+func isBikeRide(act string) bool {
+	act = strings.ToLower(act)
+	if strings.Contains(act, "bike") {
+		return true
+	}
+	if strings.Contains(act, "ride") {
+		return true
+	}
+	return false
 }

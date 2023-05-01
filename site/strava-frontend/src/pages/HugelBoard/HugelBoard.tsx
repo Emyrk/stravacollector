@@ -84,8 +84,8 @@ export const HugelBoard: FC = () => {
         <Td>
           <LinkOverlay href={"https://www.strava.com/activities/" + activity.activity_id} target="_blank">
             <Box>
-              {activity.rank}
-              {activity.activity_name}
+              <Text as="span">{activity.rank}</Text>
+              <Text as="span">{activity.activity_name}</Text>
             </Box>
           </LinkOverlay>
         </Td>
