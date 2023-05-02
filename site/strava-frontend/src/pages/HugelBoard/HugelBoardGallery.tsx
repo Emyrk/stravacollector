@@ -137,7 +137,7 @@ const GalleryCard: React.FC<{
         </Box>
       </Flex>
       <Flex bg={'rgba(0,0,0,0.25)'} color={bgColor} p={'1.25rem'} maxHeight={'2.5rem'} borderRadius={'0 1rem 0 1rem'} alignItems={'center'} justifyContent={'center'}>
-        <Text>
+        <Text fontWeight='bold' fontSize={"1.4em"}>
           {position}
         </Text>
       </Flex>

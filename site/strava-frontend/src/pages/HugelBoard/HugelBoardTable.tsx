@@ -97,7 +97,7 @@ export const HugelBoardTableRow: FC<PropsWithChildren<HugelLeaderBoardActivity>>
   return <Tr>
     <Td>
     <Flex p={3} alignItems={'center'}>
-      <Text fontSize={30} pr={5}>
+      <Text fontWeight='bold' fontSize={30} pr={5}>
         {activity.rank}
       </Text>
         <AthleteAvatar
