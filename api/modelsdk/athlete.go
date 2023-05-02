@@ -27,12 +27,13 @@ type HugelLeaderBoard struct {
 }
 
 type HugelLeaderBoardActivity struct {
-	ActivityID int64           `json:"activity_id"`
-	AthleteID  int64           `json:"athlete_id"`
-	Elapsed    int64           `json:"elapsed"`
-	Rank       int64           `json:"rank"`
-	Efforts    []SegmentEffort `json:"efforts"`
-	Athlete    MinAthlete      `json:"athlete"`
+	RankOneElapsed int64           `json:"rank_one_elapsed"`
+	ActivityID     int64           `json:"activity_id"`
+	AthleteID      int64           `json:"athlete_id"`
+	Elapsed        int64           `json:"elapsed"`
+	Rank           int64           `json:"rank"`
+	Efforts        []SegmentEffort `json:"efforts"`
+	Athlete        MinAthlete      `json:"athlete"`
 
 	// Activity info
 	ActivityName               string    `json:"activity_name"`

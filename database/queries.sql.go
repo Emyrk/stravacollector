@@ -791,7 +791,7 @@ SELECT
 				'id',segments.id,
 				'name',segments.name
 			)
-		) AS segments
+		) AS segment_summaries
 	FROM
 		segments
 	WHERE
@@ -806,7 +806,7 @@ LIMIT 1
 
 type GetCompetitiveRouteRow struct {
 	CompetitiveRoute CompetitiveRoute `db:"competitiveroute" json:"competitiveroute"`
-	Segments         json.RawMessage  `db:"segments" json:"segments"`
+	SegmentSummaries json.RawMessage  `db:"segment_summaries" json:"segment_summaries"`
 }
 
 func (q *sqlQuerier) GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error) {
@@ -817,13 +817,14 @@ func (q *sqlQuerier) GetCompetitiveRoute(ctx context.Context, routeName string) 
 		&i.CompetitiveRoute.DisplayName,
 		&i.CompetitiveRoute.Description,
 		&i.CompetitiveRoute.Segments,
-		&i.Segments,
+		&i.SegmentSummaries,
 	)
 	return i, err
 }
 
 const hugelLeaderboard = `-- name: HugelLeaderboard :many
 SELECT
+	(SELECT min(total_time_seconds) FROM hugel_activities) :: BIGINT AS best_time,
 	ROW_NUMBER() over(ORDER BY total_time_seconds ASC) AS rank,
 	athlete_bests.activity_id,
 	athlete_bests.athlete_id,
@@ -862,6 +863,7 @@ ORDER BY
 `
 
 type HugelLeaderboardRow struct {
+	BestTime           int64           `db:"best_time" json:"best_time"`
 	Rank               int64           `db:"rank" json:"rank"`
 	ActivityID         int64           `db:"activity_id" json:"activity_id"`
 	AthleteID          int64           `db:"athlete_id" json:"athlete_id"`
@@ -890,6 +892,7 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, athleteID interface{}
 	for rows.Next() {
 		var i HugelLeaderboardRow
 		if err := rows.Scan(
+			&i.BestTime,
 			&i.Rank,
 			&i.ActivityID,
 			&i.AthleteID,

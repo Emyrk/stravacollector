@@ -85,7 +85,7 @@ func convertRoute(route database.GetCompetitiveRouteRow) modelsdk.CompetitiveRou
 		Segments:    []modelsdk.SegmentSummary{},
 	}
 
-	_ = json.Unmarshal(route.Segments, &sdkRoute.Segments)
+	_ = json.Unmarshal(route.SegmentSummaries, &sdkRoute.Segments)
 	return sdkRoute
 }
 
@@ -101,11 +101,12 @@ func convertHugelActivity(activity database.HugelLeaderboardRow) modelsdk.HugelL
 	var efforts []modelsdk.SegmentEffort
 	_ = json.Unmarshal(activity.Efforts, &efforts)
 	return modelsdk.HugelLeaderBoardActivity{
-		ActivityID: activity.ActivityID,
-		AthleteID:  activity.AthleteID,
-		Elapsed:    activity.TotalTimeSeconds,
-		Rank:       activity.Rank,
-		Efforts:    efforts,
+		RankOneElapsed: activity.BestTime,
+		ActivityID:     activity.ActivityID,
+		AthleteID:      activity.AthleteID,
+		Elapsed:        activity.TotalTimeSeconds,
+		Rank:           activity.Rank,
+		Efforts:        efforts,
 		Athlete: modelsdk.MinAthlete{
 			AthleteID:      activity.AthleteID,
 			Username:       activity.Username,

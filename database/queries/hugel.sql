@@ -1,5 +1,6 @@
 -- name: HugelLeaderboard :many
 SELECT
+	(SELECT min(total_time_seconds) FROM hugel_activities) :: BIGINT AS best_time,
 	ROW_NUMBER() over(ORDER BY total_time_seconds ASC) AS rank,
 	athlete_bests.activity_id,
 	athlete_bests.athlete_id,
@@ -46,7 +47,7 @@ SELECT
 				'id',segments.id,
 				'name',segments.name
 			)
-		) AS segments
+		) AS segment_summaries
 	FROM
 		segments
 	WHERE

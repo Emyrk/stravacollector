@@ -36,6 +36,7 @@ export interface HugelLeaderBoard {
 
 // From codersdk/athlete.go
 export interface HugelLeaderBoardActivity {
+  readonly rank_one_elapsed: number
   readonly activity_id: number
   readonly athlete_id: number
   readonly elapsed: number
