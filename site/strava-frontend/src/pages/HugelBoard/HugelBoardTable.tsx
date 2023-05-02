@@ -27,17 +27,27 @@ import {
   AlertTitle,
   Tabs, TabList, TabPanels, Tab, TabPanel,
 } from '@chakra-ui/react'
-import { getErrorDetail, getErrorMessage, getHugelLeaderBoard } from "../../api/rest"
+import { getErrorDetail, getErrorMessage, getHugelLeaderBoard, getHugelSegments } from "../../api/rest"
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
 import { HugelBoardProps } from "./HugelBoard";
 import { HugelLeaderBoard, HugelLeaderBoardActivity } from "../../api/typesGenerated"
-import { CalculateActivity, ElapsedDurationText } from "./CalcActivity";
+import { CalculateActivity, ElapsedDurationText, SortEfforts, SortSegments } from "./CalcActivity";
 import React from "react";
 
 export const HugelBoardTable: FC<HugelBoardProps> = ({
   data, error, isLoading, isFetched
 }) => {
+  const queryKey = ["hugel-segments"]
+  const {
+    data: hugelSegments,
+    error: hugelSegmentsError,
+    isLoading: hugelSegmentsLoading,
+    isFetched: hugelSegmentsFetched,
+  } = useQuery({
+    queryKey,
+    queryFn: getHugelSegments,
+  })
 
   return <>
     {
@@ -55,20 +65,20 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
             <Th>Athlete</Th>
             <Th>Elapsed Time</Th>
             <Th>Activity</Th>
-            {/* {Segment IDs
-              data && data.activities[0] && data.activities[0].efforts.map((effort) => {
+            {
+              hugelSegments && hugelSegments.segments[0] && SortSegments(hugelSegments.segments).map((segment) => {
                 return <Th>
-                    {effort.segment_id}
+                  {segment.name}
                 </Th>
               })
-            } */}
+            }
           </Tr>
         </Thead>
         <Tbody>
-        {data && data.activities?.map((activity) => {
-           return  <HugelBoardTableRow {...activity}/>
-        })
-        }
+          {data && data.activities?.map((activity) => {
+            return <HugelBoardTableRow {...activity} />
+          })
+          }
         </Tbody>
       </Table>
     </TableContainer>
@@ -86,20 +96,20 @@ export const HugelBoardTableRow: FC<PropsWithChildren<HugelLeaderBoardActivity>>
   } = activity.athlete
 
   const {
-    dateText, 
+    dateText,
     elapsedText,
-    totalElapsedText, 
+    totalElapsedText,
     elevationText,
     distance,
-    showWatts, 
+    showWatts,
     avgWatts
-} = CalculateActivity(activity)
+  } = CalculateActivity(activity)
   return <Tr>
     <Td>
-    <Flex p={3} alignItems={'center'}>
-      <Text fontWeight='bold' fontSize={30} pr={5}>
-        {activity.rank}
-      </Text>
+      <Flex p={3} alignItems={'center'}>
+        <Text fontWeight='bold' fontSize={30} pr={5}>
+          {activity.rank}
+        </Text>
         <AthleteAvatar
           firstName={firstname}
           lastName={lastname}
@@ -124,21 +134,21 @@ export const HugelBoardTableRow: FC<PropsWithChildren<HugelLeaderBoardActivity>>
     </Td>
     <Td>
       <Box>
-      {activity.activity_name}
+        {activity.activity_name}
       </Box>
       <Box>
-      {distance} miles | {elevationText} feet
+        {distance} miles | {elevationText} feet
       </Box>
     </Td>
     {
-      activity.efforts.map((effort) => {
+      SortEfforts(activity.efforts).map((effort) => {
         return <Td>
-            <Box>
-              {ElapsedDurationText(false, effort.elapsed_time)}
-            </Box>
-            <Box>
-              {effort.device_watts ? effort.average_watts + "w" : "--"}
-            </Box>
+          <Box>
+            {ElapsedDurationText(false, effort.elapsed_time)}
+          </Box>
+          <Box>
+            {effort.device_watts ? effort.average_watts + "w" : "--"}
+          </Box>
         </Td>
       })
     }
