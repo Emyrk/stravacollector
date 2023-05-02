@@ -51,6 +51,7 @@ type API struct {
 	Manager     *queue.Manager
 
 	HugelBoardCache *gencache.LazyCache[[]database.HugelLeaderboardRow]
+	HugelRouteCache *gencache.LazyCache[database.GetCompetitiveRouteRow]
 }
 
 func New(opts Options) (*API, error) {
@@ -86,6 +87,9 @@ func New(opts Options) (*API, error) {
 
 	api.HugelBoardCache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
 		return api.Opts.DB.HugelLeaderboard(ctx, 0)
+	})
+	api.HugelRouteCache = gencache.New(time.Minute, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {
+		return api.Opts.DB.GetCompetitiveRoute(ctx, "das-hugel")
 	})
 
 	return api, nil
@@ -124,6 +128,9 @@ func (api *API) Routes() chi.Router {
 				httpmw.Authenticated(api.Auth, true),
 			)
 			r.Get("/hugelboard", api.hugelboard)
+			r.Route("/route", func(r chi.Router) {
+				r.Get("/{route-name}", api.competitiveRoute)
+			})
 		})
 		r.NotFound(api.apiNotFound)
 	})

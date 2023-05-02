@@ -782,36 +782,44 @@ func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLo
 	return i, err
 }
 
-const getCompetitiveRoute = `-- name: GetCompetitiveRoute :many
-SELECT name, display_name, description, segments FROM competitive_routes WHERE name = $1
+const getCompetitiveRoute = `-- name: GetCompetitiveRoute :one
+SELECT
+	competitive_routes.name, competitive_routes.display_name, competitive_routes.description, competitive_routes.segments, (
+	SELECT
+		json_agg(
+			json_build_object(
+				'id',segments.id,
+				'name',segments.name
+			)
+		) AS segments
+	FROM
+		segments
+	WHERE
+		id = ANY(competitive_routes.segments)
+)
+FROM
+	competitive_routes
+WHERE
+	competitive_routes.name = $1
+LIMIT 1
 `
 
-func (q *sqlQuerier) GetCompetitiveRoute(ctx context.Context, routeName string) ([]CompetitiveRoute, error) {
-	rows, err := q.db.QueryContext(ctx, getCompetitiveRoute, routeName)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []CompetitiveRoute
-	for rows.Next() {
-		var i CompetitiveRoute
-		if err := rows.Scan(
-			&i.Name,
-			&i.DisplayName,
-			&i.Description,
-			pq.Array(&i.Segments),
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type GetCompetitiveRouteRow struct {
+	CompetitiveRoute CompetitiveRoute `db:"competitiveroute" json:"competitiveroute"`
+	Segments         json.RawMessage  `db:"segments" json:"segments"`
+}
+
+func (q *sqlQuerier) GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error) {
+	row := q.db.QueryRowContext(ctx, getCompetitiveRoute, routeName)
+	var i GetCompetitiveRouteRow
+	err := row.Scan(
+		&i.CompetitiveRoute.Name,
+		&i.CompetitiveRoute.DisplayName,
+		&i.CompetitiveRoute.Description,
+		&i.CompetitiveRoute.Segments,
+		&i.Segments,
+	)
+	return i, err
 }
 
 const hugelLeaderboard = `-- name: HugelLeaderboard :many

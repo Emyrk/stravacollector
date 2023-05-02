@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/Emyrk/strava/database"
 
 	"github.com/Emyrk/strava/api/httpapi"
@@ -11,16 +13,40 @@ import (
 	"github.com/Emyrk/strava/api/modelsdk"
 )
 
+func (api *API) competitiveRoute(rw http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	routeName := chi.URLParam(r, "route-name")
+	if routeName == "das-hugel" {
+		route, err := api.HugelRouteCache.Load(ctx)
+		if err != nil {
+			httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+				Message: "Failed to load route",
+				Detail:  err.Error(),
+			})
+			return
+		}
+		httpapi.Write(ctx, rw, http.StatusOK, convertRoute(route))
+		return
+	}
+
+	// Only support hugel for now
+	httpapi.Write(ctx, rw, http.StatusNotFound, modelsdk.Response{
+		Message: "Route not found",
+	})
+}
+
 func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 	var (
 		ctx                 = r.Context()
 		id, athleteLoggedIn = httpmw.AuthenticatedAthleteIDOptional(r)
 	)
-	var _ = athleteLoggedIn
 
 	activities, err := api.HugelBoardCache.Load(ctx)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+			Message: "Failed to load leaderboard",
+			Detail:  err.Error(),
+		})
 		return
 	}
 
@@ -49,6 +75,18 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 	httpapi.Write(ctx, rw, http.StatusOK, board)
+}
+
+func convertRoute(route database.GetCompetitiveRouteRow) modelsdk.CompetitiveRoute {
+	sdkRoute := modelsdk.CompetitiveRoute{
+		Name:        route.CompetitiveRoute.Name,
+		DisplayName: route.CompetitiveRoute.DisplayName,
+		Description: route.CompetitiveRoute.Description,
+		Segments:    []modelsdk.SegmentSummary{},
+	}
+
+	_ = json.Unmarshal(route.Segments, &sdkRoute.Segments)
+	return sdkRoute
 }
 
 func convertHugelActivities(activites []database.HugelLeaderboardRow) []modelsdk.HugelLeaderBoardActivity {

@@ -37,5 +37,23 @@ ORDER BY
     total_time_seconds ASC
 ;
 
--- name: GetCompetitiveRoute :many
-SELECT * FROM competitive_routes WHERE name = @route_name;
+-- name: GetCompetitiveRoute :one
+SELECT
+	sqlc.embed(competitive_routes), (
+	SELECT
+		json_agg(
+			json_build_object(
+				'id',segments.id,
+				'name',segments.name
+			)
+		) AS segments
+	FROM
+		segments
+	WHERE
+		id = ANY(competitive_routes.segments)
+)
+FROM
+	competitive_routes
+WHERE
+	competitive_routes.name = @route_name
+LIMIT 1;

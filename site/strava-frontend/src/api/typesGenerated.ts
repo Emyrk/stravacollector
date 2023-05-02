@@ -20,6 +20,14 @@ export interface AthleteSummary {
   readonly updated_at: string
 }
 
+// From codersdk/route.go
+export interface CompetitiveRoute {
+  readonly name: string
+  readonly display_name: string
+  readonly description: string
+  readonly segments: SegmentSummary[]
+}
+
 // From codersdk/athlete.go
 export interface HugelLeaderBoard {
   readonly personal_best?: HugelLeaderBoardActivity
@@ -67,4 +75,10 @@ export interface SegmentEffort {
   readonly moving_time: number
   readonly device_watts: boolean
   readonly average_watts: number
+}
+
+// From codersdk/route.go
+export interface SegmentSummary {
+  readonly id: number
+  readonly name: string
 }
