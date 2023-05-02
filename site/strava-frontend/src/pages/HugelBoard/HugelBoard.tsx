@@ -31,7 +31,6 @@ import {
 import { getErrorDetail, getErrorMessage, getHugelLeaderBoard } from "../../api/rest"
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
-import * as moment from 'moment'
 import * as TypesGen from "./../../api/typesGenerated"
 import { HugelBoardGallery } from "./HugelBoardGallery";
 import { HugelBoardTable } from "./HugelBoardTable";

@@ -13,6 +13,7 @@ import {
 import { HugelLeaderBoardActivity } from "../../api/typesGenerated"
 import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar"
 import { DistanceToLocal, DistanceToLocalElevation } from "../../lib/Distance/Distance"
+import { CalculateActivity } from "./CalcActivity"
 
 export const HugelBoardGallery: FC<HugelBoardProps> = ({
   data, error, isLoading, isFetched
@@ -93,9 +94,6 @@ const GalleryCard: React.FC<{
     return <Box w='100%' maxW='350px' h='300px' bg={"transparent"} borderRadius={'1rem'} />
   }
 
-  console.log({ activity })
-
-
   const {
     firstname,
     lastname,
@@ -103,15 +101,15 @@ const GalleryCard: React.FC<{
     username,
   } = activity.athlete
 
-  // 2022-11-27T15:42:54Z
-  // Dates come over in UTC
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-  const dateText = new Date(activity.activity_start_date).toLocaleDateString(undefined, options)
-  const elapsed = `${Math.floor(activity.elapsed / 3600)}:${Math.floor(activity.elapsed / 60) % 60}:${activity.elapsed % 60}`
-  const totalElapsed = `${Math.floor(activity.activity_elapsed_time / 3600)}:${Math.floor(activity.activity_elapsed_time / 60) % 60}`
-  const elevation = `${Math.floor(DistanceToLocalElevation(activity.activity_total_elevation_gain) / 100) / 10}k`
-  const showWatts = activity.efforts.every(effort => effort.average_watts > 0 && effort.device_watts)
-  const avgWatts = Math.floor(activity.efforts.reduce((acc, effort) => acc + effort.average_watts * effort.elapsed_time, 0) / activity.elapsed).toString()
+  const {
+    dateText, 
+    elapsedText,
+    totalElapsedText, 
+    elevationText,
+    distance,
+    showWatts, 
+    avgWatts
+} = CalculateActivity(activity)
 
   return <Box w='100%' maxW='350px' h='300px' bg={bgColor} borderRadius={'1rem'}
     filter={`drop-shadow(2px 2px 2px rgba(${shadowColorRGB}, 0.25))`}
@@ -148,13 +146,13 @@ const GalleryCard: React.FC<{
     <Text fontWeight='bold'>{activity.activity_name}</Text>
     <Grid gridTemplateColumns='2fr 1fr' gap={3} p={4}>
       {/* Margins are not yet computed */}
-      <StatBox stat={elapsed} label={"+00:00:05"} />
-      <StatBox stat={Math.floor(DistanceToLocal(activity.activity_distance)).toString()} label={"miles"} />
+      <StatBox stat={elapsedText} label={"+00:00:05"} />
+      <StatBox stat={distance.toString()} label={"miles"} />
     </Grid>
     <Grid gridTemplateColumns='1fr 1fr 1fr' gap={3} px={4}>
-      <StatBox stat={totalElapsed} label={"total hours"} />
-      <StatBox stat={showWatts ? avgWatts : "--"} label={"watts"} />
-      <StatBox stat={elevation} label={"feet"} />
+      <StatBox stat={totalElapsedText} label={"total hours"} />
+      <StatBox stat={showWatts ? avgWatts.toString() : "--"} label={"watts"} />
+      <StatBox stat={elevationText} label={"feet"} />
     </Grid>
 
   </Box>
