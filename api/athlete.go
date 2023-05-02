@@ -6,9 +6,8 @@ import (
 	"net/http"
 
 	"github.com/Emyrk/strava/api/httpapi"
-	"github.com/Emyrk/strava/api/modelsdk"
-
 	"github.com/Emyrk/strava/api/httpmw"
+	"github.com/Emyrk/strava/api/modelsdk"
 )
 
 func (api *API) whoAmI(rw http.ResponseWriter, r *http.Request) {

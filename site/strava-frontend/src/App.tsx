@@ -13,6 +13,7 @@ import {
   AlertIcon,
   AlertTitle,
   useColorModeValue,
+  StyleConfig,
 } from "@chakra-ui/react"
 import { Logo } from "./Logo"
 import {
@@ -43,18 +44,28 @@ const queryClient = new QueryClient({
 })
 
 
-const theme = extendTheme({
-  components: {
-    Tabs: {
-      baseStyle: {
-        tab: {
-          _selected: {
-            color: "#fc4c02",
-          }
-        }
-      },
-    }
+const customComponents: Record<string, StyleConfig> = {
+  Text: {
+    variants: {
+      // used as <Text variant="minor">
+      minor: ({ colorMode }) => ({
+        color: colorMode === "dark" ? "whiteAlpha.500" : "blackAlpha.500",
+      })
+    },
   },
+  Tabs: {
+    baseStyle: {
+      tab: {
+        _selected: {
+          color: "#fc4c02",
+        }
+      }
+    },
+  }
+}
+
+const theme = extendTheme({
+  components: { ...customComponents },
   colors: {
     brand: {
       primary: "#ebebeb",

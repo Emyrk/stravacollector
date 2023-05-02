@@ -31,7 +31,7 @@ import { getErrorDetail, getErrorMessage, getHugelLeaderBoard, getHugelSegments 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
 import { HugelBoardProps } from "./HugelBoard";
-import { HugelLeaderBoard, HugelLeaderBoardActivity } from "../../api/typesGenerated"
+import { HugelLeaderBoard, HugelLeaderBoardActivity, SegmentEffort, SegmentSummary } from "../../api/typesGenerated"
 import { CalculateActivity, ElapsedDurationText, SortEfforts, SortSegments } from "./CalcActivity";
 import React from "react";
 
@@ -49,6 +49,11 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
     queryFn: getHugelSegments,
   })
 
+  const segmentMapping = hugelSegments?.segments.reduce((acc, segment) => {
+    acc[segment.id] = segment
+    return acc
+  }, {} as { [key: number]: SegmentSummary })
+
   return <>
     {
       error && <Alert status='error'>
@@ -63,37 +68,48 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
         <Thead>
           <Tr>
             <Th>Athlete</Th>
-            <Th>Elapsed Time</Th>
+            <Th>Elapsed</Th>
             <Th>Activity</Th>
-            {
-              hugelSegments && hugelSegments.segments[0] && SortSegments(hugelSegments.segments).map((segment) => {
-                return <Th>
-                  {segment.name}
-                </Th>
-              })
-            }
           </Tr>
         </Thead>
         <Tbody>
           {data && data.activities?.map((activity) => {
-            return <HugelBoardTableRow key={activity.activity_id} {...activity} />
+            return <HugelBoardTableRow key={activity.activity_id} activity={activity} segmentSummaries={segmentMapping} />
           })
           }
         </Tbody>
       </Table>
-    </TableContainer>
+    </TableContainer >
   </>
 }
 
 
 
-export const HugelBoardTableRow: FC<PropsWithChildren<HugelLeaderBoardActivity>> = (activity) => {
+export const HugelBoardTableRow: FC<PropsWithChildren<{
+  activity: HugelLeaderBoardActivity
+  segmentSummaries?: { [key: number]: SegmentSummary }
+}>> = ({ activity, segmentSummaries }) => {
   const {
     firstname,
     lastname,
     profile_pic_link,
     username,
   } = activity.athlete
+
+  // Sort by the length of the segment name to group similar length names
+  const efforts = activity.efforts.sort((a, b) => {
+    if (segmentSummaries) {
+      return segmentSummaries[a.segment_id].name.length - segmentSummaries[b.segment_id].name.length
+    }
+    return a.segment_id - b.segment_id
+  })
+
+
+  console.log(efforts)
+  const pairedEfforts: SegmentEffort[][] = []
+  for (let i = 0; i < efforts.length; i += 2) {
+    pairedEfforts.push(efforts.slice(i, i + 2))
+  }
 
   const {
     dateText,
@@ -102,7 +118,8 @@ export const HugelBoardTableRow: FC<PropsWithChildren<HugelLeaderBoardActivity>>
     elevationText,
     distance,
     showWatts,
-    avgWatts
+    avgWatts,
+    marginText
   } = CalculateActivity(activity)
   return <Tr key={`row-${activity.activity_id}`}>
     <Td>
@@ -129,26 +146,35 @@ export const HugelBoardTableRow: FC<PropsWithChildren<HugelLeaderBoardActivity>>
         </Box>
       </Flex>
     </Td>
-    <Td>
-      {elapsedText}
+    <Td textAlign={"center"}>
+      <Text fontSize='lg'>{elapsedText}</Text>
+      <Text variant="minor">{marginText}</Text>
     </Td>
     <Td>
-      <Box>
-        {activity.activity_name}
-      </Box>
-      <Box>
-        {distance} miles | {elevationText} feet
-      </Box>
+      <Link href={`https://strava.com/activities/${activity.activity_id}`} target="_blank">
+        <Text fontWeight={"bold"}>
+          {activity.activity_name}
+        </Text>
+        <Box>
+          {distance} miles | {elevationText} feet
+        </Box>
+      </Link>
     </Td>
     {
-      SortEfforts(activity.efforts).map((effort) => {
+      pairedEfforts.map((efforts) => {
+
+        console.log(efforts[0].effort_id, segmentSummaries[efforts[0].segment_id].name)
         return <Td>
-          <Box>
-            {ElapsedDurationText(effort.elapsed_time, false)}
-          </Box>
-          <Box>
-            {effort.device_watts ? Math.floor(effort.average_watts) + "w" : "--"}
-          </Box>
+          {efforts.map((effort) => {
+            return <>
+              <Link target="_blank" href={`https://strava.com/activities/${activity.activity_id.toString()}/segments/${effort.effort_id.toString()}`}>
+                <Text maxWidth={"100px"} isTruncated fontWeight={"bold"}>{segmentSummaries ? segmentSummaries[effort.segment_id].name : "----"}</Text>
+                <Box>
+                  {ElapsedDurationText(effort.elapsed_time, false)} @ {effort.device_watts ? Math.floor(effort.average_watts) + "w" : "--"}
+                </Box>
+              </Link>
+            </>
+          })}
         </Td>
       })
     }
