@@ -102,14 +102,15 @@ const GalleryCard: React.FC<{
   } = activity.athlete
 
   const {
-    dateText, 
+    dateText,
     elapsedText,
-    totalElapsedText, 
+    totalElapsedText,
     elevationText,
     distance,
-    showWatts, 
-    avgWatts
-} = CalculateActivity(activity)
+    showWatts,
+    avgWatts,
+    marginText
+  } = CalculateActivity(activity)
 
   return <Box w='100%' maxW='350px' h='300px' bg={bgColor} borderRadius={'1rem'}
     filter={`drop-shadow(2px 2px 2px rgba(${shadowColorRGB}, 0.25))`}
@@ -145,8 +146,7 @@ const GalleryCard: React.FC<{
     </Flex>
     <Text fontWeight='bold'>{activity.activity_name}</Text>
     <Grid gridTemplateColumns='2fr 1fr' gap={3} p={4}>
-      {/* Margins are not yet computed */}
-      <StatBox stat={elapsedText} label={"+00:00:05"} />
+      <StatBox stat={elapsedText} label={marginText} />
       <StatBox stat={distance.toString()} label={"miles"} />
     </Grid>
     <Grid gridTemplateColumns='1fr 1fr 1fr' gap={3} px={4}>

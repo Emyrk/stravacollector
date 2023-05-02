@@ -79,9 +79,9 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 
 func convertRoute(route database.GetCompetitiveRouteRow) modelsdk.CompetitiveRoute {
 	sdkRoute := modelsdk.CompetitiveRoute{
-		Name:        route.CompetitiveRoute.Name,
-		DisplayName: route.CompetitiveRoute.DisplayName,
-		Description: route.CompetitiveRoute.Description,
+		Name:        route.Name,
+		DisplayName: route.DisplayName,
+		Description: route.Description,
 		Segments:    []modelsdk.SegmentSummary{},
 	}
 

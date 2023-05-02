@@ -40,7 +40,7 @@ ORDER BY
 
 -- name: GetCompetitiveRoute :one
 SELECT
-	sqlc.embed(competitive_routes), (
+	competitive_routes.name, competitive_routes.display_name, competitive_routes.description, (
 	SELECT
 		json_agg(
 			json_build_object(

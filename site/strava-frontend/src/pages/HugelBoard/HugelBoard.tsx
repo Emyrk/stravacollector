@@ -77,7 +77,7 @@ export const HugelBoard: FC = () => {
       <Tab>📋 Table</Tab>
     </TabList>
     <TabPanels>
-      <TabPanel>
+      <TabPanel key="gallery">
         <HugelBoardGallery
           data={hugelLeaderboard}
           error={hugelLeaderboardError}
@@ -85,7 +85,7 @@ export const HugelBoard: FC = () => {
           isFetched={hugelFetched}
         />
       </TabPanel>
-      <TabPanel>
+      <TabPanel key="table">
         <HugelBoardTable
           data={hugelLeaderboard}
           error={hugelLeaderboardError}

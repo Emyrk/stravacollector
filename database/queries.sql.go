@@ -784,7 +784,7 @@ func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLo
 
 const getCompetitiveRoute = `-- name: GetCompetitiveRoute :one
 SELECT
-	competitive_routes.name, competitive_routes.display_name, competitive_routes.description, competitive_routes.segments, (
+	competitive_routes.name, competitive_routes.display_name, competitive_routes.description, (
 	SELECT
 		json_agg(
 			json_build_object(
@@ -805,18 +805,19 @@ LIMIT 1
 `
 
 type GetCompetitiveRouteRow struct {
-	CompetitiveRoute CompetitiveRoute `db:"competitiveroute" json:"competitiveroute"`
-	SegmentSummaries json.RawMessage  `db:"segment_summaries" json:"segment_summaries"`
+	Name             string          `db:"name" json:"name"`
+	DisplayName      string          `db:"display_name" json:"display_name"`
+	Description      string          `db:"description" json:"description"`
+	SegmentSummaries json.RawMessage `db:"segment_summaries" json:"segment_summaries"`
 }
 
 func (q *sqlQuerier) GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error) {
 	row := q.db.QueryRowContext(ctx, getCompetitiveRoute, routeName)
 	var i GetCompetitiveRouteRow
 	err := row.Scan(
-		&i.CompetitiveRoute.Name,
-		&i.CompetitiveRoute.DisplayName,
-		&i.CompetitiveRoute.Description,
-		&i.CompetitiveRoute.Segments,
+		&i.Name,
+		&i.DisplayName,
+		&i.Description,
 		&i.SegmentSummaries,
 	)
 	return i, err

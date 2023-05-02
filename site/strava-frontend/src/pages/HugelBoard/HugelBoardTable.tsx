@@ -76,7 +76,7 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
         </Thead>
         <Tbody>
           {data && data.activities?.map((activity) => {
-            return <HugelBoardTableRow {...activity} />
+            return <HugelBoardTableRow key={activity.activity_id} {...activity} />
           })
           }
         </Tbody>
@@ -104,7 +104,7 @@ export const HugelBoardTableRow: FC<PropsWithChildren<HugelLeaderBoardActivity>>
     showWatts,
     avgWatts
   } = CalculateActivity(activity)
-  return <Tr>
+  return <Tr key={`row-${activity.activity_id}`}>
     <Td>
       <Flex p={3} alignItems={'center'}>
         <Text fontWeight='bold' fontSize={30} pr={5}>

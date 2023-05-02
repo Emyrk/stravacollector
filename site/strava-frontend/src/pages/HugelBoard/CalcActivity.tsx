@@ -9,6 +9,7 @@ export interface ActivityCalResults {
     showWatts: boolean
     avgWatts: number
     distance: number
+    marginText: string
 }
 
 export const CalculateActivity = (activity: HugelLeaderBoardActivity): ActivityCalResults => {
@@ -22,6 +23,10 @@ export const CalculateActivity = (activity: HugelLeaderBoardActivity): ActivityC
     const showWatts = activity.efforts.every(effort => effort.average_watts > 0 && effort.device_watts)
     const avgWatts = Math.floor(activity.efforts.reduce((acc, effort) => acc + effort.average_watts * effort.elapsed_time, 0) / activity.elapsed)
     const distance = Math.floor(DistanceToLocal(activity.activity_distance))
+    let marginText = "+" + ElapsedDurationText(true, activity.elapsed - activity.rank_one_elapsed)
+    if (!activity.rank_one_elapsed) {
+        marginText = "--:--:--"
+    }
 
 
     return {
@@ -31,7 +36,8 @@ export const CalculateActivity = (activity: HugelLeaderBoardActivity): ActivityC
         elevationText,
         distance,
         showWatts,
-        avgWatts
+        avgWatts,
+        marginText
     }
 }
 
