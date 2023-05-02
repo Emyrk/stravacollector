@@ -144,10 +144,10 @@ export const HugelBoardTableRow: FC<PropsWithChildren<HugelLeaderBoardActivity>>
       SortEfforts(activity.efforts).map((effort) => {
         return <Td>
           <Box>
-            {ElapsedDurationText(false, effort.elapsed_time)}
+            {ElapsedDurationText(effort.elapsed_time, false)}
           </Box>
           <Box>
-            {effort.device_watts ? effort.average_watts + "w" : "--"}
+            {effort.device_watts ? Math.floor(effort.average_watts) + "w" : "--"}
           </Box>
         </Td>
       })
