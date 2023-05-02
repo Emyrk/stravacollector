@@ -6,6 +6,14 @@ WHERE
 RETURNING *
 ;
 
+-- name: GetActivityDetail :one
+SELECT
+	*
+FROM
+	activity_detail
+WHERE
+	id = $1;
+
 -- name: GetActivitySummary :one
 SELECT
 	*

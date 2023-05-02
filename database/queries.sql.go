@@ -66,6 +66,46 @@ func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySumm
 	return i, err
 }
 
+const getActivityDetail = `-- name: GetActivityDetail :one
+SELECT
+	id, athlete_id, start_latlng, end_latlng, from_accepted_tag, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, max_watts, elev_high, elev_low, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at, map_id, source
+FROM
+	activity_detail
+WHERE
+	id = $1
+`
+
+func (q *sqlQuerier) GetActivityDetail(ctx context.Context, id int64) (ActivityDetail, error) {
+	row := q.db.QueryRowContext(ctx, getActivityDetail, id)
+	var i ActivityDetail
+	err := row.Scan(
+		&i.ID,
+		&i.AthleteID,
+		pq.Array(&i.StartLatlng),
+		pq.Array(&i.EndLatlng),
+		&i.FromAcceptedTag,
+		&i.AverageCadence,
+		&i.AverageTemp,
+		&i.AverageWatts,
+		&i.WeightedAverageWatts,
+		&i.Kilojoules,
+		&i.MaxWatts,
+		&i.ElevHigh,
+		&i.ElevLow,
+		&i.SufferScore,
+		&i.Calories,
+		&i.EmbedToken,
+		&i.SegmentLeaderboardOptOut,
+		&i.LeaderboardOptOut,
+		&i.NumSegmentEfforts,
+		&i.PremiumFetch,
+		&i.UpdatedAt,
+		&i.MapID,
+		&i.Source,
+	)
+	return i, err
+}
+
 const getActivitySummary = `-- name: GetActivitySummary :one
 SELECT
 	id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate

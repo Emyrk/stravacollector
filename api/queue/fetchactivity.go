@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/strava"
@@ -52,6 +53,11 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 	if args.Source == "" {
 		args.Source = database.ActivityDetailSourceUnknown
 	}
+	logger = logger.With().
+		Int64("activity_id", args.ActivityID).
+		Int64("athlete_id", args.AthleteID).
+		Str("source", string(args.Source)).
+		Logger()
 
 	// Only track athletes we have in our database
 	athlete, err := m.DB.GetAthleteLogin(ctx, args.AthleteID)
@@ -59,11 +65,18 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 		logger.Error().Err(err).Msg("athlete not found, job abandoned")
 		return nil
 	}
-
 	if err != nil {
 		return err
 	}
-	logger = logger.With().Int64("athlete_id", athlete.AthleteID).Logger()
+
+	// First check if we just fetched this from another source.
+	act, err := m.DB.GetActivityDetail(ctx, args.ActivityID)
+	if err == nil {
+		// We already fetched this today.
+		if time.Since(act.UpdatedAt) < time.Hour*24 {
+			return nil
+		}
+	}
 
 	cli := strava.NewOAuthClient(m.OAuthCfg.Client(ctx, athlete.OAuthToken()))
 
