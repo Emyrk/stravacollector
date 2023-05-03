@@ -6,7 +6,6 @@ import {
 
 export const SignedOut: FC = () => {
   const theme = useTheme()
-  console.log(theme.colors.brand)
 
   return (
     <Box

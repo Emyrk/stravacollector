@@ -15,28 +15,37 @@ import {
   Container,
   Tag,
   useTheme,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from '@chakra-ui/react';
 import {
   Link as RouteLink,
 } from "react-router-dom";
 import {
+  AddIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  EditIcon,
+  ExternalLinkIcon,
+  HamburgerIcon,
+  RepeatIcon,
 } from '@chakra-ui/icons';
 import { StravaConnect } from './StravaConnect';
 import { useAuthenticated } from '../../contexts/Authenticated';
 import { getErrorMessage, getErrorDetail } from '../../api/rest';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { AthleteAvatar } from '../AthleteAvatar/AthleteAvatar';
 import { AthleteAvatarDropdown } from './AthleteAvatarDropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrophy } from '@fortawesome/free-solid-svg-icons'
+import { faTrophy, faBars } from '@fortawesome/free-solid-svg-icons'
 import { ColorModeSwitcher } from '../ColorModeSwitcher/ColorModeSwitcher';
 
 const Navbar: React.FC = () => {
   const { isOpen, onToggle } = useDisclosure();
   const theme = useTheme()
-  console.log(theme.colors)
 
   return <>
     <Flex w='100%' maxW={'7xl'} m={'1rem auto 0'} justifyContent='space-between' alignItems={'center'} p={3} pb={0}>
@@ -47,11 +56,14 @@ const Navbar: React.FC = () => {
           <Image maxHeight={"80px"} src="/logos/LogoTypeColor.png" alt="Hugel Ranker" display={{ base: 'none', md: 'block' }} />
         </RouteLink>
       </Box>
-      <ColorModeSwitcher justifySelf="flex-end" />
-      <Flex alignItems={'center'} gap={2}>
+
+      <Flex alignItems={'center'} gap={2} marginLeft={"auto"}>
+        {/* <ColorModeSwitcher display={{ base: 'none', md: 'none' }} justifySelf="flex-end" /> */}
         <DesktopNav display={{ base: 'none', md: 'block' }} />
         <StravaConnect />
+        <MobileNav2 display={{ base: 'block', md: 'none' }} />
       </Flex>
+      {/* <ColorModeSwitcher display={{ base: 'none', md: 'block' }} justifySelf="flex-end" /> */}
     </Flex>
     <MobileNav display={{ base: 'block', md: 'none' }} />
   </>
@@ -81,7 +93,7 @@ const DesktopNav: React.FC<{ display: { base: string, md: string } }> = ({ displ
                   color: linkHoverColor,
                 }}>
                 <RouteLink to={navItem.href ?? '#'}>
-                  <Tag p={3} display={'flex'} gap={2}>
+                  <Tag p={3} display={'flex'} gap={2} borderRadius={"2px"}>
                     <FontAwesomeIcon icon={faTrophy} />
                     {navItem.label}
                   </Tag>
@@ -148,6 +160,38 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
     </Container >
   );
 };
+
+export const MobileNav2: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
+  const bugerColor = useColorModeValue("brand.stravaOrange", "colors.alphaWhite.800")
+
+  // Hugel links + Light/Dark toggle
+  return <Box display={display}>
+    <Menu>
+      <MenuButton
+        color={bugerColor}
+        variant='outline'
+        as={IconButton}
+        aria-label='Options'
+        icon={<HamburgerIcon />}
+      />
+      <MenuList>
+        <MenuItem icon={<AddIcon />} command='⌘T'>
+          New Tab
+        </MenuItem>
+        <MenuItem icon={<ExternalLinkIcon />} command='⌘N'>
+          New Window
+        </MenuItem>
+        <MenuItem icon={<RepeatIcon />} command='⌘⇧N'>
+          Open Closed Tab
+        </MenuItem>
+        <MenuItem icon={<EditIcon />} command='⌘O'>
+          Open File...
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  </Box>
+}
+
 
 const MobileNav: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
   return (

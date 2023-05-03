@@ -98,17 +98,22 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
 
   // Sort by the length of the segment name to group similar length names
   const efforts = activity.efforts.sort((a, b) => {
+    // if (segmentSummaries) {
+    //   return segmentSummaries[a.segment_id].name.length - segmentSummaries[b.segment_id].name.length
+    // }
     if (segmentSummaries) {
-      return segmentSummaries[a.segment_id].name.length - segmentSummaries[b.segment_id].name.length
+      return segmentSummaries[a.segment_id].name.toLowerCase() < segmentSummaries[b.segment_id].name.toLowerCase() ? -1 : 1
     }
     return a.segment_id - b.segment_id
   })
 
 
-  console.log(efforts)
-  const pairedEfforts: SegmentEffort[][] = []
+  const pairedEfforts: (SegmentEffort | null)[][] = []
   for (let i = 0; i < efforts.length; i += 2) {
     pairedEfforts.push(efforts.slice(i, i + 2))
+  }
+  if (pairedEfforts[pairedEfforts.length - 1].length === 1) {
+    pairedEfforts[pairedEfforts.length - 1].push(null)
   }
 
   const {
@@ -163,20 +168,24 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
     {
       pairedEfforts.map((efforts) => {
 
-        console.log(efforts[0].effort_id, segmentSummaries[efforts[0].segment_id].name)
+        // console.log(efforts[0].effort_id, segmentSummaries[efforts[0].segment_id].name)
         return <Td>
-          {efforts.map((effort) => {
+          {efforts.map((effort, index) => {
+            if (!effort) {
+              // Blank box of height 2 lines
+              return <Box pb={index === 0 ? 3 : 0} height="2em"></Box>
+            }
             return <>
               <Link target="_blank" href={`https://strava.com/activities/${activity.activity_id.toString()}/segments/${effort.effort_id.toString()}`}>
                 <Text maxWidth={"100px"} isTruncated fontWeight={"bold"}>{segmentSummaries ? segmentSummaries[effort.segment_id].name : "----"}</Text>
-                <Box>
+                <Box pb={index === 0 ? 3 : 0}>
                   {ElapsedDurationText(effort.elapsed_time, false)} @ {effort.device_watts ? Math.floor(effort.average_watts) + "w" : "--"}
                 </Box>
-              </Link>
+              </Link >
             </>
           })}
         </Td>
       })
     }
-  </Tr>
+  </Tr >
 }

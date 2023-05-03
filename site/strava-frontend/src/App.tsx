@@ -14,6 +14,7 @@ import {
   AlertTitle,
   useColorModeValue,
   StyleConfig,
+  StyleFunctionProps,
 } from "@chakra-ui/react"
 import { Logo } from "./Logo"
 import {
@@ -61,10 +62,20 @@ const customComponents: Record<string, StyleConfig> = {
         }
       }
     },
+  },
+  Tag: {
+    baseStyle: {
+      container: {
+        color: "white",
+      }
+    },
+    variants: {},
   }
 }
 
 const theme = extendTheme({
+  initialColorMode: 'dark',
+  useSystemColorMode: false,
   components: { ...customComponents },
   colors: {
     brand: {
@@ -75,6 +86,7 @@ const theme = extendTheme({
 })
 
 export const App = () => {
+  console.log("theme", theme.components.Tag)
   return <QueryClientProvider client={queryClient}>
     <AuthenticatedProvider>
       <ChakraProvider theme={theme}>
