@@ -63,7 +63,7 @@ const PaddedNumber = (num: number): string => {
 
 export const SortSegments = (efforts: SegmentSummary[]): SegmentSummary[] => {
     return efforts.sort((a, b) => {
-        return a.id - b.id
+        return a.id.toLowerCase() < b.id.toLowerCase() ? -1 : 1
     })
 }
 

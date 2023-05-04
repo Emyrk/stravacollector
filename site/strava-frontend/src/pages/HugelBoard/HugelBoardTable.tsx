@@ -103,7 +103,7 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
     // if (segmentSummaries) {
     //   return segmentSummaries[a.segment_id].name.length - segmentSummaries[b.segment_id].name.length
     // }
-    if (segmentSummaries) {
+    if (segmentSummaries && segmentSummaries[a.segment_id] && segmentSummaries[b.segment_id]) {
       return segmentSummaries[a.segment_id].name.toLowerCase() < segmentSummaries[b.segment_id].name.toLowerCase() ? -1 : 1
     }
     return a.segment_id.toLowerCase() < b.segment_id.toLowerCase() ? -1 : 1
@@ -178,7 +178,7 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
             }
             return <>
               <Link target="_blank" href={`https://strava.com/activities/${activity.activity_id.toString()}/segments/${effort.effort_id.toString()}`}>
-                <Text maxWidth={"100px"} isTruncated fontWeight={"bold"}>{segmentSummaries ? segmentSummaries[effort.segment_id].name : "----"}</Text>
+                <Text maxWidth={"100px"} isTruncated fontWeight={"bold"}>{segmentSummaries && segmentSummaries[effort.segment_id] ? segmentSummaries[effort.segment_id].name : "????"}</Text>
                 <Box pb={index === 0 ? 3 : 0}>
                   {ElapsedDurationText(effort.elapsed_time, false)} @ {effort.device_watts ? Math.floor(effort.average_watts) + "w" : "--"}
                 </Box>
