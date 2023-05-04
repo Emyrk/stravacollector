@@ -80,6 +80,10 @@ export interface SegmentEffort {
 
 // From codersdk/route.go
 export interface SegmentSummary {
-  readonly id: number
+  readonly id: string
   readonly name: string
 }
+
+// From codersdk/int.go
+export type StringInt = never
+export const StringInts: StringInt[] = []

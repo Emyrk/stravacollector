@@ -57,7 +57,7 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 
 	if athleteLoggedIn {
 		for _, act := range board.Activities {
-			if act.AthleteID == modelsdk.Int64String(id) {
+			if act.AthleteID == modelsdk.StringInt(id) {
 				act := act
 				board.PersonalBest = &act
 				break
@@ -102,13 +102,13 @@ func convertHugelActivity(activity database.HugelLeaderboardRow) modelsdk.HugelL
 	_ = json.Unmarshal(activity.Efforts, &efforts)
 	return modelsdk.HugelLeaderBoardActivity{
 		RankOneElapsed: activity.BestTime,
-		ActivityID:     modelsdk.Int64String(activity.ActivityID),
-		AthleteID:      modelsdk.Int64String(activity.AthleteID),
+		ActivityID:     modelsdk.StringInt(activity.ActivityID),
+		AthleteID:      modelsdk.StringInt(activity.AthleteID),
 		Elapsed:        activity.TotalTimeSeconds,
 		Rank:           activity.Rank,
 		Efforts:        efforts,
 		Athlete: modelsdk.MinAthlete{
-			AthleteID:      modelsdk.Int64String(activity.AthleteID),
+			AthleteID:      modelsdk.StringInt(activity.AthleteID),
 			Username:       activity.Username,
 			Firstname:      activity.Firstname,
 			Lastname:       activity.Lastname,

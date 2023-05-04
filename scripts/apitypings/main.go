@@ -696,6 +696,8 @@ func (g *Generator) typescriptType(ty types.Type) (TypescriptType, error) {
 
 		// These are external named types that we handle uniquely.
 		switch n.String() {
+		case "github.com/Emyrk/strava/api/modelsdk.StringInt":
+			return TypescriptType{ValueType: "string"}, nil
 		case "net/url.URL":
 			return TypescriptType{ValueType: "string"}, nil
 		case "time.Time":

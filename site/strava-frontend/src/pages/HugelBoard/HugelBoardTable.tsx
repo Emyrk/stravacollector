@@ -50,9 +50,10 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
   })
 
   const segmentMapping = hugelSegments?.segments.reduce((acc, segment) => {
+    console.log(segment.id)
     acc[segment.id] = segment
     return acc
-  }, {} as { [key: number]: SegmentSummary })
+  }, {} as { [key: string]: SegmentSummary })
 
   return <>
     {
@@ -73,9 +74,10 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {data && data.activities?.map((activity) => {
-            return <HugelBoardTableRow key={activity.activity_id} activity={activity} segmentSummaries={segmentMapping} />
-          })
+          {
+            data && data.activities?.map((activity) => {
+              return <HugelBoardTableRow key={`tbr-${activity.activity_id}`} activity={activity} segmentSummaries={segmentMapping} />
+            })
           }
         </Tbody>
       </Table>
@@ -126,6 +128,7 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
     avgWatts,
     marginText
   } = CalculateActivity(activity)
+
   return <Tr key={`row-${activity.activity_id}`}>
     <Td>
       <Flex p={3} alignItems={'center'}>
