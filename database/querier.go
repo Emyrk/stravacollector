@@ -12,6 +12,7 @@ type sqlcQuerier interface {
 	AllCompetitiveRoutes(ctx context.Context) ([]CompetitiveRoute, error)
 	// BestRouteEfforts returns all activities that have efforts on all the provided segments.
 	// The returned activities include the best effort for each segment.
+	// This isn't used in the app, but is the foundation for the hugel view.
 	BestRouteEfforts(ctx context.Context, expectedSegments []int64) ([]BestRouteEffortsRow, error)
 	DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error)
 	GetActivityDetail(ctx context.Context, id int64) (ActivityDetail, error)
@@ -19,6 +20,7 @@ type sqlcQuerier interface {
 	GetAthlete(ctx context.Context, athleteID int64) (Athlete, error)
 	GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteLoad, error)
 	GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error)
+	GetAthleteLoginFull(ctx context.Context, athleteID int64) (GetAthleteLoginFullRow, error)
 	GetAthleteNeedsLoad(ctx context.Context) (GetAthleteNeedsLoadRow, error)
 	GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error)
 	HugelLeaderboard(ctx context.Context, athleteID interface{}) ([]HugelLeaderboardRow, error)

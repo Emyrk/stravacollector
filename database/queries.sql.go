@@ -550,6 +550,66 @@ func (q *sqlQuerier) GetAthleteLogin(ctx context.Context, athleteID int64) (Athl
 	return i, err
 }
 
+const getAthleteLoginFull = `-- name: GetAthleteLoginFull :one
+SELECT
+    athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id,
+    athletes.id, athletes.summit, athletes.username, athletes.firstname, athletes.lastname, athletes.sex, athletes.city, athletes.state, athletes.country, athletes.follow_count, athletes.friend_count, athletes.measurement_preference, athletes.ftp, athletes.weight, athletes.clubs, athletes.created_at, athletes.updated_at, athletes.fetched_at, athletes.profile_pic_link, athletes.profile_pic_link_medium,
+    athlete_hugel_count.count AS hugel_count
+FROM
+    athlete_logins
+INNER JOIN
+    athletes ON athlete_logins.athlete_id = athletes.id
+INNER JOIN
+	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
+WHERE
+	athlete_logins.athlete_id = $1
+`
+
+type GetAthleteLoginFullRow struct {
+	AthleteLogin AthleteLogin `db:"athletelogin" json:"athletelogin"`
+	Athlete      Athlete      `db:"athlete" json:"athlete"`
+	HugelCount   int64        `db:"hugel_count" json:"hugel_count"`
+}
+
+func (q *sqlQuerier) GetAthleteLoginFull(ctx context.Context, athleteID int64) (GetAthleteLoginFullRow, error) {
+	row := q.db.QueryRowContext(ctx, getAthleteLoginFull, athleteID)
+	var i GetAthleteLoginFullRow
+	err := row.Scan(
+		&i.AthleteLogin.AthleteID,
+		&i.AthleteLogin.Summit,
+		&i.AthleteLogin.ProviderID,
+		&i.AthleteLogin.CreatedAt,
+		&i.AthleteLogin.UpdatedAt,
+		&i.AthleteLogin.OauthAccessToken,
+		&i.AthleteLogin.OauthRefreshToken,
+		&i.AthleteLogin.OauthExpiry,
+		&i.AthleteLogin.OauthTokenType,
+		&i.AthleteLogin.ID,
+		&i.Athlete.ID,
+		&i.Athlete.Summit,
+		&i.Athlete.Username,
+		&i.Athlete.Firstname,
+		&i.Athlete.Lastname,
+		&i.Athlete.Sex,
+		&i.Athlete.City,
+		&i.Athlete.State,
+		&i.Athlete.Country,
+		&i.Athlete.FollowCount,
+		&i.Athlete.FriendCount,
+		&i.Athlete.MeasurementPreference,
+		&i.Athlete.Ftp,
+		&i.Athlete.Weight,
+		&i.Athlete.Clubs,
+		&i.Athlete.CreatedAt,
+		&i.Athlete.UpdatedAt,
+		&i.Athlete.FetchedAt,
+		&i.Athlete.ProfilePicLink,
+		&i.Athlete.ProfilePicLinkMedium,
+		&i.HugelCount,
+	)
+	return i, err
+}
+
 const getAthleteNeedsLoad = `-- name: GetAthleteNeedsLoad :one
 SELECT
     athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id
@@ -883,7 +943,8 @@ SELECT
 	athletes.lastname,
 	athletes.username,
 	athletes.profile_pic_link,
-	athletes.sex
+	athletes.sex,
+	hugel_count.count AS hugel_count
 FROM
 	(
 		SELECT DISTINCT ON (athlete_id)
@@ -895,6 +956,8 @@ FROM
 	) AS athlete_bests
 INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id
+INNER JOIN athlete_hugel_count AS hugel_count
+	ON hugel_count.athlete_id = athlete_bests.athlete_id
 INNER JOIN
 	activity_summary ON athlete_bests.activity_id = activity_summary.id
 WHERE
@@ -921,6 +984,7 @@ type HugelLeaderboardRow struct {
 	Username           string          `db:"username" json:"username"`
 	ProfilePicLink     string          `db:"profile_pic_link" json:"profile_pic_link"`
 	Sex                string          `db:"sex" json:"sex"`
+	HugelCount         int64           `db:"hugel_count" json:"hugel_count"`
 }
 
 func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, athleteID interface{}) ([]HugelLeaderboardRow, error) {
@@ -950,6 +1014,7 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, athleteID interface{}
 			&i.Username,
 			&i.ProfilePicLink,
 			&i.Sex,
+			&i.HugelCount,
 		); err != nil {
 			return nil, err
 		}
@@ -976,7 +1041,8 @@ SELECT
 	athletes.lastname,
 	athletes.username,
 	athletes.profile_pic_link,
-	athletes.sex
+	athletes.sex,
+	hugel_count.count AS hugel_count
 FROM
 	(
 		SELECT DISTINCT ON (athlete_id)
@@ -986,8 +1052,10 @@ FROM
 		ORDER BY
 			athlete_id, total_time_seconds ASC
 	) AS athlete_bests
-		INNER JOIN
+INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id
+INNER JOIN athlete_hugel_count AS hugel_count
+		ON hugel_count.athlete_id = athlete_bests.athlete_id
 WHERE
 	CASE WHEN $1 > 0 THEN athlete_bests.athlete_id = $1 ELSE TRUE END
 ORDER BY
@@ -1005,6 +1073,7 @@ type SuperHugelLeaderboardRow struct {
 	Username         string          `db:"username" json:"username"`
 	ProfilePicLink   string          `db:"profile_pic_link" json:"profile_pic_link"`
 	Sex              string          `db:"sex" json:"sex"`
+	HugelCount       int64           `db:"hugel_count" json:"hugel_count"`
 }
 
 func (q *sqlQuerier) SuperHugelLeaderboard(ctx context.Context, athleteID interface{}) ([]SuperHugelLeaderboardRow, error) {
@@ -1027,6 +1096,7 @@ func (q *sqlQuerier) SuperHugelLeaderboard(ctx context.Context, athleteID interf
 			&i.Username,
 			&i.ProfilePicLink,
 			&i.Sex,
+			&i.HugelCount,
 		); err != nil {
 			return nil, err
 		}
@@ -1201,6 +1271,7 @@ type BestRouteEffortsRow struct {
 
 // BestRouteEfforts returns all activities that have efforts on all the provided segments.
 // The returned activities include the best effort for each segment.
+// This isn't used in the app, but is the foundation for the hugel view.
 func (q *sqlQuerier) BestRouteEfforts(ctx context.Context, expectedSegments []int64) ([]BestRouteEffortsRow, error) {
 	rows, err := q.db.QueryContext(ctx, bestRouteEfforts, pq.Array(expectedSegments))
 	if err != nil {

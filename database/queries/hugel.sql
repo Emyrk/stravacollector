@@ -18,7 +18,8 @@ SELECT
 	athletes.lastname,
 	athletes.username,
 	athletes.profile_pic_link,
-	athletes.sex
+	athletes.sex,
+	hugel_count.count AS hugel_count
 FROM
 	(
 		SELECT DISTINCT ON (athlete_id)
@@ -30,6 +31,8 @@ FROM
 	) AS athlete_bests
 INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id
+INNER JOIN athlete_hugel_count AS hugel_count
+	ON hugel_count.athlete_id = athlete_bests.athlete_id
 INNER JOIN
 	activity_summary ON athlete_bests.activity_id = activity_summary.id
 WHERE
@@ -50,7 +53,8 @@ SELECT
 	athletes.lastname,
 	athletes.username,
 	athletes.profile_pic_link,
-	athletes.sex
+	athletes.sex,
+	hugel_count.count AS hugel_count
 FROM
 	(
 		SELECT DISTINCT ON (athlete_id)
@@ -60,8 +64,11 @@ FROM
 		ORDER BY
 			athlete_id, total_time_seconds ASC
 	) AS athlete_bests
-		INNER JOIN
+INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id
+INNER JOIN
+	athlete_hugel_count AS hugel_count
+		ON hugel_count.athlete_id = athlete_bests.athlete_id
 WHERE
 	CASE WHEN @athlete_id > 0 THEN athlete_bests.athlete_id = @athlete_id ELSE TRUE END
 ORDER BY

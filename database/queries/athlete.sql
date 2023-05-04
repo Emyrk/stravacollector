@@ -45,6 +45,20 @@ LIMIT 1;
 -- name: GetAthleteLogin :one
 SELECT * FROM athlete_logins WHERE athlete_id = @athlete_id;
 
+-- name: GetAthleteLoginFull :one
+SELECT
+    sqlc.embed(athlete_logins),
+    sqlc.embed(athletes),
+    athlete_hugel_count.count AS hugel_count
+FROM
+    athlete_logins
+INNER JOIN
+    athletes ON athlete_logins.athlete_id = athletes.id
+INNER JOIN
+	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
+WHERE
+	athlete_logins.athlete_id = @athlete_id;
+
 -- name: GetAthlete :one
 SELECT * FROM athletes WHERE id = @athlete_id;
 

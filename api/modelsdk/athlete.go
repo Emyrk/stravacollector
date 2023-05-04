@@ -20,7 +20,8 @@ type AthleteSummary struct {
 	Sex                  string    `json:"sex"`
 	ProfilePicLink       string    `json:"profile_pic_link"`
 	ProfilePicLinkMedium string    `json:"profile_pic_link_medium"`
-	UpdatedAt            time.Time `db:"updated_at" json:"updated_at"`
+	UpdatedAt            time.Time `json:"updated_at"`
+	HugelCount           int       `json:"hugel_count"`
 }
 
 type HugelLeaderBoard struct {
@@ -78,4 +79,5 @@ type MinAthlete struct {
 	Lastname       string    `json:"lastname"`
 	Sex            string    `json:"sex"`
 	ProfilePicLink string    `json:"profile_pic_link"`
+	HugelCount     int       `json:"hugel_count"`
 }

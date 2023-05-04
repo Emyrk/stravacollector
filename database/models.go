@@ -175,6 +175,11 @@ type Athlete struct {
 	ProfilePicLinkMedium  string          `db:"profile_pic_link_medium" json:"profile_pic_link_medium"`
 }
 
+type AthleteHugelCount struct {
+	AthleteID int64 `db:"athlete_id" json:"athlete_id"`
+	Count     int64 `db:"count" json:"count"`
+}
+
 // Tracks loading athlete activities. Must be an authenticated athlete.
 type AthleteLoad struct {
 	AthleteID int64 `db:"athlete_id" json:"athlete_id"`

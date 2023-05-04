@@ -18,6 +18,7 @@ export interface AthleteSummary {
   readonly profile_pic_link: string
   readonly profile_pic_link_medium: string
   readonly updated_at: string
+  readonly hugel_count: number
 }
 
 // From codersdk/route.go
@@ -59,6 +60,7 @@ export interface MinAthlete {
   readonly lastname: string
   readonly sex: string
   readonly profile_pic_link: string
+  readonly hugel_count: number
 }
 
 // From codersdk/response.go

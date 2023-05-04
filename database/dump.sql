@@ -82,44 +82,6 @@ CREATE TABLE activity_summary (
 
 COMMENT ON TABLE activity_summary IS 'Activity is missing many detailed fields';
 
-CREATE TABLE athlete_load (
-    athlete_id bigint NOT NULL,
-    last_backload_activity_start timestamp with time zone NOT NULL,
-    last_load_attempt timestamp with time zone NOT NULL,
-    last_load_incomplete boolean NOT NULL,
-    last_load_error text NOT NULL,
-    activites_loaded_last_attempt integer NOT NULL,
-    earliest_activity timestamp with time zone DEFAULT (now())::timestamp without time zone NOT NULL,
-    earliest_activity_done boolean DEFAULT false NOT NULL
-);
-
-COMMENT ON TABLE athlete_load IS 'Tracks loading athlete activities. Must be an authenticated athlete.';
-
-COMMENT ON COLUMN athlete_load.last_backload_activity_start IS 'Timestamp start of the last activity loaded. Future ones are not loaded.';
-
-COMMENT ON COLUMN athlete_load.last_load_attempt IS 'Timestamp of the last time the athlete was attempted to be loaded.';
-
-COMMENT ON COLUMN athlete_load.last_load_incomplete IS 'True if the last load was incomplete and needs more work to catch up.';
-
-COMMENT ON COLUMN athlete_load.earliest_activity IS 'The earliest activity found for the athlete';
-
-COMMENT ON COLUMN athlete_load.earliest_activity_done IS 'Loading backwards is done';
-
-CREATE TABLE athlete_logins (
-    athlete_id bigint NOT NULL,
-    summit boolean NOT NULL,
-    provider_id text NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    oauth_access_token text NOT NULL,
-    oauth_refresh_token text NOT NULL,
-    oauth_expiry timestamp with time zone NOT NULL,
-    oauth_token_type text DEFAULT ''::text NOT NULL,
-    id uuid DEFAULT gen_random_uuid() NOT NULL
-);
-
-COMMENT ON COLUMN athlete_logins.provider_id IS 'Oauth app client ID';
-
 CREATE TABLE athletes (
     id bigint NOT NULL,
     summit boolean NOT NULL,
@@ -150,19 +112,6 @@ CREATE TABLE competitive_routes (
     display_name text NOT NULL,
     description text NOT NULL,
     segments bigint[] NOT NULL
-);
-
-CREATE TABLE gue_jobs (
-    job_id text NOT NULL,
-    priority smallint NOT NULL,
-    run_at timestamp with time zone NOT NULL,
-    job_type text NOT NULL,
-    args bytea NOT NULL,
-    error_count integer DEFAULT 0 NOT NULL,
-    last_error text,
-    queue text NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
 );
 
 CREATE TABLE segment_efforts (
@@ -228,6 +177,64 @@ CREATE VIEW hugel_activities AS
           WHERE (competitive_routes.name = 'das-hugel'::text)));
 
 COMMENT ON VIEW hugel_activities IS 'This view contains all activities that classify as a "hugel" and their best efforts on each segment.';
+
+CREATE VIEW athlete_hugel_count AS
+ SELECT hugel_activities.athlete_id,
+    count(*) AS count
+   FROM (public.athletes
+     JOIN hugel_activities ON ((athletes.id = hugel_activities.athlete_id)))
+  GROUP BY hugel_activities.athlete_id;
+
+CREATE TABLE athlete_load (
+    athlete_id bigint NOT NULL,
+    last_backload_activity_start timestamp with time zone NOT NULL,
+    last_load_attempt timestamp with time zone NOT NULL,
+    last_load_incomplete boolean NOT NULL,
+    last_load_error text NOT NULL,
+    activites_loaded_last_attempt integer NOT NULL,
+    earliest_activity timestamp with time zone DEFAULT (now())::timestamp without time zone NOT NULL,
+    earliest_activity_done boolean DEFAULT false NOT NULL
+);
+
+COMMENT ON TABLE athlete_load IS 'Tracks loading athlete activities. Must be an authenticated athlete.';
+
+COMMENT ON COLUMN athlete_load.last_backload_activity_start IS 'Timestamp start of the last activity loaded. Future ones are not loaded.';
+
+COMMENT ON COLUMN athlete_load.last_load_attempt IS 'Timestamp of the last time the athlete was attempted to be loaded.';
+
+COMMENT ON COLUMN athlete_load.last_load_incomplete IS 'True if the last load was incomplete and needs more work to catch up.';
+
+COMMENT ON COLUMN athlete_load.earliest_activity IS 'The earliest activity found for the athlete';
+
+COMMENT ON COLUMN athlete_load.earliest_activity_done IS 'Loading backwards is done';
+
+CREATE TABLE athlete_logins (
+    athlete_id bigint NOT NULL,
+    summit boolean NOT NULL,
+    provider_id text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    oauth_access_token text NOT NULL,
+    oauth_refresh_token text NOT NULL,
+    oauth_expiry timestamp with time zone NOT NULL,
+    oauth_token_type text DEFAULT ''::text NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
+);
+
+COMMENT ON COLUMN athlete_logins.provider_id IS 'Oauth app client ID';
+
+CREATE TABLE gue_jobs (
+    job_id text NOT NULL,
+    priority smallint NOT NULL,
+    run_at timestamp with time zone NOT NULL,
+    job_type text NOT NULL,
+    args bytea NOT NULL,
+    error_count integer DEFAULT 0 NOT NULL,
+    last_error text,
+    queue text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
 
 CREATE TABLE maps (
     id text NOT NULL,

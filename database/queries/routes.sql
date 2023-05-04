@@ -1,6 +1,7 @@
 -- name: BestRouteEfforts :many
 -- BestRouteEfforts returns all activities that have efforts on all the provided segments.
 -- The returned activities include the best effort for each segment.
+-- This isn't used in the app, but is the foundation for the hugel view.
 SELECT
 	*
 FROM

@@ -155,6 +155,7 @@ func convertSuperHugelActivity(activity database.SuperHugelLeaderboardRow) model
 			Lastname:       activity.Lastname,
 			Sex:            activity.Sex,
 			ProfilePicLink: activity.ProfilePicLink,
+			HugelCount:     int(activity.HugelCount),
 		},
 	}
 }
@@ -184,6 +185,7 @@ func convertHugelActivity(activity database.HugelLeaderboardRow) modelsdk.HugelL
 			Lastname:       activity.Lastname,
 			Sex:            activity.Sex,
 			ProfilePicLink: activity.ProfilePicLink,
+			HugelCount:     int(activity.HugelCount),
 		},
 		ActivityName:               activity.Name,
 		ActivityDistance:           activity.Distance,

@@ -16,17 +16,12 @@ func (api *API) whoAmI(rw http.ResponseWriter, r *http.Request) {
 		id  = httpmw.AuthenticatedAthleteID(r)
 	)
 
-	login, err := api.Opts.DB.GetAthleteLogin(ctx, id)
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	athlete, err := api.Opts.DB.GetAthlete(ctx, id)
+	full, err := api.Opts.DB.GetAthleteLoginFull(ctx, id)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	athlete := full.Athlete
 
 	if errors.Is(err, sql.ErrNoRows) {
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
@@ -38,7 +33,7 @@ func (api *API) whoAmI(rw http.ResponseWriter, r *http.Request) {
 
 	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.AthleteSummary{
 		AthleteID:            modelsdk.StringInt(id),
-		Summit:               login.Summit,
+		Summit:               full.AthleteLogin.Summit,
 		Username:             athlete.Username,
 		Firstname:            athlete.Firstname,
 		Lastname:             athlete.Lastname,
@@ -46,5 +41,6 @@ func (api *API) whoAmI(rw http.ResponseWriter, r *http.Request) {
 		ProfilePicLink:       athlete.ProfilePicLink,
 		ProfilePicLinkMedium: athlete.ProfilePicLinkMedium,
 		UpdatedAt:            athlete.UpdatedAt,
+		HugelCount:           int(full.HugelCount),
 	})
 }
