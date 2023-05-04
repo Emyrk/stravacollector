@@ -54,20 +54,21 @@ export const HugelBoard: FC = () => {
     queryFn: getHugelLeaderBoard,
     // queryFn: async () => {
     //   const data = await getHugelLeaderBoard()
-    //   if (!data || !data.activities) {
-    //     return data
-    //   }
-    //   // Add some extra rows for some editing purposes
-    //   return {
-    //     ...data,
-    //     activities: [
-    //       ...data.activities,
-    //       data.activities[0],
-    //       data.activities[0],
-    //       data.activities[0],
-    //       data.activities[0],
-    //     ]
-    //   }
+    //   return data
+    //   // if (!data || !data.activities) {
+    //   //   return data
+    //   // }
+    //   // // Add some extra rows for some editing purposes
+    //   // return {
+    //   //   ...data,
+    //   //   activities: [
+    //   //     ...data.activities,
+    //   //     data.activities[0],
+    //   //     data.activities[0],
+    //   //     data.activities[0],
+    //   //     data.activities[0],
+    //   //   ]
+    //   // }
     // },
   })
 

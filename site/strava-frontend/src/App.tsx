@@ -86,7 +86,6 @@ const theme = extendTheme({
 })
 
 export const App = () => {
-  console.log("theme", theme.components.Tag)
   return <QueryClientProvider client={queryClient}>
     <AuthenticatedProvider>
       <ChakraProvider theme={theme}>

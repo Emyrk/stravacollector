@@ -5,7 +5,7 @@ import { Avatar, AvatarBadge, AvatarProps } from "@chakra-ui/react";
 export const AthleteAvatar: FC<{
   firstName: string
   lastName: string
-  athleteID: number
+  athleteID: string
   profilePicLink: string
   username: string
   size?: string

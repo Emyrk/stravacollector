@@ -3,13 +3,13 @@
 
 // From codersdk/athlete.go
 export interface AthleteLogin {
-  readonly athlete_id: number
+  readonly athlete_id: string
   readonly summit: boolean
 }
 
 // From codersdk/athlete.go
 export interface AthleteSummary {
-  readonly athlete_id: number
+  readonly athlete_id: string
   readonly summit: boolean
   readonly username: string
   readonly firstname: string
@@ -37,8 +37,8 @@ export interface HugelLeaderBoard {
 // From codersdk/athlete.go
 export interface HugelLeaderBoardActivity {
   readonly rank_one_elapsed: number
-  readonly activity_id: number
-  readonly athlete_id: number
+  readonly activity_id: string
+  readonly athlete_id: string
   readonly elapsed: number
   readonly rank: number
   readonly efforts: SegmentEffort[]
@@ -53,7 +53,7 @@ export interface HugelLeaderBoardActivity {
 
 // From codersdk/athlete.go
 export interface MinAthlete {
-  readonly athlete_id: number
+  readonly athlete_id: string
   readonly username: string
   readonly firstname: string
   readonly lastname: string
@@ -69,9 +69,9 @@ export interface Response {
 
 // From codersdk/athlete.go
 export interface SegmentEffort {
-  readonly effort_id: number
+  readonly effort_id: string
   readonly start_date: string
-  readonly segment_id: number
+  readonly segment_id: string
   readonly elapsed_time: number
   readonly moving_time: number
   readonly device_watts: boolean

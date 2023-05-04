@@ -37,7 +37,7 @@ func (api *API) whoAmI(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.AthleteSummary{
-		AthleteID:            id,
+		AthleteID:            modelsdk.Int64String(id),
 		Summit:               login.Summit,
 		Username:             athlete.Username,
 		Firstname:            athlete.Firstname,

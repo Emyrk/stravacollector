@@ -87,7 +87,7 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
 
 export const HugelBoardTableRow: FC<PropsWithChildren<{
   activity: HugelLeaderBoardActivity
-  segmentSummaries?: { [key: number]: SegmentSummary }
+  segmentSummaries?: { [key: string]: SegmentSummary }
 }>> = ({ activity, segmentSummaries }) => {
   const {
     firstname,
@@ -104,7 +104,7 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
     if (segmentSummaries) {
       return segmentSummaries[a.segment_id].name.toLowerCase() < segmentSummaries[b.segment_id].name.toLowerCase() ? -1 : 1
     }
-    return a.segment_id - b.segment_id
+    return a.segment_id.toLowerCase() < b.segment_id.toLowerCase() ? -1 : 1
   })
 
 
@@ -167,8 +167,6 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
     </Td>
     {
       pairedEfforts.map((efforts) => {
-
-        // console.log(efforts[0].effort_id, segmentSummaries[efforts[0].segment_id].name)
         return <Td>
           {efforts.map((effort, index) => {
             if (!effort) {

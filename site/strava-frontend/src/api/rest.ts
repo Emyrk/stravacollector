@@ -1,5 +1,18 @@
 import axios, { AxiosError, AxiosPromise, AxiosResponse } from "axios"
 import * as TypesGen from "./typesGenerated"
+// import JSONbig from 'json-bigint';
+
+// Overriding the transformResponse of axios and converting any number which crosses JS max limit to string using stringify
+// Remember the data is received as string in case of string not JSON over the network that's why we need parser always
+// Default JSON.parse will transform the huge number to some random number which is an issue
+// axios.defaults.transformResponse = [(data) => {
+//   try {
+//     return JSONbig.parse(data);
+//   } catch (error) {
+//     return data;
+//   }
+// }];
+
 
 export type ApiError = AxiosError<TypesGen.Response> & {
   response: AxiosResponse<TypesGen.Response>
