@@ -35,6 +35,48 @@ func (api *API) competitiveRoute(rw http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (api *API) superHugelboard(rw http.ResponseWriter, r *http.Request) {
+	var (
+		ctx                 = r.Context()
+		id, athleteLoggedIn = httpmw.AuthenticatedAthleteIDOptional(r)
+	)
+
+	activities, err := api.SuperHugelBoardCache.Load(ctx)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+			Message: "Failed to load leaderboard",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	board := modelsdk.SuperHugelLeaderBoard{
+		PersonalBest: nil,
+		Activities:   convertSuperHugelActivities(activities),
+	}
+
+	if athleteLoggedIn {
+		for _, act := range board.Activities {
+			if act.AthleteID == modelsdk.StringInt(id) {
+				act := act
+				board.PersonalBest = &act
+				break
+			}
+		}
+
+		if board.PersonalBest == nil {
+			athleteAct, err := api.Opts.DB.SuperHugelLeaderboard(ctx, id)
+			if err == nil {
+				if len(athleteAct) == 1 {
+					pb := convertSuperHugelActivity(athleteAct[0])
+					board.PersonalBest = &pb
+				}
+			}
+		}
+	}
+	httpapi.Write(ctx, rw, http.StatusOK, board)
+}
+
 func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 	var (
 		ctx                 = r.Context()
@@ -87,6 +129,34 @@ func convertRoute(route database.GetCompetitiveRouteRow) modelsdk.CompetitiveRou
 
 	_ = json.Unmarshal(route.SegmentSummaries, &sdkRoute.Segments)
 	return sdkRoute
+}
+
+func convertSuperHugelActivities(activites []database.SuperHugelLeaderboardRow) []modelsdk.SuperHugelLeaderBoardActivity {
+	sdk := make([]modelsdk.SuperHugelLeaderBoardActivity, 0, len(activites))
+	for _, act := range activites {
+		sdk = append(sdk, convertSuperHugelActivity(act))
+	}
+	return sdk
+}
+
+func convertSuperHugelActivity(activity database.SuperHugelLeaderboardRow) modelsdk.SuperHugelLeaderBoardActivity {
+	var efforts []modelsdk.SegmentEffort
+	_ = json.Unmarshal(activity.Efforts, &efforts)
+	return modelsdk.SuperHugelLeaderBoardActivity{
+		RankOneElapsed: activity.BestTime,
+		AthleteID:      modelsdk.StringInt(activity.AthleteID),
+		Elapsed:        activity.TotalTimeSeconds,
+		Rank:           activity.Rank,
+		Efforts:        efforts,
+		Athlete: modelsdk.MinAthlete{
+			AthleteID:      modelsdk.StringInt(activity.AthleteID),
+			Username:       activity.Username,
+			Firstname:      activity.Firstname,
+			Lastname:       activity.Lastname,
+			Sex:            activity.Sex,
+			ProfilePicLink: activity.ProfilePicLink,
+		},
+	}
 }
 
 func convertHugelActivities(activites []database.HugelLeaderboardRow) []modelsdk.HugelLeaderBoardActivity {

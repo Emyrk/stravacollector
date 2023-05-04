@@ -46,7 +46,22 @@ type HugelLeaderBoardActivity struct {
 	ActivityTotalElevationGain float64   `json:"activity_total_elevation_gain"`
 }
 
+type SuperHugelLeaderBoard struct {
+	PersonalBest *SuperHugelLeaderBoardActivity  `json:"personal_best,omitempty"`
+	Activities   []SuperHugelLeaderBoardActivity `json:"activities"`
+}
+
+type SuperHugelLeaderBoardActivity struct {
+	RankOneElapsed int64           `json:"rank_one_elapsed"`
+	AthleteID      StringInt       `json:"athlete_id"`
+	Elapsed        int64           `json:"elapsed"`
+	Rank           int64           `json:"rank"`
+	Efforts        []SegmentEffort `json:"efforts"`
+	Athlete        MinAthlete      `json:"athlete"`
+}
+
 type SegmentEffort struct {
+	ActivityID   StringInt `json:"activity_id"`
 	EffortID     StringInt `json:"effort_id"`
 	StartDate    time.Time `json:"start_date"`
 	SegmentID    StringInt `json:"segment_id"`

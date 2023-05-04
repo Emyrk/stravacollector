@@ -50,8 +50,9 @@ type API struct {
 	Events      *webhooks.ActivityEvents
 	Manager     *queue.Manager
 
-	HugelBoardCache *gencache.LazyCache[[]database.HugelLeaderboardRow]
-	HugelRouteCache *gencache.LazyCache[database.GetCompetitiveRouteRow]
+	SuperHugelBoardCache *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]
+	HugelBoardCache      *gencache.LazyCache[[]database.HugelLeaderboardRow]
+	HugelRouteCache      *gencache.LazyCache[database.GetCompetitiveRouteRow]
 }
 
 func New(opts Options) (*API, error) {
@@ -85,6 +86,9 @@ func New(opts Options) (*API, error) {
 	r = api.Events.Attach(r)
 	api.Handler = r
 
+	api.SuperHugelBoardCache = gencache.New(time.Minute, func(ctx context.Context) ([]database.SuperHugelLeaderboardRow, error) {
+		return api.Opts.DB.SuperHugelLeaderboard(ctx, 0)
+	})
 	api.HugelBoardCache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
 		return api.Opts.DB.HugelLeaderboard(ctx, 0)
 	})
@@ -127,6 +131,7 @@ func (api *API) Routes() chi.Router {
 			r.Use(
 				httpmw.Authenticated(api.Auth, true),
 			)
+			r.Get("/superhugelboard", api.hugelboard)
 			r.Get("/hugelboard", api.hugelboard)
 			r.Route("/route", func(r chi.Router) {
 				r.Get("/{route-name}", api.competitiveRoute)

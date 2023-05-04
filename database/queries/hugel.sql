@@ -38,6 +38,36 @@ ORDER BY
     total_time_seconds ASC
 ;
 
+-- name: SuperHugelLeaderboard :many
+SELECT
+	(SELECT min(total_time_seconds) FROM super_hugel_activities) :: BIGINT AS best_time,
+	ROW_NUMBER() over(ORDER BY total_time_seconds ASC) AS rank,
+	athlete_bests.athlete_id,
+	athlete_bests.total_time_seconds,
+	athlete_bests.efforts,
+
+	athletes.firstname,
+	athletes.lastname,
+	athletes.username,
+	athletes.profile_pic_link,
+	athletes.sex
+FROM
+	(
+		SELECT DISTINCT ON (athlete_id)
+			*
+		FROM
+			super_hugel_activities
+		ORDER BY
+			athlete_id, total_time_seconds ASC
+	) AS athlete_bests
+		INNER JOIN
+	athletes ON athlete_bests.athlete_id = athletes.id
+WHERE
+	CASE WHEN @athlete_id > 0 THEN athlete_bests.athlete_id = @athlete_id ELSE TRUE END
+ORDER BY
+	total_time_seconds ASC
+;
+
 -- name: GetCompetitiveRoute :one
 SELECT
 	competitive_routes.name, competitive_routes.display_name, competitive_routes.description, (

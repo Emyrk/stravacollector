@@ -69,6 +69,7 @@ export interface Response {
 
 // From codersdk/athlete.go
 export interface SegmentEffort {
+  readonly activity_id: string
   readonly effort_id: string
   readonly start_date: string
   readonly segment_id: string
@@ -82,6 +83,22 @@ export interface SegmentEffort {
 export interface SegmentSummary {
   readonly id: string
   readonly name: string
+}
+
+// From codersdk/athlete.go
+export interface SuperHugelLeaderBoard {
+  readonly personal_best?: SuperHugelLeaderBoardActivity
+  readonly activities: SuperHugelLeaderBoardActivity[]
+}
+
+// From codersdk/athlete.go
+export interface SuperHugelLeaderBoardActivity {
+  readonly rank_one_elapsed: number
+  readonly athlete_id: string
+  readonly elapsed: number
+  readonly rank: number
+  readonly efforts: SegmentEffort[]
+  readonly athlete: MinAthlete
 }
 
 // From codersdk/int.go

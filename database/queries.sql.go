@@ -964,6 +964,83 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, athleteID interface{}
 	return items, nil
 }
 
+const superHugelLeaderboard = `-- name: SuperHugelLeaderboard :many
+SELECT
+	(SELECT min(total_time_seconds) FROM super_hugel_activities) :: BIGINT AS best_time,
+	ROW_NUMBER() over(ORDER BY total_time_seconds ASC) AS rank,
+	athlete_bests.athlete_id,
+	athlete_bests.total_time_seconds,
+	athlete_bests.efforts,
+
+	athletes.firstname,
+	athletes.lastname,
+	athletes.username,
+	athletes.profile_pic_link,
+	athletes.sex
+FROM
+	(
+		SELECT DISTINCT ON (athlete_id)
+			athlete_id, segment_ids, total_time_seconds, efforts
+		FROM
+			super_hugel_activities
+		ORDER BY
+			athlete_id, total_time_seconds ASC
+	) AS athlete_bests
+		INNER JOIN
+	athletes ON athlete_bests.athlete_id = athletes.id
+WHERE
+	CASE WHEN $1 > 0 THEN athlete_bests.athlete_id = $1 ELSE TRUE END
+ORDER BY
+	total_time_seconds ASC
+`
+
+type SuperHugelLeaderboardRow struct {
+	BestTime         int64           `db:"best_time" json:"best_time"`
+	Rank             int64           `db:"rank" json:"rank"`
+	AthleteID        int64           `db:"athlete_id" json:"athlete_id"`
+	TotalTimeSeconds int64           `db:"total_time_seconds" json:"total_time_seconds"`
+	Efforts          json.RawMessage `db:"efforts" json:"efforts"`
+	Firstname        string          `db:"firstname" json:"firstname"`
+	Lastname         string          `db:"lastname" json:"lastname"`
+	Username         string          `db:"username" json:"username"`
+	ProfilePicLink   string          `db:"profile_pic_link" json:"profile_pic_link"`
+	Sex              string          `db:"sex" json:"sex"`
+}
+
+func (q *sqlQuerier) SuperHugelLeaderboard(ctx context.Context, athleteID interface{}) ([]SuperHugelLeaderboardRow, error) {
+	rows, err := q.db.QueryContext(ctx, superHugelLeaderboard, athleteID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SuperHugelLeaderboardRow
+	for rows.Next() {
+		var i SuperHugelLeaderboardRow
+		if err := rows.Scan(
+			&i.BestTime,
+			&i.Rank,
+			&i.AthleteID,
+			&i.TotalTimeSeconds,
+			&i.Efforts,
+			&i.Firstname,
+			&i.Lastname,
+			&i.Username,
+			&i.ProfilePicLink,
+			&i.Sex,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const upsertMapData = `-- name: UpsertMapData :one
 INSERT INTO
 	maps(
