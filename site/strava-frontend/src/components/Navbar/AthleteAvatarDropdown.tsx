@@ -23,6 +23,7 @@ export const AthleteAvatarDropdown: FC<{
         athleteID={athlete.athlete_id}
         username={athlete.username}
         profilePicLink={athlete.profile_pic_link}
+        hugelCount={athlete.hugel_count}
         size="lg"
       />
     </MenuButton>

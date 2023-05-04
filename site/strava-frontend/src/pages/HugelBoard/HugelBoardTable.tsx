@@ -95,6 +95,7 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
     lastname,
     profile_pic_link,
     username,
+    hugel_count,
   } = activity.athlete
 
   // Sort by the length of the segment name to group similar length names
@@ -137,6 +138,7 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
           athleteID={activity.athlete_id}
           profilePicLink={profile_pic_link}
           username={username}
+          hugelCount={hugel_count}
           size="md"
           styleProps={{
             mr: 3,

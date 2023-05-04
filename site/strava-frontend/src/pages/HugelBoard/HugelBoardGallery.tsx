@@ -99,6 +99,7 @@ const GalleryCard: React.FC<{
     lastname,
     profile_pic_link,
     username,
+    hugel_count
   } = activity.athlete
 
   const {
@@ -126,6 +127,7 @@ const GalleryCard: React.FC<{
           athleteID={activity.athlete_id}
           profilePicLink={profile_pic_link}
           username={username}
+          hugelCount={hugel_count}
           size="lg"
           styleProps={{
             mr: 3,

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { AthleteSummary } from "../../api/typesGenerated";
-import { Avatar, AvatarBadge, AvatarProps } from "@chakra-ui/react";
+import { Avatar, AvatarBadge, AvatarProps, Text } from "@chakra-ui/react";
 
 export const AthleteAvatar: FC<{
   firstName: string
@@ -10,7 +10,8 @@ export const AthleteAvatar: FC<{
   username: string
   size?: string
   styleProps?: AvatarProps
-}> = ({ firstName, lastName, athleteID, username, profilePicLink, size = "md", styleProps }) => {
+  hugelCount?: number
+}> = ({ firstName, lastName, athleteID, username, profilePicLink, size = "md", hugelCount, styleProps }) => {
   let name = firstName + " " + lastName
   if (name === "") {
     name = username
@@ -21,6 +22,17 @@ export const AthleteAvatar: FC<{
     size={size}
     {...styleProps}
   >
-    {/* <AvatarBadge boxSize='1.25em' bg='green.500' /> */}
+    {hugelCount && hugelCount > 0 &&
+      <AvatarBadge
+        boxSize='1em'
+        bg='green.500'
+        fontWeight={"bold"}
+        borderColor="transparent"
+      >
+        <Text fontSize={"sm"} >
+          {hugelCount}
+        </Text>
+      </AvatarBadge>
+    }
   </Avatar>
 }
