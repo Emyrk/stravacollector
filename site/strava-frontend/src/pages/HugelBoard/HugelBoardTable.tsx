@@ -50,7 +50,6 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
   })
 
   const segmentMapping = hugelSegments?.segments.reduce((acc, segment) => {
-    console.log(segment.id)
     acc[segment.id] = segment
     return acc
   }, {} as { [key: string]: SegmentSummary })

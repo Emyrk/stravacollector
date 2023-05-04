@@ -5,8 +5,8 @@ import (
 )
 
 type AthleteLogin struct {
-	AthleteID string `db:"athlete_id" json:"athlete_id"`
-	Summit    bool   `db:"summit" json:"summit"`
+	AthleteID StringInt `db:"athlete_id" json:"athlete_id"`
+	Summit    bool      `db:"summit" json:"summit"`
 }
 
 // AthleteSummary is the smallest amount of information we need to know about an athlete
@@ -49,7 +49,7 @@ type HugelLeaderBoardActivity struct {
 type SegmentEffort struct {
 	EffortID     StringInt `json:"effort_id"`
 	StartDate    time.Time `json:"start_date"`
-	SegmentID    string    `json:"segment_id"`
+	SegmentID    StringInt `json:"segment_id"`
 	ElapsedTime  int64     `json:"elapsed_time"`
 	MovingTime   int64     `json:"moving_time"`
 	DeviceWatts  bool      `json:"device_watts"`
