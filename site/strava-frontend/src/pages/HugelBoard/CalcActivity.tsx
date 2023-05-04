@@ -1,4 +1,4 @@
-import { HugelLeaderBoardActivity, SegmentEffort, SegmentSummary } from "../../api/typesGenerated"
+import { HugelLeaderBoardActivity, SegmentEffort, SegmentSummary, SuperHugelLeaderBoard, SuperHugelLeaderBoardActivity } from "../../api/typesGenerated"
 import { DistanceToLocal, DistanceToLocalElevation } from "../../lib/Distance/Distance"
 
 export interface ActivityCalResults {
@@ -12,21 +12,37 @@ export interface ActivityCalResults {
     marginText: string
 }
 
-export const CalculateActivity = (activity: HugelLeaderBoardActivity): ActivityCalResults => {
+export const CalculateActivity = (activity: HugelLeaderBoardActivity | SuperHugelLeaderBoardActivity): ActivityCalResults => {
     // 2022-11-27T15:42:54Z
     // Dates come over in UTC
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    const dateText = new Date(activity.activity_start_date).toLocaleDateString(undefined, options)
     const elapsedText = ElapsedDurationText(activity.elapsed)
-    const totalElapsedText = ElapsedDurationText(activity.activity_elapsed_time, true, true, false)
-    const elevationText = `${Math.floor(DistanceToLocalElevation(activity.activity_total_elevation_gain) / 100) / 10}k`
     const showWatts = activity.efforts.every(effort => effort.average_watts > 0 && effort.device_watts)
     const avgWatts = Math.floor(activity.efforts.reduce((acc, effort) => acc + effort.average_watts * effort.elapsed_time, 0) / activity.elapsed)
-    const distance = Math.floor(DistanceToLocal(activity.activity_distance))
     let marginText = "+" + ElapsedDurationText(activity.elapsed - activity.rank_one_elapsed)
     if (!activity.rank_one_elapsed) {
         marginText = "--:--:--"
     }
+
+    // Abort early on super hugel activities
+    if (!("activity_elapsed_time" in activity)) {
+        return {
+            elapsedText,
+            showWatts,
+            avgWatts,
+            marginText,
+            dateText: "",
+            totalElapsedText: "",
+            elevationText: "",
+            distance: 0,
+        }
+    }
+
+
+    const totalElapsedText = ElapsedDurationText(activity.activity_elapsed_time, true, true, false)
+    const elevationText = `${Math.floor(DistanceToLocalElevation(activity.activity_total_elevation_gain) / 100) / 10}k`
+    const distance = Math.floor(DistanceToLocal(activity.activity_distance))
+    const dateText = new Date(activity.activity_start_date).toLocaleDateString(undefined, options)
 
 
     return {

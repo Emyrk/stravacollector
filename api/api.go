@@ -131,7 +131,7 @@ func (api *API) Routes() chi.Router {
 			r.Use(
 				httpmw.Authenticated(api.Auth, true),
 			)
-			r.Get("/superhugelboard", api.hugelboard)
+			r.Get("/superhugelboard", api.superHugelboard)
 			r.Get("/hugelboard", api.hugelboard)
 			r.Route("/route", func(r chi.Router) {
 				r.Get("/{route-name}", api.competitiveRoute)
