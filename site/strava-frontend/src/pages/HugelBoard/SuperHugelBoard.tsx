@@ -1,49 +1,19 @@
-import { FC, useEffect } from "react"
+import { FC } from "react"
 import {
-  Flex,
-  Grid,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  TableContainer,
-  Box,
-  Spinner,
-  Text,
-  Link,
-  LinkBox,
-  LinkOverlay,
-  Skeleton,
-  SkeletonCircle,
-  SkeletonText,
-  useToast,
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Tabs, TabList, TabPanels, Tab, TabPanel,
   useTheme,
   Heading,
+  Flex,
 } from '@chakra-ui/react'
-import { getErrorDetail, getErrorMessage, getHugelLeaderBoard } from "../../api/rest"
+import { getErrorDetail, getErrorMessage, getHugelLeaderBoard, getSuperHugelLeaderBoard } from "../../api/rest"
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
 import * as TypesGen from "./../../api/typesGenerated"
 import { HugelBoardGallery } from "./HugelBoardGallery";
 import { HugelBoardTable } from "./HugelBoardTable";
 
-export interface HugelBoardProps {
-  data?: TypesGen.HugelLeaderBoard | TypesGen.SuperHugelLeaderBoard
-  error?: Error | unknown
-  isLoading: boolean
-  isFetched: boolean
-}
 
-export const HugelBoard: FC = () => {
+export const SuperHugelBoard: FC = () => {
   const queryKey = ["hugel-leaderboard"]
   const {
     data: hugelLeaderboard,
@@ -52,30 +22,12 @@ export const HugelBoard: FC = () => {
     isFetched: hugelFetched,
   } = useQuery({
     queryKey,
-    queryFn: getHugelLeaderBoard,
-    // queryFn: async () => {
-    //   const data = await getHugelLeaderBoard()
-    //   return data
-    //   // if (!data || !data.activities) {
-    //   //   return data
-    //   // }
-    //   // // Add some extra rows for some editing purposes
-    //   // return {
-    //   //   ...data,
-    //   //   activities: [
-    //   //     ...data.activities,
-    //   //     data.activities[0],
-    //   //     data.activities[0],
-    //   //     data.activities[0],
-    //   //     data.activities[0],
-    //   //   ]
-    //   // }
-    // },
+    queryFn: getSuperHugelLeaderBoard,
   })
 
   return <>
     <Flex w="100%" justifyContent={"center"}>
-      <Heading>Tour Das Hugel</Heading>
+      <Heading>Super Scored Hugel</Heading>
     </Flex>
     <Tabs isFitted align="center" p='0 1rem'>
       <TabList>

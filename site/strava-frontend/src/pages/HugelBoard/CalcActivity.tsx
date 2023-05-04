@@ -10,6 +10,7 @@ export interface ActivityCalResults {
     avgWatts: number
     distance: number
     marginText: string
+    numActivities: number
 }
 
 export const CalculateActivity = (activity: HugelLeaderBoardActivity | SuperHugelLeaderBoardActivity): ActivityCalResults => {
@@ -23,6 +24,13 @@ export const CalculateActivity = (activity: HugelLeaderBoardActivity | SuperHuge
     if (!activity.rank_one_elapsed) {
         marginText = "--:--:--"
     }
+    const uniqueActs = activity.efforts.reduce((acc, effort) => {
+        acc[effort.activity_id] += 1
+        return acc
+    }, {} as Record<string, number>)
+    const numActivities = Object.keys(uniqueActs).length
+
+
 
     // Abort early on super hugel activities
     if (!("activity_elapsed_time" in activity)) {
@@ -31,6 +39,7 @@ export const CalculateActivity = (activity: HugelLeaderBoardActivity | SuperHuge
             showWatts,
             avgWatts,
             marginText,
+            numActivities,
             dateText: "",
             totalElapsedText: "",
             elevationText: "",
@@ -53,7 +62,8 @@ export const CalculateActivity = (activity: HugelLeaderBoardActivity | SuperHuge
         distance,
         showWatts,
         avgWatts,
-        marginText
+        marginText,
+        numActivities
     }
 }
 

@@ -277,7 +277,7 @@ const NAV_ITEMS: Array<NavItem> = [
       {
         label: 'All Hugel Super Scores',
         subLabel: 'Have not done a Das Hugel?',
-        href: '#',
+        href: '/superhugelboard',
       },
     ],
   },

@@ -10,7 +10,7 @@ import {
   useColorModeValue,
 
 } from '@chakra-ui/react'
-import { HugelLeaderBoardActivity } from "../../api/typesGenerated"
+import { HugelLeaderBoardActivity, SuperHugelLeaderBoardActivity } from "../../api/typesGenerated"
 import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar"
 import { DistanceToLocal, DistanceToLocalElevation } from "../../lib/Distance/Distance"
 import { CalculateActivity } from "./CalcActivity"
@@ -77,7 +77,7 @@ const gradientsDark = [
 
 
 const GalleryCard: React.FC<{
-  activity?: HugelLeaderBoardActivity
+  activity?: HugelLeaderBoardActivity | SuperHugelLeaderBoardActivity
   position: number
 }> = ({ activity, position }) => {
   const gradients = useColorModeValue(gradientsLight, gradientsDark)
@@ -109,7 +109,8 @@ const GalleryCard: React.FC<{
     distance,
     showWatts,
     avgWatts,
-    marginText
+    marginText,
+    numActivities
   } = CalculateActivity(activity)
 
   return <Box w='100%' maxW='350px' h='300px' bg={bgColor} borderRadius={'1rem'}
@@ -144,7 +145,12 @@ const GalleryCard: React.FC<{
       </Flex>
 
     </Flex>
-    <Text fontWeight='bold'>{activity.activity_name}</Text>
+    {
+      "activity_name" in activity ?
+        <Text fontWeight='bold'>{activity.activity_name}</Text>
+        :
+        <Text fontWeight='bold'>{`In ${numActivities} activites`}</Text>
+    }
     <Grid gridTemplateColumns='2fr 1fr' gap={3} p={4}>
       <StatBox stat={elapsedText} label={marginText} />
       <StatBox stat={distance.toString()} label={"miles"} />

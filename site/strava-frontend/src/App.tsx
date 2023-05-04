@@ -32,6 +32,7 @@ import { AuthenticatedProvider } from "./contexts/Authenticated";
 import { FC } from "react";
 import { NotFound } from "./pages/404/404";
 import { SignedOut } from "./pages/SignedOut/SignedOut";
+import { SuperHugelBoard } from "./pages/HugelBoard/SuperHugelBoard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -95,6 +96,7 @@ export const App = () => {
               {/* Navbar and statics */}
               <Route path="/" element={<Landing />} />
               <Route path="/hugelboard" element={<HugelBoard />} />
+              <Route path="/superhugelboard" element={<SuperHugelBoard />} />
               <Route path="/signed-out" element={<SignedOut />} />
             </Route>
             <Route path='*' element={<NotFound />} />

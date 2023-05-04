@@ -40,6 +40,17 @@ export const getHugelLeaderBoard = async (): Promise<
   }
 }
 
+export const getSuperHugelLeaderBoard = async (): Promise<
+  TypesGen.SuperHugelLeaderBoard | undefined
+> => {
+  try {
+    const response = await axios.get<TypesGen.SuperHugelLeaderBoard>("/api/v1/superhugelboard")
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
 export const getHugelSegments = async (): Promise<
   TypesGen.CompetitiveRoute | undefined
 > => {

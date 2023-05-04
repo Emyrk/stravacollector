@@ -75,7 +75,7 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
         <Tbody>
           {
             data && data.activities?.map((activity) => {
-              return <HugelBoardTableRow key={`tbr-${activity.activity_id}`} activity={activity} segmentSummaries={segmentMapping} />
+              return <HugelBoardTableRow key={`tbr-${activity.athlete_id}`} activity={activity} segmentSummaries={segmentMapping} />
             })
           }
         </Tbody>
@@ -99,9 +99,6 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
 
   // Sort by the length of the segment name to group similar length names
   const efforts = activity.efforts.sort((a, b) => {
-    // if (segmentSummaries) {
-    //   return segmentSummaries[a.segment_id].name.length - segmentSummaries[b.segment_id].name.length
-    // }
     if (segmentSummaries && segmentSummaries[a.segment_id] && segmentSummaries[b.segment_id]) {
       return segmentSummaries[a.segment_id].name.toLowerCase() < segmentSummaries[b.segment_id].name.toLowerCase() ? -1 : 1
     }
@@ -177,15 +174,13 @@ export const HugelBoardTableRow: FC<PropsWithChildren<{
               // Blank box of height 2 lines
               return <Box pb={index === 0 ? 3 : 0} height="2em"></Box>
             }
-            console.log(effort)
-            console.log(segmentSummaries)
             return <>
-              {/* <Link target="_blank" href={`https://strava.com/activities/${effort.activity_id.toString()}/segments/${effort.effort_id.toString()}`}> */}
-              <Text maxWidth={"100px"} isTruncated fontWeight={"bold"}>{segmentSummaries && segmentSummaries[effort.segment_id] ? segmentSummaries[effort.segment_id].name : "????"}</Text>
-              <Box pb={index === 0 ? 3 : 0}>
-                {ElapsedDurationText(effort.elapsed_time, false)} @ {effort.device_watts ? Math.floor(effort.average_watts) + "w" : "--"}
-              </Box>
-              {/* </Link > */}
+              <Link target="_blank" href={`https://strava.com/activities/${effort.activity_id.toString()}/segments/${effort.effort_id.toString()}`}>
+                <Text maxWidth={"100px"} isTruncated fontWeight={"bold"}>{segmentSummaries && segmentSummaries[effort.segment_id] ? segmentSummaries[effort.segment_id].name : "????"}</Text>
+                <Box pb={index === 0 ? 3 : 0}>
+                  {ElapsedDurationText(effort.elapsed_time, false)} @ {effort.device_watts ? Math.floor(effort.average_watts) + "w" : "--"}
+                </Box>
+              </Link >
             </>
           })}
         </Td>
