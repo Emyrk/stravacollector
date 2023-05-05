@@ -16,13 +16,20 @@ export const Landing: FC = () => {
   return <Box textAlign="center" fontSize="xl" maxW={'7xl'} m={'1rem auto'}>
     <Heading>Welcome to Tour Das Hügel!</Heading>
     <Box bg={bg} p={5} borderRadius={3} m={'0 auto'} maxW='2xl' w='100%'>
+      <Text>
+        Austin, Texas is home to the notorious Tour das Hügel — a challenging bike route boasting over 100 miles of treacherous
+        hills and climbs totaling over 13,000 feet. Unfortunately, riders attempting this ride often encounter dangerous stop signs
+        that can prompt them to take unnecessary risks in order to get better times. To help cyclists stay safe and get the most out
+        of their Tour das Hügel experience, our site provides an alternative solution by calculating the best times for riders on the
+        famous climbs, allowing them to avoid being penalized for stop signs or traffic jams.
+      </Text>
       <Text>In Austin Texas exists this notorious biking route! This route is filled with dangerous stop-signs which push racers to take risks to get the best times. This site instead calculates riders best times on the climbs to avoid penalizations for stop-signs/traffic.</Text>
     </Box>
 
     <Flex w='100%' maxW='4xl' m='0 auto' justifyContent='space-between' p={3} gap={'1rem'} flexDir={{ base: 'column', md: 'row' }}>
-      <Card header={'Connect with Strava'} text='Connect your strava account to this site' />
-      <Card header={'Wait for Sync'} text={`We're currently in alpha so our api takes awhile to load your data. Give us some time and come back after signing in.`} />
-      <Card header={'Climb the leaderboard'} text='Track your scores against others against the Hügel!' />
+      <Card header={'Connect With Strava'} text='Link your Strava account to our site to get started and unlock exclusive benefits.' />
+      <Card header={'Wait to Sync'} text={`Our API may be slow to load due to our current alpha stage. We are actively working on improving its speed and performance. Please come back after signing in and your data should be available shortly. Thank you for your patience!`} />
+      <Card header={'Climb the Leaderboard'} text='Track your scores against others and challenge yourself to be the best on the Hügel!' />
     </Flex>
   </Box >
 }
