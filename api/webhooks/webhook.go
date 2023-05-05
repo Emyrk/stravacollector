@@ -10,6 +10,9 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog"
 	"golang.org/x/oauth2"
@@ -30,10 +33,12 @@ type ActivityEvents struct {
 
 	eventQueue chan *WebhookEvent
 
+	webhookCount *prometheus.GaugeVec
+
 	ID int
 }
 
-func NewActivityEvents(logger zerolog.Logger, cfg *oauth2.Config, db database.Store, accessURL *url.URL, verifyToken string) *ActivityEvents {
+func NewActivityEvents(logger zerolog.Logger, cfg *oauth2.Config, db database.Store, accessURL *url.URL, verifyToken string, registry prometheus.Registerer) *ActivityEvents {
 	if verifyToken == "" {
 		vData := make([]byte, 32)
 		_, err := rand.Read(vData)
@@ -44,6 +49,7 @@ func NewActivityEvents(logger zerolog.Logger, cfg *oauth2.Config, db database.St
 	}
 	callback := *accessURL
 	callback.Path = "/webhooks/strava"
+	factory := promauto.With(registry)
 
 	return &ActivityEvents{
 		OauthConfig: cfg,
@@ -53,6 +59,13 @@ func NewActivityEvents(logger zerolog.Logger, cfg *oauth2.Config, db database.St
 		Logger:      logger,
 		DB:          db,
 		eventQueue:  make(chan *WebhookEvent, 100),
+		webhookCount: factory.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace:   "strava",
+			Subsystem:   "api_webhooks",
+			Name:        "webhook_count",
+			Help:        "Number of webhooks received",
+			ConstLabels: nil,
+		}, []string{"type"}),
 	}
 }
 
@@ -122,6 +135,7 @@ func (a *ActivityEvents) handleWebhook(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 	a.eventQueue <- &event
+	a.webhookCount.WithLabelValues(event.AspectType).Inc()
 	_, _ = rw.Write([]byte("Thanks!"))
 }
 

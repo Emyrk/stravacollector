@@ -62,6 +62,9 @@ type API struct {
 }
 
 func New(opts Options) (*API, error) {
+	if opts.Registry == nil {
+		opts.Registry = prometheus.NewRegistry()
+	}
 	api := &API{
 		Opts: &opts,
 		OAuthConfig: &oauth2.Config{
@@ -78,20 +81,18 @@ func New(opts Options) (*API, error) {
 		},
 		Registry: opts.Registry,
 	}
-	if api.Registry == nil {
-		api.Registry = prometheus.NewRegistry()
-	}
 	ath, err := auth.New(auth.Options{
 		Lifetime:  time.Hour * 24 * 7,
 		SecretPEM: opts.SigningKeyPEM,
 		Issuer:    "Strava-Hugel",
+		Registry:  api.Registry,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("create auth: %w", err)
 	}
 	api.Auth = ath
 
-	api.Events = webhooks.NewActivityEvents(opts.Logger, api.OAuthConfig, api.Opts.DB, opts.AccessURL, opts.VerifyToken)
+	api.Events = webhooks.NewActivityEvents(opts.Logger, api.OAuthConfig, api.Opts.DB, opts.AccessURL, opts.VerifyToken, api.Registry)
 	r := api.Routes()
 	r = api.Events.Attach(r)
 	api.Handler = r
@@ -120,6 +121,9 @@ func (api *API) StartWebhook(ctx context.Context) (<-chan *webhooks.WebhookEvent
 
 func (api *API) Routes() chi.Router {
 	r := chi.NewRouter()
+	r.Use(
+		httpmw.PrometheusMW(api.Registry),
+	)
 
 	r.Get("/myhealthz", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("ok"))
