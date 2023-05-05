@@ -11,7 +11,7 @@ processes = []
   image = "emyrk/strava:latest"
 
 [deploy]
-  strategy = "bluegreen"
+  strategy = "rolling"
 
 [env]
   STRAVA_ACCESS_URL = "https://dashugel.bike"
