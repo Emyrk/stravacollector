@@ -1,0 +1,46 @@
+;;
+;; Domain:     dashugel.bike.
+;; Exported:   2023-05-05 17:49:10
+;;
+;; This file is intended for use for informational and archival
+;; purposes ONLY and MUST be edited before use on a production
+;; DNS server.  In particular, you must:
+;;   -- update the SOA record with the correct authoritative name server
+;;   -- update the SOA record with the contact e-mail address information
+;;   -- update the NS record(s) with the authoritative name servers for this domain.
+;;
+;; For further information, please consult the BIND documentation
+;; located on the following website:
+;;
+;; http://www.isc.org/
+;;
+;; And RFC 1035:
+;;
+;; http://www.ietf.org/rfc/rfc1035.txt
+;;
+;; Please note that we do NOT offer technical support for any use
+;; of this zone data, the BIND name server, or any other third-party
+;; DNS software.
+;;
+;; Use at your own risk.
+;; SOA Record
+dashugel.bike	3600	IN	SOA	jeff.ns.cloudflare.com dns.cloudflare.com 2043497555 10000 2400 604800 3600
+
+;; NS Records
+dashugel.bike.	86400	IN	NS	jeff.ns.cloudflare.com.
+dashugel.bike.	86400	IN	NS	laura.ns.cloudflare.com.
+
+;; A Records
+dashugel.bike.	1	IN	A	216.239.32.21 ; GCloud Run
+dashugel.bike.	1	IN	A	216.239.34.21 ; GCloud Run
+dashugel.bike.	1	IN	A	216.239.38.21 ; GCloud Run
+dashugel.bike.	1	IN	A	216.239.36.21 ; GCloud Run
+
+;; AAAA Records
+dashugel.bike.	1	IN	AAAA	2001:4860:4802:36::15 ; GCloud Run
+dashugel.bike.	1	IN	AAAA	2001:4860:4802:38::15 ; GCloud Run
+dashugel.bike.	1	IN	AAAA	2001:4860:4802:34::15 ; GCloud Run
+dashugel.bike.	1	IN	AAAA	2001:4860:4802:32::15 ; GCloud Run
+
+;; TXT Records
+dashugel.bike.	1	IN	TXT	"google-site-verification=mljDTaaWgF0LBYcVF4h4l5UzabFxf6ejMGxvY5wqyOM" ; Google domain verify

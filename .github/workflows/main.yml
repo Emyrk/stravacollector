@@ -83,7 +83,7 @@ jobs:
 
   deploy-cloud-run:
     name: "Deploy to GCP Cloud Run"
-    if: github.ref_type == 'tag'
+    if: false && github.ref_type == 'tag'
     needs: docker-push
     permissions:
       contents: "read"
