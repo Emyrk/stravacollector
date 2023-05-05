@@ -111,10 +111,12 @@ func New(opts Options) (*API, error) {
 }
 
 // StartWebhook needs to be called after the API is served.
-func (api *API) StartWebhook(ctx context.Context) (<-chan *webhooks.WebhookEvent, error) {
-	err := api.Events.Setup(ctx)
-	if err != nil {
-		return nil, err
+func (api *API) StartWebhook(ctx context.Context, setup bool) (<-chan *webhooks.WebhookEvent, error) {
+	if setup {
+		err := api.Events.Setup(ctx)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return api.Events.EventQueue(), nil
 }
