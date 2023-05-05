@@ -76,7 +76,7 @@ const customComponents: Record<string, StyleConfig> = {
 }
 
 
-export const themeConfig: ThemeConfig = {
+export const config: ThemeConfig = {
   initialColorMode: "dark",
   useSystemColorMode: false,
 };
@@ -89,7 +89,9 @@ const theme = extendTheme({
       stravaOrange: "#fc4c02",
     },
   },
-}, themeConfig)
+}, { config })
+
+export default theme
 
 export const App = () => {
   return <QueryClientProvider client={queryClient}>
