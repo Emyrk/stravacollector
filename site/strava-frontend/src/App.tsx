@@ -15,6 +15,7 @@ import {
   useColorModeValue,
   StyleConfig,
   StyleFunctionProps,
+  ThemeConfig,
 } from "@chakra-ui/react"
 import { Logo } from "./Logo"
 import {
@@ -73,11 +74,14 @@ const customComponents: Record<string, StyleConfig> = {
     variants: {},
   }
 }
+
+
+export const themeConfig: ThemeConfig = {
+  initialColorMode: "dark",
+  useSystemColorMode: false,
+};
+
 const theme = extendTheme({
-  config: {
-    initialColorMode: 'dark',
-    useSystemColorMode: false,
-  },
   components: { ...customComponents },
   colors: {
     brand: {
@@ -85,7 +89,7 @@ const theme = extendTheme({
       stravaOrange: "#fc4c02",
     },
   },
-})
+}, themeConfig)
 
 export const App = () => {
   return <QueryClientProvider client={queryClient}>
