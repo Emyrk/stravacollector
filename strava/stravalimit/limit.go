@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+
 	"github.com/rs/zerolog"
 )
 
@@ -24,6 +26,13 @@ type Limiter struct {
 	IntervalLimit int64
 	DailyLimit    int64
 
+	// Gauges
+	PromCurrentIntervalUsage prometheus.Gauge
+	PromCurrentDailyUsage    prometheus.Gauge
+	PromIntervalLimit        prometheus.Gauge
+	PromDailyLimit           prometheus.Gauge
+
+	Registry *prometheus.Registry
 	sync.Mutex
 }
 
@@ -34,7 +43,43 @@ func New() *Limiter {
 		CurrentDay:      GetDay(now),
 		IntervalLimit:   200,
 		DailyLimit:      1000,
+		PromCurrentIntervalUsage: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "strava",
+			Subsystem: "api_limiter",
+			Name:      "interval_usage",
+			Help:      "How many calls in this interval",
+		}),
+		PromCurrentDailyUsage: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "strava",
+			Subsystem: "api_limiter",
+			Name:      "daily_usage",
+			Help:      "How many calls in this day",
+		}),
+		PromIntervalLimit: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "strava",
+			Subsystem: "api_limiter",
+			Name:      "interval_limit",
+			Help:      "Interval limit",
+		}),
+		PromDailyLimit: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "strava",
+			Subsystem: "api_limiter",
+			Name:      "daily_limit",
+			Help:      "Daily limit",
+		}),
 	}
+}
+
+func (l *Limiter) RegisterMetrics(reg *prometheus.Registry) {
+	reg.MustRegister(
+		l.PromCurrentDailyUsage, l.PromCurrentIntervalUsage,
+		l.PromDailyLimit, l.PromIntervalLimit,
+	)
+}
+
+func SetRegistry(registry *prometheus.Registry) {
+	limiter.Registry = registry
+	limiter.RegisterMetrics(registry)
 }
 
 func GetInterval(t time.Time) int64 {
@@ -54,6 +99,11 @@ func (l *Limiter) UpdateUsage(intervalUsage, intervalLimit, dailyUsage, dailyLim
 	l.CurrentDailyUsage = dailyUsage
 	l.IntervalLimit = intervalLimit
 	l.DailyLimit = dailyLimit
+
+	l.PromCurrentDailyUsage.Set(float64(l.CurrentDailyUsage))
+	l.PromCurrentIntervalUsage.Set(float64(l.CurrentIntervalUsage))
+	l.PromDailyLimit.Set(float64(l.DailyLimit))
+	l.PromIntervalLimit.Set(float64(l.IntervalLimit))
 }
 
 func (l *Limiter) Remaining() (int64, int64) {
@@ -72,11 +122,13 @@ func (l *Limiter) updateInterval() {
 	if l.CurrentInterval != interval {
 		l.CurrentInterval = interval
 		l.CurrentIntervalUsage = 0
+		l.PromCurrentIntervalUsage.Set(0)
 	}
 
 	if l.CurrentDay != day {
 		l.CurrentDay = day
 		l.CurrentDailyUsage = 0
+		l.PromCurrentDailyUsage.Set(0)
 	}
 }
 

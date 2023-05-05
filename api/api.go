@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+
 	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/modelsdk"
 
@@ -34,6 +36,7 @@ type Options struct {
 	AccessURL     *url.URL
 	VerifyToken   string
 	SigningKeyPEM []byte
+	Registry      *prometheus.Registry
 }
 
 type OAuthOptions struct {
@@ -53,6 +56,9 @@ type API struct {
 	SuperHugelBoardCache *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]
 	HugelBoardCache      *gencache.LazyCache[[]database.HugelLeaderboardRow]
 	HugelRouteCache      *gencache.LazyCache[database.GetCompetitiveRouteRow]
+
+	// Metrics
+	Registry *prometheus.Registry
 }
 
 func New(opts Options) (*API, error) {
@@ -70,6 +76,10 @@ func New(opts Options) (*API, error) {
 			// Must be comma joined
 			Scopes: []string{strings.Join([]string{"read", "read_all", "profile:read_all", "activity:read"}, ",")},
 		},
+		Registry: opts.Registry,
+	}
+	if api.Registry == nil {
+		api.Registry = prometheus.NewRegistry()
 	}
 	ath, err := auth.New(auth.Options{
 		Lifetime:  time.Hour * 24 * 7,

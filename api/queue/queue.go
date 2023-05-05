@@ -7,6 +7,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+
 	"github.com/Emyrk/strava/strava/stravalimit"
 
 	"golang.org/x/oauth2"
@@ -38,6 +40,7 @@ type Options struct {
 	Logger   zerolog.Logger
 	DB       database.Store
 	OAuthCfg *oauth2.Config
+	Registry *prometheus.Registry
 }
 
 // Manager will handle all queue related operations and jobs
@@ -51,6 +54,7 @@ type Manager struct {
 	DB database.Store
 
 	Logger   zerolog.Logger
+	Registry *prometheus.Registry
 	OAuthCfg *oauth2.Config
 
 	cancel              context.CancelFunc
@@ -83,6 +87,10 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	if err != nil {
 		return nil, fmt.Errorf("new client: %w", err)
 	}
+	registry := opts.Registry
+	if registry == nil {
+		registry = prometheus.NewRegistry()
+	}
 
 	return &Manager{
 		Client:   cli,
@@ -90,6 +98,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		DB:       opts.DB,
 		OAuthCfg: opts.OAuthCfg,
 		Logger:   opts.Logger,
+		Registry: registry,
 	}, nil
 }
 

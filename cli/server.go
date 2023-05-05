@@ -13,6 +13,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/rs/zerolog"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -25,17 +29,19 @@ import (
 
 func serverCmd() *cobra.Command {
 	var (
-		dbURL           string
-		secret          string
-		clientID        string
-		port            int
-		accessURL       string
-		config          string
-		writeConfig     bool
-		stackDriver     bool
-		verifyToken     string
-		disableWebhooks bool
-		signingSecret   string
+		dbURL             string
+		secret            string
+		clientID          string
+		port              int
+		accessURL         string
+		config            string
+		writeConfig       bool
+		stackDriver       bool
+		verifyToken       string
+		disableWebhooks   bool
+		signingSecret     string
+		prometheusEnabled bool
+		promtheusAddress  string
 	)
 
 	v := viper.New()
@@ -79,6 +85,8 @@ func serverCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, cancel := context.WithCancel(cmd.Context())
 			defer cancel()
+			registry := prometheus.NewRegistry()
+			stravalimit.SetRegistry(registry)
 
 			if writeConfig {
 				return v.SafeWriteConfigAs(config)
@@ -120,6 +128,7 @@ func serverCmd() *cobra.Command {
 				AccessURL:     u,
 				VerifyToken:   verifyToken,
 				SigningKeyPEM: secPem,
+				Registry:      registry,
 			})
 			if err != nil {
 				return fmt.Errorf("create server: %w", err)
@@ -130,6 +139,7 @@ func serverCmd() *cobra.Command {
 				Logger:   logger.With().Str("component", "queue").Logger(),
 				DB:       db,
 				OAuthCfg: srv.OAuthConfig,
+				Registry: registry,
 			})
 			if err != nil {
 				return fmt.Errorf("create queue manager: %w", err)
@@ -159,23 +169,10 @@ func serverCmd() *cobra.Command {
 				Int("port", port).
 				Str("access_url", accessURL).Msg("Server running")
 
-			go func() {
-				logger.Debug().Msg("Will watch strava rate limits every minute.")
-				ticker := time.NewTicker(time.Minute * 10)
-				for {
-					select {
-					case <-ctx.Done():
-						logger.Debug().Msg("Stopping strava rate limit watcher.")
-						return
-					case <-ticker.C:
-						i, d := stravalimit.Remaining()
-						logger.Debug().
-							Int64("IntervalLeft", i).
-							Int64("DailyLeft", d).
-							Msg("Strava Rate Limits")
-					}
-				}
-			}()
+			stravaRateLimitLog(ctx, logger)
+			if prometheusEnabled {
+				launchPrometheus(ctx, logger, promtheusAddress, registry)
+			}
 
 			if !disableWebhooks {
 				lastPrint := time.Time{}
@@ -255,8 +252,47 @@ func serverCmd() *cobra.Command {
 	cmd.Flags().StringVar(&verifyToken, "verify-token", "", "Strava webhook verify token")
 	cmd.Flags().BoolVar(&disableWebhooks, "disable-webhooks", false, "Useful for running a server without a public url")
 	cmd.Flags().StringVar(&signingSecret, "signing-secret", "", "RSA signing key base64 encoded")
+	cmd.Flags().BoolVar(&prometheusEnabled, "enable-prometheus", false, "Enable prometheus metrics")
+	cmd.Flags().StringVar(&promtheusAddress, "prometheus-address", "0.0.0.0:9091", "Prometheus address to listen on")
 
 	return cmd
+}
+
+func stravaRateLimitLog(ctx context.Context, logger zerolog.Logger) {
+	go func() {
+		logger.Debug().Msg("Will watch strava rate limits every minute.")
+		ticker := time.NewTicker(time.Minute * 10)
+		for {
+			select {
+			case <-ctx.Done():
+				logger.Debug().Msg("Stopping strava rate limit watcher.")
+				return
+			case <-ticker.C:
+				i, d := stravalimit.Remaining()
+				logger.Debug().
+					Int64("IntervalLeft", i).
+					Int64("DailyLeft", d).
+					Msg("Strava Rate Limits")
+			}
+		}
+	}()
+}
+
+func launchPrometheus(ctx context.Context, logger zerolog.Logger, address string, registry *prometheus.Registry) {
+	srv := http.Server{
+		Addr:    address,
+		Handler: promhttp.HandlerFor(registry, promhttp.HandlerOpts{}),
+		BaseContext: func(listener net.Listener) context.Context {
+			return ctx
+		},
+	}
+	go func() {
+		logger.Info().Str("address", address).Msg("Starting prometheus server")
+		err := srv.ListenAndServe()
+		if err != nil {
+			logger.Error().Str("service", "prometheus").Err(err).Msg("prometheus server error")
+		}
+	}()
 }
 
 // Bind each cobra flag to its associated viper configuration (config file and environment variable)
