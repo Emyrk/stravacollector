@@ -4,8 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"sync/atomic"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus/promauto"
 
 	"github.com/prometheus/client_golang/prometheus"
 
@@ -54,11 +57,15 @@ type Manager struct {
 	DB database.Store
 
 	Logger   zerolog.Logger
-	Registry *prometheus.Registry
 	OAuthCfg *oauth2.Config
 
 	cancel              context.CancelFunc
 	stravaLimitDebounce atomic.Pointer[time.Time]
+
+	// Metrics!
+	backloadHistogram        *prometheus.HistogramVec
+	backgroundJobHistogram   *prometheus.HistogramVec
+	backloadActivitiesLoaded prometheus.Counter
 }
 
 func New(ctx context.Context, opts Options) (*Manager, error) {
@@ -87,18 +94,40 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	if err != nil {
 		return nil, fmt.Errorf("new client: %w", err)
 	}
-	registry := opts.Registry
-	if registry == nil {
-		registry = prometheus.NewRegistry()
+	if opts.Registry == nil {
+		opts.Registry = prometheus.NewRegistry()
 	}
 
+	factory := promauto.With(opts.Registry)
 	return &Manager{
 		Client:   cli,
 		pool:     pool,
 		DB:       opts.DB,
 		OAuthCfg: opts.OAuthCfg,
 		Logger:   opts.Logger,
-		Registry: registry,
+
+		// Metrics!
+		backloadHistogram: factory.NewHistogramVec(prometheus.HistogramOpts{
+			Namespace: "strava",
+			Subsystem: "manager",
+			Name:      "backload_athlete_seconds",
+			Help:      "Each time we backload an athlete",
+			// A 1s backload is fine imo
+			Buckets: []float64{0.001, 0.005, 0.01, 0.25, 0.5, 1, 2, 5},
+		}, []string{"success"}),
+		backloadActivitiesLoaded: factory.NewCounter(prometheus.CounterOpts{
+			Namespace: "strava",
+			Subsystem: "manager",
+			Name:      "backload_activities_enqueued_total",
+			Help:      "The total number of activities enqueued to be fetched",
+		}),
+		backgroundJobHistogram: factory.NewHistogramVec(prometheus.HistogramOpts{
+			Namespace: "strava",
+			Subsystem: "manager",
+			Name:      "background_job_seconds",
+			Help:      "Each time we run a background job",
+			Buckets:   []float64{0.001, 0.005, 0.01, 0.25, 0.5, 1, 2, 5},
+		}, []string{"type", "success"}),
 	}, nil
 }
 
@@ -192,15 +221,20 @@ func (m *Manager) workMap() gue.WorkMap {
 			m.Logger.Info().Msg("worker online")
 			return nil
 		},
-		fetchActivityJob: func(ctx context.Context, j *gue.Job) error {
-			return m.fetchActivity(ctx, j)
-		},
-		updateActivityField: func(ctx context.Context, j *gue.Job) error {
-			return m.updateActivity(ctx, j)
-		},
-		deleteActivityJob: func(ctx context.Context, j *gue.Job) error {
-			return m.deleteActivity(ctx, j)
-		},
+		fetchActivityJob:    m.instrumentJob(m.fetchActivity),
+		updateActivityField: m.instrumentJob(m.updateActivity),
+		deleteActivityJob:   m.instrumentJob(m.deleteActivity),
+	}
+}
+
+func (m *Manager) instrumentJob(runJob func(ctx context.Context, j *gue.Job) error) func(ctx context.Context, j *gue.Job) error {
+	return func(ctx context.Context, j *gue.Job) error {
+		start := time.Now()
+		err := runJob(ctx, j)
+		m.backgroundJobHistogram.
+			WithLabelValues(j.Type, strconv.FormatBool(err == nil)).
+			Observe(time.Since(start).Seconds())
+		return err
 	}
 }
 

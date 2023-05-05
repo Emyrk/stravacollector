@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -48,7 +49,9 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 			continue
 		}
 
+		start := time.Now()
 		err := m.backloadAthlete(ctx, *athlete)
+		m.backloadHistogram.WithLabelValues(strconv.FormatBool(err == nil)).Observe(time.Since(start).Seconds())
 		if err != nil {
 			// This could be bad
 			_, dbErr := m.DB.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
@@ -241,6 +244,7 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 	if err != nil {
 		return fmt.Errorf("in tx: %w", err)
 	}
+	m.backloadActivitiesLoaded.Add(float64(len(activities)))
 
 	return nil
 }
