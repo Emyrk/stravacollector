@@ -34,3 +34,10 @@ https://choc-ui.com/docs/packages/pagination
 Icons: https://fontawesome.com/search
 
 https://jessicasalbert.medium.com/holding-your-hand-through-stravas-api-e642d15695f2
+
+
+# Accounts
+
+- Fly.io
+- GCP Cloud run
+- logtail.com

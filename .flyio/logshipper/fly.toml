@@ -1,0 +1,15 @@
+# fly.toml app configuration file generated for dashugel-logs on 2023-05-04T22:36:56-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+# https://fly.io/docs/going-to-production/monitoring/exporting-logs/
+app = "dashugel-logs"
+primary_region = "dfw"
+
+[build]
+  image = "ghcr.io/superfly/fly-log-shipper:latest"
+
+[[services]]
+  http_checks = []
+  internal_port = 8686
