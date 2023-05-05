@@ -1,0 +1,47 @@
+# fly.toml file generated for dashugel on 2023-05-05T02:55:19Z
+
+app = "dashugel"
+kill_signal = "SIGINT"
+kill_timeout = 5
+mounts = []
+primary_region = "dfw"
+processes = []
+
+[build]
+  image = "emyrk/strava:latest"
+
+[deploy]
+  strategy = "bluegreen"
+
+[env]
+  STRAVA_ACCESS_URL = "https://dashugel.bike"
+  STRAVA_JSON_LOGS = "false"
+  STRAVA_ENABLE_PROMETHEUS=true
+  STRAVA_SKIP_WEBHOOK_SETUP=true
+
+# Should set this up!
+#[[statics]]
+#  guest_path = "/app/public"
+#  url_prefix = "/public"
+
+[metrics]
+  port = 9091       # default for most prometheus clients
+  path = "/metrics" # default for most prometheus clients
+
+[[services]]
+  internal_port = 9090
+  processes = ["app"]
+  protocol = "tcp"
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+    type = "connections"
+
+  [[services.ports]]
+    force_https = true
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
