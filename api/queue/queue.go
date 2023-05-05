@@ -174,10 +174,12 @@ func (m *Manager) Run(ctx context.Context) error {
 
 	// Run backloading!
 	go func() {
+		// TODO: Make this able to scale horizontally
 		m.BackLoadAthleteRoutine(ctx)
 	}()
 
 	go func() {
+		// TODO: Make this able to scale horizontally
 		m.BackLoadRouteSegments(ctx)
 	}()
 
