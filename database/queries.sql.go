@@ -620,8 +620,9 @@ INNER JOIN
 ON
     athlete_load.athlete_id = athlete_logins.athlete_id
 ORDER BY
-    -- Athletes with oldest load attempt first.
-	(last_load_incomplete OR not earliest_activity_done, last_load_attempt)
+  -- Athletes with oldest load attempt first.
+	-- Order is [false, true]. 
+	not last_load_incomplete, earliest_activity_done, last_load_attempt
 LIMIT 1
 `
 
@@ -1054,7 +1055,8 @@ FROM
 	) AS athlete_bests
 INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id
-INNER JOIN athlete_hugel_count AS hugel_count
+INNER JOIN
+	athlete_hugel_count AS hugel_count
 		ON hugel_count.athlete_id = athlete_bests.athlete_id
 WHERE
 	CASE WHEN $1 > 0 THEN athlete_bests.athlete_id = $1 ELSE TRUE END

@@ -38,8 +38,9 @@ INNER JOIN
 ON
     athlete_load.athlete_id = athlete_logins.athlete_id
 ORDER BY
-    -- Athletes with oldest load attempt first.
-	(last_load_incomplete OR not earliest_activity_done, last_load_attempt)
+  -- Athletes with oldest load attempt first.
+	-- Order is [false, true]. 
+	not last_load_incomplete, earliest_activity_done, last_load_attempt
 LIMIT 1;
 
 -- name: GetAthleteLogin :one
