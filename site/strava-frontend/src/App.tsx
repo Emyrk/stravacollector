@@ -46,78 +46,42 @@ const queryClient = new QueryClient({
   },
 })
 
-
-const customComponents: Record<string, StyleConfig> = {
-  Text: {
-    variants: {
-      // used as <Text variant="minor">
-      minor: ({ colorMode }) => ({
-        color: colorMode === "dark" ? "whiteAlpha.500" : "blackAlpha.500",
-      })
-    },
-  },
-  Tabs: {
-    baseStyle: {
-      tab: {
-        _selected: {
-          color: "#fc4c02",
-        }
-      }
-    },
-  },
-  Tag: {
-    baseStyle: {
-      container: {
-        color: "white",
-      }
-    },
-    variants: {},
-  }
-}
-
-
-export const config: ThemeConfig = {
-  initialColorMode: "dark",
-  useSystemColorMode: false,
-};
-
-const theme = extendTheme({
-  components: { ...customComponents },
-  colors: {
-    brand: {
-      primary: "#ebebeb",
-      stravaOrange: "#fc4c02",
-    },
-  },
-}, { config })
-
-export default theme
-
 export const App = () => {
   return <QueryClientProvider client={queryClient}>
     <AuthenticatedProvider>
-      <ChakraProvider theme={theme}>
+      
         <Router>
           <Routes>
-            <Route element={<IncludeNavbar />}>
-              {/* Navbar and statics */}
-              <Route path="/" element={<Landing />} />
-              <Route path="/hugelboard" element={<HugelBoard />} />
-              <Route path="/superhugelboard" element={<SuperHugelBoard />} />
-              <Route path="/signed-out" element={<SignedOut />} />
+            <Route element={<Background />}>
+              <Route element={<IncludeNavbar />}>
+                {/* Navbar and statics */}
+                <Route path="/" element={<Landing />} />
+                <Route path="/hugelboard" element={<HugelBoard />} />
+                <Route path="/superhugelboard" element={<SuperHugelBoard />} />
+                <Route path="/signed-out" element={<SignedOut />} />
+              </Route>
+              <Route path='*' element={<NotFound />} />
             </Route>
-            <Route path='*' element={<NotFound />} />
           </Routes>
         </Router>
-      </ChakraProvider>
+      
     </AuthenticatedProvider>
   </QueryClientProvider>
+}
+
+export const Background: FC = () => {
+  const bgSrc = useColorModeValue("dark", "light")
+  return <>
+    <Box h={'100svh'} background={`url(/hugel_route_lines_${bgSrc}.svg)`} backgroundPosition={'center'} backgroundRepeat={'no-repeat'} backgroundSize='cover'  >
+      <Outlet />
+    </Box>
+  </>
 }
 
 export const IncludeNavbar: FC = () => {
   const bgSrc = useColorModeValue("dark", "light")
   return <>
-    <Box h={'100svh'} background={`url(/hugel_route_lines_${bgSrc}.svg)`} backgroundPosition={'center'} backgroundRepeat={'no-repeat'} backgroundSize='cover'  >
+    <Box>
       <Navbar />
       <Outlet />
     </Box>

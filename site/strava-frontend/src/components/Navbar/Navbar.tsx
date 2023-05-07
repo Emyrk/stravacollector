@@ -45,10 +45,9 @@ import { ColorModeSwitcher } from '../ColorModeSwitcher/ColorModeSwitcher';
 
 const Navbar: React.FC = () => {
   const { isOpen, onToggle } = useDisclosure();
-  const theme = useTheme()
 
   return <>
-    <Flex w='100%'  m={'1rem auto 0'} justifyContent='space-between' alignItems={'center'} p={3} pb={0}>
+    <Flex w='100%' m={'1rem auto 0'} justifyContent='space-between' alignItems={'center'} p={3} pb={0}>
       <Box>
         <RouteLink to="/">
           {/* https://chakra-ui.com/docs/components/image/usage */}
