@@ -20,7 +20,7 @@ export const AthleteAvatarDropdown: FC<{
         rounded={'full'}
         variant={'link'}
         as={Button}
-        rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        // rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
       >
         <AthleteAvatar
           firstName={athlete.firstname}
