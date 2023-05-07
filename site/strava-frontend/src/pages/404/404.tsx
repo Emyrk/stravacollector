@@ -15,7 +15,6 @@ export const NotFound: FC = () => {
         alignItems: 'center',
         flexDirection: 'column',
         minHeight: '100vh',
-        backgroundColor: theme.colors.brand.primary,
       }}
     >
       {/* <Typography variant="h1" style={{ color: 'white' }}>
