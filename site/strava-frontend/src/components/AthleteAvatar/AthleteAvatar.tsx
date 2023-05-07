@@ -22,7 +22,7 @@ export const AthleteAvatar: FC<{
     size={size}
     {...styleProps}
   >
-    {hugelCount && hugelCount > 0 &&
+    {hugelCount && hugelCount > 0 ?
       <AvatarBadge
         boxSize='1em'
         bg='green.500'
@@ -33,6 +33,7 @@ export const AthleteAvatar: FC<{
           {hugelCount}
         </Text>
       </AvatarBadge>
+      : ""
     }
   </Avatar>
 }
