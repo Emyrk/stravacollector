@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
   const { isOpen, onToggle } = useDisclosure();
 
   return <>
-    <Flex w='100%' m={'1rem auto 0'} justifyContent='space-between' alignItems={'center'} p={3} pb={0}>
+    <Flex w='100%' maxW={'7xl'} m={'1rem auto 0'} justifyContent='space-between' alignItems={'center'} p={3} pb={0}>
       <Box>
         <RouteLink to="/">
           {/* https://chakra-ui.com/docs/components/image/usage */}
@@ -70,29 +70,22 @@ export default Navbar
 
 
 const DesktopNav: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
-  const linkColor = useColorModeValue('gray.600', 'gray.200');
-  const linkHoverColor = useColorModeValue('gray.800', 'white');
-  const popoverContentBgColor = useColorModeValue('white', 'gray.800');
 
   return (
     <Stack direction={'row'} spacing={4} display={display}>
       {NAV_ITEMS.map((navItem, index) => (
         <Box key={navItem.label}>
-          <Popover trigger={'hover'} placement={'bottom-start'}>
+          <Popover trigger={'hover'} placement={'bottom-end'}>
             <PopoverTrigger>
               <Container
                 p={2}
-                fontSize={'sm'}
+                fontSize={'md'}
                 fontWeight={500}
-                color={linkColor}
-                _hover={{
-                  textDecoration: 'none',
-                  color: linkHoverColor,
-                }}>
+                >
                 <RouteLink to={navItem.href ?? '#'}>
                   <Tag p={3} display={'flex'} gap={2} borderRadius={"2px"}>
                     <FontAwesomeIcon icon={faTrophy} />
-                    {navItem.label}
+                    <Text>{navItem.label}</Text>
                   </Tag>
                 </RouteLink>
               </Container>
@@ -102,7 +95,6 @@ const DesktopNav: React.FC<{ display: { base: string, md: string } }> = ({ displ
               <PopoverContent
                 border={0}
                 boxShadow={'xl'}
-                bg={popoverContentBgColor}
                 p={4}
                 rounded={'xl'}
                 minW={'sm'}>
@@ -136,7 +128,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
           <Box>
             <Text
               transition={'all .3s ease'}
-              _groupHover={{ color: 'pink.400' }}
+              _groupHover={{ color: 'brand.stravaOrange' }}
               fontWeight={500}>
               {label}
             </Text>
@@ -150,7 +142,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
             justify={'flex-end'}
             align={'center'}
             flex={1}>
-            <Icon color={'pink.400'} w={5} h={5} as={ChevronRightIcon} />
+            <Icon color={'brand.stravaOrange'} w={5} h={5} as={ChevronRightIcon} />
           </Flex>
         </Stack>
       </RouteLink>

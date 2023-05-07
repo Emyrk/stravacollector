@@ -14,16 +14,14 @@ export const AthleteAvatarDropdown: FC<{
   athlete: AthleteSummary
 }> = ({ athlete }) => {
 
-  return <Menu>
+  return <Menu  placement={'bottom-end'}>
     {({ isOpen }) => (<>
-      {/* as={Button} rightIcon={<ChevronDownIcon />} */}
       <MenuButton
         rounded={'full'}
         variant={'link'}
         as={Button}
         rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
       >
-        {/* <Flex alignItems={"center"}> */}
         <AthleteAvatar
           firstName={athlete.firstname}
           lastName={athlete.lastname}
@@ -33,12 +31,6 @@ export const AthleteAvatarDropdown: FC<{
           hugelCount={athlete.hugel_count}
           size="lg"
         />
-        {/* {({ isOpen }) => (
-          <>
-            {isOpen && <ChevronDownIcon boxSize={9} />}
-          </>
-        )} */}
-        {/* </Flex> */}
       </MenuButton>
       <MenuList alignItems={'center'}>
         <Center>
