@@ -554,12 +554,12 @@ const getAthleteLoginFull = `-- name: GetAthleteLoginFull :one
 SELECT
     athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id,
     athletes.id, athletes.summit, athletes.username, athletes.firstname, athletes.lastname, athletes.sex, athletes.city, athletes.state, athletes.country, athletes.follow_count, athletes.friend_count, athletes.measurement_preference, athletes.ftp, athletes.weight, athletes.clubs, athletes.created_at, athletes.updated_at, athletes.fetched_at, athletes.profile_pic_link, athletes.profile_pic_link_medium,
-    athlete_hugel_count.count AS hugel_count
+    COALESCE(athlete_hugel_count.count, 0) AS hugel_count
 FROM
     athlete_logins
 INNER JOIN
     athletes ON athlete_logins.athlete_id = athletes.id
-INNER JOIN
+LEFT JOIN
 	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
 WHERE
 	athlete_logins.athlete_id = $1
