@@ -33,7 +33,7 @@ import {
   HamburgerIcon,
   RepeatIcon,
 } from '@chakra-ui/icons';
-import { StravaConnect } from './StravaConnect';
+import { StravaConnectOrUser } from './StravaConnect';
 import { useAuthenticated } from '../../contexts/Authenticated';
 import { getErrorMessage, getErrorDetail } from '../../api/rest';
 import React, { useEffect } from 'react';
@@ -48,22 +48,20 @@ const Navbar: React.FC = () => {
   const theme = useTheme()
 
   return <>
-    <Flex w='100%' maxW={'7xl'} m={'1rem auto 0'} justifyContent='space-between' alignItems={'center'} p={3} pb={0}>
+    <Flex w='100%'  m={'1rem auto 0'} justifyContent='space-between' alignItems={'center'} p={3} pb={0}>
       <Box>
         <RouteLink to="/">
           {/* https://chakra-ui.com/docs/components/image/usage */}
-          <Image maxHeight={"80px"} src="/logos/LogoTypeColorSquare.png" alt="Hugel Ranker" display={{ base: 'block', md: 'none' }} />
-          <Image maxHeight={"80px"} src="/logos/LogoTypeColor.png" alt="Hugel Ranker" display={{ base: 'none', md: 'block' }} />
+          <Image maxHeight={"80px"} src="/logos/Logomark.png" alt="Hugel Ranker" display={{ base: 'block', md: 'none' }} />
+          <Image maxHeight={"80px"} src="/logos/LongDasHugelWhite.png" alt="Hugel Ranker" display={{ base: 'none', md: 'block' }} />
         </RouteLink>
       </Box>
 
       <Flex alignItems={'center'} gap={2} marginLeft={"auto"}>
-        {/* <ColorModeSwitcher display={{ base: 'none', md: 'none' }} justifySelf="flex-end" /> */}
         <DesktopNav display={{ base: 'none', md: 'block' }} />
-        <StravaConnect />
+        <StravaConnectOrUser />
         <MobileNav2 display={{ base: 'block', md: 'none' }} />
       </Flex>
-      {/* <ColorModeSwitcher display={{ base: 'none', md: 'block' }} justifySelf="flex-end" /> */}
     </Flex>
     <MobileNav display={{ base: 'block', md: 'none' }} />
   </>

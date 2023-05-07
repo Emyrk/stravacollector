@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 
 
-export const StravaConnect: React.FC<{
+export const StravaConnectOrUser: React.FC<{
   styleProps?: LinkProps
 }> = ({ styleProps }) => {
   const { authenticatedUser, isFetched: athleteFetched } = useAuthenticated()

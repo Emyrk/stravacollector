@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { AthleteSummary } from "../../api/typesGenerated"
-import { Text, Menu, MenuList, MenuItem, MenuButton, Flex, Button, useTheme, Container, Link } from "@chakra-ui/react"
+import { Text, Menu, MenuDivider, MenuList, MenuItem, MenuButton, Flex, Button, useTheme, Center, Container, Link } from "@chakra-ui/react"
 import { AthleteAvatar } from "../AthleteAvatar/AthleteAvatar"
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -18,7 +18,8 @@ export const AthleteAvatarDropdown: FC<{
     {({ isOpen }) => (<>
       {/* as={Button} rightIcon={<ChevronDownIcon />} */}
       <MenuButton
-        variant="none"
+        rounded={'full'}
+        variant={'link'}
         as={Button}
         rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
       >
@@ -39,17 +40,33 @@ export const AthleteAvatarDropdown: FC<{
         )} */}
         {/* </Flex> */}
       </MenuButton>
-      <MenuList>
+      <MenuList alignItems={'center'}>
+        <Center>
+          <AthleteAvatar
+            firstName={athlete.firstname}
+            lastName={athlete.lastname}
+            athleteID={athlete.athlete_id}
+            username={athlete.username}
+            profilePicLink={athlete.profile_pic_link}
+            hugelCount={athlete.hugel_count}
+            size="2xl"
+          />
+        </Center>
+        <br />
+        <Center>
+          <p>{athlete.firstname} {athlete.lastname}</p>
+        </Center>
+        <MenuDivider />
+        <MenuItem>
+          <FontAwesomeIcon icon={faGear} />
+          <Container paddingLeft={"10px"}>Settings</Container>
+        </MenuItem>
         <Link href="/logout" style={{ textDecoration: 'none' }}>
           <MenuItem>
             <FontAwesomeIcon icon={faArrowRightFromBracket} />
             <Text as="span" paddingLeft={"10px"}>Logout</Text>
           </MenuItem>
         </Link>
-        <MenuItem>
-          <FontAwesomeIcon icon={faGear} />
-          <Container paddingLeft={"10px"}>Settings</Container>
-        </MenuItem>
       </MenuList>
     </>
     )}
