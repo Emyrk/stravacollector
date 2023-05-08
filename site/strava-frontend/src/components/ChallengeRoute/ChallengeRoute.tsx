@@ -74,16 +74,34 @@ export const ChallengeRoute: FC<{
   const mapboxAccessToken = "pk.eyJ1IjoiZW15cmsiLCJhIjoiY2wweW93ZnYzMGp0OTNvbzN5a2VvNWVldyJ9.QyM0MUn75YqHqMUvMlMaag"
   const mapboxStyleID = "clhebqdem028w01p85pnzcsch"
   const mapboxUsername = "emyrk"
-  // const center = segmentsData.reduce((acc, segment) => {
-  //   const points = decode(segment.map.polyline)
-  //   const center = points.reduce((acc, point) => {
-  //     return [acc[0] + point[0], acc[1] + point[1]]
-  //   }, [0, 0])
-  //   return [acc[0] + center[0], acc[1] + center[1]]
-  // }, [0, 0])
+
+  // Calculate the center of the route
+  const sum = segmentsData.reduce((acc, segment) => {
+    const points = decode(segment.map.polyline)
+    const sum = points.reduce((acc, point) => {
+      return [acc[0] + point[0], acc[1] + point[1]]
+    }, [0, 0])
+    const center = [sum[0] / points.length, sum[1] / points.length]
+
+    return [acc[0] + center[0], acc[1] + center[1]]
+  }, [0, 0])
+  const center:[number, number] = [sum[0] / segmentsData.length, sum[1] / segmentsData.length]
+  // Calculate the bounds of the route
+  const bounds:[[number, number], [number, number]] = segmentsData.reduce((acc, segment) => {
+    const points = decode(segment.map.polyline)
+
+    const min = points.reduce((acc, point) => {
+      return [Math.min(acc[0], point[0]), Math.min(acc[1], point[1])]
+    }, [360, 360])
+    const max = points.reduce((acc, point) => {
+      return [Math.max(acc[0], point[0]), Math.max(acc[1], point[1])]
+    }, [-360, -360])
+
+    return [[Math.min(acc[0][0], min[0]), Math.min(acc[0][1], min[1])], [Math.max(acc[1][0], max[0]), Math.max(acc[1][1], max[1])]]
+  }, [[360, 360], [-360, -360]])
+  console.log(bounds)
 
   //mapbox://styles/emyrk/clhe4rd8l027g01pa3bdh5u4v
-
   // https://www.paigeniedringhaus.com/blog/render-multiple-colored-lines-on-a-react-map-with-polylines
   // pk.eyJ1IjoiZW15cmsiLCJhIjoiY2xoZTR6YjAxMWh0ODNqbzc5NjRxdzBxbCJ9._SlRHXQG5-DqZTucbZUagA
   // https://api.mapbox.com/styles/v1/emyrk/clhe4rd8l027g01pa3bdh5u4v.html?title=view&access_token=pk.eyJ1IjoiZW15cmsiLCJhIjoiY2xoZTR6YjAxMWh0ODNqbzc5NjRxdzBxbCJ9._SlRHXQG5-DqZTucbZUagA&zoomwheel=true&fresh=true#7.5/42.2/9.1
@@ -99,8 +117,8 @@ export const ChallengeRoute: FC<{
     <Flex w="100%" flexDirection="column" alignItems={"center"} textAlign={"center"} pt={"2em"}>
       <MapContainer 
       ref={mapRef} style={{ zIndex: 0, borderRadius:"10px", height: "650px", width: "80%" }} 
-      center={[30.349426, -97.774007]} zoom={12}
-      maxBounds={[[30.014037, -98.181035], [30.859113, -97.179963]]}
+      center={center} zoom={12}
+      maxBounds={bounds}
       >
         <MapController />
         <TileLayer 
