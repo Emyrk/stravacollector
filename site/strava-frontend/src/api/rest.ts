@@ -64,6 +64,19 @@ export const getRoute = async (
   }
 }
 
+export const getDetailedSegments = async (
+  segments: string[]
+): Promise<
+  TypesGen.DetailedSegment[] | undefined
+> => {
+  try {
+    const response = await axios.post<TypesGen.DetailedSegment[]>(`/api/v1/segments`, segments)
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
 export const getHugelSegments = async (): Promise<
   TypesGen.CompetitiveRoute | undefined
 > => {

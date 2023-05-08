@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { AthleteSummary } from "../../api/typesGenerated";
+import { AthleteSummary, DetailedSegment } from "../../api/typesGenerated";
 import { Avatar, AvatarBadge, AvatarProps, Box, Flex, Heading, Text } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
-import { getErrorMessage, getHugelLeaderBoard, getRoute } from "../../api/rest";
+import { getDetailedSegments, getErrorMessage, getHugelLeaderBoard, getRoute } from "../../api/rest";
 import { NotFound } from "../../pages/404/404";
 import { useQuery } from "@tanstack/react-query";
 
@@ -23,24 +23,34 @@ export const ChallengeRoute: FC<{
     enabled: !!name,
   })
   
+  const {
+    data: segmentsData,
+    error: segmentsError,
+    isLoading: segmentsLoading,
+    isFetched: segmentsFetched,
+  } = useQuery({
+    queryKey: ["hugel-segments", name],
+    queryFn: () => getDetailedSegments(routeData?.segments.map(e => e.id) || []),
+    enabled: !!name && !!routeData,
+  })
+
   if(!name) {
     return <NotFound />
   }
 
 
-  if(routeLoading) {
+  if(routeLoading || segmentsLoading) {
     return <Loading />
   }
 
-  if(routeError) {
+  if(routeError || segmentsError) {
     return <Text>{getErrorMessage(routeError, "route failed to load")}</Text>
   }
 
-  if(!routeData) {
+  if(!routeData || !segmentsData) {
     return <NotFound />
   }
 
-  console.log(routeData)  
   return <>
   <Flex w='100%' maxW={'7xl'} m={'1rem auto 0'} flexDirection="column">
     <Flex w="100%" justifyContent={"center"} alignItems={"center"} textAlign="center">
@@ -50,9 +60,12 @@ export const ChallengeRoute: FC<{
       </Flex>
     </Flex>
 
-    <Flex w="50%" flexDirection="column" >
-        {Array.from({ length: 20 }).map(e =>
-          <SegmentCard />
+    <Flex w="100%" flexDirection="column" >
+      Map here
+    </Flex>
+    <Flex w="100%" flexDirection="column" >
+        {segmentsData.map(segment =>
+          <SegmentCard key={segment.id} segment={segment}/>
         )} 
     </Flex>
   </Flex>
@@ -60,9 +73,11 @@ export const ChallengeRoute: FC<{
   </>
 }
 
-const SegmentCard: FC<{}> = ({}) => {
+const SegmentCard: FC<{
+  segment: DetailedSegment
+}> = ({segment}) => {
   return <Box m={1} bg="lightblue" width="100%" height="2em">
-    asd
+    {segment.name}
     </Box>
 }
 
