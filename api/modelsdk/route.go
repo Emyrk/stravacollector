@@ -15,7 +15,7 @@ type SegmentSummary struct {
 }
 
 type DetailedSegment struct {
-	ID            StringInt     `json:"id"`
+	ID            StringInt `json:"id"`
 	Name          string    `json:"name"`
 	ActivityType  string    `json:"activity_type"`
 	Distance      float64   `json:"distance"`
@@ -36,7 +36,7 @@ type DetailedSegment struct {
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
 	TotalElevationGain float64   `json:"total_elevation_gain"`
-	MapID              Map       `json:"map_id"`
+	Map                Map       `json:"map"`
 	TotalEffortCount   int32     `json:"total_effort_count"`
 	TotalAthleteCount  int32     `json:"total_athlete_count"`
 	TotalStarCount     int32     `json:"total_star_count"`

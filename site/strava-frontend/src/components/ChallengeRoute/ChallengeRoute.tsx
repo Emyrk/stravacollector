@@ -1,10 +1,25 @@
 import { FC } from "react";
 import { AthleteSummary, DetailedSegment } from "../../api/typesGenerated";
-import { Avatar, AvatarBadge, AvatarProps, Box, Flex, Heading, Text } from "@chakra-ui/react";
+import { Image, Avatar, AvatarBadge, AvatarProps, Box, Flex, Heading, Text, Link } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { getDetailedSegments, getErrorMessage, getHugelLeaderBoard, getRoute } from "../../api/rest";
 import { NotFound } from "../../pages/404/404";
 import { useQuery } from "@tanstack/react-query";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  CircleMarker,
+  Circle,
+  Polyline,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
+import "leaflet-defaulticon-compatibility";
+import { decode } from "@mapbox/polyline";
+import { faCirclePlay } from '@fortawesome/free-solid-svg-icons'
+import { DistanceToLocal } from "../../lib/Distance/Distance";
 
 export const ChallengeRoute: FC<{
 
@@ -51,6 +66,16 @@ export const ChallengeRoute: FC<{
     return <NotFound />
   }
 
+
+  const mapboxAccessToken = "pk.eyJ1IjoiZW15cmsiLCJhIjoiY2wweW93ZnYzMGp0OTNvbzN5a2VvNWVldyJ9.QyM0MUn75YqHqMUvMlMaag"
+  const mapboxStyleID = "clhebqdem028w01p85pnzcsch"
+  const mapboxUsername = "emyrk"
+
+    //mapbox://styles/emyrk/clhe4rd8l027g01pa3bdh5u4v
+
+  // https://www.paigeniedringhaus.com/blog/render-multiple-colored-lines-on-a-react-map-with-polylines
+  // pk.eyJ1IjoiZW15cmsiLCJhIjoiY2xoZTR6YjAxMWh0ODNqbzc5NjRxdzBxbCJ9._SlRHXQG5-DqZTucbZUagA
+  // https://api.mapbox.com/styles/v1/emyrk/clhe4rd8l027g01pa3bdh5u4v.html?title=view&access_token=pk.eyJ1IjoiZW15cmsiLCJhIjoiY2xoZTR6YjAxMWh0ODNqbzc5NjRxdzBxbCJ9._SlRHXQG5-DqZTucbZUagA&zoomwheel=true&fresh=true#7.5/42.2/9.1
   return <>
   <Flex w='100%' maxW={'7xl'} m={'1rem auto 0'} flexDirection="column">
     <Flex w="100%" justifyContent={"center"} alignItems={"center"} textAlign="center">
@@ -60,8 +85,32 @@ export const ChallengeRoute: FC<{
       </Flex>
     </Flex>
 
-    <Flex w="100%" flexDirection="column" >
-      Map here
+    <Flex w="100%" flexDirection="column" alignItems={"center"} textAlign={"center"}>
+      <MapContainer style={{ borderRadius:"10px", height: "650px", width: "80%" }} center={[30.349426, -97.774007]} zoom={12}>
+        <TileLayer 
+        attribution="Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors, <a href=&quot;https://creativecommons.org/licenses/by-sa/2.0/&quot;>CC-BY-SA</a>, Imagery &copy; <a href=&quot;https://www.mapbox.com/&quot;>Mapbox</a>"
+        url={`https://api.mapbox.com/styles/v1/${mapboxUsername}/${mapboxStyleID}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`}
+        // url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZW15cmsiLCJhIjoiY2wweW93ZnYzMGp0OTNvbzN5a2VvNWVldyJ9.QyM0MUn75YqHqMUvMlMaag`}
+        />
+        {segmentsData.map(segment =>{
+          const points = decode(segment.map_id.polyline)
+          const circleRadius = 5
+          const popUp = <Popup>
+              {segment.name}
+          </Popup>
+          return <Box key={segment.id}>
+            <Polyline weight={3} key={segment.id} pathOptions={{ color: "#fc4c02" }} positions={points}>
+              {popUp}
+            </Polyline>
+            <CircleMarker center={points[0]} radius={circleRadius} color="green">
+              {popUp}
+            </CircleMarker>
+            <CircleMarker center={points[points.length-1]} radius={circleRadius} color="red">
+              {popUp}
+            </CircleMarker>
+          </Box>
+        })} 
+      </MapContainer>
     </Flex>
     <Flex w="100%" flexDirection="column" >
         {segmentsData.map(segment =>
@@ -76,9 +125,19 @@ export const ChallengeRoute: FC<{
 const SegmentCard: FC<{
   segment: DetailedSegment
 }> = ({segment}) => {
-  return <Box m={1} bg="lightblue" width="100%" height="2em">
-    {segment.name}
-    </Box>
+  //  bg="rgba(248,248,248,0.3)"
+  return <Flex 
+    alignItems={"center"} textAlign={"center"}
+    m={1} bg="rgba(248,248,248,0.3)" width="100%" borderRadius={"4px"} p={0}
+  >
+    <Link href={`https://strava.com/segments/${segment.id}`} target="_blank" height={"4em"} p={"10px"}>
+      <Image src={"/logos/stravalogo.png"} height="100%"/>
+    </Link>
+    <Image src={segment.elevation_profile} p={"10px"}/>
+    <Text fontSize={"1em"} fontWeight={"bold"} p={"10px"}>{segment.name}</Text>
+    <Text>{` Distance: ${Math.floor(DistanceToLocal(segment.distance)*10)/10} mi | Avg Grade: ${segment.average_grade}%`}</Text>
+
+    </Flex>
 }
 
 export const Loading: FC = () => {
