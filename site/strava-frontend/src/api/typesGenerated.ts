@@ -51,7 +51,7 @@ export interface DetailedSegment {
   readonly created_at: string
   readonly updated_at: string
   readonly total_elevation_gain: number
-  readonly map_id: Map
+  readonly map: Map
   readonly total_effort_count: number
   readonly total_athlete_count: number
   readonly total_star_count: number

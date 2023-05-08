@@ -93,7 +93,7 @@ export const ChallengeRoute: FC<{
         // url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZW15cmsiLCJhIjoiY2wweW93ZnYzMGp0OTNvbzN5a2VvNWVldyJ9.QyM0MUn75YqHqMUvMlMaag`}
         />
         {segmentsData.map(segment =>{
-          const points = decode(segment.map_id.polyline)
+          const points = decode(segment.map.polyline)
           const circleRadius = 5
           const popUp = <Popup>
               {segment.name}
@@ -130,6 +130,7 @@ const SegmentCard: FC<{
     alignItems={"center"} textAlign={"center"}
     m={"0.5em"} bg="rgba(248,248,248,0.3)" width="100%" borderRadius={"4px"} p={0}
   >
+    {/* TODO: Add a checkmark if the athlete has done the segment or not */}
     <Link href={`https://strava.com/segments/${segment.id}`} target="_blank" height={"4em"} p={"10px"}>
       <Image src={"/logos/stravalogo.png"} height="100%"/>
     </Link>
