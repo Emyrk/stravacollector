@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useRef } from "react";
 import { AthleteSummary, DetailedSegment } from "../../api/typesGenerated";
 import { Image, Avatar, AvatarBadge, AvatarProps, Box, Flex, Heading, Text, Link } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
@@ -25,6 +25,7 @@ export const ChallengeRoute: FC<{
 
 }> = ({  }) => {
   const {name} = useParams()
+  const mapRef = useRef(null);
   
   const queryKey = ["hugel-leaderboard", name]
   const {
@@ -71,7 +72,7 @@ export const ChallengeRoute: FC<{
   const mapboxStyleID = "clhebqdem028w01p85pnzcsch"
   const mapboxUsername = "emyrk"
 
-    //mapbox://styles/emyrk/clhe4rd8l027g01pa3bdh5u4v
+  //mapbox://styles/emyrk/clhe4rd8l027g01pa3bdh5u4v
 
   // https://www.paigeniedringhaus.com/blog/render-multiple-colored-lines-on-a-react-map-with-polylines
   // pk.eyJ1IjoiZW15cmsiLCJhIjoiY2xoZTR6YjAxMWh0ODNqbzc5NjRxdzBxbCJ9._SlRHXQG5-DqZTucbZUagA
@@ -86,7 +87,7 @@ export const ChallengeRoute: FC<{
     </Flex>
 
     <Flex w="100%" flexDirection="column" alignItems={"center"} textAlign={"center"} pt={"2em"}>
-      <MapContainer style={{ zIndex: 0, borderRadius:"10px", height: "650px", width: "80%" }} center={[30.349426, -97.774007]} zoom={12}>
+      <MapContainer ref={mapRef} style={{ zIndex: 0, borderRadius:"10px", height: "650px", width: "80%" }} center={[30.349426, -97.774007]} zoom={12}>
         <TileLayer 
         attribution="Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors, <a href=&quot;https://creativecommons.org/licenses/by-sa/2.0/&quot;>CC-BY-SA</a>, Imagery &copy; <a href=&quot;https://www.mapbox.com/&quot;>Mapbox</a>"
         url={`https://api.mapbox.com/styles/v1/${mapboxUsername}/${mapboxStyleID}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`}
@@ -127,6 +128,7 @@ const SegmentCard: FC<{
 }> = ({segment}) => {
   //  bg="rgba(248,248,248,0.3)"
   return <Flex 
+    _hover={{ bg: "rgba(248,248,248,0.5)" }}
     alignItems={"center"} textAlign={"center"}
     m={"0.5em"} bg="rgba(248,248,248,0.3)" width="100%" borderRadius={"4px"} p={0}
   >
