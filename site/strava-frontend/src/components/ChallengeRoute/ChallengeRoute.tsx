@@ -86,7 +86,7 @@ export const ChallengeRoute: FC<{
     </Flex>
 
     <Flex w="100%" flexDirection="column" alignItems={"center"} textAlign={"center"} pt={"2em"}>
-      <MapContainer style={{ borderRadius:"10px", height: "650px", width: "80%" }} center={[30.349426, -97.774007]} zoom={12}>
+      <MapContainer style={{ zIndex: 0, borderRadius:"10px", height: "650px", width: "80%" }} center={[30.349426, -97.774007]} zoom={12}>
         <TileLayer 
         attribution="Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors, <a href=&quot;https://creativecommons.org/licenses/by-sa/2.0/&quot;>CC-BY-SA</a>, Imagery &copy; <a href=&quot;https://www.mapbox.com/&quot;>Mapbox</a>"
         url={`https://api.mapbox.com/styles/v1/${mapboxUsername}/${mapboxStyleID}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`}
