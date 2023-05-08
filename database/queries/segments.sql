@@ -1,6 +1,16 @@
 -- name: LoadedSegments :many
 SELECT id, fetched_at FROM segments;
 
+-- name: GetSegments :many
+SELECT
+    sqlc.embed(segments), sqlc.embed(maps)
+FROM
+    segments
+LEFT JOIN
+	maps ON segments.map_id = maps.id
+WHERE segments.id = ANY(@segment_ids::bigint[])
+;
+
 -- name: UpsertSegmentEffort :one
 INSERT INTO
 	segment_efforts(

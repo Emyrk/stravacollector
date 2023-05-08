@@ -1336,6 +1336,74 @@ func (q *sqlQuerier) BestRouteEfforts(ctx context.Context, expectedSegments []in
 	return items, nil
 }
 
+const getSegments = `-- name: GetSegments :many
+SELECT
+    segments.id, segments.name, segments.activity_type, segments.distance, segments.average_grade, segments.maximum_grade, segments.elevation_high, segments.elevation_low, segments.start_latlng, segments.end_latlng, segments.elevation_profile, segments.climb_category, segments.city, segments.state, segments.country, segments.private, segments.hazardous, segments.created_at, segments.updated_at, segments.total_elevation_gain, segments.map_id, segments.total_effort_count, segments.total_athlete_count, segments.total_star_count, segments.fetched_at, maps.id, maps.polyline, maps.summary_polyline, maps.updated_at
+FROM
+    segments
+LEFT JOIN
+	maps ON segments.map_id = maps.id
+WHERE segments.id = ANY($1::bigint[])
+`
+
+type GetSegmentsRow struct {
+	Segment Segment `db:"segment" json:"segment"`
+	Map     Map     `db:"map" json:"map"`
+}
+
+func (q *sqlQuerier) GetSegments(ctx context.Context, segmentIds []int64) ([]GetSegmentsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getSegments, pq.Array(segmentIds))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetSegmentsRow
+	for rows.Next() {
+		var i GetSegmentsRow
+		if err := rows.Scan(
+			&i.Segment.ID,
+			&i.Segment.Name,
+			&i.Segment.ActivityType,
+			&i.Segment.Distance,
+			&i.Segment.AverageGrade,
+			&i.Segment.MaximumGrade,
+			&i.Segment.ElevationHigh,
+			&i.Segment.ElevationLow,
+			&i.Segment.StartLatlng,
+			&i.Segment.EndLatlng,
+			&i.Segment.ElevationProfile,
+			&i.Segment.ClimbCategory,
+			&i.Segment.City,
+			&i.Segment.State,
+			&i.Segment.Country,
+			&i.Segment.Private,
+			&i.Segment.Hazardous,
+			&i.Segment.CreatedAt,
+			&i.Segment.UpdatedAt,
+			&i.Segment.TotalElevationGain,
+			&i.Segment.MapID,
+			&i.Segment.TotalEffortCount,
+			&i.Segment.TotalAthleteCount,
+			&i.Segment.TotalStarCount,
+			&i.Segment.FetchedAt,
+			&i.Map.ID,
+			&i.Map.Polyline,
+			&i.Map.SummaryPolyline,
+			&i.Map.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const loadedSegments = `-- name: LoadedSegments :many
 SELECT id, fetched_at FROM segments
 `
@@ -1420,8 +1488,8 @@ type UpsertSegmentParams struct {
 	MaximumGrade       float64   `db:"maximum_grade" json:"maximum_grade"`
 	ElevationHigh      float64   `db:"elevation_high" json:"elevation_high"`
 	ElevationLow       float64   `db:"elevation_low" json:"elevation_low"`
-	StartLatlng        []float64 `db:"start_latlng" json:"start_latlng"`
-	EndLatlng          []float64 `db:"end_latlng" json:"end_latlng"`
+	StartLatlng        Floats    `db:"start_latlng" json:"start_latlng"`
+	EndLatlng          Floats    `db:"end_latlng" json:"end_latlng"`
 	ElevationProfile   string    `db:"elevation_profile" json:"elevation_profile"`
 	ClimbCategory      int32     `db:"climb_category" json:"climb_category"`
 	City               string    `db:"city" json:"city"`
@@ -1448,8 +1516,8 @@ func (q *sqlQuerier) UpsertSegment(ctx context.Context, arg UpsertSegmentParams)
 		arg.MaximumGrade,
 		arg.ElevationHigh,
 		arg.ElevationLow,
-		pq.Array(arg.StartLatlng),
-		pq.Array(arg.EndLatlng),
+		arg.StartLatlng,
+		arg.EndLatlng,
 		arg.ElevationProfile,
 		arg.ClimbCategory,
 		arg.City,
@@ -1475,8 +1543,8 @@ func (q *sqlQuerier) UpsertSegment(ctx context.Context, arg UpsertSegmentParams)
 		&i.MaximumGrade,
 		&i.ElevationHigh,
 		&i.ElevationLow,
-		pq.Array(&i.StartLatlng),
-		pq.Array(&i.EndLatlng),
+		&i.StartLatlng,
+		&i.EndLatlng,
 		&i.ElevationProfile,
 		&i.ClimbCategory,
 		&i.City,

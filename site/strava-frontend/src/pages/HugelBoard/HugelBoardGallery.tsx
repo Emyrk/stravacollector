@@ -15,6 +15,7 @@ import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar"
 import { DistanceToLocal, DistanceToLocalElevation } from "../../lib/Distance/Distance"
 import { CalculateActivity } from "./CalcActivity"
 
+// https://chakra-templates.dev/components/cards
 export const HugelBoardGallery: FC<HugelBoardProps> = ({
   data, error, isLoading, isFetched
 }) => {

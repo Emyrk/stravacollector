@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"flag"
 	"net/http"
+
+	"github.com/Emyrk/strava/api/modelsdk"
 )
 
 func Write(_ context.Context, rw http.ResponseWriter, status int, response interface{}) {
@@ -28,4 +30,17 @@ func Write(_ context.Context, rw http.ResponseWriter, status int, response inter
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+// Read decodes JSON from the HTTP request into the value provided.
+func Read(ctx context.Context, rw http.ResponseWriter, r *http.Request, value interface{}) bool {
+	err := json.NewDecoder(r.Body).Decode(value)
+	if err != nil {
+		Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+			Message: "Request body must be valid JSON.",
+			Detail:  err.Error(),
+		})
+		return false
+	}
+	return true
 }

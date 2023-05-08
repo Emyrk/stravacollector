@@ -29,6 +29,35 @@ export interface CompetitiveRoute {
   readonly segments: SegmentSummary[]
 }
 
+// From codersdk/route.go
+export interface DetailedSegment {
+  readonly id: string
+  readonly name: string
+  readonly activity_type: string
+  readonly distance: number
+  readonly average_grade: number
+  readonly maximum_grade: number
+  readonly elevation_high: number
+  readonly elevation_low: number
+  readonly start_latlng: number[]
+  readonly end_latlng: number[]
+  readonly elevation_profile: string
+  readonly climb_category: number
+  readonly city: string
+  readonly state: string
+  readonly country: string
+  readonly private: boolean
+  readonly hazardous: boolean
+  readonly created_at: string
+  readonly updated_at: string
+  readonly total_elevation_gain: number
+  readonly map_id: Map
+  readonly total_effort_count: number
+  readonly total_athlete_count: number
+  readonly total_star_count: number
+  readonly fetched_at: string
+}
+
 // From codersdk/athlete.go
 export interface HugelLeaderBoard {
   readonly personal_best?: HugelLeaderBoardActivity
@@ -50,6 +79,14 @@ export interface HugelLeaderBoardActivity {
   readonly activity_elapsed_time: number
   readonly activity_start_date: string
   readonly activity_total_elevation_gain: number
+}
+
+// From codersdk/map.go
+export interface Map {
+  readonly id: string
+  readonly polyline: string
+  readonly summary_polyline: string
+  readonly updated_at: string
 }
 
 // From codersdk/athlete.go

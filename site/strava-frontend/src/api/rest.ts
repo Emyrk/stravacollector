@@ -51,6 +51,19 @@ export const getSuperHugelLeaderBoard = async (): Promise<
   }
 }
 
+export const getRoute = async (
+  routeName: string
+): Promise<
+  TypesGen.CompetitiveRoute | undefined
+> => {
+  try {
+    const response = await axios.get<TypesGen.CompetitiveRoute>(`/api/v1/route/${routeName}`)
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
 export const getHugelSegments = async (): Promise<
   TypesGen.CompetitiveRoute | undefined
 > => {

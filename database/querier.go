@@ -23,6 +23,7 @@ type sqlcQuerier interface {
 	GetAthleteLoginFull(ctx context.Context, athleteID int64) (GetAthleteLoginFullRow, error)
 	GetAthleteNeedsLoad(ctx context.Context) (GetAthleteNeedsLoadRow, error)
 	GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error)
+	GetSegments(ctx context.Context, segmentIds []int64) ([]GetSegmentsRow, error)
 	HugelLeaderboard(ctx context.Context, athleteID interface{}) ([]HugelLeaderboardRow, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
 	LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, error)

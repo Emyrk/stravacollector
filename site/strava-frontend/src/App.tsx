@@ -34,6 +34,8 @@ import { FC } from "react";
 import { NotFound } from "./pages/404/404";
 import { SignedOut } from "./pages/SignedOut/SignedOut";
 import { SuperHugelBoard } from "./pages/HugelBoard/SuperHugelBoard";
+import { Activity } from "./components/Activity/Activity";
+import { ChallengeRoute } from "./components/ChallengeRoute/ChallengeRoute";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,6 +60,8 @@ export const App = () => {
                 <Route path="/" element={<Landing />} />
                 <Route path="/hugelboard" element={<HugelBoard />} />
                 <Route path="/superhugelboard" element={<SuperHugelBoard />} />
+                <Route path="/activity/:activity_id" element={<Activity />} />
+                <Route path="/route/:name" element={<ChallengeRoute />} />
                 <Route path="/signed-out" element={<SignedOut />} />
               </Route>
               <Route path='*' element={<NotFound />} />

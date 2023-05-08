@@ -152,6 +152,9 @@ func (api *API) Routes() chi.Router {
 			r.Route("/route", func(r chi.Router) {
 				r.Get("/{route-name}", api.competitiveRoute)
 			})
+			r.Route("/segments", func(r chi.Router) {
+				r.Post("/", api.getSegments)
+			})
 		})
 		r.NotFound(api.apiNotFound)
 	})

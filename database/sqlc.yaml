@@ -12,3 +12,14 @@ sql:
         emit_db_tags: true
         emit_enum_valid_method: true
         emit_all_enum_values: true
+        overrides:
+          - column: "segments.start_latlng"
+            go_type:
+              import: ""
+              package: ""
+              type: "Floats"
+          - column: "segments.end_latlng"
+            go_type:
+              import: ""
+              package: ""
+              type: "Floats"
