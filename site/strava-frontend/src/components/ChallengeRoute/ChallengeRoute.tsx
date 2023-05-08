@@ -71,6 +71,13 @@ export const ChallengeRoute: FC<{
   const mapboxAccessToken = "pk.eyJ1IjoiZW15cmsiLCJhIjoiY2wweW93ZnYzMGp0OTNvbzN5a2VvNWVldyJ9.QyM0MUn75YqHqMUvMlMaag"
   const mapboxStyleID = "clhebqdem028w01p85pnzcsch"
   const mapboxUsername = "emyrk"
+  // const center = segmentsData.reduce((acc, segment) => {
+  //   const points = decode(segment.map.polyline)
+  //   const center = points.reduce((acc, point) => {
+  //     return [acc[0] + point[0], acc[1] + point[1]]
+  //   }, [0, 0])
+  //   return [acc[0] + center[0], acc[1] + center[1]]
+  // }, [0, 0])
 
   //mapbox://styles/emyrk/clhe4rd8l027g01pa3bdh5u4v
 
@@ -87,11 +94,14 @@ export const ChallengeRoute: FC<{
     </Flex>
 
     <Flex w="100%" flexDirection="column" alignItems={"center"} textAlign={"center"} pt={"2em"}>
-      <MapContainer ref={mapRef} style={{ zIndex: 0, borderRadius:"10px", height: "650px", width: "80%" }} center={[30.349426, -97.774007]} zoom={12}>
+      <MapContainer 
+      ref={mapRef} style={{ zIndex: 0, borderRadius:"10px", height: "650px", width: "80%" }} 
+      center={[center[0], center[1]]} zoom={12}
+      maxBounds={[[30.014037, -98.181035], [30.859113, -97.179963]]}
+      >
         <TileLayer 
         attribution="Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors, <a href=&quot;https://creativecommons.org/licenses/by-sa/2.0/&quot;>CC-BY-SA</a>, Imagery &copy; <a href=&quot;https://www.mapbox.com/&quot;>Mapbox</a>"
         url={`https://api.mapbox.com/styles/v1/${mapboxUsername}/${mapboxStyleID}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`}
-        // url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZW15cmsiLCJhIjoiY2wweW93ZnYzMGp0OTNvbzN5a2VvNWVldyJ9.QyM0MUn75YqHqMUvMlMaag`}
         />
         {segmentsData.map(segment =>{
           const points = decode(segment.map.polyline)
