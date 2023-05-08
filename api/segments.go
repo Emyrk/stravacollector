@@ -30,7 +30,7 @@ func (api *API) getSegments(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpapi.Write(ctx, rw, http.StatusNotFound, convertSegmentRows(segments))
+	httpapi.Write(ctx, rw, http.StatusOK, convertSegmentRows(segments))
 }
 
 func convertSegmentRows(rows []database.GetSegmentsRow) []modelsdk.DetailedSegment {
