@@ -96,7 +96,7 @@ export const ChallengeRoute: FC<{
     <Flex w="100%" flexDirection="column" alignItems={"center"} textAlign={"center"} pt={"2em"}>
       <MapContainer 
       ref={mapRef} style={{ zIndex: 0, borderRadius:"10px", height: "650px", width: "80%" }} 
-      center={[center[0], center[1]]} zoom={12}
+      center={[30.349426, -97.774007]} zoom={12}
       maxBounds={[[30.014037, -98.181035], [30.859113, -97.179963]]}
       >
         <TileLayer 
