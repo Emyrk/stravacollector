@@ -13,6 +13,8 @@ import {
   CircleMarker,
   Circle,
   Polyline,
+  useMap,
+  FeatureGroup,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -20,6 +22,7 @@ import "leaflet-defaulticon-compatibility";
 import { decode } from "@mapbox/polyline";
 import { faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 import { DistanceToLocal, DistanceToLocalElevation } from "../../lib/Distance/Distance";
+import { Layer } from "leaflet";
 
 export const ChallengeRoute: FC<{
 
@@ -99,28 +102,31 @@ export const ChallengeRoute: FC<{
       center={[30.349426, -97.774007]} zoom={12}
       maxBounds={[[30.014037, -98.181035], [30.859113, -97.179963]]}
       >
+        <MapController />
         <TileLayer 
         attribution="Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors, <a href=&quot;https://creativecommons.org/licenses/by-sa/2.0/&quot;>CC-BY-SA</a>, Imagery &copy; <a href=&quot;https://www.mapbox.com/&quot;>Mapbox</a>"
         url={`https://api.mapbox.com/styles/v1/${mapboxUsername}/${mapboxStyleID}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`}
         />
-        {segmentsData.map(segment =>{
-          const points = decode(segment.map.polyline)
-          const circleRadius = 5
-          const popUp = <Popup>
-              {segment.name}
-          </Popup>
-          return <Box key={segment.id}>
-            <Polyline weight={3} key={segment.id} pathOptions={{ color: "#fc4c02" }} positions={points}>
-              {popUp}
-            </Polyline>
-            <CircleMarker center={points[0]} radius={circleRadius} color="green">
-              {popUp}
-            </CircleMarker>
-            <CircleMarker center={points[points.length-1]} radius={circleRadius} color="red">
-              {popUp}
-            </CircleMarker>
-          </Box>
-        })} 
+        <FeatureGroup>
+          {segmentsData.map(segment =>{
+            const points = decode(segment.map.polyline)
+            const circleRadius = 5
+            const popUp = <Popup>
+                {segment.name}
+            </Popup>
+            return <Box key={segment.id}>
+              <Polyline weight={3} key={segment.id} pathOptions={{ color: "#fc4c02" }} positions={points}>
+                {popUp}
+              </Polyline>
+              <CircleMarker center={points[0]} radius={circleRadius} color="green">
+                {popUp}
+              </CircleMarker>
+              <CircleMarker center={points[points.length-1]} radius={circleRadius} color="red">
+                {popUp}
+              </CircleMarker>
+            </Box>
+          })} 
+        </FeatureGroup>
       </MapContainer>
     </Flex>
     <Flex w="100%" flexDirection="column" p="2em">
@@ -131,6 +137,11 @@ export const ChallengeRoute: FC<{
   </Flex>
     
   </>
+}
+
+const MapController: FC<{}> = () => {
+  const mapRef = useMap()
+  return <></>
 }
 
 const SegmentCard: FC<{
