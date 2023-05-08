@@ -63,7 +63,7 @@ func convertSegmentRow(row database.GetSegmentsRow) modelsdk.DetailedSegment {
 		CreatedAt:          row.Segment.CreatedAt,
 		UpdatedAt:          row.Segment.UpdatedAt,
 		TotalElevationGain: row.Segment.TotalElevationGain,
-		MapID:              convertMap(row.Map),
+		Map:                convertMap(row.Map),
 		TotalEffortCount:   row.Segment.TotalEffortCount,
 		TotalAthleteCount:  row.Segment.TotalAthleteCount,
 		TotalStarCount:     row.Segment.TotalStarCount,

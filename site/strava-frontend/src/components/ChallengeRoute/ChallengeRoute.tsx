@@ -19,7 +19,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 import { decode } from "@mapbox/polyline";
 import { faCirclePlay } from '@fortawesome/free-solid-svg-icons'
-import { DistanceToLocal } from "../../lib/Distance/Distance";
+import { DistanceToLocal, DistanceToLocalElevation } from "../../lib/Distance/Distance";
 
 export const ChallengeRoute: FC<{
 
@@ -80,12 +80,12 @@ export const ChallengeRoute: FC<{
   <Flex w='100%' maxW={'7xl'} m={'1rem auto 0'} flexDirection="column">
     <Flex w="100%" justifyContent={"center"} alignItems={"center"} textAlign="center">
       <Flex flexDirection={"column"}>
-        <Heading fontSize={"8em"}>{routeData.display_name}</Heading>
+        <Heading fontSize={"6em"}>{routeData.display_name}</Heading>
         <Text>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum rhoncus in arcu eu luctus. Donec vel risus suscipit, dignissim quam sit amet, blandit nulla. Donec molestie tincidunt odio, ut sodales mi porttitor ut. Cras fermentum vestibulum viverra. Mauris blandit gravida nibh, sit amet viverra risus convallis eget. Donec efficitur commodo luctus. Vestibulum elementum odio arcu, vitae fermentum urna feugiat eu.</Text>
       </Flex>
     </Flex>
 
-    <Flex w="100%" flexDirection="column" alignItems={"center"} textAlign={"center"}>
+    <Flex w="100%" flexDirection="column" alignItems={"center"} textAlign={"center"} pt={"2em"}>
       <MapContainer style={{ borderRadius:"10px", height: "650px", width: "80%" }} center={[30.349426, -97.774007]} zoom={12}>
         <TileLayer 
         attribution="Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors, <a href=&quot;https://creativecommons.org/licenses/by-sa/2.0/&quot;>CC-BY-SA</a>, Imagery &copy; <a href=&quot;https://www.mapbox.com/&quot;>Mapbox</a>"
@@ -112,7 +112,7 @@ export const ChallengeRoute: FC<{
         })} 
       </MapContainer>
     </Flex>
-    <Flex w="100%" flexDirection="column" >
+    <Flex w="100%" flexDirection="column" p="2em">
         {segmentsData.map(segment =>
           <SegmentCard key={segment.id} segment={segment}/>
         )} 
@@ -128,14 +128,14 @@ const SegmentCard: FC<{
   //  bg="rgba(248,248,248,0.3)"
   return <Flex 
     alignItems={"center"} textAlign={"center"}
-    m={1} bg="rgba(248,248,248,0.3)" width="100%" borderRadius={"4px"} p={0}
+    m={"0.5em"} bg="rgba(248,248,248,0.3)" width="100%" borderRadius={"4px"} p={0}
   >
     <Link href={`https://strava.com/segments/${segment.id}`} target="_blank" height={"4em"} p={"10px"}>
       <Image src={"/logos/stravalogo.png"} height="100%"/>
     </Link>
     <Image src={segment.elevation_profile} p={"10px"}/>
     <Text fontSize={"1em"} fontWeight={"bold"} p={"10px"}>{segment.name}</Text>
-    <Text>{` Distance: ${Math.floor(DistanceToLocal(segment.distance)*10)/10} mi | Avg Grade: ${segment.average_grade}%`}</Text>
+    <Text>{` Distance: ${Math.floor(DistanceToLocal(segment.distance)*10)/10} mi | Avg Grade: ${segment.average_grade}% | Elevation Gain: ${Math.floor(DistanceToLocalElevation(segment.total_elevation_gain))} ft`}</Text>
 
     </Flex>
 }
