@@ -365,7 +365,8 @@ const SegmentCard: FC<{
   return (
     <Box
       // bgColor={"#272c35"}
-      bgColor={"#3b3f48"}
+      // bgColor={"#3b3f48"}
+      bg={"linear-gradient(135deg, #3b3f48 0%, #48403b 260%)"}
       height={"170px"}
       width={"350px"}
       borderRadius={"10px"}
