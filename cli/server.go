@@ -149,6 +149,7 @@ func serverCmd() *cobra.Command {
 				return fmt.Errorf("run queue: %w", err)
 			}
 			defer manager.Close()
+			srv.Manager = manager
 
 			hsrv := &http.Server{
 				Addr:    fmt.Sprintf("0.0.0.0:%d", port),
