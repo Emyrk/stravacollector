@@ -32,6 +32,57 @@ LEFT JOIN
 WHERE segments.id = ANY(@segment_ids::bigint[])
 ;
 
+-- name: GetPersonalSegments :many
+-- For authenticated users
+SELECT
+	sqlc.embed(segments),
+	sqlc.embed(maps),
+	sqlc.embed(segment_efforts),
+	COALESCE(starred_segments.starred, false) as starred
+FROM
+	segments
+LEFT JOIN
+	maps ON segments.map_id = maps.id
+LEFT JOIN
+	-- Only for the authenticated user
+	starred_segments
+	    ON segments.id = starred_segments.segment_id AND starred_segments.athlete_id = @athlete_id
+LEFT JOIN LATERAL
+	(
+	    SELECT DISTINCT ON (segment_efforts.athlete_id, segment_efforts.segment_id)
+			*
+	    FROM
+	        segment_efforts
+	    WHERE
+	        athlete_id = @athlete_id AND
+	        segment_id = segments.id
+    	ORDER BY
+			segment_efforts.athlete_id, segment_efforts.segment_id, elapsed_time ASC
+	) segment_efforts ON segment_efforts.segment_id = segments.id
+WHERE segments.id = ANY(@segment_ids::bigint[])
+;
+
+-- name: test :many
+SELECT
+	*
+FROM
+	segments
+		LEFT JOIN
+	maps ON segments.map_id = maps.id
+		LEFT JOIN LATERAL (
+		SELECT DISTINCT ON (segment_efforts.athlete_id, segment_efforts.segment_id)
+			*
+		FROM
+			segment_efforts
+		WHERE
+				athlete_id = 20563755 AND
+				segment_id = segments.id
+		ORDER BY
+			segment_efforts.athlete_id, segment_efforts.segment_id, elapsed_time ASC
+		) segment_effort ON segment_effort.segment_id = segments.id
+
+WHERE segments.id = ANY(ARRAY[628842]);
+
 -- name: UpsertSegmentEffort :one
 INSERT INTO
 	segment_efforts(

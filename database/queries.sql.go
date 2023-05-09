@@ -1336,6 +1336,119 @@ func (q *sqlQuerier) BestRouteEfforts(ctx context.Context, expectedSegments []in
 	return items, nil
 }
 
+const getPersonalSegments = `-- name: GetPersonalSegments :many
+SELECT
+	segments.id, segments.name, segments.activity_type, segments.distance, segments.average_grade, segments.maximum_grade, segments.elevation_high, segments.elevation_low, segments.start_latlng, segments.end_latlng, segments.elevation_profile, segments.climb_category, segments.city, segments.state, segments.country, segments.private, segments.hazardous, segments.created_at, segments.updated_at, segments.total_elevation_gain, segments.map_id, segments.total_effort_count, segments.total_athlete_count, segments.total_star_count, segments.fetched_at,
+	maps.id, maps.polyline, maps.summary_polyline, maps.updated_at,
+	segment_efforts.id, segment_efforts.athlete_id, segment_efforts.segment_id, segment_efforts.name, segment_efforts.elapsed_time, segment_efforts.moving_time, segment_efforts.start_date, segment_efforts.start_date_local, segment_efforts.distance, segment_efforts.start_index, segment_efforts.end_index, segment_efforts.device_watts, segment_efforts.average_watts, segment_efforts.kom_rank, segment_efforts.pr_rank, segment_efforts.updated_at, segment_efforts.activities_id, segment_efforts.id, segment_efforts.athlete_id, segment_efforts.segment_id, segment_efforts.name, segment_efforts.elapsed_time, segment_efforts.moving_time, segment_efforts.start_date, segment_efforts.start_date_local, segment_efforts.distance, segment_efforts.start_index, segment_efforts.end_index, segment_efforts.device_watts, segment_efforts.average_watts, segment_efforts.kom_rank, segment_efforts.pr_rank, segment_efforts.updated_at, segment_efforts.activities_id,
+	COALESCE(starred_segments.starred, false) as starred
+FROM
+	segments
+LEFT JOIN
+	maps ON segments.map_id = maps.id
+LEFT JOIN
+	-- Only for the authenticated user
+	starred_segments
+	    ON segments.id = starred_segments.segment_id AND starred_segments.athlete_id = $1
+LEFT JOIN LATERAL
+	(
+	    SELECT DISTINCT ON (segment_efforts.athlete_id, segment_efforts.segment_id)
+			id, athlete_id, segment_id, name, elapsed_time, moving_time, start_date, start_date_local, distance, start_index, end_index, device_watts, average_watts, kom_rank, pr_rank, updated_at, activities_id
+	    FROM
+	        segment_efforts
+	    WHERE
+	        athlete_id = $1 AND
+	        segment_id = segments.id
+    	ORDER BY
+			segment_efforts.athlete_id, segment_efforts.segment_id, elapsed_time ASC
+	) segment_efforts ON segment_efforts.segment_id = segments.id
+WHERE segments.id = ANY($2::bigint[])
+`
+
+type GetPersonalSegmentsParams struct {
+	AthleteID  int64   `db:"athlete_id" json:"athlete_id"`
+	SegmentIds []int64 `db:"segment_ids" json:"segment_ids"`
+}
+
+type GetPersonalSegmentsRow struct {
+	Segment       Segment       `db:"segment" json:"segment"`
+	Map           Map           `db:"map" json:"map"`
+	SegmentEffort SegmentEffort `db:"segmenteffort" json:"segmenteffort"`
+	Starred       bool          `db:"starred" json:"starred"`
+}
+
+// For authenticated users
+func (q *sqlQuerier) GetPersonalSegments(ctx context.Context, arg GetPersonalSegmentsParams) ([]GetPersonalSegmentsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPersonalSegments, arg.AthleteID, pq.Array(arg.SegmentIds))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPersonalSegmentsRow
+	for rows.Next() {
+		var i GetPersonalSegmentsRow
+		if err := rows.Scan(
+			&i.Segment.ID,
+			&i.Segment.Name,
+			&i.Segment.ActivityType,
+			&i.Segment.Distance,
+			&i.Segment.AverageGrade,
+			&i.Segment.MaximumGrade,
+			&i.Segment.ElevationHigh,
+			&i.Segment.ElevationLow,
+			&i.Segment.StartLatlng,
+			&i.Segment.EndLatlng,
+			&i.Segment.ElevationProfile,
+			&i.Segment.ClimbCategory,
+			&i.Segment.City,
+			&i.Segment.State,
+			&i.Segment.Country,
+			&i.Segment.Private,
+			&i.Segment.Hazardous,
+			&i.Segment.CreatedAt,
+			&i.Segment.UpdatedAt,
+			&i.Segment.TotalElevationGain,
+			&i.Segment.MapID,
+			&i.Segment.TotalEffortCount,
+			&i.Segment.TotalAthleteCount,
+			&i.Segment.TotalStarCount,
+			&i.Segment.FetchedAt,
+			&i.Map.ID,
+			&i.Map.Polyline,
+			&i.Map.SummaryPolyline,
+			&i.Map.UpdatedAt,
+			&i.SegmentEffort.ID,
+			&i.SegmentEffort.AthleteID,
+			&i.SegmentEffort.SegmentID,
+			&i.SegmentEffort.Name,
+			&i.SegmentEffort.ElapsedTime,
+			&i.SegmentEffort.MovingTime,
+			&i.SegmentEffort.StartDate,
+			&i.SegmentEffort.StartDateLocal,
+			&i.SegmentEffort.Distance,
+			&i.SegmentEffort.StartIndex,
+			&i.SegmentEffort.EndIndex,
+			&i.SegmentEffort.DeviceWatts,
+			&i.SegmentEffort.AverageWatts,
+			&i.SegmentEffort.KomRank,
+			&i.SegmentEffort.PrRank,
+			&i.SegmentEffort.UpdatedAt,
+			&i.SegmentEffort.ActivitiesID,
+			&i.Starred,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSegments = `-- name: GetSegments :many
 SELECT
     segments.id, segments.name, segments.activity_type, segments.distance, segments.average_grade, segments.maximum_grade, segments.elevation_high, segments.elevation_low, segments.start_latlng, segments.end_latlng, segments.elevation_profile, segments.climb_category, segments.city, segments.state, segments.country, segments.private, segments.hazardous, segments.created_at, segments.updated_at, segments.total_elevation_gain, segments.map_id, segments.total_effort_count, segments.total_athlete_count, segments.total_star_count, segments.fetched_at, maps.id, maps.polyline, maps.summary_polyline, maps.updated_at
@@ -1695,6 +1808,181 @@ func (q *sqlQuerier) UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentE
 		&i.ActivitiesID,
 	)
 	return i, err
+}
+
+const test = `-- name: test :many
+SELECT
+	segments.id, segments.name, activity_type, segments.distance, average_grade, maximum_grade, elevation_high, elevation_low, start_latlng, end_latlng, elevation_profile, climb_category, city, state, country, private, hazardous, created_at, segments.updated_at, total_elevation_gain, map_id, total_effort_count, total_athlete_count, total_star_count, fetched_at, maps.id, polyline, summary_polyline, maps.updated_at, segment_effort.id, segment_effort.athlete_id, segment_effort.segment_id, segment_effort.name, segment_effort.elapsed_time, segment_effort.moving_time, segment_effort.start_date, segment_effort.start_date_local, segment_effort.distance, segment_effort.start_index, segment_effort.end_index, segment_effort.device_watts, segment_effort.average_watts, segment_effort.kom_rank, segment_effort.pr_rank, segment_effort.updated_at, segment_effort.activities_id, segment_efforts.id, segment_efforts.athlete_id, segment_efforts.segment_id, segment_efforts.name, segment_efforts.elapsed_time, segment_efforts.moving_time, segment_efforts.start_date, segment_efforts.start_date_local, segment_efforts.distance, segment_efforts.start_index, segment_efforts.end_index, segment_efforts.device_watts, segment_efforts.average_watts, segment_efforts.kom_rank, segment_efforts.pr_rank, segment_efforts.updated_at, segment_efforts.activities_id
+FROM
+	segments
+		LEFT JOIN
+	maps ON segments.map_id = maps.id
+		LEFT JOIN LATERAL (
+		SELECT DISTINCT ON (segment_efforts.athlete_id, segment_efforts.segment_id)
+			id, athlete_id, segment_id, name, elapsed_time, moving_time, start_date, start_date_local, distance, start_index, end_index, device_watts, average_watts, kom_rank, pr_rank, updated_at, activities_id
+		FROM
+			segment_efforts
+		WHERE
+				athlete_id = 20563755 AND
+				segment_id = segments.id
+		ORDER BY
+			segment_efforts.athlete_id, segment_efforts.segment_id, elapsed_time ASC
+		) segment_effort ON segment_effort.segment_id = segments.id
+
+WHERE segments.id = ANY(ARRAY[628842])
+`
+
+type testRow struct {
+	ID                 int64          `db:"id" json:"id"`
+	Name               string         `db:"name" json:"name"`
+	ActivityType       string         `db:"activity_type" json:"activity_type"`
+	Distance           float64        `db:"distance" json:"distance"`
+	AverageGrade       float64        `db:"average_grade" json:"average_grade"`
+	MaximumGrade       float64        `db:"maximum_grade" json:"maximum_grade"`
+	ElevationHigh      float64        `db:"elevation_high" json:"elevation_high"`
+	ElevationLow       float64        `db:"elevation_low" json:"elevation_low"`
+	StartLatlng        Floats         `db:"start_latlng" json:"start_latlng"`
+	EndLatlng          Floats         `db:"end_latlng" json:"end_latlng"`
+	ElevationProfile   string         `db:"elevation_profile" json:"elevation_profile"`
+	ClimbCategory      int32          `db:"climb_category" json:"climb_category"`
+	City               string         `db:"city" json:"city"`
+	State              string         `db:"state" json:"state"`
+	Country            string         `db:"country" json:"country"`
+	Private            bool           `db:"private" json:"private"`
+	Hazardous          bool           `db:"hazardous" json:"hazardous"`
+	CreatedAt          time.Time      `db:"created_at" json:"created_at"`
+	UpdatedAt          time.Time      `db:"updated_at" json:"updated_at"`
+	TotalElevationGain float64        `db:"total_elevation_gain" json:"total_elevation_gain"`
+	MapID              string         `db:"map_id" json:"map_id"`
+	TotalEffortCount   int32          `db:"total_effort_count" json:"total_effort_count"`
+	TotalAthleteCount  int32          `db:"total_athlete_count" json:"total_athlete_count"`
+	TotalStarCount     int32          `db:"total_star_count" json:"total_star_count"`
+	FetchedAt          time.Time      `db:"fetched_at" json:"fetched_at"`
+	ID_2               sql.NullString `db:"id_2" json:"id_2"`
+	Polyline           sql.NullString `db:"polyline" json:"polyline"`
+	SummaryPolyline    sql.NullString `db:"summary_polyline" json:"summary_polyline"`
+	UpdatedAt_2        sql.NullTime   `db:"updated_at_2" json:"updated_at_2"`
+	ID_3               int64          `db:"id_3" json:"id_3"`
+	AthleteID          int64          `db:"athlete_id" json:"athlete_id"`
+	SegmentID          int64          `db:"segment_id" json:"segment_id"`
+	Name_2             string         `db:"name_2" json:"name_2"`
+	ElapsedTime        float64        `db:"elapsed_time" json:"elapsed_time"`
+	MovingTime         float64        `db:"moving_time" json:"moving_time"`
+	StartDate          time.Time      `db:"start_date" json:"start_date"`
+	StartDateLocal     time.Time      `db:"start_date_local" json:"start_date_local"`
+	Distance_2         float64        `db:"distance_2" json:"distance_2"`
+	StartIndex         int32          `db:"start_index" json:"start_index"`
+	EndIndex           int32          `db:"end_index" json:"end_index"`
+	DeviceWatts        bool           `db:"device_watts" json:"device_watts"`
+	AverageWatts       float64        `db:"average_watts" json:"average_watts"`
+	KomRank            sql.NullInt32  `db:"kom_rank" json:"kom_rank"`
+	PrRank             sql.NullInt32  `db:"pr_rank" json:"pr_rank"`
+	UpdatedAt_3        time.Time      `db:"updated_at_3" json:"updated_at_3"`
+	ActivitiesID       int64          `db:"activities_id" json:"activities_id"`
+	ID_4               int64          `db:"id_4" json:"id_4"`
+	AthleteID_2        int64          `db:"athlete_id_2" json:"athlete_id_2"`
+	SegmentID_2        int64          `db:"segment_id_2" json:"segment_id_2"`
+	Name_3             string         `db:"name_3" json:"name_3"`
+	ElapsedTime_2      float64        `db:"elapsed_time_2" json:"elapsed_time_2"`
+	MovingTime_2       float64        `db:"moving_time_2" json:"moving_time_2"`
+	StartDate_2        time.Time      `db:"start_date_2" json:"start_date_2"`
+	StartDateLocal_2   time.Time      `db:"start_date_local_2" json:"start_date_local_2"`
+	Distance_3         float64        `db:"distance_3" json:"distance_3"`
+	StartIndex_2       int32          `db:"start_index_2" json:"start_index_2"`
+	EndIndex_2         int32          `db:"end_index_2" json:"end_index_2"`
+	DeviceWatts_2      bool           `db:"device_watts_2" json:"device_watts_2"`
+	AverageWatts_2     float64        `db:"average_watts_2" json:"average_watts_2"`
+	KomRank_2          sql.NullInt32  `db:"kom_rank_2" json:"kom_rank_2"`
+	PrRank_2           sql.NullInt32  `db:"pr_rank_2" json:"pr_rank_2"`
+	UpdatedAt_4        time.Time      `db:"updated_at_4" json:"updated_at_4"`
+	ActivitiesID_2     int64          `db:"activities_id_2" json:"activities_id_2"`
+}
+
+func (q *sqlQuerier) test(ctx context.Context) ([]testRow, error) {
+	rows, err := q.db.QueryContext(ctx, test)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []testRow
+	for rows.Next() {
+		var i testRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ActivityType,
+			&i.Distance,
+			&i.AverageGrade,
+			&i.MaximumGrade,
+			&i.ElevationHigh,
+			&i.ElevationLow,
+			&i.StartLatlng,
+			&i.EndLatlng,
+			&i.ElevationProfile,
+			&i.ClimbCategory,
+			&i.City,
+			&i.State,
+			&i.Country,
+			&i.Private,
+			&i.Hazardous,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.TotalElevationGain,
+			&i.MapID,
+			&i.TotalEffortCount,
+			&i.TotalAthleteCount,
+			&i.TotalStarCount,
+			&i.FetchedAt,
+			&i.ID_2,
+			&i.Polyline,
+			&i.SummaryPolyline,
+			&i.UpdatedAt_2,
+			&i.ID_3,
+			&i.AthleteID,
+			&i.SegmentID,
+			&i.Name_2,
+			&i.ElapsedTime,
+			&i.MovingTime,
+			&i.StartDate,
+			&i.StartDateLocal,
+			&i.Distance_2,
+			&i.StartIndex,
+			&i.EndIndex,
+			&i.DeviceWatts,
+			&i.AverageWatts,
+			&i.KomRank,
+			&i.PrRank,
+			&i.UpdatedAt_3,
+			&i.ActivitiesID,
+			&i.ID_4,
+			&i.AthleteID_2,
+			&i.SegmentID_2,
+			&i.Name_3,
+			&i.ElapsedTime_2,
+			&i.MovingTime_2,
+			&i.StartDate_2,
+			&i.StartDateLocal_2,
+			&i.Distance_3,
+			&i.StartIndex_2,
+			&i.EndIndex_2,
+			&i.DeviceWatts_2,
+			&i.AverageWatts_2,
+			&i.KomRank_2,
+			&i.PrRank_2,
+			&i.UpdatedAt_4,
+			&i.ActivitiesID_2,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const insertWebhookDump = `-- name: InsertWebhookDump :one
