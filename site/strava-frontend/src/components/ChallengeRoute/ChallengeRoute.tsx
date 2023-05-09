@@ -49,6 +49,7 @@ import {
   Polyline,
   useMap,
   FeatureGroup,
+  Rectangle,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -59,7 +60,7 @@ import {
   DistanceToLocal,
   DistanceToLocalElevation,
 } from "../../lib/Distance/Distance";
-import L, { Layer } from "leaflet";
+import L, { LatLngBoundsExpression, Layer } from "leaflet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
@@ -145,33 +146,40 @@ export const ChallengeRoute: FC<{}> = ({}) => {
     sum[1] / segmentsData.length,
   ];
   // Calculate the bounds of the route
-  const bounds: [[number, number], [number, number]] = segmentsData.reduce(
-    (acc, segment) => {
-      const points = decode(segment.detailed_segment.map.polyline);
+  const strictBounds: [[number, number], [number, number]] =
+    segmentsData.reduce(
+      (acc, segment) => {
+        const points = decode(segment.detailed_segment.map.polyline);
 
-      const min = points.reduce(
-        (acc, point) => {
-          return [Math.min(acc[0], point[0]), Math.min(acc[1], point[1])];
-        },
-        [360, 360]
-      );
-      const max = points.reduce(
-        (acc, point) => {
-          return [Math.max(acc[0], point[0]), Math.max(acc[1], point[1])];
-        },
-        [-360, -360]
-      );
+        const min = points.reduce(
+          (acc, point) => {
+            return [Math.min(acc[0], point[0]), Math.min(acc[1], point[1])];
+          },
+          [360, 360]
+        );
+        const max = points.reduce(
+          (acc, point) => {
+            return [Math.max(acc[0], point[0]), Math.max(acc[1], point[1])];
+          },
+          [-360, -360]
+        );
 
-      return [
-        [Math.min(acc[0][0], min[0]), Math.min(acc[0][1], min[1])],
-        [Math.max(acc[1][0], max[0]), Math.max(acc[1][1], max[1])],
-      ];
-    },
-    [
-      [360, 360],
-      [-360, -360],
-    ]
-  );
+        return [
+          [Math.min(acc[0][0], min[0]), Math.min(acc[0][1], min[1])],
+          [Math.max(acc[1][0], max[0]), Math.max(acc[1][1], max[1])],
+        ];
+      },
+      [
+        [360, 360],
+        [-360, -360],
+      ]
+    );
+
+  // Add some tolerance to the bounds for easier viewing
+  const bounds: [[number, number], [number, number]] = [
+    [strictBounds[0][0] - 0.1, strictBounds[0][1] - 0.1],
+    [strictBounds[1][0] + 0.1, strictBounds[1][1] + 0.1],
+  ];
 
   //mapbox://styles/emyrk/clhe4rd8l027g01pa3bdh5u4v
   // https://www.paigeniedringhaus.com/blog/render-multiple-colored-lines-on-a-react-map-with-polylines
@@ -225,9 +233,11 @@ export const ChallengeRoute: FC<{}> = ({}) => {
             zoom={12}
             maxBounds={bounds}
           >
+            {/* <Rectangle bounds={bounds}></Rectangle> */}
             <MapController
               segments={segmentsData}
               selectedSegment={selectedSegment}
+              outerBounds={strictBounds}
             />
             <TileLayer
               attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
@@ -268,17 +278,17 @@ export const ChallengeRoute: FC<{}> = ({}) => {
           </MapContainer>
         </Flex>
 
-        <SegmentCardContainer>
+        <SegmentCardContainer setSelectedSegment={setSelectedSegment}>
           {/* <Flex w="100%" flexDirection="column" p="2em"> */}
           {segmentsData.map((segment) => (
             <Box
               key={segment.detailed_segment.id}
-              onMouseOut={() => {
+              onMouseEnter={() => {
                 if (selectedSegment === segment.detailed_segment.id) {
                   setSelectedSegment("");
                 }
               }}
-              onMouseOver={() => {
+              onMouseLeave={() => {
                 if (selectedSegment !== segment.detailed_segment.id) {
                   setSelectedSegment(segment.detailed_segment.id);
                 }
@@ -297,13 +307,10 @@ export const ChallengeRoute: FC<{}> = ({}) => {
 const MapController: FC<{
   selectedSegment: string;
   segments: PersonalSegment[];
-}> = ({ selectedSegment, segments }) => {
+  outerBounds: LatLngBoundsExpression;
+}> = ({ selectedSegment, segments, outerBounds }) => {
   const mapRef = useMap();
 
-  // let segment = new L.FeatureGroup();
-  // const points = decode(segments[0].detailed_segment.map.polyline);
-  // const poly = L.polyline(points);
-  // let polys = [] as [string, L.Polyline][];
   const [polys, setPolys] = useState([] as [string, L.Polyline][]);
   useEffect(() => {
     const polys = segments.map((segment) => {
@@ -326,6 +333,7 @@ const MapController: FC<{
       const group = L.featureGroup([poly, start, end]).on("click", () => {
         console.log("Clicked", segment.detailed_segment.id);
       });
+      // https://www.wrld3d.com/wrld.js/latest/docs/leaflet/L.Popup/
       group.bindTooltip(segment.detailed_segment.name);
 
       mapRef.addLayer(group);
@@ -334,26 +342,29 @@ const MapController: FC<{
     setPolys(polys);
   }, [mapRef, segments]);
 
-  // useEffect(() => {
-  //   polys.forEach(([id, poly]) => {
-  //     if (id === selectedSegment) {
-  //       poly.setStyle({ color: "blue", weight: 10 });
-  //     } else {
-  //       poly.setStyle({ color: "#fc4c02", weight: 3 });
-  //     }
-  //   });
-  // }, [polys, selectedSegment]);
+  useEffect(() => {
+    if (selectedSegment === "") {
+      mapRef.fitBounds(outerBounds);
+    }
+    polys.forEach(([id, poly]) => {
+      if (id === selectedSegment) {
+        poly.setStyle({ color: "#0215fc", weight: 5 });
+        mapRef.panTo(poly.getBounds().getCenter());
+        mapRef.fitBounds(poly.getBounds());
+      } else {
+        poly.setStyle({ color: "#fc4c02", weight: 3 });
+      }
+    });
+  }, [mapRef, polys, selectedSegment]);
 
-  // poly.on("click", (e) => {
-  //   poly.setStyle({ color: "#fc4c02", weight: 10 });
-  //   // console.log(e);
-  // });
-  // // segment.addTo(mapRef);
-  // mapRef.addLayer(poly);
   return <></>;
 };
 
-const SegmentCardContainer: FC<PropsWithChildren> = ({ children }) => {
+const SegmentCardContainer: FC<
+  PropsWithChildren<{
+    setSelectedSegment: (id: string) => void;
+  }>
+> = ({ children, setSelectedSegment }) => {
   return (
     <Grid
       pt={"2em"}
@@ -361,6 +372,13 @@ const SegmentCardContainer: FC<PropsWithChildren> = ({ children }) => {
       rowGap={4}
       columnGap={6}
       maxWidth={"1050px"}
+      onMouseLeave={(e) => {
+        // if (selectedSegment !== segment.detailed_segment.id) {
+        //   setSelectedSegment(segment.detailed_segment.id);
+        // }
+        setSelectedSegment("");
+        console.log("Mouse leave", e.target);
+      }}
     >
       {children}
     </Grid>
