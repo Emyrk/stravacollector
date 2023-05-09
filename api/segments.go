@@ -79,14 +79,14 @@ func convertSegmentRow[S segmentRow](row S) modelsdk.PersonalSegment {
 		starred = row.Starred
 		if row.BestEffortID > 0 {
 			best = &modelsdk.PersonalBestSegmentEffort{
-				BestEffortID:             row.BestEffortID,
+				BestEffortID:             modelsdk.StringInt(row.BestEffortID),
 				BestEffortElapsedTime:    row.BestEffortElapsedTime,
 				BestEffortMovingTime:     row.BestEffortMovingTime,
 				BestEffortStartDate:      row.BestEffortStartDate,
 				BestEffortStartDateLocal: row.BestEffortStartDateLocal,
 				BestEffortDeviceWatts:    row.BestEffortDeviceWatts,
 				BestEffortAverageWatts:   row.BestEffortAverageWatts,
-				BestEffortActivitiesID:   row.BestEffortActivitiesID,
+				BestEffortActivitiesID:   modelsdk.StringInt(row.BestEffortActivitiesID),
 			}
 		}
 	case database.GetSegmentsRow:
