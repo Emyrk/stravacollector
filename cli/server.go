@@ -3,7 +3,6 @@ package cli
 import (
 	"context"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -14,10 +13,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/rs/zerolog"
-
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"

@@ -25,62 +25,105 @@ func (api *API) getSegments(rw http.ResponseWriter, r *http.Request) {
 	for i, seg := range requestedSegments {
 		requestedSegmentsInts[i] = int64(seg)
 	}
-	var _, _ = id, athleteLoggedIn
 
-	//if athleteLoggedIn {
-	//	segments, err := api.Opts.DB.GetPersonalSegments(ctx, database.GetPersonalSegmentsParams{
-	//		AthleteID:  id,
-	//		SegmentIds: requestedSegmentsInts,
-	//	})
-	//}
-
-	segments, err := api.Opts.DB.GetSegments(ctx, requestedSegmentsInts)
-	if err != nil {
-		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
-			Message: "Failed to load segments",
-			Detail:  err.Error(),
+	var resp []modelsdk.PersonalSegment
+	if athleteLoggedIn {
+		segments, err := api.Opts.DB.GetPersonalSegments(ctx, database.GetPersonalSegmentsParams{
+			AthleteID:  id,
+			SegmentIds: requestedSegmentsInts,
 		})
-		return
+		if err != nil {
+			httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+				Message: "Failed to load segments",
+				Detail:  err.Error(),
+			})
+			return
+		}
+		resp = convertSegmentRows(segments)
+	} else {
+		segments, err := api.Opts.DB.GetSegments(ctx, requestedSegmentsInts)
+		if err != nil {
+			httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+				Message: "Failed to load segments",
+				Detail:  err.Error(),
+			})
+			return
+		}
+		resp = convertSegmentRows(segments)
 	}
 
-	httpapi.Write(ctx, rw, http.StatusOK, convertSegmentRows(segments))
+	httpapi.Write(ctx, rw, http.StatusOK, resp)
 }
 
-func convertSegmentRows(rows []database.GetSegmentsRow) []modelsdk.DetailedSegment {
-	segments := make([]modelsdk.DetailedSegment, len(rows))
+type segmentRow interface {
+	database.GetPersonalSegmentsRow | database.GetSegmentsRow
+}
+
+func convertSegmentRows[S segmentRow](rows []S) []modelsdk.PersonalSegment {
+	segments := make([]modelsdk.PersonalSegment, len(rows))
 	for i, row := range rows {
 		segments[i] = convertSegmentRow(row)
 	}
 	return segments
 }
 
-func convertSegmentRow(row database.GetSegmentsRow) modelsdk.DetailedSegment {
-	return modelsdk.DetailedSegment{
-		ID:                 modelsdk.StringInt(row.Segment.ID),
-		Name:               row.Segment.Name,
-		ActivityType:       row.Segment.ActivityType,
-		Distance:           row.Segment.Distance,
-		AverageGrade:       row.Segment.AverageGrade,
-		MaximumGrade:       row.Segment.MaximumGrade,
-		ElevationHigh:      row.Segment.ElevationHigh,
-		ElevationLow:       row.Segment.ElevationLow,
-		StartLatlng:        row.Segment.StartLatlng,
-		EndLatlng:          row.Segment.EndLatlng,
-		ElevationProfile:   row.Segment.ElevationProfile,
-		ClimbCategory:      row.Segment.ClimbCategory,
-		City:               row.Segment.City,
-		State:              row.Segment.State,
-		Country:            row.Segment.Country,
-		Private:            row.Segment.Private,
-		Hazardous:          row.Segment.Hazardous,
-		CreatedAt:          row.Segment.CreatedAt,
-		UpdatedAt:          row.Segment.UpdatedAt,
-		TotalElevationGain: row.Segment.TotalElevationGain,
-		Map:                convertMap(row.Map),
-		TotalEffortCount:   row.Segment.TotalEffortCount,
-		TotalAthleteCount:  row.Segment.TotalAthleteCount,
-		TotalStarCount:     row.Segment.TotalStarCount,
-		FetchedAt:          row.Segment.FetchedAt,
+func convertSegmentRow[S segmentRow](row S) modelsdk.PersonalSegment {
+	var segment database.Segment
+	var dbMap database.Map
+	var starred bool
+	var best *modelsdk.PersonalBestSegmentEffort
+	switch row := any(row).(type) {
+	case database.GetPersonalSegmentsRow:
+		segment = row.Segment
+		dbMap = row.Map
+		starred = row.Starred
+		if row.BestEffortID > 0 {
+			best = &modelsdk.PersonalBestSegmentEffort{
+				BestEffortID:             row.BestEffortID,
+				BestEffortElapsedTime:    row.BestEffortElapsedTime,
+				BestEffortMovingTime:     row.BestEffortMovingTime,
+				BestEffortStartDate:      row.BestEffortStartDate,
+				BestEffortStartDateLocal: row.BestEffortStartDateLocal,
+				BestEffortDeviceWatts:    row.BestEffortDeviceWatts,
+				BestEffortAverageWatts:   row.BestEffortAverageWatts,
+				BestEffortActivitiesID:   row.BestEffortActivitiesID,
+			}
+		}
+	case database.GetSegmentsRow:
+		segment = row.Segment
+		dbMap = row.Map
+	}
+
+	return modelsdk.PersonalSegment{
+		DetailedSegment: modelsdk.DetailedSegment{
+			ID:                 modelsdk.StringInt(segment.ID),
+			Name:               segment.Name,
+			ActivityType:       segment.ActivityType,
+			Distance:           segment.Distance,
+			AverageGrade:       segment.AverageGrade,
+			MaximumGrade:       segment.MaximumGrade,
+			ElevationHigh:      segment.ElevationHigh,
+			ElevationLow:       segment.ElevationLow,
+			StartLatlng:        segment.StartLatlng,
+			EndLatlng:          segment.EndLatlng,
+			ElevationProfile:   segment.ElevationProfile,
+			ClimbCategory:      segment.ClimbCategory,
+			City:               segment.City,
+			State:              segment.State,
+			Country:            segment.Country,
+			Private:            segment.Private,
+			Hazardous:          segment.Hazardous,
+			CreatedAt:          segment.CreatedAt,
+			UpdatedAt:          segment.UpdatedAt,
+			TotalElevationGain: segment.TotalElevationGain,
+			Map:                convertMap(dbMap),
+			TotalEffortCount:   segment.TotalEffortCount,
+			TotalAthleteCount:  segment.TotalAthleteCount,
+			TotalStarCount:     segment.TotalStarCount,
+			FetchedAt:          segment.FetchedAt,
+		},
+		Starred:      starred,
+		PersonalBest: best,
 	}
 }
 

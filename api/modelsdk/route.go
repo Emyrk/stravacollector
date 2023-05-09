@@ -14,6 +14,24 @@ type SegmentSummary struct {
 	Name string    `json:"name"`
 }
 
+type PersonalSegment struct {
+	DetailedSegment
+
+	Starred      bool                       `json:"starred,omitempty"`
+	PersonalBest *PersonalBestSegmentEffort `json:"personal_best,omitempty"`
+}
+
+type PersonalBestSegmentEffort struct {
+	BestEffortID             int64     `json:"best_effort_id"`
+	BestEffortElapsedTime    float64   `json:"best_effort_elapsed_time"`
+	BestEffortMovingTime     float64   `json:"best_effort_moving_time"`
+	BestEffortStartDate      time.Time `json:"best_effort_start_date"`
+	BestEffortStartDateLocal time.Time `json:"best_effort_start_date_local"`
+	BestEffortDeviceWatts    bool      `json:"best_effort_device_watts"`
+	BestEffortAverageWatts   float64   `json:"best_effort_average_watts"`
+	BestEffortActivitiesID   int64     `json:"best_effort_activities_id"`
+}
+
 type DetailedSegment struct {
 	ID            StringInt `json:"id"`
 	Name          string    `json:"name"`
