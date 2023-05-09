@@ -289,9 +289,7 @@ const MapController: FC<{
         color: "red",
       });
 
-      const group = L.featureGroup([poly, start, end]).on("click", () => {
-        console.log("Clicked", segment.detailed_segment.id);
-      });
+      const group = L.featureGroup([poly, start, end]);
       // https://www.wrld3d.com/wrld.js/latest/docs/leaflet/L.Popup/
       group.bindTooltip(segment.detailed_segment.name);
 
