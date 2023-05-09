@@ -15,7 +15,7 @@ processes = []
 
 [env]
   STRAVA_ACCESS_URL = "https://dashugel.bike"
-  STRAVA_JSON_LOGS = "false"
+  STRAVA_JSON_LOGS = "true"
   STRAVA_ENABLE_PROMETHEUS=true
   STRAVA_SKIP_WEBHOOK_SETUP=true
 
