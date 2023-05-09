@@ -29,6 +29,7 @@ import {
   GridItem,
   Tooltip,
   background,
+  Button,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import {
@@ -73,7 +74,6 @@ import {
   ElapsedDurationText,
   FormatDate,
 } from "../../pages/HugelBoard/CalcActivity";
-import { getEffectiveConstraintOfTypeParameter } from "typescript";
 
 export const ChallengeRoute: FC<{}> = ({}) => {
   const { name } = useParams();
@@ -246,23 +246,14 @@ export const ChallengeRoute: FC<{}> = ({}) => {
           </MapContainer>
         </Flex>
 
-        <SegmentCardContainer setSelectedSegment={setSelectedSegment}>
+        <SegmentCardContainer>
           {/* <Flex w="100%" flexDirection="column" p="2em"> */}
           {segmentsData.map((segment) => (
-            <Box
-              key={segment.detailed_segment.id}
-              onMouseEnter={() => {
-                if (selectedSegment === segment.detailed_segment.id) {
-                  setSelectedSegment("");
-                }
-              }}
-              onMouseLeave={() => {
-                if (selectedSegment !== segment.detailed_segment.id) {
-                  setSelectedSegment(segment.detailed_segment.id);
-                }
-              }}
-            >
-              <SegmentCard segment={segment} />
+            <Box key={segment.detailed_segment.id}>
+              <SegmentCard
+                segment={segment}
+                setSelectedSegment={setSelectedSegment}
+              />
             </Box>
           ))}
           {/* </Flex> */}
@@ -323,16 +314,12 @@ const MapController: FC<{
         poly.setStyle({ color: "#fc4c02", weight: 3 });
       }
     });
-  }, [mapRef, polys, selectedSegment]);
+  }, [mapRef, polys, selectedSegment, outerBounds]);
 
   return <></>;
 };
 
-const SegmentCardContainer: FC<
-  PropsWithChildren<{
-    setSelectedSegment: (id: string) => void;
-  }>
-> = ({ children, setSelectedSegment }) => {
+const SegmentCardContainer: FC<PropsWithChildren<{}>> = ({ children }) => {
   return (
     <Grid
       pt={"2em"}
@@ -344,13 +331,6 @@ const SegmentCardContainer: FC<
       rowGap={4}
       columnGap={6}
       maxWidth={"1050px"}
-      onMouseLeave={(e) => {
-        // if (selectedSegment !== segment.detailed_segment.id) {
-        //   setSelectedSegment(segment.detailed_segment.id);
-        // }
-        setSelectedSegment("");
-        console.log("Mouse leave", e.target);
-      }}
     >
       {children}
     </Grid>
@@ -359,7 +339,8 @@ const SegmentCardContainer: FC<
 
 const SegmentCard: FC<{
   segment: PersonalSegment;
-}> = ({ segment }) => {
+  setSelectedSegment: (id: string) => void;
+}> = ({ segment, setSelectedSegment }) => {
   const { authenticatedUser } = useAuthenticated();
   const starIcon =
     authenticatedUser === undefined
@@ -416,7 +397,15 @@ const SegmentCard: FC<{
                 textAlign={"center"}
                 colSpan={9}
               >
-                {segment.detailed_segment.name}
+                <Link
+                  as="span"
+                  onClick={() =>
+                    setSelectedSegment(segment.detailed_segment.id)
+                  }
+                  overflow={"wrap"}
+                >
+                  {segment.detailed_segment.name}
+                </Link>
               </GridItem>
               <GridItem colSpan={1}>
                 <Tooltip
