@@ -243,38 +243,6 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
               url={`https://api.mapbox.com/styles/v1/${mapboxUsername}/${mapboxStyleID}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`}
             />
-            {/* <FeatureGroup>
-              {segmentsData.map((segment) => {
-                const points = decode(segment.detailed_segment.map.polyline);
-                const circleRadius = 5;
-                const popUp = <Popup>{segment.detailed_segment.name}</Popup>;
-                return (
-                  <Box key={segment.detailed_segment.id}>
-                    <Polyline
-                      weight={3}
-                      pathOptions={{ color: "#fc4c02" }}
-                      positions={points}
-                    >
-                      {popUp}
-                    </Polyline>
-                    <CircleMarker
-                      center={points[0]}
-                      radius={circleRadius}
-                      color="green"
-                    >
-                      {popUp}
-                    </CircleMarker>
-                    <CircleMarker
-                      center={points[points.length - 1]}
-                      radius={circleRadius}
-                      color="red"
-                    >
-                      {popUp}
-                    </CircleMarker>
-                  </Box>
-                );
-              })}
-            </FeatureGroup> */}
           </MapContainer>
         </Flex>
 
@@ -368,7 +336,11 @@ const SegmentCardContainer: FC<
   return (
     <Grid
       pt={"2em"}
-      gridTemplateColumns="repeat(auto-fit, minmax(300px, 1fr))"
+      gridTemplateColumns={{
+        base: "repeat(1, 1fr)",
+        md: "repeat(2, 1fr)",
+        lg: "repeat(auto-fit, minmax(300px, 1fr))",
+      }}
       rowGap={4}
       columnGap={6}
       maxWidth={"1050px"}
