@@ -67,6 +67,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faStar as fasStar,
   faCircleInfo,
+  faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as farStar } from "@fortawesome/free-regular-svg-icons";
 import { useAuthenticated } from "../../contexts/Authenticated";
@@ -395,34 +396,45 @@ const SegmentCard: FC<{
                 }
                 // fontSize={segment.detailed_segment.name.length < 20 ? "2em" : "1em"}
                 textAlign={"center"}
-                colSpan={9}
+                colSpan={8}
               >
-                <Link
-                  as="span"
-                  onClick={() =>
-                    setSelectedSegment(segment.detailed_segment.id)
-                  }
-                  overflow={"wrap"}
-                >
-                  {segment.detailed_segment.name}
-                </Link>
+                {segment.detailed_segment.name}
               </GridItem>
-              <GridItem colSpan={1}>
-                <Tooltip
-                  label="Link to segment"
-                  aria-label="Strava logo tooltip"
-                >
+              <GridItem colSpan={2}>
+                <Flex alignItems={"center"} columnGap={3}>
                   <Link
-                    href={`https://strava.com/segments/${segment.detailed_segment.id}`}
-                    target="_blank"
+                    as="span"
+                    onClick={() =>
+                      setSelectedSegment(segment.detailed_segment.id)
+                    }
                   >
-                    <Image
-                      src={"/logos/stravalogo.png"}
-                      height={"30px"}
-                      width={"auto"}
-                    />
+                    <Tooltip
+                      label="Zoom to segment"
+                      aria-label="Segment view tooltip"
+                    >
+                      <FontAwesomeIcon
+                        style={{ color: "#fc4c02" }}
+                        icon={faLocationDot}
+                        size="2x"
+                      />
+                    </Tooltip>
                   </Link>
-                </Tooltip>
+                  <Tooltip
+                    label="Link to segment"
+                    aria-label="Strava logo tooltip"
+                  >
+                    <Link
+                      href={`https://strava.com/segments/${segment.detailed_segment.id}`}
+                      target="_blank"
+                    >
+                      <Image
+                        src={"/logos/stravalogo.png"}
+                        height={"30px"}
+                        width={"auto"}
+                      />
+                    </Link>
+                  </Tooltip>
+                </Flex>
               </GridItem>
             </Grid>
           </GridItem>
@@ -492,7 +504,11 @@ const SegmentCard: FC<{
           <GridItem textAlign={"center"}>
             <Flex justifyContent="center" alignItems={"center"} height={"100%"}>
               <Tooltip label={starTooltip} aria-label="Starred Segment Tooltip">
-                <FontAwesomeIcon icon={starIcon} size="2x" />
+                <FontAwesomeIcon
+                  icon={starIcon}
+                  size="2x"
+                  style={{ color: "#fcaf02" }}
+                />
               </Tooltip>
             </Flex>
           </GridItem>
