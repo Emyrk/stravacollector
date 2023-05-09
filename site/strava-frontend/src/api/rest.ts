@@ -67,10 +67,10 @@ export const getRoute = async (
 export const getDetailedSegments = async (
   segments: string[]
 ): Promise<
-  TypesGen.DetailedSegment[] | undefined
+  TypesGen.PersonalSegment[] | undefined
 > => {
   try {
-    const response = await axios.post<TypesGen.DetailedSegment[]>(`/api/v1/segments`, segments)
+    const response = await axios.post<TypesGen.PersonalSegment[]>(`/api/v1/segments`, segments)
     return response.data
   } catch (error) {
     throw error

@@ -2,12 +2,18 @@
   "name": "strava-frontend",
   "version": "0.1.0",
   "private": true,
+  "babelMacros": {
+    "fontawesome-svg-core": {
+      "license": "free"
+    }
+  },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.19",
     "@chakra-ui/react": "^2.6.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@iconscout/react-unicons": "^2.0.2",
