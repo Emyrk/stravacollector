@@ -366,6 +366,7 @@ const SegmentCard: FC<{
     <Box
       // bgColor={"#272c35"}
       // bgColor={"#3b3f48"}
+      // https://www.sessions.edu/color-calculator/
       bg={"linear-gradient(135deg, #3b3f48 0%, #48403b 260%)"}
       height={"170px"}
       width={"350px"}
