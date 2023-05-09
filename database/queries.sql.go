@@ -1436,6 +1436,45 @@ func (q *sqlQuerier) LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, e
 	return items, nil
 }
 
+const starSegments = `-- name: StarSegments :one
+INSERT INTO
+	starred_segments(
+		updated_at,
+		athlete_id,
+		segment_id,
+	    starred
+	)
+SELECT
+	Now() AS updated_at,
+	unnest($1::bigint[]) AS athlete_id,
+	unnest($2::bigint[]) AS segment_id,
+	unnest($3::boolean[]) AS starred
+ON CONFLICT
+	(athlete_id, segment_id)
+	DO UPDATE SET
+		updated_at = Now(),
+		starred = EXCLUDED.starred
+RETURNING athlete_id, segment_id, starred, updated_at
+`
+
+type StarSegmentsParams struct {
+	AthleteID []int64 `db:"athlete_id" json:"athlete_id"`
+	SegmentID []int64 `db:"segment_id" json:"segment_id"`
+	Starred   []bool  `db:"starred" json:"starred"`
+}
+
+func (q *sqlQuerier) StarSegments(ctx context.Context, arg StarSegmentsParams) (StarredSegment, error) {
+	row := q.db.QueryRowContext(ctx, starSegments, pq.Array(arg.AthleteID), pq.Array(arg.SegmentID), pq.Array(arg.Starred))
+	var i StarredSegment
+	err := row.Scan(
+		&i.AthleteID,
+		&i.SegmentID,
+		&i.Starred,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const upsertSegment = `-- name: UpsertSegment :one
 INSERT INTO
 	segments(

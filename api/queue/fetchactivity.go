@@ -170,7 +170,13 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 		}
 
 		// Insert efforts.
+		starAtheletes := make([]int64, 0, len(activity.SegmentEfforts))
+		starSegments := make([]int64, 0, len(activity.SegmentEfforts))
+		starStarred := make([]bool, 0, len(activity.SegmentEfforts))
 		for i, effort := range activity.SegmentEfforts {
+			starAtheletes = append(starAtheletes, effort.Athlete.ID)
+			starSegments = append(starSegments, effort.Segment.ID)
+			starStarred = append(starStarred, effort.Segment.Starred)
 			_, err := store.UpsertSegmentEffort(ctx, database.UpsertSegmentEffortParams{
 				ID:             effort.ID,
 				AthleteID:      effort.Athlete.ID,
@@ -198,6 +204,15 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			if err != nil {
 				return fmt.Errorf("upsert segment effort index=%d, id=%d: %w", i, effort.ID, err)
 			}
+		}
+
+		_, err = store.StarSegments(ctx, database.StarSegmentsParams{
+			AthleteID: starAtheletes,
+			SegmentID: starSegments,
+			Starred:   starStarred,
+		})
+		if err != nil {
+			return fmt.Errorf("star segments: %w", err)
 		}
 
 		return nil

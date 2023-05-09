@@ -298,6 +298,13 @@ type SegmentEffort struct {
 	ActivitiesID int64 `db:"activities_id" json:"activities_id"`
 }
 
+type StarredSegment struct {
+	AthleteID int64     `db:"athlete_id" json:"athlete_id"`
+	SegmentID int64     `db:"segment_id" json:"segment_id"`
+	Starred   bool      `db:"starred" json:"starred"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+}
+
 type SuperHugelActivity struct {
 	AthleteID        int64           `db:"athlete_id" json:"athlete_id"`
 	SegmentIds       interface{}     `db:"segment_ids" json:"segment_ids"`

@@ -1,0 +1,75 @@
+{
+    "name": "das-hugel",
+    "display_name": "Tour Das Hügel",
+    "description": "The legendary Tour Das Hügel route.",
+    "segments": [
+        {
+            "id": "629546",
+            "name": "Jester"
+        },
+        {
+            "id": "628842",
+            "name": "Big View Dr."
+        },
+        {
+            "id": "629046",
+            "name": "Terrace Mountain"
+        },
+        {
+            "id": "681737",
+            "name": "Barton Creek to Lost Creek, including descent from Bee Caves"
+        },
+        {
+            "id": "609560",
+            "name": "Mt. Bonnell South Face"
+        },
+        {
+            "id": "33454575",
+            "name": "Bluegrass and Lost Horizon Climb"
+        },
+        {
+            "id": "628845",
+            "name": "Top of City Park Road"
+        },
+        {
+            "id": "891091",
+            "name": "Cat Mountain (Hugel Route)"
+        },
+        {
+            "id": "1469968",
+            "name": "River Place to U Turn at 2222"
+        },
+        {
+            "id": "28704989",
+            "name": "Colorado River to Comanche Trail"
+        },
+        {
+            "id": "995700",
+            "name": "courtyard from 360 to top"
+        },
+        {
+            "id": "10355605",
+            "name": "Bullick Hollow to the end"
+        },
+        {
+            "id": "628782",
+            "name": "River Hills"
+        },
+        {
+            "id": "1733083",
+            "name": "Trail of the Madrones \u0026 Ridgecrest"
+        },
+        {
+            "id": "740569",
+            "name": "Rain Creek Fun Climb - LONG"
+        },
+        {
+            "id": "626149",
+            "name": "Smokey Valley"
+        },
+        {
+            "id": "617537",
+            "name": "Beauford Dr."
+        }
+    ]
+}

@@ -1,0 +1,392 @@
+{
+    "personal_best": {
+        "rank_one_elapsed": 9320,
+        "activity_id": "8178026414",
+        "athlete_id": "2661162",
+        "elapsed": 9320,
+        "rank": 1,
+        "efforts": [
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219575526810",
+                "start_date": "2022-11-27T21:39:35Z",
+                "segment_id": "609560",
+                "elapsed_time": 254,
+                "moving_time": 254,
+                "device_watts": true,
+                "average_watts": 211.4
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219583356314",
+                "start_date": "2022-11-27T14:19:12Z",
+                "segment_id": "617537",
+                "elapsed_time": 284,
+                "moving_time": 284,
+                "device_watts": true,
+                "average_watts": 287.5
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219572840858",
+                "start_date": "2022-11-27T22:06:44Z",
+                "segment_id": "626149",
+                "elapsed_time": 395,
+                "moving_time": 395,
+                "device_watts": true,
+                "average_watts": 217.3
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219580772762",
+                "start_date": "2022-11-27T18:59:04Z",
+                "segment_id": "628782",
+                "elapsed_time": 609,
+                "moving_time": 553,
+                "device_watts": true,
+                "average_watts": 200.4
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219581652378",
+                "start_date": "2022-11-27T16:49:10Z",
+                "segment_id": "628842",
+                "elapsed_time": 406,
+                "moving_time": 406,
+                "device_watts": true,
+                "average_watts": 267.6
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219586283930",
+                "start_date": "2022-11-27T14:46:46Z",
+                "segment_id": "628845",
+                "elapsed_time": 132,
+                "moving_time": 132,
+                "device_watts": true,
+                "average_watts": 316.4
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219576955290",
+                "start_date": "2022-11-27T20:38:42Z",
+                "segment_id": "629046",
+                "elapsed_time": 450,
+                "moving_time": 450,
+                "device_watts": true,
+                "average_watts": 206.5
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219578646938",
+                "start_date": "2022-11-27T17:09:44Z",
+                "segment_id": "629546",
+                "elapsed_time": 345,
+                "moving_time": 345,
+                "device_watts": true,
+                "average_watts": 253.4
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219577413018",
+                "start_date": "2022-11-27T19:17:12Z",
+                "segment_id": "681737",
+                "elapsed_time": 1693,
+                "moving_time": 1644,
+                "device_watts": true,
+                "average_watts": 157.9
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219585730970",
+                "start_date": "2022-11-27T14:06:45Z",
+                "segment_id": "740569",
+                "elapsed_time": 180,
+                "moving_time": 180,
+                "device_watts": true,
+                "average_watts": 271.9
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219576124826",
+                "start_date": "2022-11-27T21:52:13Z",
+                "segment_id": "891091",
+                "elapsed_time": 554,
+                "moving_time": 554,
+                "device_watts": true,
+                "average_watts": 185.2
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219582751130",
+                "start_date": "2022-11-27T14:39:08Z",
+                "segment_id": "995700",
+                "elapsed_time": 352,
+                "moving_time": 352,
+                "device_watts": true,
+                "average_watts": 269.2
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219582600602",
+                "start_date": "2022-11-27T15:03:39Z",
+                "segment_id": "1469968",
+                "elapsed_time": 1362,
+                "moving_time": 862,
+                "device_watts": true,
+                "average_watts": 189
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219575439770",
+                "start_date": "2022-11-27T20:25:28Z",
+                "segment_id": "1733083",
+                "elapsed_time": 503,
+                "moving_time": 465,
+                "device_watts": true,
+                "average_watts": 195.9
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219584508314",
+                "start_date": "2022-11-27T15:41:23Z",
+                "segment_id": "10355605",
+                "elapsed_time": 398,
+                "moving_time": 347,
+                "device_watts": true,
+                "average_watts": 227
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3032077219585556890",
+                "start_date": "2022-11-27T16:04:10Z",
+                "segment_id": "28704989",
+                "elapsed_time": 867,
+                "moving_time": 867,
+                "device_watts": true,
+                "average_watts": 211
+            },
+            {
+                "activity_id": "8178026414",
+                "effort_id": "3040416824399535524",
+                "start_date": "2022-11-27T13:54:44Z",
+                "segment_id": "33454575",
+                "elapsed_time": 536,
+                "moving_time": 536,
+                "device_watts": true,
+                "average_watts": 231.9
+            }
+        ],
+        "athlete": {
+            "athlete_id": "2661162",
+            "username": "smasley",
+            "firstname": "Steven",
+            "lastname": "Masley",
+            "sex": "M",
+            "profile_pic_link": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/2661162/847010/7/large.jpg",
+            "hugel_count": 1
+        },
+        "activity_name": "Is a late Hugel still a Hugel?",
+        "activity_distance": 174859,
+        "activity_moving_time": 26091,
+        "activity_elapsed_time": 30673,
+        "activity_start_date": "2022-11-27T13:51:22Z",
+        "activity_total_elevation_gain": 3389.2
+    },
+    "activities": [
+        {
+            "rank_one_elapsed": 9320,
+            "activity_id": "8178026414",
+            "athlete_id": "2661162",
+            "elapsed": 9320,
+            "rank": 1,
+            "efforts": [
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219575526810",
+                    "start_date": "2022-11-27T21:39:35Z",
+                    "segment_id": "609560",
+                    "elapsed_time": 254,
+                    "moving_time": 254,
+                    "device_watts": true,
+                    "average_watts": 211.4
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219583356314",
+                    "start_date": "2022-11-27T14:19:12Z",
+                    "segment_id": "617537",
+                    "elapsed_time": 284,
+                    "moving_time": 284,
+                    "device_watts": true,
+                    "average_watts": 287.5
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219572840858",
+                    "start_date": "2022-11-27T22:06:44Z",
+                    "segment_id": "626149",
+                    "elapsed_time": 395,
+                    "moving_time": 395,
+                    "device_watts": true,
+                    "average_watts": 217.3
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219580772762",
+                    "start_date": "2022-11-27T18:59:04Z",
+                    "segment_id": "628782",
+                    "elapsed_time": 609,
+                    "moving_time": 553,
+                    "device_watts": true,
+                    "average_watts": 200.4
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219581652378",
+                    "start_date": "2022-11-27T16:49:10Z",
+                    "segment_id": "628842",
+                    "elapsed_time": 406,
+                    "moving_time": 406,
+                    "device_watts": true,
+                    "average_watts": 267.6
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219586283930",
+                    "start_date": "2022-11-27T14:46:46Z",
+                    "segment_id": "628845",
+                    "elapsed_time": 132,
+                    "moving_time": 132,
+                    "device_watts": true,
+                    "average_watts": 316.4
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219576955290",
+                    "start_date": "2022-11-27T20:38:42Z",
+                    "segment_id": "629046",
+                    "elapsed_time": 450,
+                    "moving_time": 450,
+                    "device_watts": true,
+                    "average_watts": 206.5
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219578646938",
+                    "start_date": "2022-11-27T17:09:44Z",
+                    "segment_id": "629546",
+                    "elapsed_time": 345,
+                    "moving_time": 345,
+                    "device_watts": true,
+                    "average_watts": 253.4
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219577413018",
+                    "start_date": "2022-11-27T19:17:12Z",
+                    "segment_id": "681737",
+                    "elapsed_time": 1693,
+                    "moving_time": 1644,
+                    "device_watts": true,
+                    "average_watts": 157.9
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219585730970",
+                    "start_date": "2022-11-27T14:06:45Z",
+                    "segment_id": "740569",
+                    "elapsed_time": 180,
+                    "moving_time": 180,
+                    "device_watts": true,
+                    "average_watts": 271.9
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219576124826",
+                    "start_date": "2022-11-27T21:52:13Z",
+                    "segment_id": "891091",
+                    "elapsed_time": 554,
+                    "moving_time": 554,
+                    "device_watts": true,
+                    "average_watts": 185.2
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219582751130",
+                    "start_date": "2022-11-27T14:39:08Z",
+                    "segment_id": "995700",
+                    "elapsed_time": 352,
+                    "moving_time": 352,
+                    "device_watts": true,
+                    "average_watts": 269.2
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219582600602",
+                    "start_date": "2022-11-27T15:03:39Z",
+                    "segment_id": "1469968",
+                    "elapsed_time": 1362,
+                    "moving_time": 862,
+                    "device_watts": true,
+                    "average_watts": 189
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219575439770",
+                    "start_date": "2022-11-27T20:25:28Z",
+                    "segment_id": "1733083",
+                    "elapsed_time": 503,
+                    "moving_time": 465,
+                    "device_watts": true,
+                    "average_watts": 195.9
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219584508314",
+                    "start_date": "2022-11-27T15:41:23Z",
+                    "segment_id": "10355605",
+                    "elapsed_time": 398,
+                    "moving_time": 347,
+                    "device_watts": true,
+                    "average_watts": 227
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3032077219585556890",
+                    "start_date": "2022-11-27T16:04:10Z",
+                    "segment_id": "28704989",
+                    "elapsed_time": 867,
+                    "moving_time": 867,
+                    "device_watts": true,
+                    "average_watts": 211
+                },
+                {
+                    "activity_id": "8178026414",
+                    "effort_id": "3040416824399535524",
+                    "start_date": "2022-11-27T13:54:44Z",
+                    "segment_id": "33454575",
+                    "elapsed_time": 536,
+                    "moving_time": 536,
+                    "device_watts": true,
+                    "average_watts": 231.9
+                }
+            ],
+            "athlete": {
+                "athlete_id": "2661162",
+                "username": "smasley",
+                "firstname": "Steven",
+                "lastname": "Masley",
+                "sex": "M",
+                "profile_pic_link": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/2661162/847010/7/large.jpg",
+                "hugel_count": 1
+            },
+            "activity_name": "Is a late Hugel still a Hugel?",
+            "activity_distance": 174859,
+            "activity_moving_time": 26091,
+            "activity_elapsed_time": 30673,
+            "activity_start_date": "2022-11-27T13:51:22Z",
+            "activity_total_elevation_gain": 3389.2
+        }
+    ]
+}

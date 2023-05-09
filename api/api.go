@@ -141,6 +141,7 @@ func (api *API) Routes() chi.Router {
 				httpmw.Authenticated(api.Auth, false),
 			)
 			r.Get("/whoami", api.whoAmI)
+			r.Get("fetch-activity/{activity_id}", api.manualFetchActivity)
 		})
 		r.Group(func(r chi.Router) {
 			// Unauthenticated routes

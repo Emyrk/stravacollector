@@ -275,6 +275,13 @@ COMMENT ON COLUMN segments.elevation_profile IS 'A small image of the elevation 
 
 COMMENT ON COLUMN segments.fetched_at IS 'The time at which this segment was fetched from the Strava API.';
 
+CREATE TABLE starred_segments (
+    athlete_id bigint NOT NULL,
+    segment_id bigint NOT NULL,
+    starred boolean NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
 CREATE VIEW super_hugel_activities AS
  SELECT merged.athlete_id,
     merged.segment_ids,
@@ -347,6 +354,9 @@ ALTER TABLE ONLY segment_efforts
 ALTER TABLE ONLY segments
     ADD CONSTRAINT segments_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY starred_segments
+    ADD CONSTRAINT starred_segments_pkey PRIMARY KEY (athlete_id, segment_id);
+
 ALTER TABLE ONLY webhook_dump
     ADD CONSTRAINT webhook_dump_pkey PRIMARY KEY (id);
 
@@ -375,4 +385,10 @@ ALTER TABLE ONLY segment_efforts
 
 ALTER TABLE ONLY segments
     ADD CONSTRAINT segments_map_id_fkey FOREIGN KEY (map_id) REFERENCES maps(id);
+
+ALTER TABLE ONLY starred_segments
+    ADD CONSTRAINT starred_segments_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id);
+
+ALTER TABLE ONLY starred_segments
+    ADD CONSTRAINT starred_segments_segment_id_fkey FOREIGN KEY (segment_id) REFERENCES segments(id);
 

@@ -1,0 +1,648 @@
+[
+    {
+        "id": "629546",
+        "name": "Jester",
+        "activity_type": "Ride",
+        "distance": 830.869,
+        "average_grade": 12.5,
+        "maximum_grade": 20.1,
+        "elevation_high": 295.3,
+        "elevation_low": 191.4,
+        "start_latlng": [
+            30.3695962,
+            -97.8016839
+        ],
+        "end_latlng": [
+            30.3757635,
+            -97.7989523
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/VG7VRF2X3RQ45BUF2U24MCKQLPBYP3YPRPBEF5VJMJ7UXMBJXAVW5THCRDDY6YKTFALAJEZKOS5YSGWCXKKPK===",
+        "climb_category": 1,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2010-11-14T17:32:24Z",
+        "updated_at": "2021-05-20T08:02:03Z",
+        "total_elevation_gain": 105.264,
+        "map": {
+            "id": "s629546",
+            "polyline": "}pjxDp{|sQYo@o@qA{@uAwAoB[e@kAeC]]q@a@g@Q]GeABgAVw@\\gA\\cAR_AHi@@cAAaAM_Cc@s@W",
+            "summary_polyline": "",
+            "updated_at": "2023-05-01T02:38:05.221878Z"
+        },
+        "total_effort_count": 11068,
+        "total_athlete_count": 1853,
+        "total_star_count": 200,
+        "fetched_at": "2023-05-01T02:38:05.221878Z"
+    },
+    {
+        "id": "628842",
+        "name": "Big View Dr.",
+        "activity_type": "Ride",
+        "distance": 1380.67,
+        "average_grade": 8.3,
+        "maximum_grade": 27.9,
+        "elevation_high": 274.1,
+        "elevation_low": 156.7,
+        "start_latlng": [
+            30.3575036,
+            -97.8638311
+        ],
+        "end_latlng": [
+            30.3625568,
+            -97.8517879
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/LKEC5DUZ4R5HAL7X5R26XOV7MCM7NRAGWOQKZRCXJNECYEQL2HB76SXQ7FGHRV5LQYHWTJHZ7BUX4EAH2K6A====",
+        "climb_category": 1,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2010-11-02T14:46:40Z",
+        "updated_at": "2021-05-19T08:01:54Z",
+        "total_elevation_gain": 121.89,
+        "map": {
+            "id": "s628842",
+            "polyline": "kehxD~_itQcAMg@YeByAe@m@eDeHYy@u@aEW_BS{@m@qAyCaD_@k@c@gAQ_Ae@aHm@yCGi@@gAb@oBRqA@w@GcAIo@So@[q@]c@y@q@",
+            "summary_polyline": "",
+            "updated_at": "2023-05-01T02:38:05.912353Z"
+        },
+        "total_effort_count": 8217,
+        "total_athlete_count": 1200,
+        "total_star_count": 63,
+        "fetched_at": "2023-05-01T02:38:05.912353Z"
+    },
+    {
+        "id": "629046",
+        "name": "Terrace Mountain",
+        "activity_type": "Ride",
+        "distance": 1967.92,
+        "average_grade": 4.4,
+        "maximum_grade": 25,
+        "elevation_high": 216.6,
+        "elevation_low": 122,
+        "start_latlng": [
+            30.301174,
+            -97.797044
+        ],
+        "end_latlng": [
+            30.301139,
+            -97.808322
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/2QNT3JG4IVIXMMW5DHI3AGCU6K7DPQPP6E4V6LEGFXORZVXZ4CZPNYLXLVPAUV5ZVSTUCOB3BXRUZ3SGPSF74===",
+        "climb_category": 1,
+        "city": "West Lake Hills",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2010-11-06T03:18:01Z",
+        "updated_at": "2021-05-20T08:02:03Z",
+        "total_elevation_gain": 101.961,
+        "map": {
+            "id": "s629046",
+            "polyline": "ie}wDp~{sQsARs@N[NKHWZi@dAOd@QdAi@nEGPKNODMAIEwA_Bo@g@U[CS?m@K_@OQGCSCI@_@JsAr@SN[XMVKXUxAMZSTo@VMJGFEVGj@?T@TBJx@vALb@Hr@DbAHx@d@zBDXAVKb@U`@a@h@MXCZD\\Pd@h@l@f@Zt@ZZPRNRXFX@`@MfAAp@Fr@Nd@T`@^VjCh@h@Ph@V~BfBtAv@nA|@n@n@PL",
+            "summary_polyline": "",
+            "updated_at": "2023-05-01T02:38:06.557043Z"
+        },
+        "total_effort_count": 23909,
+        "total_athlete_count": 2976,
+        "total_star_count": 149,
+        "fetched_at": "2023-05-01T02:38:06.557043Z"
+    },
+    {
+        "id": "681737",
+        "name": "Barton Creek to Lost Creek, including descent from Bee Caves",
+        "activity_type": "Ride",
+        "distance": 10668,
+        "average_grade": -0,
+        "maximum_grade": 15.8,
+        "elevation_high": 317.6,
+        "elevation_low": 222,
+        "start_latlng": [
+            30.304214609786868,
+            -97.84204213880002
+        ],
+        "end_latlng": [
+            30.284243719652295,
+            -97.83373952843249
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/VPHGUXFAY7MNWLMFWULSSVUUR6DU3QWTMCJW52V7YVII7FTCRYY6TUGL54RTK23M3QFZKKWXQK6OD45PZL3Q====",
+        "climb_category": 0,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2011-07-14T01:09:32Z",
+        "updated_at": "2021-05-20T08:02:05Z",
+        "total_elevation_gain": 201.8,
+        "map": {
+            "id": "s681737",
+            "polyline": "ix}wDxwdtQb@zB`@vAb@v@l@r@XVrA|@z@^tC~@t@`@TPh@l@`@t@t@pBh@jAr@v@`@\\lBr@vBj@dAr@\\b@Xh@Rn@f@dCJX^l@x@x@rAhARR`@p@Xx@F^hBrMBV?lAKp@Ol@Wd@i@l@eBxAUX]f@[|@Ip@EbA@`@NfARt@pCzElClE\\dA^jBb@bBHf@|@nD\\~@\\h@p@n@JFj@R`@H`Dd@^B`ACtDu@v@En@BvAh@v@p@`CvCZj@^|AbB~[nArTJx@Tt@P^lCvEd@r@b@`@hAj@bCj@~@X`ALL@|BOhADhBd@\\KtBgFTq@^yAf@_Ah@qAb@e@hCaA~AgA^M|@g@l@i@f@U`AWpBEj@MRIx@g@bC}BNSnA}Br@o@TIlAUVQRWZ}@Bc@Ec@Ma@u@o@cAI{@Ug@q@A{@Nu@d@_@b@Wz@SPGd@]fBwC|@iB|@sB`@k@t@k@ZOvFqArBeAJKf@w@PgAGoAOe@gC}GaAsDKgBJsCNmARs@d@kAh@o@rAw@x@o@r@}@Re@Nc@d@gG\\mAj@_Af@a@`BsBd@_@f@YbA_@\\Sn@u@X}@LkBGmBSs@GQsAyB[c@_AcA}@iAYi@KYI_@EeA?oBEg@Mc@Qa@Y]mBcBeBeBq@k@gA}@w@eAGa@s@aBeAy@y@O_BHoBf@u@L]E_BWmA]m@Cs@GkCTc@Ay@Iy@?k@HmB?g@C[Eu@Sm@[aCmBq@o@k@qAGc@GoCIo@I_@I]Sg@_@o@qAoBuCcEqCyDUa@IUM{@AeAq@yJAk@Ba@Ja@\\{@b@eB",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:26.216074Z"
+        },
+        "total_effort_count": 20948,
+        "total_athlete_count": 3411,
+        "total_star_count": 25,
+        "fetched_at": "2023-05-02T20:30:26.216074Z"
+    },
+    {
+        "id": "609560",
+        "name": "Mt. Bonnell South Face",
+        "activity_type": "Ride",
+        "distance": 1072.25,
+        "average_grade": 4.7,
+        "maximum_grade": 16.1,
+        "elevation_high": 219.8,
+        "elevation_low": 166,
+        "start_latlng": [
+            30.3134815,
+            -97.7718854
+        ],
+        "end_latlng": [
+            30.3218366,
+            -97.7730674
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/UPPHEWL6MGJLSI6GAS5ELYEVVJEC5Z44TWOJH5RT3UWZDEGBRDLKIUJWZLWGROEV6BC7A3E4CGXCEFE7OBYQ====",
+        "climb_category": 0,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2010-04-20T22:07:25Z",
+        "updated_at": "2021-05-20T08:02:03Z",
+        "total_elevation_gain": 54.7953,
+        "map": {
+            "id": "s609560",
+            "polyline": "gr_xDhawsQiBbBqAz@eClBu@fA_AlCWl@_@CyA_@oE{@sCm@cMcEq@Qq@CWB{@N{Al@",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:26.692301Z"
+        },
+        "total_effort_count": 73881,
+        "total_athlete_count": 5714,
+        "total_star_count": 267,
+        "fetched_at": "2023-05-02T20:30:26.692301Z"
+    },
+    {
+        "id": "33454575",
+        "name": "Bluegrass and Lost Horizon Climb",
+        "activity_type": "Ride",
+        "distance": 3034.6,
+        "average_grade": 2.8,
+        "maximum_grade": 18.4,
+        "elevation_high": 249.8,
+        "elevation_low": 164.8,
+        "start_latlng": [
+            30.386721,
+            -97.767296
+        ],
+        "end_latlng": [
+            30.41133,
+            -97.768181
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/W76YBI4HOHTJZPNP3K63GB5NZKK2E5DLJZ6OMU2SKV3LJ2QBCDM5SKWU5EAYMCUK6THM6YUXXVJ4WTWDBUKZE===",
+        "climb_category": 0,
+        "city": "Austin",
+        "state": "Texas",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2022-12-20T22:46:45Z",
+        "updated_at": "2022-12-20T22:46:45Z",
+        "total_elevation_gain": 110,
+        "map": {
+            "id": "s33454575",
+            "polyline": "_|mxDrdvsQi@N_@Lu@f@}@fAk@z@E?ICUUy@s@[QMA]KMAg@@OFCAQBu@\\i@l@IDQV]^SZo@r@c@j@]R]P_@Ts@LmAI}@Bq@NgA^a@De@?e@Me@[kAiAc@WkA[sDoA_BaAu@m@cCwAi@Mo@GYA_ABiCAe@DeB^w@Vk@H}@EkAWgBWe@@_B\\u@Fk@Eg@KQIc@CE@i@z@a@Zg@Pi@N_Ch@_@Bu@PoFfBiCfA{Az@m@Xy@RiCDgADwCDcAQ_@Q[YKKS_@eA_COSYYy@a@s@MYK_AM]CWD",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:27.148584Z"
+        },
+        "total_effort_count": 9336,
+        "total_athlete_count": 861,
+        "total_star_count": 1,
+        "fetched_at": "2023-05-02T20:30:27.148584Z"
+    },
+    {
+        "id": "628845",
+        "name": "Top of City Park Road",
+        "activity_type": "Ride",
+        "distance": 335.32,
+        "average_grade": 12.6,
+        "maximum_grade": 26.8,
+        "elevation_high": 263.4,
+        "elevation_low": 216.6,
+        "start_latlng": [
+            30.3634543,
+            -97.8037798
+        ],
+        "end_latlng": [
+            30.3640305,
+            -97.8070697
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/SKPSJSIOBIU7UYQSHNKU6ZZKM4EFANSILETDKGQG5QS6AE4KHBZOZNT2WD46DLZHGI5EKSRYCFWCUP3LM4YNI===",
+        "climb_category": 0,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2010-11-02T18:06:35Z",
+        "updated_at": "2021-05-20T08:02:03Z",
+        "total_elevation_gain": 46.77,
+        "map": {
+            "id": "s628845",
+            "polyline": "qjixDrh}sQWFAD]nAGb@]lFStBGfBDbA",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:27.613294Z"
+        },
+        "total_effort_count": 18047,
+        "total_athlete_count": 3244,
+        "total_star_count": 35,
+        "fetched_at": "2023-05-02T20:30:27.613294Z"
+    },
+    {
+        "id": "891091",
+        "name": "Cat Mountain (Hugel Route)",
+        "activity_type": "Ride",
+        "distance": 2358.85,
+        "average_grade": 3.5,
+        "maximum_grade": 34.5,
+        "elevation_high": 258.2,
+        "elevation_low": 175.6,
+        "start_latlng": [
+            30.342433154582977,
+            -97.78067696839571
+        ],
+        "end_latlng": [
+            30.35151494666934,
+            -97.77215994894505
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/VTDIH3W72QDJHGEIDFBLMTLXEXDSCO75LUATFZ6FD4M6SNNA2FT6Q7CTRK5T3ZKNCG2KTUC5MXVHKYON7PWQ====",
+        "climb_category": 1,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2012-01-03T01:39:31Z",
+        "updated_at": "2021-05-20T08:02:07Z",
+        "total_elevation_gain": 107.8,
+        "map": {
+            "id": "s891091",
+            "polyline": "egexDfxxsQg@Rg@f@s@bBc@r@c@fAGXi@`Da@fAWn@k@~@w@x@]TWJYDYAc@QY[MUGWEw@BiAGkAGe@M]Sy@OYGEK?gAPw@F]Ae@MUKi@a@a@e@O]Iq@ISKEg@B_@CSCWI[O[Ye@s@a@aAUkAEm@MsGOcAO_@QKS?UJq@d@WJc@Z{@VY?uA]QIQMOQMUGUCy@J}AIm@O[IGOA{@Fo@CMCKKCQ?_@@UJg@r@{Ah@e@d@k@h@iALc@BSAs@DgBPuA@YMw@Sa@_@i@Ue@I_@",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:28.090495Z"
+        },
+        "total_effort_count": 6988,
+        "total_athlete_count": 1291,
+        "total_star_count": 38,
+        "fetched_at": "2023-05-02T20:30:28.090495Z"
+    },
+    {
+        "id": "1469968",
+        "name": "River Place to U Turn at 2222",
+        "activity_type": "Ride",
+        "distance": 3771.12,
+        "average_grade": 3.2,
+        "maximum_grade": 17.3,
+        "elevation_high": 345,
+        "elevation_low": 223.8,
+        "start_latlng": [
+            30.3658569,
+            -97.8596601
+        ],
+        "end_latlng": [
+            30.3931546,
+            -97.8461414
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/AJZTDW6PXL6SVXKW6TUXLYXII5GVGXUJRYPSWCIO4272ICUDHREMHUX65SCVHYXKJU3OAPMI7VNLVJOGEXQRQ===",
+        "climb_category": 1,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2012-05-29T12:21:45Z",
+        "updated_at": "2021-05-18T08:02:45Z",
+        "total_elevation_gain": 136.8,
+        "map": {
+            "id": "s1469968",
+            "polyline": "qyixDzehtQa@^y@|@QZsBtEUZc@^c@R]HmBNs@?q@OoIsEa@[{A_Ae@a@U_@ISIa@CYBuDEeAKu@Oi@KWUa@]e@SOUOg@UqBm@oBu@k@Yc@WWUcC}Co@eA[u@a@gB[k@e@k@eAcAYSgAa@_BW{@S]OeAm@k@Oa@CQAs@Fc@JcBl@s@P{@Fi@EoAa@mD_Bk@c@_DwCUQwAo@o@IoCMiD[m@CcDE}CG{@QiCw@s@Oc@Og@Wg@c@e@k@cDqEi@i@o@Yo@S[AuCa@cAUe@Ss@c@sEyDiAaBKKOGUH",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:28.597782Z"
+        },
+        "total_effort_count": 4864,
+        "total_athlete_count": 1246,
+        "total_star_count": 5,
+        "fetched_at": "2023-05-02T20:30:28.597782Z"
+    },
+    {
+        "id": "28704989",
+        "name": "Colorado River to Comanche Trail",
+        "activity_type": "Ride",
+        "distance": 4525.5,
+        "average_grade": 3.7,
+        "maximum_grade": 18,
+        "elevation_high": 319.2,
+        "elevation_low": 153.8,
+        "start_latlng": [
+            30.388005,
+            -97.913035
+        ],
+        "end_latlng": [
+            30.394283,
+            -97.86888
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/Z2I2G7YWVPRD32FYED4BWJ25IYVN5NV42TIV5XV2ZNDJW3K7DMHU6OTTNUDAEQHWODXJ34VTQUREROWS2DVPY===",
+        "climb_category": 2,
+        "city": "Austin",
+        "state": "Texas",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2021-06-05T18:10:46Z",
+        "updated_at": "2021-06-05T18:10:47Z",
+        "total_elevation_gain": 165.4,
+        "map": {
+            "id": "s28704989",
+            "polyline": "_dnxDnsrtQZy@lAiCb@kATu@TsAHw@F_CAgDQ}CW{BKgA@aCOoB?a@VsARcBJeCAeAKcCoAeXEkCDkBd@yH@qCMmCUuB_AqGU_A_@mAkB{D{AsCu@gA_C{C}@mAu@_B[}@Qs@QkBGqA?cADoALgATgApCcKXmALq@PyAFgBCcBGaAQkASaAm@cBg@cAoEeH{A{CwAmDgAqD]wAy@iEUgB[eDo@oFi@yDq@gEo@}E",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:29.061166Z"
+        },
+        "total_effort_count": 4344,
+        "total_athlete_count": 1237,
+        "total_star_count": 1,
+        "fetched_at": "2023-05-02T20:30:29.061166Z"
+    },
+    {
+        "id": "995700",
+        "name": "courtyard from 360 to top",
+        "activity_type": "Ride",
+        "distance": 1073.18,
+        "average_grade": 8.9,
+        "maximum_grade": 22.7,
+        "elevation_high": 279.2,
+        "elevation_low": 184.2,
+        "start_latlng": [
+            30.352592105045915,
+            -97.79555233195424
+        ],
+        "end_latlng": [
+            30.358656495809555,
+            -97.80111280269921
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/AOXCZWXT44XRF33IYSKKXOPLN2O3UOS5IOUJUBHQMZDAQCU2ISE4IENSNO7WO2TQFCRGTB365IGBPZ4LSBQQ====",
+        "climb_category": 1,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2012-02-16T04:10:48Z",
+        "updated_at": "2021-05-20T08:02:08Z",
+        "total_elevation_gain": 95,
+        "map": {
+            "id": "s995700",
+            "polyline": "ufgxDfu{sQ_@t@[fASbFMh@QZ]Tm@Xe@DQFc@M_@UcBeBm@OMMOEq@@oBRq@VWR{AhBUP_Bp@UPQVWh@Mt@APF~@BxAAJM^MPO^]VQVYVQTy@l@MN",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:29.571693Z"
+        },
+        "total_effort_count": 16501,
+        "total_athlete_count": 3269,
+        "total_star_count": 168,
+        "fetched_at": "2023-05-02T20:30:29.571693Z"
+    },
+    {
+        "id": "10355605",
+        "name": "Bullick Hollow to the end",
+        "activity_type": "Ride",
+        "distance": 1537.5,
+        "average_grade": 4.5,
+        "maximum_grade": 48,
+        "elevation_high": 315.1,
+        "elevation_low": 245.6,
+        "start_latlng": [
+            30.412859,
+            -97.866108
+        ],
+        "end_latlng": [
+            30.404082,
+            -97.854571
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/KV37BGQERKDJOTYGTTIJU6SX6PTCJODJXZ6U7C2RHYCDJGSGFQ6AI6HRH22F2TNJSTZ7JMWNE7ZPFHBEUIRMM===",
+        "climb_category": 0,
+        "city": "Austin",
+        "state": "Texas",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2015-08-30T18:01:18Z",
+        "updated_at": "2021-05-18T08:04:06Z",
+        "total_elevation_gain": 74,
+        "map": {
+            "id": "s10355605",
+            "polyline": "i_sxDdnitQP]nAmD`@w@z@qAd@[DG`Ae@nAQzBc@hBc@vBgAvAkANUDSzA{BZk@d@{ANw@^wA~@oCrBmEZe@f@_At@cA`@u@b@iAr@yB|@}B`@w@lAuB^i@jA}A",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:30.076561Z"
+        },
+        "total_effort_count": 6009,
+        "total_athlete_count": 1572,
+        "total_star_count": 5,
+        "fetched_at": "2023-05-02T20:30:30.076561Z"
+    },
+    {
+        "id": "628782",
+        "name": "River Hills",
+        "activity_type": "Ride",
+        "distance": 2586.26,
+        "average_grade": 3.9,
+        "maximum_grade": 12.5,
+        "elevation_high": 252.2,
+        "elevation_low": 150.6,
+        "start_latlng": [
+            30.337957,
+            -97.848799
+        ],
+        "end_latlng": [
+            30.318579,
+            -97.854263
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/XKKKL52JXYUVABPUVBI23HDI5RXKERNMXX2PU6HGKDI3AW4PRF24MWR65RISMKX5IO52OSOWQL2CQI5YG6CA====",
+        "climb_category": 1,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2010-11-02T02:34:29Z",
+        "updated_at": "2021-05-20T08:02:03Z",
+        "total_elevation_gain": 104.317,
+        "map": {
+            "id": "s628782",
+            "polyline": "ekdxD~aftQVw@p@w@l@GxA@jBOb@?n@ZHNXp@`@dB\\~@LHb@?vA]|@MrBPd@A|@SnAGb@Gr@[nA_@nCwAfAa@bA[ZEj@CpBBPBPDb@T~DjCn@x@jAnCf@fAbB~BtA`C~@lBh@^H@jADlBQxEi@|@Gd@BdA\\bAr@v@RhAKn@HPPz@rAv@Xp@CdBk@`ASbALjBjA`@h@h@dA^d@t@n@",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:30.534034Z"
+        },
+        "total_effort_count": 42941,
+        "total_athlete_count": 4161,
+        "total_star_count": 225,
+        "fetched_at": "2023-05-02T20:30:30.534034Z"
+    },
+    {
+        "id": "1733083",
+        "name": "Trail of the Madrones \u0026 Ridgecrest",
+        "activity_type": "Ride",
+        "distance": 1717.99,
+        "average_grade": 3.8,
+        "maximum_grade": 21.8,
+        "elevation_high": 250.4,
+        "elevation_low": 184.6,
+        "start_latlng": [
+            30.309366,
+            -97.798199
+        ],
+        "end_latlng": [
+            30.317159,
+            -97.804775
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/OMPNJBDXDGHDR4RRDNHXQ6TRMICWR5QFUJIS2APWWNUPJMFOUX2NRHJPOHWM3CWCA6CWFS3OMRY3RS5XIJ2U6===",
+        "climb_category": 0,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2012-07-12T00:26:52Z",
+        "updated_at": "2021-05-19T08:02:05Z",
+        "total_elevation_gain": 68.848,
+        "map": {
+            "id": "s1733083",
+            "polyline": "ox~wDve|sQy@J]HoBBO?m@Mo@UgAu@eA{@y@aA}@uAQSa@Ye@QMC[BYHwAr@[H_@@_@C[I}CqAy@e@_@GOA_@F[Li@^o@p@i@|@Yr@Kb@AR?PH`@L\\^n@J^@h@Ed@O`@KPiBjB]b@Qb@K^SjAa@~Cs@dECh@?l@NjBRnA\\zAp@nC",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:31.069556Z"
+        },
+        "total_effort_count": 1072,
+        "total_athlete_count": 222,
+        "total_star_count": 5,
+        "fetched_at": "2023-05-02T20:30:31.069556Z"
+    },
+    {
+        "id": "740569",
+        "name": "Rain Creek Fun Climb - LONG",
+        "activity_type": "Ride",
+        "distance": 612.569,
+        "average_grade": 9.7,
+        "maximum_grade": 24.9,
+        "elevation_high": 263.6,
+        "elevation_low": 204.2,
+        "start_latlng": [
+            30.39838139131488,
+            -97.76269343956046
+        ],
+        "end_latlng": [
+            30.39662806551883,
+            -97.75683584816639
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/G62AXG6K3SNMOVHXU4E5VRERSKR2XNZQYWSZCY2V2WKORG2KSSZ42OTTZI3HSQMF6KAD3GEAML73PHJ4FACA====",
+        "climb_category": 0,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2011-08-31T19:49:14Z",
+        "updated_at": "2021-05-20T08:02:05Z",
+        "total_elevation_gain": 59.53,
+        "map": {
+            "id": "s740569",
+            "polyline": "{dpxDzgusQVq@Hg@B]Ac@Eo@OcBHiA`@qA`@u@Rc@lAmGv@yCn@oAPk@f@iA",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:31.464451Z"
+        },
+        "total_effort_count": 17788,
+        "total_athlete_count": 2233,
+        "total_star_count": 53,
+        "fetched_at": "2023-05-02T20:30:31.464451Z"
+    },
+    {
+        "id": "626149",
+        "name": "Smokey Valley",
+        "activity_type": "Ride",
+        "distance": 1052.68,
+        "average_grade": 10.2,
+        "maximum_grade": 26.8,
+        "elevation_high": 276.6,
+        "elevation_low": 169.3,
+        "start_latlng": [
+            30.3593497,
+            -97.7808089
+        ],
+        "end_latlng": [
+            30.3670281,
+            -97.780456
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/25HUWLNTSLJGSQQT2J44R3GX4BMJE5TG4DWICP6LAV5JKIDFTS3NIGVNIGLHSUPWTD7BLDMSXOS2R6JACKX4E===",
+        "climb_category": 1,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2010-09-15T01:56:35Z",
+        "updated_at": "2021-05-20T08:02:03Z",
+        "total_elevation_gain": 104.9,
+        "map": {
+            "id": "s626149",
+            "polyline": "}phxD`yxsQqD?w@JWO}@qCe@u@g@UWLkBdCqAz@_Ab@kA`@]TOFaAv@Wl@[~@ENO?y@m@{Ay@}CeAuA[}@M[OoBeB",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:30:32.031277Z"
+        },
+        "total_effort_count": 11094,
+        "total_athlete_count": 1680,
+        "total_star_count": 88,
+        "fetched_at": "2023-05-02T20:30:32.031277Z"
+    },
+    {
+        "id": "617537",
+        "name": "Beauford Dr.",
+        "activity_type": "Ride",
+        "distance": 751.383,
+        "average_grade": 11.2,
+        "maximum_grade": 30.1,
+        "elevation_high": 282.6,
+        "elevation_low": 198.4,
+        "start_latlng": [
+            30.375941999999995,
+            -97.78939
+        ],
+        "end_latlng": [
+            30.375750999999998,
+            -97.794786
+        ],
+        "elevation_profile": "https://d3o5xota0a1fcr.cloudfront.net/v6/charts/LTPXK3XW37BMX7FWTVDJ5WFRVBYYMM7XLSL4FUN3XNTKJ3XQ2FK3ZYEBPY2FGS3F4DMAN5KMEGLW5BBZN3HB6===",
+        "climb_category": 1,
+        "city": "Austin",
+        "state": "TX",
+        "country": "United States",
+        "private": false,
+        "hazardous": false,
+        "created_at": "2010-07-14T23:10:37Z",
+        "updated_at": "2021-05-20T08:02:03Z",
+        "total_elevation_gain": 83.33,
+        "map": {
+            "id": "s617537",
+            "polyline": "sxkxDtnzsQAt@L|AEZQn@Y`@o@T{@J]?k@HSJs@x@[jAAZB^Jb@LXf@n@f@\\r@ZfC`A\\Rh@r@Rv@Bp@ElAKr@O\\",
+            "summary_polyline": "",
+            "updated_at": "2023-05-02T20:40:36.372657Z"
+        },
+        "total_effort_count": 9217,
+        "total_athlete_count": 1749,
+        "total_star_count": 105,
+        "fetched_at": "2023-05-02T20:40:36.372657Z"
+    }
+]

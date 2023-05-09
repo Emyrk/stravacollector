@@ -1,3 +1,24 @@
+-- name: StarSegments :one
+INSERT INTO
+	starred_segments(
+		updated_at,
+		athlete_id,
+		segment_id,
+	    starred
+	)
+SELECT
+	Now() AS updated_at,
+	unnest(@athlete_id::bigint[]) AS athlete_id,
+	unnest(@segment_id::bigint[]) AS segment_id,
+	unnest(@starred::boolean[]) AS starred
+ON CONFLICT
+	(athlete_id, segment_id)
+	DO UPDATE SET
+		updated_at = Now(),
+		starred = EXCLUDED.starred
+RETURNING *;
+;
+
 -- name: LoadedSegments :many
 SELECT id, fetched_at FROM segments;
 

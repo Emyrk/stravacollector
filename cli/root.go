@@ -23,6 +23,7 @@ func RootCmd() *cobra.Command {
 	cmd.AddCommand(
 		serverCmd(),
 		generateKey(),
+		offlineServer(),
 	)
 
 	return cmd
