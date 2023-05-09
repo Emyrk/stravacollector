@@ -3,13 +3,18 @@ package api
 import (
 	"net/http"
 
+	"github.com/Emyrk/strava/api/httpmw"
+
 	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/modelsdk"
 	"github.com/Emyrk/strava/database"
 )
 
 func (api *API) getSegments(rw http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	var (
+		id, athleteLoggedIn = httpmw.AuthenticatedAthleteIDOptional(r)
+		ctx                 = r.Context()
+	)
 
 	var requestedSegments []modelsdk.StringInt
 	if !httpapi.Read(ctx, rw, r, &requestedSegments) {
@@ -20,6 +25,14 @@ func (api *API) getSegments(rw http.ResponseWriter, r *http.Request) {
 	for i, seg := range requestedSegments {
 		requestedSegmentsInts[i] = int64(seg)
 	}
+	var _, _ = id, athleteLoggedIn
+
+	//if athleteLoggedIn {
+	//	segments, err := api.Opts.DB.GetPersonalSegments(ctx, database.GetPersonalSegmentsParams{
+	//		AthleteID:  id,
+	//		SegmentIds: requestedSegmentsInts,
+	//	})
+	//}
 
 	segments, err := api.Opts.DB.GetSegments(ctx, requestedSegmentsInts)
 	if err != nil {

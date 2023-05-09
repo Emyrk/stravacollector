@@ -37,8 +37,17 @@ WHERE segments.id = ANY(@segment_ids::bigint[])
 SELECT
 	sqlc.embed(segments),
 	sqlc.embed(maps),
-	sqlc.embed(segment_efforts),
-	COALESCE(starred_segments.starred, false) as starred
+	COALESCE(starred_segments.starred, false) as starred,
+
+	-- SegmentEffort
+	COALESCE(best_effort.id, -1) as best_effort_id,
+	COALESCE(best_effort.elapsed_time, -1) as best_effort_elapsed_time,
+	COALESCE(best_effort.moving_time, -1) as best_effort_moving_time,
+	COALESCE(best_effort.start_date, '0001-01-01 00:00:00+00'::timestamp) as best_effort_start_date,
+	COALESCE(best_effort.start_date_local, '0001-01-01 00:00:00+00'::timestamp) as best_effort_start_date_local,
+	COALESCE(best_effort.device_watts, false) as best_effort_device_watts,
+	COALESCE(best_effort.average_watts, -1) as best_effort_average_watts,
+	COALESCE(best_effort.activities_id, -1) as best_effort_activities_id
 FROM
 	segments
 LEFT JOIN
@@ -58,7 +67,7 @@ LEFT JOIN LATERAL
 	        segment_id = segments.id
     	ORDER BY
 			segment_efforts.athlete_id, segment_efforts.segment_id, elapsed_time ASC
-	) segment_efforts ON segment_efforts.segment_id = segments.id
+	) best_effort ON best_effort.segment_id = segments.id
 WHERE segments.id = ANY(@segment_ids::bigint[])
 ;
 

@@ -1340,8 +1340,17 @@ const getPersonalSegments = `-- name: GetPersonalSegments :many
 SELECT
 	segments.id, segments.name, segments.activity_type, segments.distance, segments.average_grade, segments.maximum_grade, segments.elevation_high, segments.elevation_low, segments.start_latlng, segments.end_latlng, segments.elevation_profile, segments.climb_category, segments.city, segments.state, segments.country, segments.private, segments.hazardous, segments.created_at, segments.updated_at, segments.total_elevation_gain, segments.map_id, segments.total_effort_count, segments.total_athlete_count, segments.total_star_count, segments.fetched_at,
 	maps.id, maps.polyline, maps.summary_polyline, maps.updated_at,
-	segment_efforts.id, segment_efforts.athlete_id, segment_efforts.segment_id, segment_efforts.name, segment_efforts.elapsed_time, segment_efforts.moving_time, segment_efforts.start_date, segment_efforts.start_date_local, segment_efforts.distance, segment_efforts.start_index, segment_efforts.end_index, segment_efforts.device_watts, segment_efforts.average_watts, segment_efforts.kom_rank, segment_efforts.pr_rank, segment_efforts.updated_at, segment_efforts.activities_id, segment_efforts.id, segment_efforts.athlete_id, segment_efforts.segment_id, segment_efforts.name, segment_efforts.elapsed_time, segment_efforts.moving_time, segment_efforts.start_date, segment_efforts.start_date_local, segment_efforts.distance, segment_efforts.start_index, segment_efforts.end_index, segment_efforts.device_watts, segment_efforts.average_watts, segment_efforts.kom_rank, segment_efforts.pr_rank, segment_efforts.updated_at, segment_efforts.activities_id,
-	COALESCE(starred_segments.starred, false) as starred
+	COALESCE(starred_segments.starred, false) as starred,
+
+	-- SegmentEffort
+	COALESCE(best_effort.id, -1) as best_effort_id,
+	COALESCE(best_effort.elapsed_time, -1) as best_effort_elapsed_time,
+	COALESCE(best_effort.moving_time, -1) as best_effort_moving_time,
+	COALESCE(best_effort.start_date, '0001-01-01 00:00:00+00'::timestamp) as best_effort_start_date,
+	COALESCE(best_effort.start_date_local, '0001-01-01 00:00:00+00'::timestamp) as best_effort_start_date_local,
+	COALESCE(best_effort.device_watts, false) as best_effort_device_watts,
+	COALESCE(best_effort.average_watts, -1) as best_effort_average_watts,
+	COALESCE(best_effort.activities_id, -1) as best_effort_activities_id
 FROM
 	segments
 LEFT JOIN
@@ -1361,7 +1370,7 @@ LEFT JOIN LATERAL
 	        segment_id = segments.id
     	ORDER BY
 			segment_efforts.athlete_id, segment_efforts.segment_id, elapsed_time ASC
-	) segment_efforts ON segment_efforts.segment_id = segments.id
+	) best_effort ON best_effort.segment_id = segments.id
 WHERE segments.id = ANY($2::bigint[])
 `
 
@@ -1371,10 +1380,17 @@ type GetPersonalSegmentsParams struct {
 }
 
 type GetPersonalSegmentsRow struct {
-	Segment       Segment       `db:"segment" json:"segment"`
-	Map           Map           `db:"map" json:"map"`
-	SegmentEffort SegmentEffort `db:"segmenteffort" json:"segmenteffort"`
-	Starred       bool          `db:"starred" json:"starred"`
+	Segment                  Segment   `db:"segment" json:"segment"`
+	Map                      Map       `db:"map" json:"map"`
+	Starred                  bool      `db:"starred" json:"starred"`
+	BestEffortID             int64     `db:"best_effort_id" json:"best_effort_id"`
+	BestEffortElapsedTime    float64   `db:"best_effort_elapsed_time" json:"best_effort_elapsed_time"`
+	BestEffortMovingTime     float64   `db:"best_effort_moving_time" json:"best_effort_moving_time"`
+	BestEffortStartDate      time.Time `db:"best_effort_start_date" json:"best_effort_start_date"`
+	BestEffortStartDateLocal time.Time `db:"best_effort_start_date_local" json:"best_effort_start_date_local"`
+	BestEffortDeviceWatts    bool      `db:"best_effort_device_watts" json:"best_effort_device_watts"`
+	BestEffortAverageWatts   float64   `db:"best_effort_average_watts" json:"best_effort_average_watts"`
+	BestEffortActivitiesID   int64     `db:"best_effort_activities_id" json:"best_effort_activities_id"`
 }
 
 // For authenticated users
@@ -1417,24 +1433,15 @@ func (q *sqlQuerier) GetPersonalSegments(ctx context.Context, arg GetPersonalSeg
 			&i.Map.Polyline,
 			&i.Map.SummaryPolyline,
 			&i.Map.UpdatedAt,
-			&i.SegmentEffort.ID,
-			&i.SegmentEffort.AthleteID,
-			&i.SegmentEffort.SegmentID,
-			&i.SegmentEffort.Name,
-			&i.SegmentEffort.ElapsedTime,
-			&i.SegmentEffort.MovingTime,
-			&i.SegmentEffort.StartDate,
-			&i.SegmentEffort.StartDateLocal,
-			&i.SegmentEffort.Distance,
-			&i.SegmentEffort.StartIndex,
-			&i.SegmentEffort.EndIndex,
-			&i.SegmentEffort.DeviceWatts,
-			&i.SegmentEffort.AverageWatts,
-			&i.SegmentEffort.KomRank,
-			&i.SegmentEffort.PrRank,
-			&i.SegmentEffort.UpdatedAt,
-			&i.SegmentEffort.ActivitiesID,
 			&i.Starred,
+			&i.BestEffortID,
+			&i.BestEffortElapsedTime,
+			&i.BestEffortMovingTime,
+			&i.BestEffortStartDate,
+			&i.BestEffortStartDateLocal,
+			&i.BestEffortDeviceWatts,
+			&i.BestEffortAverageWatts,
+			&i.BestEffortActivitiesID,
 		); err != nil {
 			return nil, err
 		}
