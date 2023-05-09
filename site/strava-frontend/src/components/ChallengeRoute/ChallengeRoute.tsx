@@ -359,7 +359,7 @@ const SegmentCard: FC<{
       : "Segment is not starred";
 
   const bestActHref = segment.personal_best
-    ? `https://www.strava.com/activities/${segment.personal_best?.best_effort_activities_id}`
+    ? `https://www.strava.com/activities/${segment.personal_best.best_effort_activities_id}/segments/${segment.personal_best.best_effort_id}`
     : "";
 
   return (
