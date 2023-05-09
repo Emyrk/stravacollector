@@ -173,10 +173,14 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 		starAtheletes := make([]int64, 0, len(activity.SegmentEfforts))
 		starSegments := make([]int64, 0, len(activity.SegmentEfforts))
 		starStarred := make([]bool, 0, len(activity.SegmentEfforts))
+		starSegmentsAdded := make(map[int64]bool)
 		for i, effort := range activity.SegmentEfforts {
-			starAtheletes = append(starAtheletes, effort.Athlete.ID)
-			starSegments = append(starSegments, effort.Segment.ID)
-			starStarred = append(starStarred, effort.Segment.Starred)
+			if _, ok := starSegmentsAdded[effort.Segment.ID]; !ok {
+				starAtheletes = append(starAtheletes, effort.Athlete.ID)
+				starSegments = append(starSegments, effort.Segment.ID)
+				starStarred = append(starStarred, effort.Segment.Starred)
+				starSegmentsAdded[effort.Segment.ID] = true
+			}
 			_, err := store.UpsertSegmentEffort(ctx, database.UpsertSegmentEffortParams{
 				ID:             effort.ID,
 				AthleteID:      effort.Athlete.ID,
