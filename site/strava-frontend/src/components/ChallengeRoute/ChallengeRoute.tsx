@@ -313,35 +313,20 @@ const MapController: FC<{
       const poly = L.polyline(points, {
         weight: 3,
         color: "#fc4c02",
-        // interactive: true,
       });
       const start = L.circleMarker(points[0], {
         radius: circleRadius,
         color: "green",
-        // interactive: true,
       });
       const end = L.circleMarker(points[points.length - 1], {
         radius: circleRadius,
         color: "red",
-        // interactive: true,
       });
-      // poly.setTooltipContent(segment.detailed_segment.name);
-      // poly.setPopupContent(segment.detailed_segment.name);
-
-      // const popUp = L.popup({}, poly);
 
       const group = L.featureGroup([poly, start, end]).on("click", () => {
         console.log("Clicked", segment.detailed_segment.id);
       });
-
-      // group.setPopupContent(segment.detailed_segment.name);
-      // group.setTooltipContent(segment.detailed_segment.name);
-
-      // poly.addEventListener("click", () => {
-      //   poly.toggleTooltip();
-      //   poly.openPopup();
-      //   console.log("comon");
-      // });
+      group.bindTooltip(segment.detailed_segment.name);
 
       mapRef.addLayer(group);
       return [segment.detailed_segment.id, poly] as [string, L.Polyline];
@@ -359,35 +344,6 @@ const MapController: FC<{
   //   });
   // }, [polys, selectedSegment]);
 
-  // {
-  //   segmentsData.map((segment) => {
-  //     const points = decode(segment.detailed_segment.map.polyline);
-  //     const circleRadius = 5;
-  //     const popUp = <Popup>{segment.detailed_segment.name}</Popup>;
-  //     return (
-  //       <Box key={segment.detailed_segment.id}>
-  //         <Polyline
-  //           weight={3}
-  //           pathOptions={{ color: "#fc4c02" }}
-  //           positions={points}
-  //         >
-  //           {popUp}
-  //         </Polyline>
-  //         <CircleMarker center={points[0]} radius={circleRadius} color="green">
-  //           {popUp}
-  //         </CircleMarker>
-  //         <CircleMarker
-  //           center={points[points.length - 1]}
-  //           radius={circleRadius}
-  //           color="red"
-  //         >
-  //           {popUp}
-  //         </CircleMarker>
-  //       </Box>
-  //     );
-  //   });
-  // }
-
   // poly.on("click", (e) => {
   //   poly.setStyle({ color: "#fc4c02", weight: 10 });
   //   // console.log(e);
@@ -398,11 +354,6 @@ const MapController: FC<{
 };
 
 const SegmentCardContainer: FC<PropsWithChildren> = ({ children }) => {
-  // return (
-  //   <SimpleGrid columns={3} spacing={10}>
-  //     {children}
-  //   </SimpleGrid>
-  // );
   return (
     <Grid
       pt={"2em"}
