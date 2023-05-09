@@ -372,8 +372,11 @@ const SegmentCard: FC<{
       width={"350px"}
       borderRadius={"10px"}
       boxShadow={"rgb(20, 20, 20) 0px 3px 6px"}
+      transition={"all .25s ease"}
       _hover={{
-        bg: "rgb(43, 49, 59)",
+        // bg: "rgb(43, 49, 59)",
+        // bg: "#48403b",
+        bg: "linear-gradient(135deg, #3b3f48 0%, #48403b 35%)",
         boxShadow: "rgb(20, 20, 20) 0px 5px 10px",
         marginTop: "-3px",
         marginBottom: "-3px",
@@ -392,24 +395,28 @@ const SegmentCard: FC<{
         >
           {/*  The card header */}
           <GridItem colSpan={3}>
-            <Grid templateColumns="repeat(10, 1fr)">
+            <Grid templateColumns="repeat(13, 1fr)" columnGap={2}>
               <GridItem
                 fontSize={
                   segment.detailed_segment.name.length < 20 ? "1.2rem" : "1rem"
                 }
                 // fontSize={segment.detailed_segment.name.length < 20 ? "2em" : "1em"}
                 textAlign={"center"}
-                colSpan={8}
+                colSpan={10}
               >
                 {segment.detailed_segment.name}
               </GridItem>
-              <GridItem colSpan={2}>
-                <Flex alignItems={"center"} columnGap={3}>
+              <GridItem colSpan={3}>
+                <Flex columnGap={3}>
                   <Link
                     as="span"
                     onClick={() =>
                       setSelectedSegment(segment.detailed_segment.id)
                     }
+                    transition={"all .1s ease"}
+                    _hover={{
+                      transform: "scale(1.1)",
+                    }}
                   >
                     <Tooltip
                       label="Zoom to segment"
@@ -429,11 +436,16 @@ const SegmentCard: FC<{
                     <Link
                       href={`https://strava.com/segments/${segment.detailed_segment.id}`}
                       target="_blank"
+                      transition={"all .1s ease"}
+                      _hover={{
+                        transform: "scale(1.1)",
+                      }}
                     >
                       <Image
                         src={"/logos/stravalogo.png"}
-                        height={"30px"}
-                        width={"auto"}
+                        height={"34px"}
+                        width={"34px"}
+                        maxWidth={"34px"}
                       />
                     </Link>
                   </Tooltip>
@@ -506,13 +518,26 @@ const SegmentCard: FC<{
           </GridItem>
           <GridItem textAlign={"center"}>
             <Flex justifyContent="center" alignItems={"center"} height={"100%"}>
-              <Tooltip label={starTooltip} aria-label="Starred Segment Tooltip">
-                <FontAwesomeIcon
-                  icon={starIcon}
-                  size="2x"
-                  style={{ color: starColor }}
-                />
-              </Tooltip>
+              <Box
+                cursor="help"
+                _hover={{
+                  opacity: 1,
+                }}
+                opacity={0.7}
+              >
+                <Tooltip
+                  label={starTooltip}
+                  aria-label="Starred Segment Tooltip"
+                >
+                  <FontAwesomeIcon
+                    icon={starIcon}
+                    size="2x"
+                    style={{
+                      color: starColor,
+                    }}
+                  />
+                </Tooltip>
+              </Box>
             </Flex>
           </GridItem>
         </Grid>
