@@ -51,7 +51,7 @@ import {
   DistanceToLocal,
   DistanceToLocalElevation,
 } from "../../lib/Distance/Distance";
-import { Layer } from "leaflet";
+import L, { Layer } from "leaflet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
@@ -215,7 +215,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
             zoom={12}
             maxBounds={bounds}
           >
-            <MapController />
+            <MapController segments={segmentsData} />
             <TileLayer
               attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
               url={`https://api.mapbox.com/styles/v1/${mapboxUsername}/${mapboxStyleID}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`}
@@ -267,8 +267,52 @@ export const ChallengeRoute: FC<{}> = ({}) => {
   );
 };
 
-const MapController: FC<{}> = () => {
+const MapController: FC<{ segments: PersonalSegment[] }> = ({ segments }) => {
   const mapRef = useMap();
+  // let segment = new L.FeatureGroup();
+  const points = decode(segments[0].detailed_segment.map.polyline);
+  const poly = L.polyline(points);
+  console.log(poly);
+  {
+    /* <FeatureGroup>
+              {segmentsData.map((segment) => {
+                const points = decode(segment.detailed_segment.map.polyline);
+                const circleRadius = 5;
+                const popUp = <Popup>{segment.detailed_segment.name}</Popup>;
+                return (
+                  <Box key={segment.detailed_segment.id}>
+                    <Polyline
+                      weight={3}
+                      pathOptions={{ color: "#fc4c02" }}
+                      positions={points}
+                    >
+                      {popUp}
+                    </Polyline>
+                    <CircleMarker
+                      center={points[0]}
+                      radius={circleRadius}
+                      color="green"
+                    >
+                      {popUp}
+                    </CircleMarker>
+                    <CircleMarker
+                      center={points[points.length - 1]}
+                      radius={circleRadius}
+                      color="red"
+                    >
+                      {popUp}
+                    </CircleMarker>
+                  </Box>
+                );
+              })}
+            </FeatureGroup> */
+  }
+  poly.on("click", (e) => {
+    poly.setStyle({ color: "#fc4c02", weight: 10 });
+    console.log(e);
+  });
+  // segment.addTo(mapRef);
+  mapRef.addLayer(poly);
   return <></>;
 };
 
