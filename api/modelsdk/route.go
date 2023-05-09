@@ -15,7 +15,7 @@ type SegmentSummary struct {
 }
 
 type PersonalSegment struct {
-	DetailedSegment
+	DetailedSegment DetailedSegment `json:"detailed_segment"`
 
 	Starred      bool                       `json:"starred,omitempty"`
 	PersonalBest *PersonalBestSegmentEffort `json:"personal_best,omitempty"`
