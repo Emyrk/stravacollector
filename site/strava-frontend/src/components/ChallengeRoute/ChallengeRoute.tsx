@@ -56,7 +56,6 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import { decode } from "@mapbox/polyline";
-import { faCirclePlay, faStar } from "@fortawesome/free-solid-svg-icons";
 import {
   DistanceToLocal,
   DistanceToLocalElevation,
@@ -350,6 +349,8 @@ const SegmentCard: FC<{
       ? fasStar
       : farStar;
 
+  const starColor = authenticatedUser === undefined ? "#709df8" : "#fcaf02";
+
   const starTooltip =
     authenticatedUser === undefined
       ? "Connect with strava to see if you have this segment starred"
@@ -507,7 +508,7 @@ const SegmentCard: FC<{
                 <FontAwesomeIcon
                   icon={starIcon}
                   size="2x"
-                  style={{ color: "#fcaf02" }}
+                  style={{ color: starColor }}
                 />
               </Tooltip>
             </Flex>
