@@ -312,7 +312,6 @@ const SegmentCard: FC<{
   const bestActHref = segment.personal_best
     ? `https://www.strava.com/activities/${segment.personal_best?.best_effort_activities_id}`
     : "";
-  // const starComponent = <FontAwesomeIcon icon={starIcon} size="2x" />;
 
   return (
     <Box
@@ -436,7 +435,7 @@ const SegmentCard: FC<{
             </ConditionalLink>
           </GridItem>
           <GridItem textAlign={"center"}>
-            <Flex justifyContent="center" alignItems={"center"}>
+            <Flex justifyContent="center" alignItems={"center"} height={"100%"}>
               <Tooltip label={starTooltip} aria-label="Starred Segment Tooltip">
                 <FontAwesomeIcon icon={starIcon} size="2x" />
               </Tooltip>
