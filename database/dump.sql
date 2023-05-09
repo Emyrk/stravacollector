@@ -389,6 +389,3 @@ ALTER TABLE ONLY segments
 ALTER TABLE ONLY starred_segments
     ADD CONSTRAINT starred_segments_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id);
 
-ALTER TABLE ONLY starred_segments
-    ADD CONSTRAINT starred_segments_segment_id_fkey FOREIGN KEY (segment_id) REFERENCES segments(id);
-

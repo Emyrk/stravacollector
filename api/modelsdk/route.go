@@ -22,14 +22,14 @@ type PersonalSegment struct {
 }
 
 type PersonalBestSegmentEffort struct {
-	BestEffortID             int64     `json:"best_effort_id"`
+	BestEffortID             StringInt `json:"best_effort_id"`
 	BestEffortElapsedTime    float64   `json:"best_effort_elapsed_time"`
 	BestEffortMovingTime     float64   `json:"best_effort_moving_time"`
 	BestEffortStartDate      time.Time `json:"best_effort_start_date"`
 	BestEffortStartDateLocal time.Time `json:"best_effort_start_date_local"`
 	BestEffortDeviceWatts    bool      `json:"best_effort_device_watts"`
 	BestEffortAverageWatts   float64   `json:"best_effort_average_watts"`
-	BestEffortActivitiesID   int64     `json:"best_effort_activities_id"`
+	BestEffortActivitiesID   StringInt `json:"best_effort_activities_id"`
 }
 
 type DetailedSegment struct {

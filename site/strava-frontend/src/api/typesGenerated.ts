@@ -102,14 +102,14 @@ export interface MinAthlete {
 
 // From codersdk/route.go
 export interface PersonalBestSegmentEffort {
-  readonly best_effort_id: number
+  readonly best_effort_id: string
   readonly best_effort_elapsed_time: number
   readonly best_effort_moving_time: number
   readonly best_effort_start_date: string
   readonly best_effort_start_date_local: string
   readonly best_effort_device_watts: boolean
   readonly best_effort_average_watts: number
-  readonly best_effort_activities_id: number
+  readonly best_effort_activities_id: string
 }
 
 // From codersdk/route.go
