@@ -15,6 +15,7 @@ type sqlcQuerier interface {
 	// This isn't used in the app, but is the foundation for the hugel view.
 	BestRouteEfforts(ctx context.Context, expectedSegments []int64) ([]BestRouteEffortsRow, error)
 	DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error)
+	DeleteAthleteLogin(ctx context.Context, athleteID int64) error
 	GetActivityDetail(ctx context.Context, id int64) (ActivityDetail, error)
 	GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error)
 	GetAthlete(ctx context.Context, athleteID int64) (Athlete, error)

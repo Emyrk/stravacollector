@@ -46,6 +46,10 @@ LIMIT 1;
 -- name: GetAthleteLogin :one
 SELECT * FROM athlete_logins WHERE athlete_id = @athlete_id;
 
+-- name: DeleteAthleteLogin :exec
+DELETE FROM athlete_logins WHERE athlete_id = @athlete_id;
+
+
 -- name: GetAthleteLoginFull :one
 SELECT
     sqlc.embed(athlete_logins),

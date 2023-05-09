@@ -29,9 +29,10 @@ const (
 	fetchActivityJob    = "fetch_activity"
 	updateActivityField = "update_activity"
 	deleteActivityJob   = "delete_activity"
+	updateAthleteJob    = "update_athlete"
 
-	stravaFetchQueue          = "queue_strava_fetch"
-	stravaUpdateActivityQueue = "queue_strava_update_activity"
+	stravaFetchQueue      = "queue_strava_fetch"
+	stravaUpdateHookQueue = "queue_strava_update_activity"
 )
 
 var (
@@ -155,7 +156,7 @@ func (m *Manager) Run(ctx context.Context) error {
 	m.cancel = cancel
 
 	// worker for strava fetch queue
-	workers, err := m.newWorkers([]string{stravaFetchQueue, stravaUpdateActivityQueue})
+	workers, err := m.newWorkers([]string{stravaFetchQueue, stravaUpdateHookQueue})
 	if err != nil {
 		return fmt.Errorf("new workers: %w", err)
 	}
@@ -226,6 +227,7 @@ func (m *Manager) workMap() gue.WorkMap {
 		fetchActivityJob:    m.instrumentJob(m.fetchActivity),
 		updateActivityField: m.instrumentJob(m.updateActivity),
 		deleteActivityJob:   m.instrumentJob(m.deleteActivity),
+		updateAthleteJob:    m.instrumentJob(m.updateAthlete),
 	}
 }
 

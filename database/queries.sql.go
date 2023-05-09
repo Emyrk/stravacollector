@@ -476,6 +476,15 @@ func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivi
 	return i, err
 }
 
+const deleteAthleteLogin = `-- name: DeleteAthleteLogin :exec
+DELETE FROM athlete_logins WHERE athlete_id = $1
+`
+
+func (q *sqlQuerier) DeleteAthleteLogin(ctx context.Context, athleteID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAthleteLogin, athleteID)
+	return err
+}
+
 const getAthlete = `-- name: GetAthlete :one
 SELECT id, summit, username, firstname, lastname, sex, city, state, country, follow_count, friend_count, measurement_preference, ftp, weight, clubs, created_at, updated_at, fetched_at, profile_pic_link, profile_pic_link_medium FROM athletes WHERE id = $1
 `

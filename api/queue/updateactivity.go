@@ -21,7 +21,7 @@ func (m *Manager) EnqueueUpdateActivity(ctx context.Context, event webhooks.Webh
 
 	return m.Client.Enqueue(ctx, &gue.Job{
 		Type:  updateActivityField,
-		Queue: stravaUpdateActivityQueue,
+		Queue: stravaUpdateHookQueue,
 		Args:  data,
 	})
 }
@@ -34,7 +34,7 @@ func (m *Manager) EnqueueDeleteActivity(ctx context.Context, event webhooks.Webh
 
 	return m.Client.Enqueue(ctx, &gue.Job{
 		Type:  deleteActivityJob,
-		Queue: stravaUpdateActivityQueue,
+		Queue: stravaUpdateHookQueue,
 		Args:  data,
 	})
 }

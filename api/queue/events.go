@@ -18,16 +18,41 @@ func (m *Manager) HandleWebhookEvents(ctx context.Context, c <-chan *webhooks.We
 			case "activity":
 				m.newActivity(ctx, *event)
 			case "athlete":
-				// Ignore these for now.
-				m.Logger.Warn().
-					Interface("event", event).
-					Msg("Webhook event to an athlete not handled")
+				m.newAthlete(ctx, *event)
 			default:
 				m.Logger.Warn().
 					Str("object_type", event.ObjectType).
 					Msg("Webhook event not supported")
 			}
 		}
+	}
+}
+
+func (m *Manager) newAthlete(ctx context.Context, event webhooks.WebhookEvent) {
+	var qErr error
+	switch event.AspectType {
+	case "create":
+		m.Logger.Warn().
+			Interface("event", event).
+			Msg("Webhook create event to an athlete not handled")
+	case "update":
+		qErr = m.EnqueueUpdateAthlete(ctx, event)
+	case "delete":
+		m.Logger.Warn().
+			Interface("event", event).
+			Msg("Webhook delete event to an athlete not handled")
+	default:
+		m.Logger.Warn().
+			Str("aspect_type", event.AspectType).
+			Msg("Webhook event not supported")
+	}
+	if qErr != nil {
+		m.Logger.Error().
+			Err(qErr).
+			Str("aspect_type", event.AspectType).
+			Int64("owner_id", event.OwnerID).
+			Int64("activity_id", event.ObjectID).
+			Msg("error enqueueing activity")
 	}
 }
 
