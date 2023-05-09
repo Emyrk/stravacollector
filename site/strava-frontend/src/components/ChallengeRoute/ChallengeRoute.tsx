@@ -1,4 +1,12 @@
-import { FC, useRef, PropsWithChildren, Children, ReactNode } from "react";
+import {
+  FC,
+  useRef,
+  PropsWithChildren,
+  Children,
+  ReactNode,
+  useState,
+  useEffect,
+} from "react";
 import {
   AthleteSummary,
   DetailedSegment,
@@ -64,10 +72,12 @@ import {
   ElapsedDurationText,
   FormatDate,
 } from "../../pages/HugelBoard/CalcActivity";
+import { getEffectiveConstraintOfTypeParameter } from "typescript";
 
 export const ChallengeRoute: FC<{}> = ({}) => {
   const { name } = useParams();
   const mapRef = useRef(null);
+  const [selectedSegment, setSelectedSegment] = useState<string>("");
 
   const queryKey = ["hugel-leaderboard", name];
   const {
@@ -215,12 +225,15 @@ export const ChallengeRoute: FC<{}> = ({}) => {
             zoom={12}
             maxBounds={bounds}
           >
-            <MapController segments={segmentsData} />
+            <MapController
+              segments={segmentsData}
+              selectedSegment={selectedSegment}
+            />
             <TileLayer
               attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
               url={`https://api.mapbox.com/styles/v1/${mapboxUsername}/${mapboxStyleID}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`}
             />
-            <FeatureGroup>
+            {/* <FeatureGroup>
               {segmentsData.map((segment) => {
                 const points = decode(segment.detailed_segment.map.polyline);
                 const circleRadius = 5;
@@ -251,14 +264,28 @@ export const ChallengeRoute: FC<{}> = ({}) => {
                   </Box>
                 );
               })}
-            </FeatureGroup>
+            </FeatureGroup> */}
           </MapContainer>
         </Flex>
 
         <SegmentCardContainer>
           {/* <Flex w="100%" flexDirection="column" p="2em"> */}
           {segmentsData.map((segment) => (
-            <SegmentCard key={segment.detailed_segment.id} segment={segment} />
+            <Box
+              key={segment.detailed_segment.id}
+              onMouseOut={() => {
+                if (selectedSegment === segment.detailed_segment.id) {
+                  setSelectedSegment("");
+                }
+              }}
+              onMouseOver={() => {
+                if (selectedSegment !== segment.detailed_segment.id) {
+                  setSelectedSegment(segment.detailed_segment.id);
+                }
+              }}
+            >
+              <SegmentCard segment={segment} />
+            </Box>
           ))}
           {/* </Flex> */}
         </SegmentCardContainer>
@@ -267,52 +294,106 @@ export const ChallengeRoute: FC<{}> = ({}) => {
   );
 };
 
-const MapController: FC<{ segments: PersonalSegment[] }> = ({ segments }) => {
+const MapController: FC<{
+  selectedSegment: string;
+  segments: PersonalSegment[];
+}> = ({ selectedSegment, segments }) => {
   const mapRef = useMap();
+
   // let segment = new L.FeatureGroup();
-  const points = decode(segments[0].detailed_segment.map.polyline);
-  const poly = L.polyline(points);
-  console.log(poly);
-  {
-    /* <FeatureGroup>
-              {segmentsData.map((segment) => {
-                const points = decode(segment.detailed_segment.map.polyline);
-                const circleRadius = 5;
-                const popUp = <Popup>{segment.detailed_segment.name}</Popup>;
-                return (
-                  <Box key={segment.detailed_segment.id}>
-                    <Polyline
-                      weight={3}
-                      pathOptions={{ color: "#fc4c02" }}
-                      positions={points}
-                    >
-                      {popUp}
-                    </Polyline>
-                    <CircleMarker
-                      center={points[0]}
-                      radius={circleRadius}
-                      color="green"
-                    >
-                      {popUp}
-                    </CircleMarker>
-                    <CircleMarker
-                      center={points[points.length - 1]}
-                      radius={circleRadius}
-                      color="red"
-                    >
-                      {popUp}
-                    </CircleMarker>
-                  </Box>
-                );
-              })}
-            </FeatureGroup> */
-  }
-  poly.on("click", (e) => {
-    poly.setStyle({ color: "#fc4c02", weight: 10 });
-    console.log(e);
-  });
-  // segment.addTo(mapRef);
-  mapRef.addLayer(poly);
+  // const points = decode(segments[0].detailed_segment.map.polyline);
+  // const poly = L.polyline(points);
+  // let polys = [] as [string, L.Polyline][];
+  const [polys, setPolys] = useState([] as [string, L.Polyline][]);
+  useEffect(() => {
+    const polys = segments.map((segment) => {
+      const points = decode(segment.detailed_segment.map.polyline);
+      const circleRadius = 5;
+      // const popUp = <Popup>{segment.detailed_segment.name}</Popup>;
+      const poly = L.polyline(points, {
+        weight: 3,
+        color: "#fc4c02",
+        // interactive: true,
+      });
+      const start = L.circleMarker(points[0], {
+        radius: circleRadius,
+        color: "green",
+        // interactive: true,
+      });
+      const end = L.circleMarker(points[points.length - 1], {
+        radius: circleRadius,
+        color: "red",
+        // interactive: true,
+      });
+      // poly.setTooltipContent(segment.detailed_segment.name);
+      // poly.setPopupContent(segment.detailed_segment.name);
+
+      // const popUp = L.popup({}, poly);
+
+      const group = L.featureGroup([poly, start, end]).on("click", () => {
+        console.log("Clicked", segment.detailed_segment.id);
+      });
+
+      // group.setPopupContent(segment.detailed_segment.name);
+      // group.setTooltipContent(segment.detailed_segment.name);
+
+      // poly.addEventListener("click", () => {
+      //   poly.toggleTooltip();
+      //   poly.openPopup();
+      //   console.log("comon");
+      // });
+
+      mapRef.addLayer(group);
+      return [segment.detailed_segment.id, poly] as [string, L.Polyline];
+    });
+    setPolys(polys);
+  }, [mapRef, segments]);
+
+  // useEffect(() => {
+  //   polys.forEach(([id, poly]) => {
+  //     if (id === selectedSegment) {
+  //       poly.setStyle({ color: "blue", weight: 10 });
+  //     } else {
+  //       poly.setStyle({ color: "#fc4c02", weight: 3 });
+  //     }
+  //   });
+  // }, [polys, selectedSegment]);
+
+  // {
+  //   segmentsData.map((segment) => {
+  //     const points = decode(segment.detailed_segment.map.polyline);
+  //     const circleRadius = 5;
+  //     const popUp = <Popup>{segment.detailed_segment.name}</Popup>;
+  //     return (
+  //       <Box key={segment.detailed_segment.id}>
+  //         <Polyline
+  //           weight={3}
+  //           pathOptions={{ color: "#fc4c02" }}
+  //           positions={points}
+  //         >
+  //           {popUp}
+  //         </Polyline>
+  //         <CircleMarker center={points[0]} radius={circleRadius} color="green">
+  //           {popUp}
+  //         </CircleMarker>
+  //         <CircleMarker
+  //           center={points[points.length - 1]}
+  //           radius={circleRadius}
+  //           color="red"
+  //         >
+  //           {popUp}
+  //         </CircleMarker>
+  //       </Box>
+  //     );
+  //   });
+  // }
+
+  // poly.on("click", (e) => {
+  //   poly.setStyle({ color: "#fc4c02", weight: 10 });
+  //   // console.log(e);
+  // });
+  // // segment.addTo(mapRef);
+  // mapRef.addLayer(poly);
   return <></>;
 };
 
