@@ -233,7 +233,7 @@ const GalleryCardBox: React.FC<PropsWithChildren<BoxProps>> = ({
   ...props
 }) => {
   return (
-    <ResponsiveCard m={"10px"} w="100%" maxW="350px" h="300px" {...props}>
+    <ResponsiveCard m={"10px"} w="100%" maxW="350px" h="270px" {...props}>
       {children}
     </ResponsiveCard>
   );
