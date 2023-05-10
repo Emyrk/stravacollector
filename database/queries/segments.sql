@@ -1,4 +1,4 @@
--- name: StarSegments :one
+-- name: StarSegments :exec
 INSERT INTO
 	starred_segments(
 		updated_at,
@@ -6,17 +6,22 @@ INSERT INTO
 		segment_id,
 	    starred
 	)
-SELECT
-	Now() AS updated_at,
-	unnest(@athlete_id::bigint[]) AS athlete_id,
-	unnest(@segment_id::bigint[]) AS segment_id,
-	unnest(@starred::boolean[]) AS starred
+
+SELECT * FROM
+(
+	SELECT
+		Now() AS updated_at,
+		unnest(@athlete_id::bigint[]) AS athlete_id,
+		unnest(@segment_id::bigint[]) AS segment_id,
+		unnest(@starred::boolean[]) AS starred
+) AS inserting_rows
+WHERE
+    segment_id = ANY(SELECT id FROM segments)
 ON CONFLICT
 	(athlete_id, segment_id)
 	DO UPDATE SET
 		updated_at = Now(),
 		starred = EXCLUDED.starred
-RETURNING *;
 ;
 
 -- name: LoadedSegments :many

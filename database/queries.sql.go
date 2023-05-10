@@ -1565,7 +1565,7 @@ func (q *sqlQuerier) LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, e
 	return items, nil
 }
 
-const starSegments = `-- name: StarSegments :one
+const starSegments = `-- name: StarSegments :exec
 INSERT INTO
 	starred_segments(
 		updated_at,
@@ -1573,17 +1573,22 @@ INSERT INTO
 		segment_id,
 	    starred
 	)
-SELECT
-	Now() AS updated_at,
-	unnest($1::bigint[]) AS athlete_id,
-	unnest($2::bigint[]) AS segment_id,
-	unnest($3::boolean[]) AS starred
+
+SELECT updated_at, athlete_id, segment_id, starred FROM
+(
+	SELECT
+		Now() AS updated_at,
+		unnest($1::bigint[]) AS athlete_id,
+		unnest($2::bigint[]) AS segment_id,
+		unnest($3::boolean[]) AS starred
+) AS inserting_rows
+WHERE segment_id = ANY(SELECT id FROM segments)
+
 ON CONFLICT
 	(athlete_id, segment_id)
 	DO UPDATE SET
 		updated_at = Now(),
 		starred = EXCLUDED.starred
-RETURNING athlete_id, segment_id, starred, updated_at
 `
 
 type StarSegmentsParams struct {
@@ -1592,16 +1597,9 @@ type StarSegmentsParams struct {
 	Starred   []bool  `db:"starred" json:"starred"`
 }
 
-func (q *sqlQuerier) StarSegments(ctx context.Context, arg StarSegmentsParams) (StarredSegment, error) {
-	row := q.db.QueryRowContext(ctx, starSegments, pq.Array(arg.AthleteID), pq.Array(arg.SegmentID), pq.Array(arg.Starred))
-	var i StarredSegment
-	err := row.Scan(
-		&i.AthleteID,
-		&i.SegmentID,
-		&i.Starred,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *sqlQuerier) StarSegments(ctx context.Context, arg StarSegmentsParams) error {
+	_, err := q.db.ExecContext(ctx, starSegments, pq.Array(arg.AthleteID), pq.Array(arg.SegmentID), pq.Array(arg.Starred))
+	return err
 }
 
 const upsertSegment = `-- name: UpsertSegment :one

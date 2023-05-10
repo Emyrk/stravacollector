@@ -210,7 +210,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			}
 		}
 
-		_, err = store.StarSegments(ctx, database.StarSegmentsParams{
+		err = store.StarSegments(ctx, database.StarSegmentsParams{
 			AthleteID: starAtheletes,
 			SegmentID: starSegments,
 			Starred:   starStarred,

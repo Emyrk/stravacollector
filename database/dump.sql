@@ -375,7 +375,7 @@ ALTER TABLE ONLY activity_summary
     ADD CONSTRAINT activity_summary_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY athlete_load
-    ADD CONSTRAINT athlete_load_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athlete_logins(athlete_id) ON DELETE CASCADE;
+    ADD CONSTRAINT athlete_load_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY segment_efforts
     ADD CONSTRAINT segment_efforts_activities_id_fk FOREIGN KEY (activities_id) REFERENCES activity_detail(id) ON DELETE CASCADE;
@@ -388,4 +388,7 @@ ALTER TABLE ONLY segments
 
 ALTER TABLE ONLY starred_segments
     ADD CONSTRAINT starred_segments_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id);
+
+ALTER TABLE ONLY starred_segments
+    ADD CONSTRAINT starred_segments_segment_id_fkey FOREIGN KEY (segment_id) REFERENCES segments(id) ON DELETE CASCADE;
 

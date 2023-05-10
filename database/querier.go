@@ -30,7 +30,7 @@ type sqlcQuerier interface {
 	HugelLeaderboard(ctx context.Context, athleteID interface{}) ([]HugelLeaderboardRow, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
 	LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, error)
-	StarSegments(ctx context.Context, arg StarSegmentsParams) (StarredSegment, error)
+	StarSegments(ctx context.Context, arg StarSegmentsParams) error
 	SuperHugelLeaderboard(ctx context.Context, athleteID interface{}) ([]SuperHugelLeaderboardRow, error)
 	UpdateActivityName(ctx context.Context, arg UpdateActivityNameParams) error
 	UpsertActivityDetail(ctx context.Context, arg UpsertActivityDetailParams) (ActivityDetail, error)
