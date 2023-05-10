@@ -59,7 +59,7 @@ func Authenticated(a *auth.Authentication, optional bool) func(next http.Handler
 			if err != nil {
 				// Delete expired cookies
 				http.SetCookie(rw, &http.Cookie{
-					Name:   StravaAuthJWTCookie,
+					Name: StravaAuthJWTCookie,
 					MaxAge: -1,
 				})
 				if optional {

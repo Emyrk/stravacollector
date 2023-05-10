@@ -122,6 +122,8 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		Value:    session,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
+		// 7 Days
+		MaxAge: 7 * 24 * 60 * 60,
 	})
 
 	logger.Info().

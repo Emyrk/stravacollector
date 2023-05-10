@@ -73,6 +73,7 @@ import { faStar as farStar } from "@fortawesome/free-regular-svg-icons";
 import { useAuthenticated } from "../../contexts/Authenticated";
 import { ElapsedDurationText, FormatDate } from "../HugelBoard/CalcActivity";
 import { ResponsiveCard } from "../../components/ResponsiveCard/ResponsiveCard";
+import { ConditionalLink } from "../../components/ConditionalLink/ConditionalLink";
 
 export const ChallengeRoute: FC<{}> = ({}) => {
   const { name } = useParams();
@@ -523,20 +524,6 @@ const SegmentCard: FC<{
       </Box>
     </ResponsiveCard>
   );
-};
-
-const ConditionalLink: FC<{
-  href: string;
-  children: ReactNode;
-}> = ({ href, children }) => {
-  if (href !== "") {
-    return (
-      <Link target="_blank" href={href}>
-        {children}
-      </Link>
-    );
-  }
-  return <>{children}</>;
 };
 
 const SegmentStat: FC<{
