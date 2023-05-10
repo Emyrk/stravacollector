@@ -30,6 +30,7 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  Tooltip,
   GridItem,
 } from "@chakra-ui/react";
 import {
@@ -56,6 +57,7 @@ import {
 } from "./CalcActivity";
 import React from "react";
 import { CardStat } from "../../components/CardStat/CardStat";
+import { StravaLink } from "../../components/StravaLink/StravaLink";
 
 export const HugelBoardTable: FC<HugelBoardProps> = ({
   data,
@@ -164,7 +166,7 @@ export const HugelBoardTableRow: FC<
   return (
     <Tr key={`row-${activity.athlete_id}`}>
       <Td>
-        <Flex p={3} alignItems={"center"}>
+        <Flex pl={3} alignItems={"center"}>
           <Text fontWeight="bold" fontSize={30} pr={5}>
             {activity.rank}
           </Text>
@@ -201,63 +203,124 @@ export const HugelBoardTableRow: FC<
       </Td>
       {"activity_id" in activity && (
         <Td>
-          <Link
-            href={`https://strava.com/activities/${activity.activity_id}`}
-            target="_blank"
+          <Grid
+            templateColumns="repeat(4, 1fr)"
+            rowGap={2}
+            columnGap={3}
+            alignItems="center"
           >
-            <Grid templateColumns="repeat(3, 1fr)" rowGap={2}>
-              <GridItem colSpan={1}>
-                <Text fontWeight={"bold"}>{activity.activity_name}</Text>
-              </GridItem>
+            <GridItem colSpan={4}>
+              <Text fontWeight={"bold"} isTruncated>
+                {activity.activity_name}
+              </Text>
+            </GridItem>
 
-              <GridItem colSpan={1}>
-                <CardStat title="Distance" value={distance + "mi"} />
-              </GridItem>
-              <GridItem colSpan={1}>
-                <CardStat title="Distance" value={distance + "mi"} />
-              </GridItem>
-              <GridItem colSpan={1}>
-                <CardStat title="Distance" value={elevationText + "ft"} />
-              </GridItem>
-            </Grid>
+            <GridItem colSpan={1} width="100%" textAlign={"center"}>
+              <StravaLink
+                href={`https://strava.com/activities/${activity.activity_id}`}
+                target="_blank"
+                height={"34px"}
+                width={"34px"}
+                maxWidth={"34px"}
+                tooltip="View activity on Strava"
+              />
+            </GridItem>
+            <GridItem colSpan={1}>
+              <CardStat title="Distance" value={distance + "mi"} />
+            </GridItem>
+            <GridItem colSpan={1}>
+              <CardStat title="Distance" value={elevationText + "ft"} />
+            </GridItem>
+          </Grid>
 
-            {/* {distance} miles | {elevationText} feet */}
-            {/* </Box> */}
-          </Link>
+          {/* {distance} miles | {elevationText} feet */}
+          {/* </Box> */}
         </Td>
       )}
-      {pairedEfforts.map((efforts) => {
+      {pairedEfforts.map((efforts, index) => {
         return (
-          <Td>
-            {efforts.map((effort, index) => {
-              if (!effort) {
-                // Blank box of height 2 lines
-                return <Box pb={index === 0 ? 3 : 0} height="2em"></Box>;
-              }
-              return (
-                <>
-                  <Link
-                    target="_blank"
-                    href={`https://strava.com/activities/${effort.activity_id.toString()}/segments/${effort.effort_id.toString()}`}
-                  >
-                    <Text maxWidth={"100px"} isTruncated fontWeight={"bold"}>
-                      {segmentSummaries && segmentSummaries[effort.segment_id]
-                        ? segmentSummaries[effort.segment_id].name
-                        : "????"}
-                    </Text>
-                    <Box pb={index === 0 ? 3 : 0}>
-                      {ElapsedDurationText(effort.elapsed_time, false)} @{" "}
-                      {effort.device_watts
-                        ? Math.floor(effort.average_watts) + "w"
-                        : "--"}
-                    </Box>
-                  </Link>
-                </>
-              );
-            })}
-          </Td>
+          <EffortPair
+            key={`pair-${index}`}
+            pair={efforts as [SegmentEffort, SegmentEffort | null]}
+            segmentSummaries={segmentSummaries}
+          />
         );
       })}
     </Tr>
+  );
+};
+
+const EffortPair: FC<{
+  pair: [SegmentEffort, SegmentEffort | null];
+  segmentSummaries?: { [key: string]: SegmentSummary };
+}> = ({ pair, segmentSummaries }) => {
+  return (
+    <Td p={"10px"} m={0}>
+      {pair.map((effort, index) => {
+        if (!effort) {
+          // Blank box of height 2 lines
+          return (
+            <Box
+              key={`effort-${index}`}
+              pb={index === 0 ? 3 : 0}
+              height="2em"
+            ></Box>
+          );
+        }
+
+        const name =
+          segmentSummaries && segmentSummaries[effort.segment_id]
+            ? segmentSummaries[effort.segment_id].name
+            : "????";
+
+        return (
+          <Tooltip
+            mt={index === 0 ? "-10px" : "0px"}
+            label={"Link to effort on strava"}
+            aria-label="Strava logo tooltip"
+          >
+            <Link
+              key={`effort-${index}`}
+              target="_blank"
+              href={`https://strava.com/activities/${effort.activity_id.toString()}/segments/${effort.effort_id.toString()}`}
+            >
+              <CardStat
+                title={name}
+                titleProps={{
+                  maxW: "110px",
+                  isTruncated: true,
+                }}
+                pb={index !== 0 ? "0px" : "10px"}
+                value={`${ElapsedDurationText(effort.elapsed_time, false)} @ ${
+                  effort.device_watts
+                    ? effort.average_watts.toFixed(0) + "w"
+                    : "--"
+                }`}
+              />
+            </Link>
+          </Tooltip>
+        );
+
+        // return (
+        // <Link
+        //   key={`effort-${index}`}
+        //   target="_blank"
+        //   href={`https://strava.com/activities/${effort.activity_id.toString()}/segments/${effort.effort_id.toString()}`}
+        // >
+        //     <Text maxWidth={"100px"} isTruncated fontWeight={"bold"}>
+        //       {segmentSummaries && segmentSummaries[effort.segment_id]
+        //         ? segmentSummaries[effort.segment_id].name
+        //         : "????"}
+        //     </Text>
+        //     <Box pb={index === 0 ? 3 : 0}>
+        //       {ElapsedDurationText(effort.elapsed_time, false)} @{" "}
+        //       {effort.device_watts
+        //         ? Math.floor(effort.average_watts) + "w"
+        //         : "--"}
+        //     </Box>
+        //   </Link>
+        // );
+      })}
+    </Td>
   );
 };

@@ -31,19 +31,14 @@ export const FormatDate = (
     month: shortMonth ? "short" : "long",
     day: "numeric",
   };
+  // 2022-11-27T15:42:54Z
+  // Dates come over in UTC
   return new Date(data).toLocaleDateString(undefined, options);
 };
 
 export const CalculateActivity = (
   activity: HugelLeaderBoardActivity | SuperHugelLeaderBoardActivity
 ): ActivityCalResults => {
-  // 2022-11-27T15:42:54Z
-  // Dates come over in UTC
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
   const elapsedText = ElapsedDurationText(activity.elapsed);
   const showWatts = activity.efforts.every(
     (effort) => effort.average_watts > 0 && effort.device_watts
@@ -92,10 +87,7 @@ export const CalculateActivity = (
     ) / 10
   }k`;
   const distance = Math.floor(DistanceToLocal(activity.activity_distance));
-  const dateText = new Date(activity.activity_start_date).toLocaleDateString(
-    undefined,
-    options
-  );
+  const dateText = FormatDate(activity.activity_start_date, true);
 
   return {
     dateText,

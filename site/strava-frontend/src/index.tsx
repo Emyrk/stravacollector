@@ -44,9 +44,14 @@ const customComponents: Record<string, StyleConfig> = {
     variants: {
       stravaLink: ({ colorMode }) => ({
         ...defaultTheme.components.Link.baseStyle,
-        transition: "all .1s ease",
+        // Apply transitions to the underlying image
+        img: {
+          transition: "all .1s ease",
+        },
         _hover: {
-          transform: "scale(1.1)",
+          img: {
+            transform: "scale(1.1)",
+          },
         },
       }),
     },
