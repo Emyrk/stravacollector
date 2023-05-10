@@ -17,6 +17,7 @@ const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element");
 const root = ReactDOM.createRoot(container);
 
+// console.log("defaultTheme", defaultTheme.components.Link);
 const customComponents: Record<string, StyleConfig> = {
   Box: {
     variants: {
@@ -35,6 +36,17 @@ const customComponents: Record<string, StyleConfig> = {
           boxShadow: "rgb(20, 20, 20) 0px 5px 10px",
           marginTop: "-3px",
           marginBottom: "-3px",
+        },
+      }),
+    },
+  },
+  Link: {
+    variants: {
+      stravaLink: ({ colorMode }) => ({
+        ...defaultTheme.components.Link.baseStyle,
+        transition: "all .1s ease",
+        _hover: {
+          transform: "scale(1.1)",
         },
       }),
     },

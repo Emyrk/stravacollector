@@ -75,6 +75,7 @@ import { ElapsedDurationText, FormatDate } from "../HugelBoard/CalcActivity";
 import { ResponsiveCard } from "../../components/ResponsiveCard/ResponsiveCard";
 import { ConditionalLink } from "../../components/ConditionalLink/ConditionalLink";
 import { CardStat } from "../../components/CardStat/CardStat";
+import { StravaLink } from "../../components/StravaLink/StravaLink";
 
 export const ChallengeRoute: FC<{}> = ({}) => {
   const { name } = useParams();
@@ -395,26 +396,14 @@ const SegmentCard: FC<{
                       />
                     </Tooltip>
                   </Link>
-                  <Tooltip
-                    label="Link to segment"
-                    aria-label="Strava logo tooltip"
-                  >
-                    <Link
-                      href={`https://strava.com/segments/${segment.detailed_segment.id}`}
-                      target="_blank"
-                      transition={"all .1s ease"}
-                      _hover={{
-                        transform: "scale(1.1)",
-                      }}
-                    >
-                      <Image
-                        src={"/logos/stravalogo.png"}
-                        height={"34px"}
-                        width={"34px"}
-                        maxWidth={"34px"}
-                      />
-                    </Link>
-                  </Tooltip>
+                  <StravaLink
+                    href={`https://strava.com/segments/${segment.detailed_segment.id}`}
+                    target="_blank"
+                    height={"34px"}
+                    width={"34px"}
+                    maxWidth={"34px"}
+                    tooltip="View segment on Strava"
+                  />
                 </Flex>
               </GridItem>
             </Grid>
