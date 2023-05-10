@@ -170,15 +170,21 @@ const GalleryCard: React.FC<{
               {position}
             </Text>
           </Flex>
-          {"activity_id" in activity && (
-            <StravaLink
-              height={"45px"}
-              width={"45px"}
-              target="_blank"
-              tooltip="View activity on Strava"
-              href={`"https://www.strava.com/activities/${activity.activity_id}"`}
-            />
-          )}
+          <StravaLink
+            height={"45px"}
+            width={"45px"}
+            target="_blank"
+            tooltip={
+              "activity_id" in activity
+                ? `View activity on strava`
+                : `View athlete on strava`
+            }
+            href={
+              "activity_id" in activity
+                ? `"https://www.strava.com/activities/${activity.activity_id}"`
+                : `https://www.strava.com/athletes/${activity.athlete_id}}`
+            }
+          />
         </Flex>
       </Flex>
       <Grid
