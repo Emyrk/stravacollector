@@ -203,37 +203,41 @@ export const HugelBoardTableRow: FC<
       </Td>
       {"activity_id" in activity && (
         <Td>
-          <Grid
-            templateColumns="repeat(3, 1fr)"
-            rowGap={2}
-            columnGap={3}
-            alignItems="center"
+          <Flex
+            direction={"column"}
+            // alignContent={"center"}
+            // justifyContent={"center"}
+            // alignItems={"center"}
           >
-            <GridItem colSpan={3}>
-              <Text fontWeight={"bold"} isTruncated>
-                {activity.activity_name}
-              </Text>
-            </GridItem>
-
-            <GridItem colSpan={1} width="32px" textAlign={"center"}>
+            <Text
+              textAlign={"center"}
+              fontWeight={"bold"}
+              maxW="150px"
+              isTruncated
+            >
+              {activity.activity_name}
+            </Text>
+            <Flex
+              alignContent={"center"}
+              alignItems={"center"}
+              direction={"row"}
+            >
               <StravaLink
+                m={1}
                 href={`https://strava.com/activities/${activity.activity_id}`}
                 target="_blank"
                 height={"32px"}
                 width={"32px"}
                 tooltip="View activity on Strava"
               />
-            </GridItem>
-            <GridItem colSpan={1}>
-              <CardStat title="Distance" value={distance.toFixed(1) + "mi"} />
-            </GridItem>
-            <GridItem colSpan={1}>
-              <CardStat title="Elevation" value={elevationText + "ft"} />
-            </GridItem>
-          </Grid>
-
-          {/* {distance} miles | {elevationText} feet */}
-          {/* </Box> */}
+              <CardStat
+                m={1}
+                title="Distance"
+                value={distance.toFixed(1) + "mi"}
+              />
+              <CardStat m={1} title="Elevation" value={elevationText + "ft"} />
+            </Flex>
+          </Flex>
         </Td>
       )}
       {pairedEfforts.map((efforts, index) => {
