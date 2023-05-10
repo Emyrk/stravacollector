@@ -1,5 +1,5 @@
-import { FC } from "react"
-import { HugelBoardProps } from "./HugelBoard"
+import { FC, PropsWithChildren } from "react";
+import { HugelBoardProps } from "./HugelBoard";
 import {
   Flex,
   Grid,
@@ -8,100 +8,93 @@ import {
   Badge,
   Text,
   useColorModeValue,
+  BoxProps,
+  Hide,
+  VisuallyHidden,
+  GridItem,
+  FlexProps,
+} from "@chakra-ui/react";
+import {
+  HugelLeaderBoardActivity,
+  SuperHugelLeaderBoardActivity,
+} from "../../api/typesGenerated";
+import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
+import {
+  DistanceToLocal,
+  DistanceToLocalElevation,
+} from "../../lib/Distance/Distance";
+import { CalculateActivity } from "./CalcActivity";
+import { ResponsiveCard } from "../../components/ResponsiveCard/ResponsiveCard";
+import { StravaLink } from "../../components/StravaLink/StravaLink";
+import { CardStat } from "../../components/CardStat/CardStat";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-} from '@chakra-ui/react'
-import { HugelLeaderBoardActivity, SuperHugelLeaderBoardActivity } from "../../api/typesGenerated"
-import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar"
-import { DistanceToLocal, DistanceToLocalElevation } from "../../lib/Distance/Distance"
-import { CalculateActivity } from "./CalcActivity"
-
-// https://chakra-templates.dev/components/cards
 export const HugelBoardGallery: FC<HugelBoardProps> = ({
-  data, error, isLoading, isFetched
+  data,
+  error,
+  isLoading,
+  isFetched,
 }) => {
-
-  return <>
-    <FirstPlaceContainer>
-      <GalleryCard activity={data?.activities[0]} position={1} />
-    </FirstPlaceContainer>
-
-    <SecondPlaceContainer>
-      <GalleryCard activity={data?.activities[1]} position={2} />
-      <GalleryCard activity={data?.activities[2]} position={3} />
-    </SecondPlaceContainer>
-
-    <RemainingPlacesContainer>
-      {data?.activities.slice(3).map((activity, index) =>
-        <GalleryCard activity={activity} position={index + 4} />
-      )}
-    </RemainingPlacesContainer>
-  </>
-}
-
-const FirstPlaceContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
-  return <Flex m="1rem auto" maxW='xl' justifyContent='center'>
-    {children}
-  </Flex>
-}
-const SecondPlaceContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
-  return <Flex gap={3} maxW='2xl' m='0 auto 1rem' alignItems='center' flexDir={{ base: 'column', md: 'row' }}>
-    {children}
-  </Flex>
-}
-const RemainingPlacesContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
-  return <Grid gridTemplateColumns='repeat(auto-fit, minmax(300px, 1fr))' gap={3} maxWidth={'6xl'}>
-    {children}
-  </Grid>
-}
+  return (
+    <>
+      <Grid
+        gridTemplateColumns={{
+          base: "repeat(1, 1fr)",
+          // md: "repeat(3, 1fr)",
+        }}
+        //   templateAreas={`"first first first first first"
+        // "" "second "third" "" ""`}
+        alignItems={"center"}
+        maxW={"1100px"}
+      >
+        <GridItem colSpan={3}>
+          <GalleryCard activity={data?.activities[0]} position={1} />
+        </GridItem>
+        <GridItem colSpan={3}>
+          <Flex
+            flexDirection={{
+              base: "column",
+              lg: "row",
+            }}
+            width={"100%"}
+            // justifyItems={"center"}
+            alignItems={"center"}
+            justifyContent={"center"}
+          >
+            <GalleryCard activity={data?.activities[1]} position={2} />
+            <GalleryCard activity={data?.activities[2]} position={3} />
+          </Flex>
+        </GridItem>
+        {data?.activities.slice(3).map((activity, index) => (
+          <GridItem
+            key={`activity-${index}`}
+            colSpan={{
+              base: 3,
+              lg: 1,
+            }}
+          >
+            <GalleryCard activity={activity} position={index + 4} />
+          </GridItem>
+        ))}
+      </Grid>
+    </>
+  );
+};
 
 const SkeletonGalleryCard: React.FC<{
-  position: number
+  position: number;
 }> = ({}) => {
-  return <Box w='100%' maxW='350px' h='300px' bg='transparent' />
-}
-
-// https://www.color-hex.com/color-palette/50061
-const gradientsLight = [
-  'rgba(212,175,55,1) 0%, rgba(227,227,227,1) 250%',
-  'rgba(192,192,192,1) 0%, rgba(227,227,227,1) 250%',
-  'rgba(205,127,50,1) 0%, rgba(227,227,227,1) 250%'
-]
-// Original
-// 'linear-gradient(90deg, rgba(255,217,61,1) 0%, rgba(255,132,0,1) 100%)',
-// 'linear-gradient(90deg, rgba(231,246,242,1) 0%, rgba(165,201,202,1) 100%)'
-
-const gradientsDark = [
-  'rgba(212,175,55,1) 0%, rgba(0,0,0,1) 200%',
-  'rgba(192,192,192,1) 0%, rgba(0,0,0,1) 200%',
-  'rgba(205,127,50,1) 0%, rgba(0,0,0,1) 200%'
-]
-
+  return <Box w="100%" maxW="350px" h="300px" bg="transparent" />;
+};
 
 const GalleryCard: React.FC<{
-  activity?: HugelLeaderBoardActivity | SuperHugelLeaderBoardActivity
-  position: number
+  activity?: HugelLeaderBoardActivity | SuperHugelLeaderBoardActivity;
+  position: number;
 }> = ({ activity, position }) => {
-  const gradients = useColorModeValue(gradientsLight, gradientsDark)
-  const defaultColor = useColorModeValue(
-    "rgba(252,76,2,1) 0%, rgba(0,0,0,1) 350%",
-    "rgba(252,76,2,1) 0%, rgba(9,1,1,1) 200%"
-  )
-  const bgColor = `radial-gradient(circle, ${gradients[position - 1] || defaultColor})`
-  const shadowColorRGB = useColorModeValue('0,0,0', '210,210,210')
-
-
   if (!activity) {
-    // Return empty
-    return <Box w='100%' maxW='350px' h='300px' bg={"transparent"} borderRadius={'1rem'} />
+    return <GalleryCardBox display="none" />;
   }
-
-  const {
-    firstname,
-    lastname,
-    profile_pic_link,
-    username,
-    hugel_count
-  } = activity.athlete
 
   const {
     dateText,
@@ -112,72 +105,139 @@ const GalleryCard: React.FC<{
     showWatts,
     avgWatts,
     marginText,
-    numActivities
-  } = CalculateActivity(activity)
+    numActivities,
+  } = CalculateActivity(activity);
 
-  return <Box w='100%' maxW='350px' h='300px' bg={bgColor} borderRadius={'1rem'}
-    filter={`drop-shadow(2px 2px 2px rgba(${shadowColorRGB}, 0.25))`}
-    transition={'all 0.25s ease-in-out'}
-    _hover={{ filter: `drop-shadow(3px 3px 3px rgba(${shadowColorRGB}, 0.45))`, transform: 'translate(-5px, -5px)' }
-    }>
-    <Flex justifyContent={'space-between'}>
-      <Flex p={3}>
-        <AthleteAvatar
-          firstName={firstname}
-          lastName={lastname}
-          athleteID={activity.athlete_id}
-          profilePicLink={profile_pic_link}
-          username={username}
-          hugelCount={hugel_count}
-          size="lg"
-          styleProps={{
-            mr: 3,
-          }}
+  const { firstname, lastname, profile_pic_link, username, hugel_count } =
+    activity.athlete;
+
+  const isSuper = !("activity_name" in activity);
+
+  return (
+    <GalleryCardBox>
+      <Flex justifyContent={"space-between"}>
+        <Flex p={3}>
+          <AthleteAvatar
+            firstName={firstname}
+            lastName={lastname}
+            athleteID={activity.athlete_id}
+            profilePicLink={profile_pic_link}
+            username={username}
+            hugelCount={hugel_count}
+            size="lg"
+            styleProps={{
+              mr: 3,
+            }}
+          />
+          <Box>
+            <Text fontWeight="bold" textAlign="left">
+              {firstname} {lastname}
+            </Text>
+            <Text
+              fontSize="sm"
+              fontFamily={"monospace"}
+              opacity={0.6}
+              textAlign="left"
+            >
+              {dateText || "All time"}
+            </Text>
+            <Text
+              isTruncated
+              pl={"20px"}
+              maxW="180px"
+              textAlign={"right"}
+              // noOfLines={1}
+              fontWeight={"bold"}
+              pt="10px"
+            >
+              {"activity_name" in activity
+                ? activity.activity_name
+                : `Across all rides`}
+            </Text>
+          </Box>
+        </Flex>
+        <Flex flexDirection={"column"} rowGap={2}>
+          <Flex
+            // Rank
+            bg={"rgba(0,0,0,0.25)"}
+            p={"1.5rem"}
+            maxHeight={"2.5rem"}
+            borderRadius={"0 10px 0 10px"}
+            alignItems={"center"}
+            justifyContent={"center"}
+          >
+            <Text fontWeight="bold" fontSize={"1.8rem"}>
+              {position}
+            </Text>
+          </Flex>
+          {"activity_id" in activity && (
+            <StravaLink
+              height={"45px"}
+              width={"45px"}
+              target="_blank"
+              tooltip="View activity on Strava"
+              href={`"https://www.strava.com/activities/${activity.activity_id}"`}
+            />
+          )}
+        </Flex>
+      </Flex>
+      <Grid
+        gridTemplateColumns={"repeat(3, 1fr)"}
+        gap={3}
+        p={4}
+        padding={"20px"}
+      >
+        <GridItem colSpan={2} fontFamily="monospace">
+          <Flex justifyContent={"center"} alignItems={"center"}>
+            <FontAwesomeIcon color="#fc4c02" size="2x" icon={faClock} />
+            <StatBox pl={"15px"} value={marginText} title={elapsedText} />
+          </Flex>
+        </GridItem>
+
+        <StatBox title={distance.toFixed(1)} value={"mi"} />
+        {isSuper ? (
+          <StatBox title={numActivities.toString()} value={"rides"} />
+        ) : (
+          <StatBox title={totalElapsedText} value={"total"} />
+        )}
+        <StatBox
+          title={showWatts ? avgWatts.toString() : "--"}
+          value={"watts"}
         />
-        <Box>
-          <Text fontWeight='bold' textAlign='left' >
-            {firstname} {lastname}
-          </Text>
-          <Text fontSize='sm' fontFamily={'monospace'} opacity={.6} textAlign='left' >{dateText}</Text>
-        </Box>
-      </Flex>
-      <Flex bg={'rgba(0,0,0,0.25)'} color={bgColor} p={'1.25rem'} maxHeight={'2.5rem'} borderRadius={'0 1rem 0 1rem'} alignItems={'center'} justifyContent={'center'}>
-        <Text fontWeight='bold' fontSize={"1.4em"}>
-          {position}
-        </Text>
-      </Flex>
+        {isSuper ? <></> : <StatBox title={elevationText} value={"ft"} />}
+      </Grid>
+    </GalleryCardBox>
+  );
+};
 
-    </Flex>
-    {
-      "activity_name" in activity ?
-        <Text fontWeight='bold'>{activity.activity_name}</Text>
-        :
-        <Text fontWeight='bold'>{`In ${numActivities} activites`}</Text>
-    }
-    <Grid gridTemplateColumns='2fr 1fr' gap={3} p={4}>
-      <StatBox stat={elapsedText} label={marginText} />
-      <StatBox stat={distance.toString()} label={"miles"} />
-    </Grid>
-    <Grid gridTemplateColumns='1fr 1fr 1fr' gap={3} px={4}>
-      <StatBox stat={totalElapsedText} label={"total hours"} />
-      <StatBox stat={showWatts ? avgWatts.toString() : "--"} label={"watts"} />
-      <StatBox stat={elevationText} label={"feet"} />
-    </Grid>
-
-  </Box>
-}
-
-const StatBox: React.FC<{
-  stat?: string
-  label?: string
-}> = ({
-  stat, label
-}) => {
-    return <Flex flexDir={'column'} justifyContent={'center'} alignItems={'center'} textAlign={'center'} bg={'antiquewhite'} h={'4rem'} borderRadius={3} color={'black'}>
-      <Text fontWeight={700} fontFamily='monospace' fontSize='1rem'>{stat || "123"}</Text>
-      <Text opacity={.5}>{label || "miles"}</Text>
-    </Flex >
+const StatBox: React.FC<
+  FlexProps & {
+    title: string;
+    value: string;
   }
+> = ({ title, value, ...props }) => {
+  return (
+    <CardStat
+      flexDirection={"column-reverse"}
+      value={title}
+      title={value}
+      fontSize={"1.3rem"}
+      fontFamily="monospace"
+      {...props}
+    />
+  );
+};
+
+const GalleryCardBox: React.FC<PropsWithChildren<BoxProps>> = ({
+  children,
+  ...props
+}) => {
+  return (
+    <ResponsiveCard m={"10px"} w="100%" maxW="350px" h="300px" {...props}>
+      {children}
+    </ResponsiveCard>
+  );
+};
 
 // {Array.from({ length: 20 }).map(e =>
 //   <GalleryCard />

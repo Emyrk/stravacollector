@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react"
+import { FC, useEffect } from "react";
 import {
   Flex,
   Grid,
@@ -25,26 +25,34 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
-  Tabs, TabList, TabPanels, Tab, TabPanel,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
   useTheme,
   Heading,
-} from '@chakra-ui/react'
-import { getErrorDetail, getErrorMessage, getHugelLeaderBoard } from "../../api/rest"
+} from "@chakra-ui/react";
+import {
+  getErrorDetail,
+  getErrorMessage,
+  getHugelLeaderBoard,
+} from "../../api/rest";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
-import * as TypesGen from "./../../api/typesGenerated"
+import * as TypesGen from "./../../api/typesGenerated";
 import { HugelBoardGallery } from "./HugelBoardGallery";
 import { HugelBoardTable } from "./HugelBoardTable";
 
 export interface HugelBoardProps {
-  data?: TypesGen.HugelLeaderBoard | TypesGen.SuperHugelLeaderBoard
-  error?: Error | unknown
-  isLoading: boolean
-  isFetched: boolean
+  data?: TypesGen.HugelLeaderBoard | TypesGen.SuperHugelLeaderBoard;
+  error?: Error | unknown;
+  isLoading: boolean;
+  isFetched: boolean;
 }
 
 export const HugelBoard: FC = () => {
-  const queryKey = ["hugel-leaderboard"]
+  const queryKey = ["hugel-leaderboard"];
   const {
     data: hugelLeaderboard,
     error: hugelLeaderboardError,
@@ -54,10 +62,10 @@ export const HugelBoard: FC = () => {
     queryKey,
     queryFn: getHugelLeaderBoard,
     // queryFn: async () => {
-    //   const data = await getHugelLeaderBoard()
+    //   const data = await getHugelLeaderBoard();
     //   // return data
     //   if (!data || !data.activities) {
-    //     return data
+    //     return data;
     //   }
     //   // Add some extra rows for some editing purposes
     //   return {
@@ -68,39 +76,42 @@ export const HugelBoard: FC = () => {
     //       data.activities[0],
     //       data.activities[0],
     //       data.activities[0],
-    //     ]
-    //   }
+    //       data.activities[0],
+    //       data.activities[0],
+    //     ],
+    //   };
     // },
-  })
+  });
 
-  return <>
-    <Flex w="100%" justifyContent={"center"}>
-      <Heading>Tour Das Hugel</Heading>
-    </Flex>
-    <Tabs isFitted align="center" p='0 1rem'>
-      <TabList>
-        <Tab>🖼️ Gallery</Tab>
-        <Tab>📋 Table</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel key="gallery">
-          <HugelBoardGallery
-            data={hugelLeaderboard}
-            error={hugelLeaderboardError}
-            isLoading={hugelLoading}
-            isFetched={hugelFetched}
-          />
-        </TabPanel>
-        <TabPanel key="table">
-          <HugelBoardTable
-            data={hugelLeaderboard}
-            error={hugelLeaderboardError}
-            isLoading={hugelLoading}
-            isFetched={hugelFetched}
-          />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  </>
-}
-
+  return (
+    <>
+      <Flex w="100%" justifyContent={"center"}>
+        <Heading>Tour Das Hugel</Heading>
+      </Flex>
+      <Tabs isFitted align="center" p="0 1rem">
+        <TabList>
+          <Tab>🖼️ Gallery</Tab>
+          <Tab>📋 Table</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel key="gallery">
+            <HugelBoardGallery
+              data={hugelLeaderboard}
+              error={hugelLeaderboardError}
+              isLoading={hugelLoading}
+              isFetched={hugelFetched}
+            />
+          </TabPanel>
+          <TabPanel key="table">
+            <HugelBoardTable
+              data={hugelLeaderboard}
+              error={hugelLeaderboardError}
+              isLoading={hugelLoading}
+              isFetched={hugelFetched}
+            />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </>
+  );
+};

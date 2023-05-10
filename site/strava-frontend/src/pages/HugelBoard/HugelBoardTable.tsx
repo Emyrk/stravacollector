@@ -204,32 +204,31 @@ export const HugelBoardTableRow: FC<
       {"activity_id" in activity && (
         <Td>
           <Grid
-            templateColumns="repeat(4, 1fr)"
+            templateColumns="repeat(3, 1fr)"
             rowGap={2}
             columnGap={3}
             alignItems="center"
           >
-            <GridItem colSpan={4}>
+            <GridItem colSpan={3}>
               <Text fontWeight={"bold"} isTruncated>
                 {activity.activity_name}
               </Text>
             </GridItem>
 
-            <GridItem colSpan={1} width="100%" textAlign={"center"}>
+            <GridItem colSpan={1} width="32px" textAlign={"center"}>
               <StravaLink
                 href={`https://strava.com/activities/${activity.activity_id}`}
                 target="_blank"
-                height={"34px"}
-                width={"34px"}
-                maxWidth={"34px"}
+                height={"32px"}
+                width={"32px"}
                 tooltip="View activity on Strava"
               />
             </GridItem>
             <GridItem colSpan={1}>
-              <CardStat title="Distance" value={distance + "mi"} />
+              <CardStat title="Distance" value={distance.toFixed(1) + "mi"} />
             </GridItem>
             <GridItem colSpan={1}>
-              <CardStat title="Distance" value={elevationText + "ft"} />
+              <CardStat title="Elevation" value={elevationText + "ft"} />
             </GridItem>
           </Grid>
 
@@ -275,12 +274,12 @@ const EffortPair: FC<{
 
         return (
           <Tooltip
+            key={`effort-${index}`}
             mt={index === 0 ? "-10px" : "0px"}
             label={"Link to effort on strava"}
             aria-label="Strava logo tooltip"
           >
             <Link
-              key={`effort-${index}`}
               target="_blank"
               href={`https://strava.com/activities/${effort.activity_id.toString()}/segments/${effort.effort_id.toString()}`}
             >

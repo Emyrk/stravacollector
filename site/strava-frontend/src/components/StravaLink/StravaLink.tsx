@@ -21,7 +21,6 @@ export const StravaLink: FC<StravaLinkProps> = ({
           src={"/logos/stravalogo.png"}
           height={"34px"}
           width={"34px"}
-          maxWidth={"34px"}
           {...props}
         />
       </Link>

@@ -86,7 +86,7 @@ export const CalculateActivity = (
       DistanceToLocalElevation(activity.activity_total_elevation_gain) / 100
     ) / 10
   }k`;
-  const distance = Math.floor(DistanceToLocal(activity.activity_distance));
+  const distance = DistanceToLocal(activity.activity_distance);
   const dateText = FormatDate(activity.activity_start_date, true);
 
   return {

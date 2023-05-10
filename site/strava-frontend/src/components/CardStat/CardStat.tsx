@@ -31,10 +31,10 @@ export const CardStat: FC<CardStatProps> = ({
 
   return (
     <Flex {...props}>
-      <Text color="brand.cardStatTitle" fontSize={"13px"} {...titleProps}>
+      <Text color="brand.cardStatTitle" fontSize={"0.85em"} {...titleProps}>
         {title}
       </Text>
-      <Text color="brand.cardStatValue" fontSize={"16px"} {...valueProps}>
+      <Text color="brand.cardStatValue" fontSize={"1em"} {...valueProps}>
         {value}
       </Text>
     </Flex>

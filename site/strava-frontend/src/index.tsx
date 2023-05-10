@@ -34,8 +34,7 @@ const customComponents: Record<string, StyleConfig> = {
           bgGradient:
             "linear(135deg, brand.primaryCard 0%, brand.secondaryCard 35%)",
           boxShadow: "rgb(20, 20, 20) 0px 5px 10px",
-          marginTop: "-3px",
-          marginBottom: "-3px",
+          transform: "translateY(-3px)",
         },
       }),
     },

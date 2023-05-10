@@ -401,7 +401,6 @@ const SegmentCard: FC<{
                     target="_blank"
                     height={"34px"}
                     width={"34px"}
-                    maxWidth={"34px"}
                     tooltip="View segment on Strava"
                   />
                 </Flex>
