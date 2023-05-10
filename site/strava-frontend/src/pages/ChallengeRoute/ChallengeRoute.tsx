@@ -74,6 +74,7 @@ import { useAuthenticated } from "../../contexts/Authenticated";
 import { ElapsedDurationText, FormatDate } from "../HugelBoard/CalcActivity";
 import { ResponsiveCard } from "../../components/ResponsiveCard/ResponsiveCard";
 import { ConditionalLink } from "../../components/ConditionalLink/ConditionalLink";
+import { CardStat } from "../../components/CardStat/CardStat";
 
 export const ChallengeRoute: FC<{}> = ({}) => {
   const { name } = useParams();
@@ -436,39 +437,34 @@ const SegmentCard: FC<{
 
           {/* Now the stats */}
           <GridItem>
-            <SegmentStat
+            <CardStat
               title={"Distance"}
               value={
-                Math.floor(
-                  DistanceToLocal(segment.detailed_segment.distance) * 10
-                ) /
-                  10 +
-                "mi"
+                DistanceToLocal(segment.detailed_segment.distance).toFixed(0) +
+                " mi"
               }
             />
           </GridItem>
           <GridItem>
-            <SegmentStat
+            <CardStat
               title={"Avg Grade"}
               value={segment.detailed_segment.average_grade + "%"}
             />
           </GridItem>
           <GridItem>
-            <SegmentStat
+            <CardStat
               title={"Avg Grade"}
               value={
-                Math.floor(
-                  DistanceToLocalElevation(
-                    segment.detailed_segment.total_elevation_gain
-                  )
-                ) + "ft"
+                DistanceToLocalElevation(
+                  segment.detailed_segment.total_elevation_gain
+                ).toFixed(0) + " ft"
               }
             />
           </GridItem>
 
           <GridItem>
             <ConditionalLink href={bestActHref}>
-              <SegmentStat
+              <CardStat
                 title="PR Activity"
                 value={
                   segment.personal_best
@@ -483,7 +479,7 @@ const SegmentCard: FC<{
           </GridItem>
           <GridItem>
             <ConditionalLink href={bestActHref}>
-              <SegmentStat
+              <CardStat
                 title="PR"
                 value={
                   segment.personal_best
@@ -523,24 +519,6 @@ const SegmentCard: FC<{
         </Grid>
       </Box>
     </ResponsiveCard>
-  );
-};
-
-const SegmentStat: FC<{
-  title: string;
-  value: string;
-}> = ({ title, value }) => {
-  return (
-    <Flex
-      flexDirection={"column"}
-      alignItems={"center"}
-      justifyContent={"center"}
-    >
-      <Text color="#a7afbe" fontSize={"13px"}>
-        {title}
-      </Text>
-      <Text fontSize={"16px"}>{value}</Text>
-    </Flex>
   );
 };
 

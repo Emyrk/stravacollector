@@ -5,6 +5,7 @@ import {
   ThemeConfig,
   extendTheme,
   createLocalStorageManager,
+  theme as defaultTheme,
 } from "@chakra-ui/react";
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
@@ -38,6 +39,16 @@ const customComponents: Record<string, StyleConfig> = {
       }),
     },
   },
+  // Flex: {
+  //   variants: {
+  //     cardStat: ({ colorMode }) => ({
+  //       // defaultTheme.components.Flex
+  //       flexDirection: "column",
+  //       alignItems: "center",
+  //       justifyContent: "center",
+  //     }),
+  //   },
+  // },
   Text: {
     variants: {
       // used as <Text variant="minor">
@@ -79,6 +90,8 @@ const theme = extendTheme(
         stravaOrange: "#fc4c02",
         primaryCard: "#3b3f48",
         secondaryCard: "#48403b",
+        cardStatTitle: "#a7afbe",
+        cardStatValue: "white",
       },
     },
   },
