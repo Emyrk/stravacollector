@@ -279,6 +279,28 @@ type Athlete struct {
 	Shoes                 []Equipment     `json:"shoes"`
 }
 
+type AthleteSummary struct {
+	ID            int64       `json:"id"`
+	Username      string      `json:"username"`
+	ResourceState int         `json:"resource_state"`
+	Firstname     string      `json:"firstname"`
+	Lastname      string      `json:"lastname"`
+	Bio           string      `json:"bio"`
+	City          string      `json:"city"`
+	State         string      `json:"state"`
+	Country       string      `json:"country"`
+	Sex           string      `json:"sex"`
+	Premium       bool        `json:"premium"`
+	Summit        bool        `json:"summit"`
+	CreatedAt     time.Time   `json:"created_at"`
+	UpdatedAt     time.Time   `json:"updated_at"`
+	BadgeTypeID   int         `json:"badge_type_id"`
+	ProfileMedium string      `json:"profile_medium"`
+	Profile       string      `json:"profile"`
+	Friend        interface{} `json:"friend"`
+	Follower      interface{} `json:"follower"`
+}
+
 type Equipment struct {
 	ID            string `json:"id"`
 	Primary       bool   `json:"primary"`
@@ -342,4 +364,30 @@ type SegmentDetailed struct {
 		} `json:"effort_counts"`
 		Destination string `json:"destination"`
 	} `json:"local_legend"`
+}
+
+type Route struct {
+	Athlete       AthleteSummary `json:"athlete"`
+	Description   string         `json:"description"`
+	Distance      float64        `json:"distance"`
+	ElevationGain float64        `json:"elevation_gain"`
+	ID            int64          `json:"id"`
+	IDStr         string         `json:"id_str"`
+	Map           Map            `json:"map"`
+	MapUrls       struct {
+		URL       string `json:"url"`
+		RetinaURL string `json:"retina_url"`
+	} `json:"map_urls"`
+	Name          string    `json:"name"`
+	Private       bool      `json:"private"`
+	ResourceState int       `json:"resource_state"`
+	Starred       bool      `json:"starred"`
+	SubType       int       `json:"sub_type"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	// When it was created
+	Timestamp           int              `json:"timestamp"`
+	Type                int              `json:"type"`
+	EstimatedMovingTime int              `json:"estimated_moving_time"`
+	Segments            []SegmentSummary `json:"segments"`
 }

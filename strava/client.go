@@ -108,6 +108,16 @@ func (c *Client) AthleteSegmentEfforts(ctx context.Context, segmentID int, perPa
 	return efforts, c.DecodeResponse(resp, &efforts, http.StatusOK)
 }
 
+func (c *Client) GetRoute(ctx context.Context, routeID int64) (Route, error) {
+	resp, err := c.Request(ctx, http.MethodGet, fmt.Sprintf("/routes/%d", routeID), nil, nil)
+	if err != nil {
+		return Route{}, fmt.Errorf("request: %w", err)
+	}
+
+	var route Route
+	return route, c.DecodeResponse(resp, &route, http.StatusOK)
+}
+
 func (c *Client) DecodeResponse(res *http.Response, v any, expectedCode int) error {
 	defer res.Body.Close()
 

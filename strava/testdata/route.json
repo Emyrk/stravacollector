@@ -1,0 +1,1400 @@
+{
+  "athlete": {
+    "id": 784574,
+    "username": "stanley_justin",
+    "resource_state": 2,
+    "firstname": "Justin",
+    "lastname": "Stanley",
+    "bio": "",
+    "city": "Austin",
+    "state": "Texas",
+    "country": "United States",
+    "sex": "M",
+    "premium": true,
+    "summit": true,
+    "created_at": "2012-07-18T18:09:55Z",
+    "updated_at": "2023-04-18T19:06:03Z",
+    "badge_type_id": 1,
+    "profile_medium": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/784574/293877/9/medium.jpg",
+    "profile": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/784574/293877/9/large.jpg",
+    "friend": null,
+    "follower": null
+  },
+  "description": "",
+  "distance": 178640.98305335792,
+  "elevation_gain": 3705.749336076026,
+  "id": 1157705,
+  "id_str": "1157705",
+  "map": {
+    "id": "r1157705",
+    "summary_polyline": "mtwwD|mwsQtQ_SrPL_M|^s@r[iItQwOfFwBvFnFhlAp^vTyLvd@^xLgXjMgS|k@siAps@{aAs@mc@eOqi@pIkNoCyIcJk`@q{@coAis@fNaf@kNyOAiFtTsc@z^tDbU|S~_@qHd{@fZ_JtHm@vN}CxDqTrNmOv@cCiPjK_d@zQ\\zPjJbYwQdJlCtIkEjFfKmFtBiCfL{FsH{DfCqChGvC~N_B|E~EdEhArIza@|NeNxOpLh^oDfOxApHjHlHhO_KbLrM}Q`\\eG`v@is@re@kUhHoHl]sk@jkAwApMlK`x@cg@vCif@cL{f@i`@mc@kQmIuRh@o]cEqKh@oV|PzF~I{AbHqIpGGlCjGzb@uGhT~Xde@jBhKpI|QvC|Ygg@nHm]n]iPpDjNp\\rUxJhPjC`RkGtS~Pnb@vSX`HpHzEpu@bIvLdQfC`HuPdc@oVcE}KzM{P`MmEiDa^nHwJdB{KpKgKPiHyI}UkP}P{a@a@_HkE}AcKkM{RaAuOdDaOmFaPjKmSmCkKlf@g\\nRkm@|VyJHkOxLwd@g_@gWyEyiAvBwFbRuJo^gX`GuGc@gKhJ}G{J~Hf@vJan@vk@yO`Ym\\bLuMeJfAkd@u^pCsJ}JjDaI_OeFgEnLaF_B{TkUrAyB}B}CmLwFcK{Sf@cToUmCyDbKbGrNgOjQaa@{Ia`AzVwS_CyGnFo@yF{KpCoDxIwIhBi@fJoGt@mLxT{CyMmEr@qJwHsByQcJzAuAgIsCLjEcLqAoO_[aWyU}GsGtPfBxUaD~WtNnTcJ|@oCyFsO|N{RoJjAcNgNyMrHsZ@qKjQ}b@sMyR_[qQgR`MkG|UsIxHua@rF{[pNmF{BoKrIsJn@uXsM__@Nid@nNaT_JCwFtGcDrY_i@zKPl^rTvHg_@vMiRjQhMtDzN`P`ArA`Rrh@bgA~y@neAqFlQoQpAa@fHoGnCtJlQmKvHm@`InKbInY[zKbR~We]dg@c\\vg@xPiDtNoJ_DiLjG}M~j@eVmIo@zBs@xOvJbZmCv{@uFxFd@xVgCjN~YzQ}E|NwV|Uh@hNsFzPjBfXtShPqAzIlDbGk@jLqI|AgEpPoMxQ{GvAgPmJcBuN_KwEqN}RgVu@aP}J_^kDqn@w`@iN|BgGgCoG~HgTHkQtd@nx@x^fRjgAeXxFiNvJgSuEaM~Q}Ib@mKuGyQgi@`GaLjSaKn\\wr@zd@jSbLta@hOplApRpd@aF|f@vSng@jBf`AuGtS{]jTgKbOuC{@`MmBzBcHlHqApS|OjHsV}Ay|A_Umm@`F}f@qRqd@}XwjBkh@{Wlh@c\\hOwVd_@pPrJ~J~]jDlW|Nq@wCbCu@hLbCpN|R~JvEbBtNfPlJzGwAnMyQfEqPpI}AzAdNbQla@tX|NtShYnKhTe@|CvJtGwJuGd@}CoKiTuSiYuX}NcQma@o@q[mDcGpA{IaU_T_AqTrF{P{@_MhWgWpFyNsZ_RfCkNe@yVtFyFlCw{@_Kg\\hDs]kJoKmDqMyU~Z{KcRs[SkIsGl@aI_NkO}AqL}JaIbCaNrHm@bLpMvWX|FeCtEsPbInH{GkIdWfX`{@|LrxEniCtd@n_AtNzLlMfAlh@kIvb@fOvx@jBzSkGp}@mm@nRkm@fXkM_@yLxLwd@q^wT}Fk_A~AiRhSaLo^gX`GuGc@gKhJ}G",
+    "resource_state": 3,
+    "polyline": "mtwwD|mwsQ`@YpFgF`AqApBmDhAkAbAq@dCo@j@?|AZlCb@l@FdBQwDzHUj@oCtIe@vBy@nEYrB@ZJj@Rj@f@t@BZG~AAxCGnAcAfFQf@qCrEkC`ISb@q@v@w@h@c@Rk@NgC`@{Cf@qAr@e@j@a@t@_@fAOlAG|AC|C@xDFjAbAvG|ArLDj@I`OBjA`@rDLhB@~CD~@J`AH^RZtAdAlDtBjKpFnInFw@fCqApDa@x@W^[PnArCcBfBQXa@fCaAjDy@`CMv@?dAZvBHfAe@Dd@E@xBCb@Ij@Qf@Yf@]b@k@Zo@b@s@Xi@J_@DYFg@@cAI]?{ATqAj@YVaA|BSJQBq@CMjAgIlUgBzE_CfGa@j@a@XMPCb@Jb@oMzI_XhQ_H|EoG`EgD`CaCtAeAd@cElAkBb@qCZyDHgUe@mUu@uCOeAI_De@gBi@wB_AiOcHqAc@wA]kCWeAAc@BaBTo[tGuAP_DPiB?_Ca@gCm@s@YyAs@qA_AiA_A}@cA}AwBmDkI{GmOyMg[{@{AwAmB?@aAcAy@o@mAu@chAom@WQfCsGJc@V{IN_ALc@dAyArDcEZmAFe@@k@EeAk@{Aq@}@cBeAmE{DwAcBYu@EyA\\yA|E{LjAoChCeE|FaKbD|@hJv@jDh@z@?~BG`AFfATzCvAjAfAt@nAhAfDh@pAl@|@~@d@n@VnAb@bARh@HtCXdAI~Ac@zJoFvBo@vAMlBDnMlC`Cb@nAd@rWdOpBfAfBj@~Bb@tBMuBxBeCrBw@Tk@p@Ul@Gj@G~JG\\Wh@_@j@eBbB_D|BiCr@sAf@k@?u@F_AfAwA|CYX_@PG?{FRiGb@}B}KEkCnCkOjCcCRu@D{@Kk@Oc@i@o@A_ALq@`AaBZ]p@k@dAc@fBj@hBv@nBp@|AYz@k@x@MlAr@lAhBdAlAjA~@lAl@lARrBAzBOvAiAtByB~BgAnA_AxDgElBs@`Bc@|BHHr@Tf@d@p@j@Pv@Fr@Qt@a@`AiAdA{@~@Ql@`@hD~EZPL@Ev@Ox@]ZeAFoAZy@t@g@nAgA`IOPW?_C}Bi@_@MWCmAGQi@Yu@X{A|@YZOZi@vC[DOTUDMHOXGb@@jArAdCJ`CNrAd@vACj@c@|@s@v@EV@b@^~@`Al@tAr@f@b@Pj@At@QdBFj@Nh@RZ^XvCl@t@XtCjBrBnAxBjBR[`Au@PGVA^Tz@~Ap@|@RPn@HbAE\\DtAXc@jB]j@UReAr@oErBw@d@WZQh@Ml@Gj@Aj@Fl@Ll@Tl@tDpFlAjCTn@Jp@^tDT~@^x@Jb@@b@Cb@Kd@]pA_@x@iA`DUjAC^?b@PtBNl@Xz@|EvH^ZXDp@@f@Ot@e@fA_AfB{BjAoApAs@j@KVCXDh@RxJ~LyDzDe@h@k@|@i@dAgBxEiAfF_@v@SVWPi@RlAF_CxLqAtJOvAFb@IvC@hJO~Ae@hB{@`B_@b@kA|@wCbBeBhAmAfAaEjEcAr@}@Z{@P{Er@{Ad@iAl@}AnA{EdFgArAmAz@qAf@sA^yFb@u@Jk@PmC~A{@~@y@lAi@fAi@zAe@nCOzEI|AQtA_@xAo@`B{@pA[`@yD|DcA~Ai@fAuHxTmH|T{@pBg@v@DDaC~BmBrB{@nAaA|B[jAId@OxAG~A@lBLdAzAfJRrBHpANlJFbBNnAPdAxDvNPlAoF~@s@Fw@?uH[u@?aBPaGjA_BLwB?sB_@u@Uk@WqAw@kBw@gBi@yBm@aAOsGYiBYcCo@aCgA{BuAu@q@qByB_A{@gDiC}D{DaGmEmDeC_BcA_Cy@gCu@mBa@w@IaBk@mEoCoBgA{DgAa@Qc@a@[c@K[YgCMg@?Bc@{@WQm@YUSa@uA_BkDI[KkC?yANeATgAJsACqA_@cE?q@Do@`@qCAUGKk@Yk@cASm@S{AMc@e@gAEY?[PyALsBb@{DAsB[iDBk@FIb@QbAGlARdCvAnEjDHD^@LGj@g@t@k@n@YVARBx@b@TDf@?ZQz@k@vAyBr@mBPYTSr@OpADnCUd@DH@^`@P`@|@rDTPP@JArBi@^Cv@@h@Jr@BdAUpBKjAc@n@QrFcCfB[z@AnB@lEnC\\VVZh@`AdAjC~CvEr@nAz@hBd@ZfAH`@ApI}@x@?n@Jn@Vv@n@\\Rh@@x@Mb@DZRr@lAZT`@LT?f@ItC}@n@@RFlBhAVVlArBZb@jAt@x@X|AHrB@jAN`HrBXBVCNIr@}@\\Md@F`IwUh@gAn@gARWxD}DvAsBn@aB^yAPuAH}AN{Ed@oCh@{Ah@gAx@mAz@_AlC_Bj@Qt@KxFc@rA_@pAg@lA{@fAsAhBiBb@zB?Zh@nCR|@Rj@NTRT|ApAv@d@p@VnCv@lAr@^\\h@z@fAvCZj@t@|@f@b@rFbBp@j@b@d@d@lAt@`DVj@d@l@lCzBf@v@d@vAbBtLCZBhAC^[xA_@x@W^uBjB[b@_@|@QxAA`AB^Lt@b@fAxFpJ^z@Lb@pCfMLXn@~@h@`@XPl@PzCd@bAFnFcAx@Cj@Bp@Vn@`@pArA|ApB`@t@\\zBVnHdDdh@Lr@rEzH`BfA|Cx@tARd@BpBQpAL`A\\d@Zp@sAxAyDf@mBr@qAd@oARWXSb@QnAc@j@c@r@c@x@YXQr@q@n@]j@Q|BObASd@WvC_C`@i@r@sAZc@XYd@[vAYXQNOP[H[@YAa@Qo@[_@UK[Gy@?WIc@YUc@Gs@Fo@JYPYxB{@\\URQTc@POb@m@zDcITWnAc@hE_AjCoAZYZ_AH}@Cc@Ic@eCcH_AuDMqAAk@DwA?@LmBLk@Ts@j@qAVYXSpAm@`AeAXc@Tk@Ly@XoEPaATc@j@}@jCaD\\[nB{@VOd@g@LWNe@VgB?sAUgAUq@s@kAiDmEWc@Qi@QwABaCIg@M]Uc@oJcISYcBkDcAs@i@W_@Ae@FcAPuAZu@FcHgAwN@}@S]QmAy@uBkBS]e@aBAqBCq@Ea@W}@Q_@wBeDqAcBmEoGYk@GUWcE_@wEIwA@{@D[d@sAfB}GJi@Bo@K{@Yw@_AgB_BiC[u@G_@C_ABsAT{BVgAN_@`AeBvAyAzB_BRY^aAFoAQ{@cC_Glf@g\\Wm@Kc@Bc@LQ`@Y`@k@l@yAxDiKzHqTJ[LkAp@BPCRK`A}BXWpAk@zAUbBG@Pb@AXG^Eh@Kr@Yn@c@j@[\\c@Xg@Pg@Hk@Bc@AyBIgA[wB?eALw@x@aC`AkD`@gCPYbBgBoAsCZQV_@`@y@pAqDv@gCoIoFkKqFeC{A@@_CaBS[I_@KaAE_AA_DMiBa@sDCkAHaOEk@}AsLcAwGKcBD_IF}ANmA^gA`@u@d@k@pAs@zCg@fCa@j@Ob@Sv@i@p@w@Rc@^mAIQcS}NgEiDLJgDyBrFcGLQDQAs@OoAGSq@yACW@YPo@Pa@hDyERQVOXI|@Oz@G{@F}@NYHWNSPiDxEQ`@Qn@AXBVp@xAFRNnA@r@EPMPmFxF[d@Yr@c@t@o@j@WPu@RsAN_@PSPsE|IWX_@T_@LsBEu@V}LxMQZA`@HpACVUd@cBxAcA~AiApAMJcAV[P[jBwAxCa@j@UPk@Xk@FiFZ{@PgAb@}DrB{@j@gBdBQLo@Hm@?cB[BY?a@E[Qm@g@y@a@]wAs@s@KsA?UGOOMSGm@BUTy@Fq@h@}PB}LmCbA{@Pa@@yDXeJX{BFmBAB?qAo@gDeBkAsBc@mAIc@Bm@\\wA^o@hA}@Vi@L_@oCwAY?m@Jm@DcFoCWc@uE~LOHSFm@Mk@UkAy@cDeD}@kA{@sAk@m@}D_EeB}A}AmAASrAgBi@]SW_@o@_@w@UOoAc@a@?{AZQGqBaDq@c@SQO[cA{DUk@mBsBQ[Ma@UgAUs@SY}@y@MUIgBNqEGsAD_Db@uBcEa@_@IcA[w@O_F[oCYuA|C}A~DGj@?ZDV|@vCRb@t@hAhA~An@rAy@r@aB`B_D~BgAp@MLS^_BtEO?iNeCsDqAoGwBeBQiALe@JwCfAo@HqBJ{A@{DzBkAZk@Ha@`@WHuFnAcCMwAjBmA`@}KjCqG|AiBLcBk@}CqAqDWyBFeAv@sEvDe@GGWDc@ZaBHo@Ic@c@?M@mKnCg@Va@j@S`AQbC]t@e@b@iBl@oAj@UFm@AsA?k@fJ_B?wA@o@Vg@ZyBfFWpAOnAOl@k@xAgA~Aw@n@]NYFW?YG[QU[Mc@G{DEg@s@{Cu@RsBNYEKVJW_@K_@Wu@o@MYUaBkAN{@Q_@Q_@Y_@k@o@{BGm@OyHKs@Yy@}@n@aCnAy@?iBc@_@YYm@E[GOBkBCa@Om@@WeAVmAIAaB\\iAt@mAp@m@t@uAPe@D{DL}@A_AG[}@oASu@Is@i@?UIkHqDB@cCeBoBgB_@g@uCqFmB_Bk@[}A_@g@C_DNSOkAcAsBgAyAo@yAa@_DbG}A|EUrAOpBCdAB|@RrAtAvENpBAdAsA`KmAzJ?`@DZJ^Vb@lBxAl@j@d@l@hGzKm@ZWHYD}DBeALw@wCS_@[]g@c@s@dAwA|A[VyBdAcA\\u@`@_@Zi@v@m@fBiAs@qB_AeBs@wDw@YQu@m@qAoAt@wATu@N}@H{@?oBYkB}AaEy@iAw@q@qCsBu@UoAQx@kJRo@b@u@nA}ApBcIV}DCq@MkAE{@@Y\\}@~@oAfByClDiJlAoCfAkE`AoC}A}BeDiGoBoCeCeCi@WyEuDoDuBkEaCyEgBO^g@t@c@^u@b@}EvBsCtAq@d@gAnAs@vAaAfD_AhHOn@]dAoA|Bc@h@_At@qDzBeAd@{Fr@mQbBeEt@sDhAuCjAi@ZqAZwFpAcA`@i@\\oBrCoAoAe@Ym@Q[EeALm@RqEnFiAl@o@Ve@@iAIo@?gCx@g@D}@QUIuAwA}@c@cEqAk@QWMeFkDq@Sq@MgFC_@@oD~@q@FWAmEs@g@AaCl@y@Ee@KcA[Wt@u@t@uGrA}HdCyEjCg@Hi@FeIP[Eu@S[Om@m@_B_Dg@m@k@W{Bg@cA?a@Hc@eB?@Ec@F}@V{@X]XWh@S`BWZIXS^c@dAkDh@{BVq@Xg@bA}@d@Y`Bu@t@u@r@oA`EkInAuEh@_At@s@fAm@rAQfAHpANnBb@|IvEl@d@ZPhAZTLbA|@nF~Gh@`@|@L\\Aj@QXQb@e@NYR}@BeAUeEBe@Fa@Ti@j@w@N[rBmJTw@jD}HZe@vBeCdAgA^[p@[Lb@Tb@r@~@v@j@tKpFv@v@Vj@RpALvCLbAHX^v@p@z@ZRj@Xn@Nb@@dK@AdHFnAHl@XxAh@bB\\z@nArBtLvQj@fAfA|BzG~PbApCrGbPx@xArAnB~B|C~^td@xRpVwA`BSn@GlAD`BGf@On@oAxC[XaAl@gAXwAb@_AP_AEyCSsAQGt@?n@LbAAb@Kl@Yj@w@b@yCb@WPW`@Sd@Gd@Ab@Hf@Rl@b@b@r@d@tD|At@f@Zt@F`@D|@K`BGb@QZg@r@s@t@e@P_CPe@F]Tm@z@IZKdAObEx@Hl@RVNRP`EnEx@r@n@XzCb@~@Fj@?bBGlB_@zCiAx@G`BVp@b@b@l@|@hBdB|BhAdBtArCLn@bFqDhAgAbAsAp@iAvDgIjAiBp@w@rAmA|JiFnBmA~AkAjE}D`@OjByAjBiBbFcC|@GpBLvGzAzFfBrQnJu@vBMz@OlEUr@[b@c@ZYJe@DsAKmB_CWQWKg@EmBVy@R]Vs@t@e@n@e@^aA\\[Na@`@[t@Gf@?|@DdAAt@Mj@Wj@yCdCg@t@SfA?j@PxA@b@Et@e@hDWnA_B~ESb@g@b@s@Xk@Bq@C_D{@m@e@]k@o@uA[_@YO_@KuAE{BgAo@zB{@tMFbARv@nCfFlAdCt@dEp@hBVnAD|@QdCyAnIInBPzCO|Ch@vC@zA{@bBu@dCnAzEc@|Im@t@qBj@w@n@]fBd@xVYpCaBnFKhBb@xAjEpDpJbGn@PlEx@]rB_@|Au@|BiBlDsBjCgDpDgA~@}IdHe@b@c@v@E~AJ~@r@xCDh@@l@Ct@Mr@Qf@_AfB}@lB[t@]fAU`BGlA@fAj@zMH|@TpAJ`@`@dAh@~@zAzAjBnAvBdA`AHl@G`@MjCjFR~@@~@EVaBbE|@l@`@`@\\l@`@fAL|@Bt@K`BUnA?CU`B@bAD`@_AD}@N}BHc@Nq@l@_BfDUj@Mv@k@|EWfAcDpDoBnB}@tA_AzB}@dBi@`@m@\\u@LmCHk@OeNeI]a@Wm@Gk@A{FUkAc@iAm@s@q@]qFqBs@]c@YaEmF]o@w@gCs@eAq@u@kAs@aE_AiCeA{AAcCt@wAZaBCgFyBoA_AcAgAwAuAmAe@_Hk@uAIkHIkAOqF{AiAk@y@u@kD_FcA}@eBQy@Q{B[cBs@mDoCqAoAq@mAe@e@o@OuAKaAWyAeAa@_@@?cBuAqB_@W?{ARgE|B{@Je@AcAW]M_C_BeAlCq@hA}@z@e@Ts@T{@LoA?gFsAgAIwAPoAXcAl@aAfAo@nAkFbM{EhO[hA~PpHpL|ExJlEtHvCd@Xr@l@|@`Ap@lAt@tBtFlXz@vFlE``@yFnAiBj@{D\\{Ah@sBZu@XaEnCwBt@{@j@aAxAq@j@_A@sAm@cA{@wBw@kDu@gAQcAPc@b@mDdJ]d@]Vk@Za@Fm@T[`@[z@_@T]D_Cc@g@Ew@L_Ab@iAwAaAe@wCs@k@[a@_@a@g@Wk@Mi@?DqD_ROm@e@}@a@c@cA{@[]U_@_@iAYsB_@mBOYcAgAr@yAp@qB`AsBb@m@t@s@hAo@tHsBnAk@pA{@hBuBzAoCrAmEbAuCrCyFbCuDrBkGbBkDjE{GpL|ExJlEtHvCd@Xr@l@|@`Ap@lAt@tBtFlXz@vFlE``@vFvb@R~@jAxEhAfD|BjFtD`GpAbCh@hAf@tBL|ADvAClB]pDgDpLWlAShB?|DJvAP`A^nAbAzBdF~GvBpDrA~Cr@|Bn@xDf@|DHdC@fCk@jL?dB~A~]@~AGbBKnASnAq@lCc@hA_BfCu@z@u@j@oAx@uYdQcC|BqBjCoAzBk@nAUl@uC{@f@Al@JLCb@k@n@c@f@_ARUhASb@D^H^j@^HPu@GkBpBaCnAg@bAW~@KxAEhAxBhArAbBlAtIbFbA\\RMxE}K?@h@{BNcBBiBGwDKuCW}BGmAC{DESIQUQXgARoAJoAFcBA_B_B_^?eBj@kLAgCIeCg@}Do@yDs@}BsA_DwBqDeF_HcA{B_@oAQaAKwA?}DRiBVmAfDqL\\qDBmBEwAM}Ag@uBi@iAqAcCuDaG}BkFiAgDkAyES_AwFwb@mEa`@{@wFuFmXu@uBq@mA}@aAs@m@e@YuHwCyJmEqL}EbA{A`AkAx@u@|OuI|OkIdBiAv@eAjCwFtBeEzCmEzAvAfA`Bn@Zz@L`ADp@PxFrE^Pl@PR?HAzBZx@PdBPbA|@jD~Ex@t@hAj@pFzAjANjHHtAH~Gj@lAd@vAtAbAfAnA~@fFxB`BBvA[p@xCq@yCbCu@zA@hCdA`E~@jAr@p@t@r@dAv@fC\\n@`ElFb@Xr@\\pFpBp@\\l@r@b@hATjA@zFFj@Vl@\\`@fJrF|BpAj@NlCIt@Ml@]h@a@|@eB~@{B|@uAnBoBbDqDVgAj@}ELw@Tk@~AgDp@m@b@O|BI|@O~@E\\zAZzBBtBH|@RxAPj@Zt@d@j@~B~B^h@Zt@Tv@?LJd@l@jE\\zAdEjIf@j@jBxAr@RrBLb@H\\Rr@z@n@vA^l@hAb@xBJr@T^RZZ\\fAX`BvC~Ef@d@XPdCz@x@j@f@|@t@jBZb@hApAVj@nBtGNX`CdCXb@zAbDHf@G\\g@dA?PlA|APLjD?FF|@rCFLL@BFCGMAGM}@sCGGkD?QMmA}A?Qf@eAF]Ig@{AcDYc@aCeCOYoBuGWk@iAqA[c@u@kBg@}@y@k@eC{@YQg@e@wC_FYaB]gA[[_@Ss@UyBKiAc@_@m@o@wAs@{@]Sc@IsBMs@SkByAg@k@eEkI]{Am@kEKe@?MUw@[u@_@i@_C_Ce@k@[u@Qk@SyAI}@CuB[{B]{AEa@AcADc@d@iCJaBCu@M}@a@gA]m@a@a@}@m@`BcEDWA_AS_AkCkFa@Lm@FaAI}BgA@?gBmA{A{Ai@_Aa@eAa@sBI}@k@{MAgAFmATaB\\gAZu@|@mB~@gBPg@Ls@Bu@Am@Ei@s@yCK_AD_Bb@w@d@c@|IeHfA_AfDqDrBkChBmDl@eAd@gAZyAVcBaF}@o@QqJcGkEqDc@yAJiB`BoFXqCe@yV\\gBv@o@pBk@l@u@b@}IoA{Et@eCz@cBA{Ai@wCN}CQ{CHoBxAoIPeCE}@ScAu@uBu@eEmAeCoCgFSw@GcAz@uMn@{Bt@qBZeCCiA[gAi@u@mDwCw@eAcByCs@oFMm@c@gAs@gAq@v@kAhBqElJ_@l@{@hAiAfAcFpDMo@uAsCiAeBeB}B}@iBc@m@q@c@aBWy@F{ChAmB^cBFk@?_AG{Cc@o@Yy@s@aEoESQWOm@Sy@INcEJeAH[NWu@kAUs@Q[]_@_D_C}CmCYc@Se@Kc@Ek@?mAE_AM}@S}@]w@oBgD_@Ya@UmBc@a@OMIe@k@O[Kc@Gk@?eADc@Lc@jBaFl@q@`@SlAWpAIxAVt@b@b@`@Xd@Tj@`@pAj@nAb@j@^\\b@Xv@`@l@PnA?zFQpDb@xCR~@D~@Qr@WjBe@`Am@ZYnAyCNo@Fg@EaBFmARo@vAaB~GzIb@i@{GmIg@ZfKvMlBlBtAfA`B~@|Ar@tAb@|@PbBPvCRdTdAvBRhDh@jFnA`EnA|CfAnFpCjGnDrQnJjIfE`LhGfCxAbHdEnVdNdTfL`c@~UbS~Kll@|[|@p@xB`CtAlB`AtBdZvr@bBjCl@t@|BhBrA~@pB~@dBh@`AP`BRvAHdA@bDUhGmAjNwCdCe@bEm@t@EfADxAPfBb@jAb@tJvEfEhB`D`AvAVpC\\dJ`@le@dA`EI~Di@rH}BzCaBrHgF|s@ef@Wm@Kc@Bc@LQ`@Y`@k@fFcNfImULkAp@BPCRK`A}BXWpAk@z@Q|@CbAHf@AXG^Eh@Kr@Yn@c@j@[\\c@Xg@Pg@Hk@Bc@AyBIgA[wB?eALw@x@aC`AkD`@gCPYbBgBoAsCZQV_@`@y@pAqDv@gCoIoFkKqFmDuBuAeAS[I_@KaAE_AA_DMiBa@sDCkAHaOEk@}AsLcAwGKcBD_IF}ANmA^gA`@u@d@k@pAs@zCg@fCa@j@Ob@Sv@i@p@w@Rc@^mAIQcS}NyD}CgDyBrFcGLQDQAs@OoAGSq@yACW@YPo@Pa@hDyERQVOXI|@Oz@G"
+  },
+  "map_urls": {
+    "url": "https://d3o5xota0a1fcr.cloudfront.net/v6/maps/QNZNRFT6YBQVP3T6VDHA6SD7M2MPPOLSC5K5UGWBNC2FW4QBGTMA4RO6S4XA7B7FZQCXBAXJFRYZMARGFL55TS3ZR3VQ====",
+    "retina_url": "https://d3o5xota0a1fcr.cloudfront.net/v6/maps/CVRRPKPSJ56STTAQHH6UGB23UTZB7XL7EUZDSBI5GY4A3BSRDT36PHRYYCDUT5W3KBJTXRLSVPFKYQOEFFDJDLP7TWBQ===="
+  },
+  "name": "Tour das Hugel",
+  "private": false,
+  "resource_state": 3,
+  "starred": false,
+  "sub_type": 1,
+  "created_at": "2014-11-14T22:47:59Z",
+  "updated_at": "2022-06-04T07:56:41Z",
+  "timestamp": 1416005279,
+  "type": 1,
+  "estimated_moving_time": 26623,
+  "segments": [
+    {
+      "id": 405439,
+      "resource_state": 2,
+      "name": "360 south from under the Lake Austin bridge",
+      "activity_type": "Ride",
+      "distance": 2359.71,
+      "average_grade": 3.7,
+      "maximum_grade": 8.1,
+      "elevation_high": 225.6,
+      "elevation_low": 138.1,
+      "start_latlng": [
+        30.3484372,
+        -97.7985379
+      ],
+      "end_latlng": [
+        30.3296749,
+        -97.8100368
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 609560,
+      "resource_state": 2,
+      "name": "Mt. Bonnell South Face",
+      "activity_type": "Ride",
+      "distance": 1072.25,
+      "average_grade": 4.7,
+      "maximum_grade": 16.1,
+      "elevation_high": 219.8,
+      "elevation_low": 166,
+      "start_latlng": [
+        30.3134815,
+        -97.7718854
+      ],
+      "end_latlng": [
+        30.3218366,
+        -97.7730674
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 617537,
+      "resource_state": 2,
+      "name": "Beauford Dr.",
+      "activity_type": "Ride",
+      "distance": 751.383,
+      "average_grade": 11.2,
+      "maximum_grade": 30.1,
+      "elevation_high": 282.6,
+      "elevation_low": 198.4,
+      "start_latlng": [
+        30.375941999999995,
+        -97.78939
+      ],
+      "end_latlng": [
+        30.375750999999998,
+        -97.794786
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 626148,
+      "resource_state": 2,
+      "name": "The High Road",
+      "activity_type": "Ride",
+      "distance": 678.77,
+      "average_grade": 11.9,
+      "maximum_grade": 21.9,
+      "elevation_high": 267.8,
+      "elevation_low": 186.7,
+      "start_latlng": [
+        30.3097923,
+        -97.7986003
+      ],
+      "end_latlng": [
+        30.3132493,
+        -97.8033199
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 626149,
+      "resource_state": 2,
+      "name": "Smokey Valley",
+      "activity_type": "Ride",
+      "distance": 1052.68,
+      "average_grade": 10.2,
+      "maximum_grade": 26.8,
+      "elevation_high": 276.6,
+      "elevation_low": 169.3,
+      "start_latlng": [
+        30.3593497,
+        -97.7808089
+      ],
+      "end_latlng": [
+        30.3670281,
+        -97.780456
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 628782,
+      "resource_state": 2,
+      "name": "River Hills",
+      "activity_type": "Ride",
+      "distance": 2586.26,
+      "average_grade": 3.9,
+      "maximum_grade": 12.5,
+      "elevation_high": 252.2,
+      "elevation_low": 150.6,
+      "start_latlng": [
+        30.337957,
+        -97.848799
+      ],
+      "end_latlng": [
+        30.318579,
+        -97.854263
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 628785,
+      "resource_state": 2,
+      "name": "Bullick Hollow",
+      "activity_type": "Ride",
+      "distance": 587.046,
+      "average_grade": 10.4,
+      "maximum_grade": 15.1,
+      "elevation_high": 311.6,
+      "elevation_low": 250.6,
+      "start_latlng": [
+        30.412688,
+        -97.865737
+      ],
+      "end_latlng": [
+        30.408555,
+        -97.862383
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 628842,
+      "resource_state": 2,
+      "name": "Big View Dr.",
+      "activity_type": "Ride",
+      "distance": 1380.67,
+      "average_grade": 8.3,
+      "maximum_grade": 27.9,
+      "elevation_high": 274.1,
+      "elevation_low": 156.7,
+      "start_latlng": [
+        30.3575036,
+        -97.8638311
+      ],
+      "end_latlng": [
+        30.3625568,
+        -97.8517879
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 629046,
+      "resource_state": 2,
+      "name": "Terrace Mountain",
+      "activity_type": "Ride",
+      "distance": 1967.92,
+      "average_grade": 4.4,
+      "maximum_grade": 25,
+      "elevation_high": 216.6,
+      "elevation_low": 122,
+      "start_latlng": [
+        30.301174,
+        -97.797044
+      ],
+      "end_latlng": [
+        30.301139,
+        -97.808322
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "West Lake Hills",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 629297,
+      "resource_state": 2,
+      "name": "Smokey Valley ONLY",
+      "activity_type": "Ride",
+      "distance": 400.976,
+      "average_grade": 14.9,
+      "maximum_grade": 28.2,
+      "elevation_high": 65.3,
+      "elevation_low": 5.4,
+      "start_latlng": [
+        30.36141,
+        -97.779662
+      ],
+      "end_latlng": [
+        30.364018,
+        -97.782122
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 629546,
+      "resource_state": 2,
+      "name": "Jester",
+      "activity_type": "Ride",
+      "distance": 830.869,
+      "average_grade": 12.5,
+      "maximum_grade": 20.1,
+      "elevation_high": 295.3,
+      "elevation_low": 191.4,
+      "start_latlng": [
+        30.3695962,
+        -97.8016839
+      ],
+      "end_latlng": [
+        30.3757635,
+        -97.7989523
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 648953,
+      "resource_state": 2,
+      "name": "River Hills to Barton Creek",
+      "activity_type": "Ride",
+      "distance": 1686.11,
+      "average_grade": 1.9,
+      "maximum_grade": 8.8,
+      "elevation_high": 286.6,
+      "elevation_low": 253,
+      "start_latlng": [
+        30.3140493,
+        -97.8545935
+      ],
+      "end_latlng": [
+        30.3050252,
+        -97.842043
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 657210,
+      "resource_state": 2,
+      "name": "Rollingwood 3 hills",
+      "activity_type": "Ride",
+      "distance": 992.98,
+      "average_grade": 4.1,
+      "maximum_grade": 10.6,
+      "elevation_high": 207.6,
+      "elevation_low": 166.4,
+      "start_latlng": [
+        30.26910290122032,
+        -97.77803239412606
+      ],
+      "end_latlng": [
+        30.27435701340437,
+        -97.78523018583655
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 661137,
+      "resource_state": 2,
+      "name": "Governor's Hill",
+      "activity_type": "Ride",
+      "distance": 1021.22,
+      "average_grade": 7.9,
+      "maximum_grade": 36.4,
+      "elevation_high": 268.3,
+      "elevation_low": 187.5,
+      "start_latlng": [
+        30.29651553838541,
+        -97.85184267917448
+      ],
+      "end_latlng": [
+        30.29526500034173,
+        -97.86105070272261
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 668105,
+      "resource_state": 2,
+      "name": "All through Rollingwood",
+      "activity_type": "Ride",
+      "distance": 5008.85,
+      "average_grade": 1.9,
+      "maximum_grade": 9.6,
+      "elevation_high": 267.2,
+      "elevation_low": 172,
+      "start_latlng": [
+        30.269242879003286,
+        -97.77939612977207
+      ],
+      "end_latlng": [
+        30.277743889018893,
+        -97.81927756033838
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 674506,
+      "resource_state": 2,
+      "name": "Westbank Climb to 360 ",
+      "activity_type": "Ride",
+      "distance": 778.947,
+      "average_grade": 4.2,
+      "maximum_grade": 7.5,
+      "elevation_high": 261.6,
+      "elevation_low": 228.2,
+      "start_latlng": [
+        30.274328095838428,
+        -97.81235469505191
+      ],
+      "end_latlng": [
+        30.277638779953122,
+        -97.81941837631166
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 681737,
+      "resource_state": 2,
+      "name": "Barton Creek to Lost Creek, including descent from Bee Caves",
+      "activity_type": "Ride",
+      "distance": 10668,
+      "average_grade": 0,
+      "maximum_grade": 15.8,
+      "elevation_high": 317.6,
+      "elevation_low": 222,
+      "start_latlng": [
+        30.304214609786868,
+        -97.84204213880002
+      ],
+      "end_latlng": [
+        30.284243719652295,
+        -97.83373952843249
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 703904,
+      "resource_state": 2,
+      "name": "Bluegrass",
+      "activity_type": "Ride",
+      "distance": 399.33,
+      "average_grade": 11.5,
+      "maximum_grade": 21.9,
+      "elevation_high": 252.2,
+      "elevation_low": 206.2,
+      "start_latlng": [
+        30.38802140392363,
+        -97.76825574226677
+      ],
+      "end_latlng": [
+        30.3909810539335,
+        -97.76938302442431
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 737349,
+      "resource_state": 2,
+      "name": "BeeCaves South Climbing Only",
+      "activity_type": "Ride",
+      "distance": 550.834,
+      "average_grade": 6.3,
+      "maximum_grade": 18.5,
+      "elevation_high": 279.4,
+      "elevation_low": 244.6,
+      "start_latlng": [
+        30.3036591717973,
+        -97.8263119244948
+      ],
+      "end_latlng": [
+        30.2990079503506,
+        -97.8281217897311
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 740569,
+      "resource_state": 2,
+      "name": "Rain Creek Fun Climb - LONG",
+      "activity_type": "Ride",
+      "distance": 612.569,
+      "average_grade": 9.7,
+      "maximum_grade": 24.9,
+      "elevation_high": 263.6,
+      "elevation_low": 204.2,
+      "start_latlng": [
+        30.39838139131488,
+        -97.76269343956046
+      ],
+      "end_latlng": [
+        30.39662806551883,
+        -97.75683584816639
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 792655,
+      "resource_state": 2,
+      "name": "Plaza On Lake to Lakeside via 360",
+      "activity_type": "Ride",
+      "distance": 458.02,
+      "average_grade": 4,
+      "maximum_grade": 7.8,
+      "elevation_high": 166.6,
+      "elevation_low": 148,
+      "start_latlng": [
+        30.345751466229558,
+        -97.79977387748659
+      ],
+      "end_latlng": [
+        30.342293763533235,
+        -97.80199474655092
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 862322,
+      "resource_state": 2,
+      "name": "River Place. Big View 2 Big VIew",
+      "activity_type": "Ride",
+      "distance": 2545.79,
+      "average_grade": 2.8,
+      "maximum_grade": 18.5,
+      "elevation_high": 324.2,
+      "elevation_low": 201.8,
+      "start_latlng": [
+        30.362159628421068,
+        -97.85515135154128
+      ],
+      "end_latlng": [
+        30.377879049628973,
+        -97.85261423327029
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 877850,
+      "resource_state": 2,
+      "name": "Lost Creek eastbound climb #2",
+      "activity_type": "Ride",
+      "distance": 347.572,
+      "average_grade": 12.7,
+      "maximum_grade": 30.4,
+      "elevation_high": 240.7,
+      "elevation_low": 195.1,
+      "start_latlng": [
+        30.27229983,
+        -97.85426566
+      ],
+      "end_latlng": [
+        30.27007235,
+        -97.85184766
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 879161,
+      "resource_state": 2,
+      "name": "Lost Creek winding descent",
+      "activity_type": "Ride",
+      "distance": 402.235,
+      "average_grade": -6.9,
+      "maximum_grade": 0.2,
+      "elevation_high": 241.3,
+      "elevation_low": 212.7,
+      "start_latlng": [
+        30.27808768,
+        -97.8695664
+      ],
+      "end_latlng": [
+        30.27801857,
+        -97.86694767
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 891091,
+      "resource_state": 2,
+      "name": "Cat Mountain (Hugel Route)",
+      "activity_type": "Ride",
+      "distance": 2358.85,
+      "average_grade": 3.5,
+      "maximum_grade": 34.5,
+      "elevation_high": 258.2,
+      "elevation_low": 175.6,
+      "start_latlng": [
+        30.342433154582977,
+        -97.78067696839571
+      ],
+      "end_latlng": [
+        30.35151494666934,
+        -97.77215994894505
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 910045,
+      "resource_state": 2,
+      "name": "Mount Bonnell Bridge to Top",
+      "activity_type": "Ride",
+      "distance": 559.785,
+      "average_grade": 9.3,
+      "maximum_grade": 19.9,
+      "elevation_high": 219.8,
+      "elevation_low": 167.9,
+      "start_latlng": [
+        30.3155436,
+        -97.7740693
+      ],
+      "end_latlng": [
+        30.3201414,
+        -97.772981
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 930102,
+      "resource_state": 2,
+      "name": "Stratford Climb 1 Section 1",
+      "activity_type": "Ride",
+      "distance": 159.861,
+      "average_grade": 16.7,
+      "maximum_grade": 27.2,
+      "elevation_high": 166.2,
+      "elevation_low": 139.5,
+      "start_latlng": [
+        30.2749687,
+        -97.77562616666667
+      ],
+      "end_latlng": [
+        30.2746158,
+        -97.77717228333333
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 950762,
+      "resource_state": 2,
+      "name": "360 Over 2222",
+      "activity_type": "Ride",
+      "distance": 1072.04,
+      "average_grade": 0.6,
+      "maximum_grade": 4.7,
+      "elevation_high": 179.9,
+      "elevation_low": 161.2,
+      "start_latlng": [
+        30.3629821,
+        -97.7903818
+      ],
+      "end_latlng": [
+        30.3540725,
+        -97.7944572
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 962782,
+      "resource_state": 2,
+      "name": "Under 360 to Davenport",
+      "activity_type": "Ride",
+      "distance": 1308.77,
+      "average_grade": 4,
+      "maximum_grade": 6.6,
+      "elevation_high": 215.4,
+      "elevation_low": 163.4,
+      "start_latlng": [
+        30.346172405406833,
+        -97.79950867407024
+      ],
+      "end_latlng": [
+        30.335950339213014,
+        -97.80607748776674
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 995700,
+      "resource_state": 2,
+      "name": "courtyard from 360 to top",
+      "activity_type": "Ride",
+      "distance": 1073.18,
+      "average_grade": 8.9,
+      "maximum_grade": 22.7,
+      "elevation_high": 279.2,
+      "elevation_low": 184.2,
+      "start_latlng": [
+        30.352592105045915,
+        -97.79555233195424
+      ],
+      "end_latlng": [
+        30.358656495809555,
+        -97.80111280269921
+      ],
+      "elevation_profile": null,
+      "climb_category": 1,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 1201035,
+      "resource_state": 2,
+      "name": "Bee Caves to Top of Hill Sprint",
+      "activity_type": "Ride",
+      "distance": 414.08,
+      "average_grade": 3.6,
+      "maximum_grade": 9.9,
+      "elevation_high": 176.6,
+      "elevation_low": 161.6,
+      "start_latlng": [
+        30.27243873104453,
+        -97.79891171492636
+      ],
+      "end_latlng": [
+        30.269196359440684,
+        -97.80100777745247
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 1241513,
+      "resource_state": 2,
+      "name": "Courtyard - First Half",
+      "activity_type": "Ride",
+      "distance": 546.486,
+      "average_grade": 10.2,
+      "maximum_grade": 24.3,
+      "elevation_high": 247.2,
+      "elevation_low": 191.7,
+      "start_latlng": [
+        30.353680662810802,
+        -97.7978546731174
+      ],
+      "end_latlng": [
+        30.35766047425568,
+        -97.79897239990532
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 1273482,
+      "resource_state": 2,
+      "name": "Westbank Dr to Wild Basin Plunge",
+      "activity_type": "Ride",
+      "distance": 2729.79,
+      "average_grade": 1.1,
+      "maximum_grade": 6.5,
+      "elevation_high": 291.5,
+      "elevation_low": 260.7,
+      "start_latlng": [
+        30.2776911,
+        -97.8191787
+      ],
+      "end_latlng": [
+        30.2999389,
+        -97.8276088
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "West Lake Hills",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 1583713,
+      "resource_state": 2,
+      "name": "Pennybacker Bridge to Bee Caves",
+      "activity_type": "Ride",
+      "distance": 6893.33,
+      "average_grade": 2.3,
+      "maximum_grade": 30.7,
+      "elevation_high": 311.7,
+      "elevation_low": 147.3,
+      "start_latlng": [
+        30.34988360254142,
+        -97.79705675275305
+      ],
+      "end_latlng": [
+        30.298001559392866,
+        -97.8282749101089
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 1603552,
+      "resource_state": 2,
+      "name": "Westbank downhill from 360 to Pinnacle",
+      "activity_type": "Ride",
+      "distance": 718.043,
+      "average_grade": -4,
+      "maximum_grade": -2.2,
+      "elevation_high": 288.8,
+      "elevation_low": 260,
+      "start_latlng": [
+        30.27757222764194,
+        -97.81926708295941
+      ],
+      "end_latlng": [
+        30.274421302601695,
+        -97.81277915462852
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "West Lake Hills",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 1776842,
+      "resource_state": 2,
+      "name": "LCRA Ramp",
+      "activity_type": "Ride",
+      "distance": 180.517,
+      "average_grade": 7.9,
+      "maximum_grade": 11.8,
+      "elevation_high": 165.2,
+      "elevation_low": 150.9,
+      "start_latlng": [
+        30.291601,
+        -97.785541
+      ],
+      "end_latlng": [
+        30.291572,
+        -97.783667
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 1807599,
+      "resource_state": 2,
+      "name": "Lost creek - 3 Hills -Barton creek to Stop Sign",
+      "activity_type": "Ride",
+      "distance": 6011.7,
+      "average_grade": 0.4,
+      "maximum_grade": 27,
+      "elevation_high": 288,
+      "elevation_low": 181.6,
+      "start_latlng": [
+        30.2840662,
+        -97.8751101
+      ],
+      "end_latlng": [
+        30.2843653,
+        -97.8340377
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Barton Creek",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 2172666,
+      "resource_state": 2,
+      "name": "Bee Cave climb to BS",
+      "activity_type": "Ride",
+      "distance": 465.769,
+      "average_grade": 5.4,
+      "maximum_grade": 40.4,
+      "elevation_high": 291.3,
+      "elevation_low": 251.9,
+      "start_latlng": [
+        30.309101667,
+        -97.843945
+      ],
+      "end_latlng": [
+        30.30526,
+        -97.842243333
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 2992849,
+      "resource_state": 2,
+      "name": "Cuernavaca Only - West to East",
+      "activity_type": "Ride",
+      "distance": 8244.32,
+      "average_grade": 0,
+      "maximum_grade": 17.5,
+      "elevation_high": 308.2,
+      "elevation_low": 199,
+      "start_latlng": [
+        30.316617395728827,
+        -97.87249476648867
+      ],
+      "end_latlng": [
+        30.314680337905884,
+        -97.8549640160054
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 3251233,
+      "resource_state": 2,
+      "name": "Rollingwood to Paige (Stop Sign climb)",
+      "activity_type": "Ride",
+      "distance": 328.89,
+      "average_grade": 6.1,
+      "maximum_grade": 18,
+      "elevation_high": 158.2,
+      "elevation_low": 138,
+      "start_latlng": [
+        30.269290739670396,
+        -97.77956225909293
+      ],
+      "end_latlng": [
+        30.270726140588522,
+        -97.78251696377993
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 3364207,
+      "resource_state": 2,
+      "name": "Bee Caves to Wild Basin Bomb",
+      "activity_type": "Ride",
+      "distance": 933.16,
+      "average_grade": -4,
+      "maximum_grade": -0.2,
+      "elevation_high": 193.2,
+      "elevation_low": 155.8,
+      "start_latlng": [
+        30.29867408797145,
+        -97.82773112878203
+      ],
+      "end_latlng": [
+        30.306622060015798,
+        -97.82499686814845
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 3478300,
+      "resource_state": 2,
+      "name": "Down on Stratford",
+      "activity_type": "Ride",
+      "distance": 613.15,
+      "average_grade": -4.9,
+      "maximum_grade": 8,
+      "elevation_high": 182.4,
+      "elevation_low": 148.4,
+      "start_latlng": [
+        30.27533484622836,
+        -97.77806768193841
+      ],
+      "end_latlng": [
+        30.27260385453701,
+        -97.77365687303245
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 3723135,
+      "resource_state": 2,
+      "name": "Las Cimas Parkway Climb",
+      "activity_type": "Ride",
+      "distance": 513.62,
+      "average_grade": 3.3,
+      "maximum_grade": 12.7,
+      "elevation_high": 279.2,
+      "elevation_low": 262.5,
+      "start_latlng": [
+        30.282499,
+        -97.823053
+      ],
+      "end_latlng": [
+        30.286403,
+        -97.825926
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "West Lake Hills",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 4105525,
+      "resource_state": 2,
+      "name": "Pinnacle to Westbank slog",
+      "activity_type": "Ride",
+      "distance": 1018,
+      "average_grade": 3.1,
+      "maximum_grade": 11.9,
+      "elevation_high": 227.9,
+      "elevation_low": 196,
+      "start_latlng": [
+        30.269245,
+        -97.804822
+      ],
+      "end_latlng": [
+        30.273878,
+        -97.812248
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 4398325,
+      "resource_state": 2,
+      "name": "Bold Ruler Short Climb",
+      "activity_type": "Ride",
+      "distance": 606.1,
+      "average_grade": 1.4,
+      "maximum_grade": 3.9,
+      "elevation_high": 246.6,
+      "elevation_low": 238.2,
+      "start_latlng": [
+        30.321778,
+        -97.81524
+      ],
+      "end_latlng": [
+        30.326278,
+        -97.811777
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 5643691,
+      "resource_state": 2,
+      "name": "Riverbend Climb",
+      "activity_type": "Ride",
+      "distance": 678.6,
+      "average_grade": 4.4,
+      "maximum_grade": 13.8,
+      "elevation_high": 201,
+      "elevation_low": 161.1,
+      "start_latlng": [
+        30.345064,
+        -97.800198
+      ],
+      "end_latlng": [
+        30.339745,
+        -97.803609
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "United States",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 5828063,
+      "resource_state": 2,
+      "name": "Mt. Bonnell base to 2222",
+      "activity_type": "Ride",
+      "distance": 3584.3,
+      "average_grade": 0.6,
+      "maximum_grade": 15.8,
+      "elevation_high": 215.2,
+      "elevation_low": 159.4,
+      "start_latlng": [
+        30.313278,
+        -97.771727
+      ],
+      "end_latlng": [
+        30.340498,
+        -97.778886
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 5997886,
+      "resource_state": 2,
+      "name": "Smokey Killer Blast",
+      "activity_type": "Ride",
+      "distance": 174.1,
+      "average_grade": 17.4,
+      "maximum_grade": 27.6,
+      "elevation_high": 240.9,
+      "elevation_low": 210.5,
+      "start_latlng": [
+        30.362914,
+        -97.780953
+      ],
+      "end_latlng": [
+        30.363965,
+        -97.782176
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 6744304,
+      "resource_state": 2,
+      "name": "lost creek climb #1",
+      "activity_type": "Ride",
+      "distance": 576.3,
+      "average_grade": 6.2,
+      "maximum_grade": 17,
+      "elevation_high": 239,
+      "elevation_low": 202.6,
+      "start_latlng": [
+        30.277985,
+        -97.866712
+      ],
+      "end_latlng": [
+        30.274003,
+        -97.863251
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    },
+    {
+      "id": 7820159,
+      "resource_state": 2,
+      "name": "Welcome to Beecaves",
+      "activity_type": "Ride",
+      "distance": 416.3,
+      "average_grade": 3.2,
+      "maximum_grade": 8.3,
+      "elevation_high": 287.2,
+      "elevation_low": 273.8,
+      "start_latlng": [
+        30.296192,
+        -97.829298
+      ],
+      "end_latlng": [
+        30.296865,
+        -97.833535
+      ],
+      "elevation_profile": null,
+      "climb_category": 0,
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "private": false,
+      "hazardous": false,
+      "starred": false
+    }
+  ]
+}

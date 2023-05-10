@@ -6,11 +6,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/Emyrk/strava/database"
-
 	"github.com/vgarvardt/gue/v5"
 
 	"github.com/Emyrk/strava/api/webhooks"
+	"github.com/Emyrk/strava/database"
 )
 
 func (m *Manager) EnqueueUpdateAthlete(ctx context.Context, event webhooks.WebhookEvent) error {
