@@ -341,21 +341,6 @@ const SegmentCard: FC<{
   setSelectedSegment: (id: string) => void;
 }> = ({ segment, setSelectedSegment }) => {
   const { authenticatedUser } = useAuthenticated();
-  const starIcon =
-    authenticatedUser === undefined
-      ? faCircleInfo
-      : segment.starred
-      ? fasStar
-      : farStar;
-
-  const starColor = authenticatedUser === undefined ? "#709df8" : "#fcaf02";
-
-  const starTooltip =
-    authenticatedUser === undefined
-      ? "Connect with strava to see if you have this segment starred"
-      : segment.starred
-      ? "You have this segment starred"
-      : "Segment is not starred";
 
   const bestActHref = segment.personal_best
     ? `https://www.strava.com/activities/${segment.personal_best.best_effort_activities_id}/segments/${segment.personal_best.best_effort_id}`
@@ -493,28 +478,12 @@ const SegmentCard: FC<{
             </ConditionalLink>
           </GridItem>
           <GridItem textAlign={"center"}>
-            <Flex justifyContent="center" alignItems={"center"} height={"100%"}>
-              <Box
-                cursor="help"
-                _hover={{
-                  opacity: 1,
-                }}
-                opacity={0.7}
-              >
-                <Tooltip
-                  label={starTooltip}
-                  aria-label="Starred Segment Tooltip"
-                >
-                  <FontAwesomeIcon
-                    icon={starIcon}
-                    size="2x"
-                    style={{
-                      color: starColor,
-                    }}
-                  />
-                </Tooltip>
-              </Box>
-            </Flex>
+            <StarredIcon starred={segment.starred} />
+            <Flex
+              justifyContent="center"
+              alignItems={"center"}
+              height={"100%"}
+            ></Flex>
           </GridItem>
         </Grid>
       </Box>
@@ -522,10 +491,45 @@ const SegmentCard: FC<{
   );
 };
 
+const StarredIcon: FC<{ starred?: boolean }> = ({ starred }) => {
+  const { authenticatedUser } = useAuthenticated();
+  const starIcon =
+    authenticatedUser === undefined
+      ? faCircleInfo
+      : starred
+      ? fasStar
+      : farStar;
+
+  const starColor = authenticatedUser === undefined ? "#709df8" : "#fcaf02";
+
+  const starTooltip =
+    authenticatedUser === undefined
+      ? "Connect with strava to see if you have this segment starred"
+      : starred
+      ? "You have this segment starred"
+      : "Segment is not starred";
+
+  return (
+    <Box
+      cursor="help"
+      _hover={{
+        opacity: 1,
+      }}
+      opacity={0.7}
+    >
+      <Tooltip label={starTooltip} aria-label="Starred Segment Tooltip">
+        <FontAwesomeIcon
+          icon={starIcon}
+          size="2x"
+          style={{
+            color: starColor,
+          }}
+        />
+      </Tooltip>
+    </Box>
+  );
+};
+
 export const Loading: FC = () => {
   return <Text>Loading...</Text>;
 };
-
-{
-  /* <iframe height='405' width='590' frameborder='0' allowtransparency='true' scrolling='no' src='https://www.strava.com/segments/7041089/embed'></iframe> */
-}
