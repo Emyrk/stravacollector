@@ -30,6 +30,7 @@ import {
   Tooltip,
   background,
   Button,
+  Card,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import {
@@ -38,7 +39,7 @@ import {
   getHugelLeaderBoard,
   getRoute,
 } from "../../api/rest";
-import { NotFound } from "../../pages/404/404";
+import { NotFound } from "../404/404";
 import { useQuery } from "@tanstack/react-query";
 import {
   MapContainer,
@@ -70,10 +71,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as farStar } from "@fortawesome/free-regular-svg-icons";
 import { useAuthenticated } from "../../contexts/Authenticated";
-import {
-  ElapsedDurationText,
-  FormatDate,
-} from "../../pages/HugelBoard/CalcActivity";
+import { ElapsedDurationText, FormatDate } from "../HugelBoard/CalcActivity";
+import { ResponsiveCard } from "../../components/ResponsiveCard/ResponsiveCard";
 
 export const ChallengeRoute: FC<{}> = ({}) => {
   const { name } = useParams();
@@ -361,25 +360,7 @@ const SegmentCard: FC<{
     : "";
 
   return (
-    <Box
-      // bgColor={"#272c35"}
-      // bgColor={"#3b3f48"}
-      // https://www.sessions.edu/color-calculator/
-      bg={"linear-gradient(135deg, #3b3f48 0%, #48403b 260%)"}
-      height={"170px"}
-      width={"350px"}
-      borderRadius={"10px"}
-      boxShadow={"rgb(20, 20, 20) 0px 3px 6px"}
-      transition={"all .25s ease"}
-      _hover={{
-        // bg: "rgb(43, 49, 59)",
-        // bg: "#48403b",
-        bg: "linear-gradient(135deg, #3b3f48 0%, #48403b 35%)",
-        boxShadow: "rgb(20, 20, 20) 0px 5px 10px",
-        marginTop: "-3px",
-        marginBottom: "-3px",
-      }}
-    >
+    <ResponsiveCard height={"170px"} width={"350px"}>
       <Box p="10px">
         <Grid
           // templateAreas={`"header header"
@@ -540,7 +521,7 @@ const SegmentCard: FC<{
           </GridItem>
         </Grid>
       </Box>
-    </Box>
+    </ResponsiveCard>
   );
 };
 

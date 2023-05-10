@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 import {
   ChakraProvider,
   Box,
@@ -16,14 +16,14 @@ import {
   StyleConfig,
   StyleFunctionProps,
   ThemeConfig,
-} from "@chakra-ui/react"
-import { Logo } from "./Logo"
+} from "@chakra-ui/react";
+import { Logo } from "./Logo";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   Link as RouteLink,
-  Outlet
+  Outlet,
 } from "react-router-dom";
 import { HugelBoard } from "./pages/HugelBoard/HugelBoard";
 import { Landing } from "./pages/Landing/Landing";
@@ -35,7 +35,7 @@ import { NotFound } from "./pages/404/404";
 import { SignedOut } from "./pages/SignedOut/SignedOut";
 import { SuperHugelBoard } from "./pages/HugelBoard/SuperHugelBoard";
 import { Activity } from "./components/Activity/Activity";
-import { ChallengeRoute } from "./components/ChallengeRoute/ChallengeRoute";
+import { ChallengeRoute } from "./pages/ChallengeRoute/ChallengeRoute";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,12 +46,12 @@ const queryClient = new QueryClient({
       networkMode: "offlineFirst",
     },
   },
-})
+});
 
 export const App = () => {
-  return <QueryClientProvider client={queryClient}>
-    <AuthenticatedProvider>
-      
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthenticatedProvider>
         <Router>
           <Routes>
             <Route element={<Background />}>
@@ -64,30 +64,40 @@ export const App = () => {
                 <Route path="/route/:name" element={<ChallengeRoute />} />
                 <Route path="/signed-out" element={<SignedOut />} />
               </Route>
-              <Route path='*' element={<NotFound />} />
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
         </Router>
-      
-    </AuthenticatedProvider>
-  </QueryClientProvider>
-}
+      </AuthenticatedProvider>
+    </QueryClientProvider>
+  );
+};
 
 export const Background: FC = () => {
-  const bgSrc = useColorModeValue("dark", "light")
-  return <>
-    <Box h={'100svh'} background={`url(/hugel_route_lines_${bgSrc}.svg)`} backgroundPosition={'center'} backgroundRepeat={'no-repeat'} backgroundSize='cover'  >
-      <Outlet />
-    </Box>
-  </>
-}
+  const bgSrc = useColorModeValue("dark", "light");
+  return (
+    <>
+      <Box
+        h={"100svh"}
+        background={`url(/hugel_route_lines_${bgSrc}.svg)`}
+        backgroundPosition={"center"}
+        backgroundRepeat={"no-repeat"}
+        backgroundSize="cover"
+      >
+        <Outlet />
+      </Box>
+    </>
+  );
+};
 
 export const IncludeNavbar: FC = () => {
-  const bgSrc = useColorModeValue("dark", "light")
-  return <>
-    <Box>
-      <Navbar />
-      <Outlet />
-    </Box>
-  </>
-}
+  const bgSrc = useColorModeValue("dark", "light");
+  return (
+    <>
+      <Box>
+        <Navbar />
+        <Outlet />
+      </Box>
+    </>
+  );
+};
