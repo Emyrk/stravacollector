@@ -300,26 +300,6 @@ const EffortPair: FC<{
             </Link>
           </Tooltip>
         );
-
-        // return (
-        // <Link
-        //   key={`effort-${index}`}
-        //   target="_blank"
-        //   href={`https://strava.com/activities/${effort.activity_id.toString()}/segments/${effort.effort_id.toString()}`}
-        // >
-        //     <Text maxWidth={"100px"} isTruncated fontWeight={"bold"}>
-        //       {segmentSummaries && segmentSummaries[effort.segment_id]
-        //         ? segmentSummaries[effort.segment_id].name
-        //         : "????"}
-        //     </Text>
-        //     <Box pb={index === 0 ? 3 : 0}>
-        //       {ElapsedDurationText(effort.elapsed_time, false)} @{" "}
-        //       {effort.device_watts
-        //         ? Math.floor(effort.average_watts) + "w"
-        //         : "--"}
-        //     </Box>
-        //   </Link>
-        // );
       })}
     </Td>
   );
