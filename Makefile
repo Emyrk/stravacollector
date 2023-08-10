@@ -3,7 +3,7 @@ FIND_EXCLUSIONS= \
 
 GIT_TAG := $(shell git describe --tags --abbrev=0)
 GIT_COMMIT := $(shell git describe --always)
-BUILD_TIME := $(shell date +"%m-%d-%y %H:%M")
+BUILD_TIME := $(shell TZ='America/Chicago' date +"%m-%d-%y %H:%M")
 
 gen: database/dump.sql database/querier.go site/strava-frontend/src/api/typesGenerated.ts
 
