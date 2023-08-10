@@ -64,8 +64,7 @@ func (h *handler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	req.URL.Path = strings.TrimSuffix(req.URL.Path, "/")
 	req.URL.Path += ".html"
 	reqFile = filePath(req.URL.Path)
-	if h.exists(reqFile) {
-		h.mux.ServeHTTP(resp, req)
+	if h.serveHTML(resp, req, reqFile, state) {
 		return
 	}
 
