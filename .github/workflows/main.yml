@@ -72,7 +72,7 @@ jobs:
           push: ${{ github.ref_type == 'tag' }}
           tags: emyrk/strava:latest
       - name: List
-        runs: ls -la
+        run: ls -la
 
   deploy-fly-io:
     name: "Deploy to Fly.io"
