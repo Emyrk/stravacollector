@@ -11,7 +11,7 @@ RUN make site
 
 FROM golang:1.20.3-alpine3.17
 
-RUN apk --no-cache add make
+RUN apk --no-cache add make git
 
 COPY --from=0 /strava /strava
 
