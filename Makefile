@@ -1,6 +1,10 @@
 FIND_EXCLUSIONS= \
 	-not \( \( -path '*/.git/*' -o -path './build/*' -o -path './vendor/*' -o -path './.coderv2/*' -o -path '*/node_modules/*' -o -path './site/out/*' \) -prune \)
 
+GIT_TAG := $(shell git describe --tags --abbrev=0)
+GIT_COMMIT := $(shell git describe --always)
+BUILD_TIME := $(shell date +"%m-%d-%y %H:%M")
+
 gen: database/dump.sql database/querier.go site/strava-frontend/src/api/typesGenerated.ts
 
 .PHONY: gen
@@ -24,5 +28,5 @@ site/strava-frontend/src/api/typesGenerated.ts: scripts/apitypings/main.go $(she
 	cd site
 
 build:
-	go build -o bin/strava --tags=static
-	# -ldflags="-X 'main.Version=$(VERSION)' -X 'main.BuildTime=$(BUILD_TIME)'" -o bin/$(BINARY_NAME) ./cmd/$(BINARY_NAME)
+	echo $(GIT_TAG) $(GIT_VERSION)
+	go build -o bin/strava --tags=static -ldflags="-X 'github.com/Emyrk/strava/internal/version.GitTag=$(GIT_TAG)' -X 'github.com/Emyrk/strava/internal/version.GitCommit=$(GIT_COMMIT)' -X 'github.com/Emyrk/strava/internal/version.BuildTime=$(BUILD_TIME)'"
