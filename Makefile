@@ -1,7 +1,7 @@
 FIND_EXCLUSIONS= \
 	-not \( \( -path '*/.git/*' -o -path './build/*' -o -path './vendor/*' -o -path './.coderv2/*' -o -path '*/node_modules/*' -o -path './site/out/*' \) -prune \)
 
-GIT_TAG := $(shell git describe --tags)
+GIT_TAG := $(shell git describe --tags --abbrev=0)
 GIT_COMMIT := $(shell git describe --always)
 BUILD_TIME := $(shell date +"%m-%d-%y %H:%M")
 
