@@ -131,7 +131,6 @@ func (c *Client) DecodeResponse(res *http.Response, v any, expectedCode int) err
 }
 
 func (c *Client) Request(ctx context.Context, method string, path string, body any, values url.Values) (*http.Response, error) {
-	fmt.Println("Making strava api request", method, path, values.Encode())
 	data, err := json.Marshal(body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal body: %w", err)

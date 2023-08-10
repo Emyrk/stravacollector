@@ -49,6 +49,10 @@ func (h *handler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		BuildTime: version.BuildTime,
 	}
 
+	if h.serveHTML(resp, req, reqFile, state) {
+		return
+	}
+
 	// If the original file exists, serve it
 	if h.exists(reqFile) {
 		h.mux.ServeHTTP(resp, req)
@@ -64,7 +68,9 @@ func (h *handler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		h.mux.ServeHTTP(resp, req)
 		return
 	}
-	if h.serveHTML(resp, req, reqFile, state) {
+
+	if h.exists(reqFile) {
+		h.mux.ServeHTTP(resp, req)
 		return
 	}
 
