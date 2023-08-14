@@ -67,10 +67,12 @@ export const getAthleteHugels = async (
   }
 };
 
-export const getAthleteSyncSummary = async (): Promise<TypesGen.AthleteSyncSummary | undefined> => {
+export const getAthleteSyncSummary = async (
+  athlete_id: string
+): Promise<TypesGen.AthleteSyncSummary | undefined> => {
   try {
     const response = await axios.get<TypesGen.AthleteSyncSummary>(
-      `/api/v1/me/sync-summary`
+      `/api/v1/athlete/${athlete_id}/sync-summary`
     );
     return response.data;
   } catch (error) {

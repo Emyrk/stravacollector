@@ -17,7 +17,11 @@ export const AthletePage: FC<{}> = ({}) => {
     return <Loading />;
   }
 
-  if (authenticatedUser?.athlete_id === athlete_id) {
+  if (
+    authenticatedUser?.athlete_id === athlete_id ||
+    // Or Steven
+    authenticatedUser?.athlete_id === "2661162"
+  ) {
     return <AthleteMePage />;
   }
   return <AthleteOtherPage />;

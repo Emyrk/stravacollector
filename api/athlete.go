@@ -55,12 +55,27 @@ func (api *API) athlete(rw http.ResponseWriter, r *http.Request) {
 
 func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 	var (
-		ctx      = r.Context()
-		id       = httpmw.AuthenticatedAthleteID(r)
-		page     = r.URL.Query().Get("page")
-		limitStr = r.URL.Query().Get("limit")
-		err      error
+		ctx         = r.Context()
+		authAth, ok = httpmw.AuthenticatedAthleteIDOptional(r)
+		id          = httpmw.AuthenticatedAthleteID(r)
+		page        = r.URL.Query().Get("page")
+		limitStr    = r.URL.Query().Get("limit")
+		err         error
 	)
+	if !ok {
+		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
+			Message: "Synced data requires authentication. No authentication provided",
+		})
+		return
+	}
+
+	// 2661162 is Steven
+	if authAth != 2661162 && authAth != id {
+		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
+			Message: "You can only fetch your own sync summary, not another athlete's.",
+		})
+		return
+	}
 
 	limit := int64(100)
 	if limitStr != "" {

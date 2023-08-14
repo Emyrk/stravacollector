@@ -65,7 +65,7 @@ export const AthleteMePage: FC<{}> = ({}) => {
   } = useQuery({
     queryKey,
     enabled: !!athlete_id,
-    queryFn: () => getAthleteSyncSummary(),
+    queryFn: () => getAthleteSyncSummary(athlete_id || "me"),
   });
 
   const queryHugelsKey = ["hugels", athlete_id];

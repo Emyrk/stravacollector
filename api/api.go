@@ -138,9 +138,13 @@ func (api *API) Routes() chi.Router {
 		r.Group(func(r chi.Router) {
 			r.Route("/athlete", func(r chi.Router) {
 				r.Route("/{athlete_id}/", func(r chi.Router) {
-					r.Use(httpmw.ExtractAthlete(api.Opts.DB))
+					r.Use(
+						httpmw.Authenticated(api.Auth, true),
+						httpmw.ExtractAthlete(api.Opts.DB),
+					)
 					r.Get("/", api.athlete)
 					r.Get("/hugels", api.athleteHugels)
+					r.Get("/sync-summary", api.syncSummary)
 				})
 			})
 		})
@@ -150,9 +154,6 @@ func (api *API) Routes() chi.Router {
 				httpmw.Authenticated(api.Auth, false),
 			)
 			r.Get("/whoami", api.whoAmI)
-			r.Route("/me", func(r chi.Router) {
-				r.Get("/sync-summary", api.syncSummary)
-			})
 			r.Route("/fetch-activity", func(r chi.Router) {
 				r.Get("/{activity_id}", api.manualFetchActivity)
 			})
