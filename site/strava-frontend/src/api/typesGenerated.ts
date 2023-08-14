@@ -213,7 +213,7 @@ export interface SuperHugelLeaderBoardActivity {
 
 // From codersdk/athlete.go
 export interface SyncActivitySummary {
-  readonly ActivitySummary: ActivitySummary
+  readonly activity_summary: ActivitySummary
   readonly synced: boolean
   readonly synced_at: string
 }

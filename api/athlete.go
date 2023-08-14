@@ -55,11 +55,24 @@ func (api *API) athlete(rw http.ResponseWriter, r *http.Request) {
 
 func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 	var (
-		ctx  = r.Context()
-		id   = httpmw.AuthenticatedAthleteID(r)
-		page = r.URL.Query().Get("page")
-		err  error
+		ctx      = r.Context()
+		id       = httpmw.AuthenticatedAthleteID(r)
+		page     = r.URL.Query().Get("page")
+		limitStr = r.URL.Query().Get("limit")
+		err      error
 	)
+
+	limit := int64(100)
+	if limitStr != "" {
+		limit, err = strconv.ParseInt(limitStr, 10, 64)
+		if err != nil {
+			httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+				Message: "Invalid limit",
+				Detail:  err.Error(),
+			})
+			return
+		}
+	}
 
 	pageNum := int64(1)
 	if page != "" {
@@ -83,15 +96,14 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 	}
 	load := detailedLoad.AthleteLoad
 
-	limit := 100
 	if pageNum <= 0 {
 		pageNum = 1
 	}
-	offset := (pageNum - 1) * int64(limit)
+	offset := (pageNum - 1) * limit
 	activities, err := api.Opts.DB.AthleteSyncedActivities(ctx, database.AthleteSyncedActivitiesParams{
 		AthleteID: id,
 		Offset:    int32(offset),
-		Limit:     100,
+		Limit:     int32(limit),
 	})
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{

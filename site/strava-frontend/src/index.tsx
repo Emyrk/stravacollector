@@ -15,6 +15,7 @@ import * as ReactDOM from "react-dom/client";
 import { App } from "./App";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorker from "./serviceWorker";
+import { mode } from "@chakra-ui/theme-tools";
 
 const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(alertAnatomy.keys);
@@ -23,7 +24,7 @@ const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element");
 const root = ReactDOM.createRoot(container);
 
-console.log("defaultTheme", defaultTheme);
+// console.log("defaultTheme", defaultTheme);
 const customComponents: Record<string, StyleConfig> = {
   Box: {
     variants: {
@@ -154,6 +155,12 @@ export const config: ThemeConfig = {
 const theme = extendTheme(
   {
     components: { ...customComponents },
+    // styles: {
+    //   global: () => ({
+    //     body: {
+    //     },
+    //   }),
+    // },
     colors: {
       brand: {
         primary: "#ebebeb",

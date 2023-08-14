@@ -25,6 +25,8 @@ import {
   AlertTitle,
   CircularProgress,
   CircularProgressLabel,
+  useTheme,
+  Tooltip,
 } from "@chakra-ui/react";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -45,6 +47,9 @@ import {
   faCircleCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { FormatDate } from "../HugelBoard/CalcActivity";
+import { StravaLink } from "../../components/StravaLink/StravaLink";
+// https://codesandbox.io/s/react-table-chakra-ui-pagination-example-fxx0v
+import { useReactTable } from "@tanstack/react-table";
 
 export const AthleteMePage: FC<{}> = ({}) => {
   const { athlete_id } = useParams();
@@ -183,19 +188,70 @@ const AthleteMeTotals: FC<{ summary: AthleteSyncSummary }> = ({ summary }) => {
 const AthleteMeHugelTable: FC<{ summary: AthleteSyncSummary }> = ({
   summary,
 }) => {
+  const theme = useTheme();
+
+  // const table = useReactTable({
+  //   data,
+  //   columns,
+  //   getCoreRowModel: getCoreRowModel(),
+  // });
+
   return (
-    <TableContainer>
+    <TableContainer
+      sx={{
+        td: { padding: "2px" },
+      }}
+    >
       <Table>
         <Thead>
           <Tr>
+            <Td>Synced</Td>
             <Td>Activity</Td>
+            <Td>Date</Td>
           </Tr>
         </Thead>
         <Tbody>
-          {/* {summary.synced_activities.map((act) => {
-            console.log(act);
-            return <Tr>{act.ActivitySummary.activity_id}</Tr>;
-          })} */}
+          {summary.synced_activities.map((act) => {
+            return (
+              <Tr key={act.activity_summary.activity_id} padding={"0px"}>
+                <Td width="70px" textAlign={"center"}>
+                  {act.synced ? (
+                    <Tooltip label={`Synced on ${FormatDate(act.synced_at)}`}>
+                      <FontAwesomeIcon
+                        cursor={"pointer"}
+                        color={theme.colors.green["500"]}
+                        icon={faCircleCheck}
+                      />
+                    </Tooltip>
+                  ) : (
+                    <FontAwesomeIcon
+                      color={theme.colors.red["500"]}
+                      icon={faCircleXmark}
+                    />
+                  )}
+                </Td>
+                <Td>
+                  <Flex flexDirection={"row"} gap="5px" alignItems={"center"}>
+                    <StravaLink
+                      href={`https://www.strava.com/activities/${act.activity_summary.activity_id}`}
+                      target="_blank"
+                      height={"24px"}
+                      width={"24px"}
+                    />
+                    <Text
+                      textAlign={"center"}
+                      fontWeight={"bold"}
+                      maxW="300px"
+                      isTruncated
+                    >
+                      {act.activity_summary.name}
+                    </Text>
+                  </Flex>
+                </Td>
+                <Td>{FormatDate(act.activity_summary.start_date_local)}</Td>
+              </Tr>
+            );
+          })}
         </Tbody>
       </Table>
     </TableContainer>
