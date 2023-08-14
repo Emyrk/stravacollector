@@ -20,10 +20,8 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-} from '@chakra-ui/react';
-import {
-  Link as RouteLink,
-} from "react-router-dom";
+} from "@chakra-ui/react";
+import { Link as RouteLink } from "react-router-dom";
 import {
   AddIcon,
   ChevronDownIcon,
@@ -32,58 +30,74 @@ import {
   ExternalLinkIcon,
   HamburgerIcon,
   RepeatIcon,
-} from '@chakra-ui/icons';
-import { StravaConnectOrUser } from './StravaConnect';
-import { useAuthenticated } from '../../contexts/Authenticated';
-import { getErrorMessage, getErrorDetail } from '../../api/rest';
-import React, { useEffect } from 'react';
-import { AthleteAvatar } from '../AthleteAvatar/AthleteAvatar';
-import { AthleteAvatarDropdown } from './AthleteAvatarDropdown';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrophy, faBars } from '@fortawesome/free-solid-svg-icons'
-import { ColorModeSwitcher } from '../ColorModeSwitcher/ColorModeSwitcher';
+} from "@chakra-ui/icons";
+import { StravaConnectOrUser } from "./StravaConnect";
+import { useAuthenticated } from "../../contexts/Authenticated";
+import { getErrorMessage, getErrorDetail } from "../../api/rest";
+import React, { FC, useEffect } from "react";
+import { AthleteAvatar } from "../AthleteAvatar/AthleteAvatar";
+import { AthleteAvatarDropdown } from "./AthleteAvatarDropdown";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrophy, faBars } from "@fortawesome/free-solid-svg-icons";
+import { ColorModeSwitcher } from "../ColorModeSwitcher/ColorModeSwitcher";
 
 const Navbar: React.FC = () => {
   const { isOpen, onToggle } = useDisclosure();
 
-  return <>
-    <Flex w='100%' maxW={'7xl'} m={'1rem auto 0'} justifyContent='space-between' alignItems={'center'} p={3} pb={0}>
-      <Box>
-        <RouteLink to="/">
-          {/* https://chakra-ui.com/docs/components/image/usage */}
-          <Image maxHeight={"80px"} src="/logos/Logomark.png" alt="Hugel Ranker" display={{ base: 'block', md: 'none' }} />
-          <Image maxHeight={"80px"} src="/logos/LongDasHugelWhite.png" alt="Hugel Ranker" display={{ base: 'none', md: 'block' }} />
-        </RouteLink>
-      </Box>
-
-      <Flex alignItems={'center'} gap={2} marginLeft={"auto"}>
-        <DesktopNav display={{ base: 'none', md: 'block' }} />
-        <StravaConnectOrUser />
-        <MobileNav2 display={{ base: 'block', md: 'none' }} />
-      </Flex>
-    </Flex>
-    <MobileNav display={{ base: 'block', md: 'none' }} />
-  </>
-}
-
-export default Navbar
-
-
-const DesktopNav: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
-
   return (
-    <Stack direction={'row'} spacing={4} display={display}>
+    <>
+      <Flex
+        w="100%"
+        maxW={"7xl"}
+        m={"1rem auto 0"}
+        justifyContent="space-between"
+        alignItems={"center"}
+        p={3}
+        pb={0}
+      >
+        <Box>
+          <RouteLink to="/">
+            {/* https://chakra-ui.com/docs/components/image/usage */}
+            <Image
+              maxHeight={"80px"}
+              src="/logos/Logomark.png"
+              alt="Hugel Ranker"
+              display={{ base: "block", md: "none" }}
+            />
+            <Image
+              maxHeight={"80px"}
+              src="/logos/LongDasHugelWhite.png"
+              alt="Hugel Ranker"
+              display={{ base: "none", md: "block" }}
+            />
+          </RouteLink>
+        </Box>
+
+        <Flex alignItems={"center"} gap={2} marginLeft={"auto"}>
+          <DesktopNav display={{ base: "none", md: "block" }} />
+          <StravaConnectOrUser />
+          <MobileNav2 display={{ base: "block", md: "none" }} />
+        </Flex>
+      </Flex>
+      {/* <MobileNav display={{ base: "block", md: "none" }} /> */}
+    </>
+  );
+};
+
+export default Navbar;
+
+const DesktopNav: React.FC<{ display: { base: string; md: string } }> = ({
+  display,
+}) => {
+  return (
+    <Stack direction={"row"} spacing={4} display={display}>
       {NAV_ITEMS.map((navItem, index) => (
         <Box key={navItem.label}>
-          <Popover trigger={'hover'} placement={'bottom-end'}>
+          <Popover trigger={"hover"} placement={"bottom-end"}>
             <PopoverTrigger>
-              <Container
-                p={2}
-                fontSize={'md'}
-                fontWeight={500}
-                >
-                <RouteLink to={navItem.href ?? '#'}>
-                  <Tag p={3} display={'flex'} gap={2} borderRadius={"2px"}>
+              <Container p={2} fontSize={"md"} fontWeight={500}>
+                <RouteLink to={navItem.href ?? "#"}>
+                  <Tag p={3} display={"flex"} gap={2} borderRadius={"2px"}>
                     <FontAwesomeIcon icon={faTrophy} />
                     <Text>{navItem.label}</Text>
                   </Tag>
@@ -94,10 +108,11 @@ const DesktopNav: React.FC<{ display: { base: string, md: string } }> = ({ displ
             {navItem.children && (
               <PopoverContent
                 border={0}
-                boxShadow={'xl'}
+                boxShadow={"xl"}
                 p={4}
-                rounded={'xl'}
-                minW={'sm'}>
+                rounded={"xl"}
+                minW={"sm"}
+              >
                 <Stack>
                   {navItem.children.map((child) => (
                     <DesktopSubNav key={child.label} {...child} />
@@ -115,79 +130,97 @@ const DesktopNav: React.FC<{ display: { base: string, md: string } }> = ({ displ
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   return (
     <Container
-      role={'group'}
-      display={'block'}
+      role={"group"}
+      display={"block"}
       p={2}
-      rounded={'md'}
-      _hover={{ bg: useColorModeValue('pink.50', 'gray.900') }}
+      rounded={"md"}
+      _hover={{ bg: useColorModeValue("pink.50", "gray.900") }}
     >
-      <RouteLink
-        to={href || '#'}
-      >
-        <Stack direction={'row'} align={'center'}>
+      <RouteLink to={href || "#"}>
+        <Stack direction={"row"} align={"center"}>
           <Box>
             <Text
-              transition={'all .3s ease'}
-              _groupHover={{ color: 'brand.stravaOrange' }}
-              fontWeight={500}>
+              transition={"all .3s ease"}
+              _groupHover={{ color: "brand.stravaOrange" }}
+              fontWeight={500}
+            >
               {label}
             </Text>
-            <Text fontSize={'sm'}>{subLabel}</Text>
+            <Text fontSize={"sm"}>{subLabel}</Text>
           </Box>
           <Flex
-            transition={'all .3s ease'}
-            transform={'translateX(-10px)'}
+            transition={"all .3s ease"}
+            transform={"translateX(-10px)"}
             opacity={0}
-            _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
-            justify={'flex-end'}
-            align={'center'}
-            flex={1}>
-            <Icon color={'brand.stravaOrange'} w={5} h={5} as={ChevronRightIcon} />
+            _groupHover={{ opacity: "100%", transform: "translateX(0)" }}
+            justify={"flex-end"}
+            align={"center"}
+            flex={1}
+          >
+            <Icon
+              color={"brand.stravaOrange"}
+              w={5}
+              h={5}
+              as={ChevronRightIcon}
+            />
           </Flex>
         </Stack>
       </RouteLink>
-    </Container >
+    </Container>
   );
 };
 
-export const MobileNav2: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
-  const bugerColor = useColorModeValue("brand.stravaOrange", "colors.alphaWhite.800")
+export const MobileNav2: React.FC<{
+  display: { base: string; md: string };
+}> = ({ display }) => {
+  const bugerColor = useColorModeValue(
+    "brand.stravaOrange",
+    "colors.alphaWhite.800"
+  );
 
   // Hugel links + Light/Dark toggle
-  return <Box display={display}>
-    <Menu>
-      <MenuButton
-        color={bugerColor}
-        variant='outline'
-        as={IconButton}
-        aria-label='Options'
-        icon={<HamburgerIcon />}
-      />
-      <MenuList>
-        <MenuItem icon={<AddIcon />} command='⌘T'>
-          New Tab
-        </MenuItem>
-        <MenuItem icon={<ExternalLinkIcon />} command='⌘N'>
-          New Window
-        </MenuItem>
-        <MenuItem icon={<RepeatIcon />} command='⌘⇧N'>
-          Open Closed Tab
-        </MenuItem>
-        <MenuItem icon={<EditIcon />} command='⌘O'>
-          Open File...
-        </MenuItem>
-      </MenuList>
-    </Menu>
-  </Box>
-}
-
-
-const MobileNav: React.FC<{ display: { base: string, md: string } }> = ({ display }) => {
   return (
-    <Stack
-      bg={useColorModeValue('white', 'gray.800')}
-      p={4}
-      display={display}>
+    <Box display={display}>
+      <Menu>
+        <MenuButton
+          color={bugerColor}
+          variant="outline"
+          as={IconButton}
+          aria-label="Options"
+          icon={<HamburgerIcon />}
+        />
+        <MenuList>
+          {NAV_ITEMS.map((navItem) => {
+            return <MobileNav2Item key={navItem.label} item={navItem} />;
+          })}
+        </MenuList>
+      </Menu>
+    </Box>
+  );
+};
+
+const MobileNav2Item: React.FC<{ item: NavItem }> = ({ item }) => {
+  if (item.children) {
+    return (
+      <>
+        {item.children.map((child) => {
+          return <MobileNav2Item key={item.label} item={child} />;
+        })}
+      </>
+    );
+  }
+  return (
+    <RouteLink to={item.href || ""}>
+      <MenuItem>{item.label}</MenuItem>
+    </RouteLink>
+  );
+};
+
+const MobileNav: React.FC<{ display: { base: string; md: string } }> = ({
+  display,
+}) => {
+  return (
+    <Stack bg={useColorModeValue("white", "gray.800")} p={4} display={display}>
       {NAV_ITEMS.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
@@ -203,42 +236,43 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
       <Flex
         py={2}
         as={Link}
-        href={href ?? '#'}
-        justify={'space-between'}
-        alignItems={'center'}
+        href={href ?? "#"}
+        justify={"space-between"}
+        alignItems={"center"}
         _hover={{
-          textDecoration: 'none',
-        }}>
+          textDecoration: "none",
+        }}
+      >
         <Text
           fontWeight={600}
-          color={useColorModeValue('gray.600', 'gray.200')}>
+          color={useColorModeValue("gray.600", "gray.200")}
+        >
           {label}
         </Text>
         {children && (
           <Icon
             as={ChevronDownIcon}
-            transition={'all .25s ease-in-out'}
-            transform={isOpen ? 'rotate(180deg)' : ''}
+            transition={"all .25s ease-in-out"}
+            transform={isOpen ? "rotate(180deg)" : ""}
             w={6}
             h={6}
           />
         )}
       </Flex>
 
-      <Collapse in={isOpen} animateOpacity style={{ marginTop: '0!important' }}>
+      <Collapse in={isOpen} animateOpacity style={{ marginTop: "0!important" }}>
         <Stack
           mt={2}
           pl={4}
           borderLeft={1}
-          borderStyle={'solid'}
-          borderColor={useColorModeValue('gray.200', 'gray.700')}
-          align={'start'}>
+          borderStyle={"solid"}
+          borderColor={useColorModeValue("gray.200", "gray.700")}
+          align={"start"}
+        >
           {children &&
             children.map((child) => (
               <Container py={2} key={child.label}>
-                <RouteLink to={child.href || '#'}>
-                  {child.label}
-                </RouteLink>
+                <RouteLink to={child.href || "#"}>{child.label}</RouteLink>
               </Container>
             ))}
         </Stack>
@@ -256,41 +290,23 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: 'Das Hugel',
+    label: "Das Hugel",
     children: [
       {
-        label: 'All Hugels',
-        subLabel: 'See how you stack up in the Das Hugel Leaderboard',
-        href: '/hugelboard',
+        label: "Das Hugel Leaderboard",
+        subLabel: "See how you stack up in the Das Hugel Leaderboard",
+        href: "/hugelboard",
       },
       {
-        label: 'All Hugel Super Scores',
-        subLabel: 'Have not done a Das Hugel?',
-        href: '/superhugelboard',
+        label: "Das Hugel Super Scores",
+        subLabel: "Have not done a Das Hugel?",
+        href: "/superhugelboard",
+      },
+      {
+        label: "Das Hugel Route",
+        subLabel: "See segments required for a Das Hugel route",
+        href: "/route/das-hugel",
       },
     ],
   },
-  // {
-  //   label: 'Find Work',
-  //   children: [
-  //     {
-  //       label: 'Job Board',
-  //       subLabel: 'Find your dream design job',
-  //       href: '#',
-  //     },
-  //     {
-  //       label: 'Freelance Projects',
-  //       subLabel: 'An exclusive list for contract work',
-  //       href: '#',
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: 'Learn Design',
-  //   href: '#',
-  // },
-  // {
-  //   label: 'Hire Designers',
-  //   href: '#',
-  // },
 ];

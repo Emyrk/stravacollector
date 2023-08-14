@@ -203,7 +203,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
           textAlign="center"
         >
           <Flex flexDirection={"column"}>
-            <Heading fontSize={"6em"}>{routeData.display_name}</Heading>
+            <Heading fontSize={"4em"}>{routeData.display_name}</Heading>
             <Text>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
               Vestibulum rhoncus in arcu eu luctus. Donec vel risus suscipit,
