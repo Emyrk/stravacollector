@@ -57,7 +57,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 	var (
 		ctx         = r.Context()
 		authAth, ok = httpmw.AuthenticatedAthleteIDOptional(r)
-		id          = httpmw.AuthenticatedAthleteID(r)
+		ath         = httpmw.Athlete(r)
 		page        = r.URL.Query().Get("page")
 		limitStr    = r.URL.Query().Get("limit")
 		err         error
@@ -70,7 +70,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2661162 is Steven
-	if authAth != 2661162 && authAth != id {
+	if authAth != 2661162 && authAth != ath.Athlete.ID {
 		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
 			Message: "You can only fetch your own sync summary, not another athlete's.",
 		})
@@ -101,7 +101,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	detailedLoad, err := api.Opts.DB.GetAthleteLoadDetailed(ctx, id)
+	detailedLoad, err := api.Opts.DB.GetAthleteLoadDetailed(ctx, ath.Athlete.ID)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 			Message: "Failed to fetch authenticated athlete sync information",
@@ -116,7 +116,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 	}
 	offset := (pageNum - 1) * limit
 	activities, err := api.Opts.DB.AthleteSyncedActivities(ctx, database.AthleteSyncedActivitiesParams{
-		AthleteID: id,
+		AthleteID: ath.Athlete.ID,
 		Offset:    int32(offset),
 		Limit:     int32(limit),
 	})
