@@ -5,8 +5,10 @@ SELECT * FROM athlete_load WHERE athlete_id = @athlete_id;
 SELECT
     sqlc.embed(athlete_load),
     sqlc.embed(athletes),
-	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = @athlete_id) AS summary_count,
-    (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = @athlete_id) AS detail_count,
+	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = @athlete_id AND LOWER(activity_summary.activity_type) = 'ride') AS summary_count,
+    (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = @athlete_id AND activity_detail.id = ANY(
+		SELECT id FROM activity_summary WHERE activity_summary.athlete_id = @athlete_id AND LOWER(activity_summary.activity_type) = 'ride')
+	) AS detail_count,
 	COALESCE(athlete_hugel_count.count, 0) AS hugel_count
 FROM
     athlete_load
@@ -28,7 +30,8 @@ LEFT JOIN
 	activity_detail ON
 		activity_summary.id = activity_detail.id
 WHERE
-	activity_summary.athlete_id = @athlete_id
+	activity_summary.athlete_id = @athlete_id AND
+	LOWER(activity_summary.activity_type) = 'ride'
 ORDER BY
     activity_summary.start_date DESC
 LIMIT @_limit

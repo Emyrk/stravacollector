@@ -487,7 +487,8 @@ LEFT JOIN
 	activity_detail ON
 		activity_summary.id = activity_detail.id
 WHERE
-	activity_summary.athlete_id = $1
+	activity_summary.athlete_id = $1 AND
+	LOWER(activity_summary.activity_type) = 'ride'
 ORDER BY
     activity_summary.start_date DESC
 LIMIT $3
@@ -681,8 +682,10 @@ const getAthleteLoadDetailed = `-- name: GetAthleteLoadDetailed :one
 SELECT
     athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id,
     athletes.id, athletes.summit, athletes.username, athletes.firstname, athletes.lastname, athletes.sex, athletes.city, athletes.state, athletes.country, athletes.follow_count, athletes.friend_count, athletes.measurement_preference, athletes.ftp, athletes.weight, athletes.clubs, athletes.created_at, athletes.updated_at, athletes.fetched_at, athletes.profile_pic_link, athletes.profile_pic_link_medium,
-	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = $1) AS summary_count,
-    (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = $1) AS detail_count,
+	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = $1 AND LOWER(activity_summary.activity_type) = 'ride') AS summary_count,
+    (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = $1 AND activity_detail.id = ANY(
+		SELECT id FROM activity_summary WHERE activity_summary.athlete_id = $1 AND LOWER(activity_summary.activity_type) = 'ride')
+	) AS detail_count,
 	COALESCE(athlete_hugel_count.count, 0) AS hugel_count
 FROM
     athlete_load
