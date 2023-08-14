@@ -51,6 +51,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FormatDate } from "../HugelBoard/CalcActivity";
 import { StravaLink } from "../../components/StravaLink/StravaLink";
+import { Column, ColumnDef, useReactTable } from "@tanstack/react-table";
 
 export const AthleteMePage: FC<{}> = ({}) => {
   const { athlete_id } = useParams();
@@ -182,6 +183,10 @@ const AthleteMeTotals: FC<{ summary: AthleteSyncSummary }> = ({ summary }) => {
         Chakra is going live on August 30th. Get ready!
       </Alert> */}
       <AthleteMeHugelTable summary={summary} />
+      {/* <AthleteMeActivitiesTable
+        data={summary.synced_activities}
+        columns={activityColumns}
+      /> */}
     </Stack>
   );
 };
@@ -251,3 +256,29 @@ const AthleteMeHugelTable: FC<{ summary: AthleteSyncSummary }> = ({
     </TableContainer>
   );
 };
+
+const activityColumns = [
+  {
+    header: "Synced",
+  },
+  {
+    header: "Activity",
+    accessor: "name",
+  },
+  {
+    header: "Date",
+    accessor: "start_date_local",
+  },
+] as ColumnDef<SyncActivitySummary, any>[];
+
+// const AthleteMeActivitiesTable: FC<{
+//   data: SyncActivitySummary[];
+//   columns: Column[];
+// }> = ({ data, columns }) => {
+//   const { rows } = useReactTable({
+//     columns,
+//     data,
+//   });
+
+//   return <></>;
+// };
