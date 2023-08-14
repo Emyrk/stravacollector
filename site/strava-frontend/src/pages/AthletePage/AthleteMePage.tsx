@@ -40,7 +40,10 @@ import { NotFound } from "../404/404";
 import { Loading } from "../../components/Loading/Loading";
 import { useAuthenticated } from "../../contexts/Authenticated";
 import { AthletePageHeader } from "./AthleteHeader";
-import { AthleteSyncSummary } from "../../api/typesGenerated";
+import {
+  AthleteSyncSummary,
+  SyncActivitySummary,
+} from "../../api/typesGenerated";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleXmark,
@@ -48,8 +51,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FormatDate } from "../HugelBoard/CalcActivity";
 import { StravaLink } from "../../components/StravaLink/StravaLink";
-// https://codesandbox.io/s/react-table-chakra-ui-pagination-example-fxx0v
-import { useReactTable } from "@tanstack/react-table";
 
 export const AthleteMePage: FC<{}> = ({}) => {
   const { athlete_id } = useParams();
@@ -189,13 +190,6 @@ const AthleteMeHugelTable: FC<{ summary: AthleteSyncSummary }> = ({
   summary,
 }) => {
   const theme = useTheme();
-
-  // const table = useReactTable({
-  //   data,
-  //   columns,
-  //   getCoreRowModel: getCoreRowModel(),
-  // });
-
   return (
     <TableContainer
       sx={{
