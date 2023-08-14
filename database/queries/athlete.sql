@@ -4,12 +4,18 @@ SELECT * FROM athlete_load WHERE athlete_id = @athlete_id;
 -- name: GetAthleteLoadDetailed :one
 SELECT
     sqlc.embed(athlete_load),
+    sqlc.embed(athletes),
 	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = @athlete_id) AS summary_count,
-    (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = @athlete_id) AS detail_count
+    (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = @athlete_id) AS detail_count,
+	COALESCE(athlete_hugel_count.count, 0) AS hugel_count
 FROM
     athlete_load
+INNER JOIN
+    athletes ON athletes.id = athlete_load.athlete_id
+LEFT JOIN
+	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
 WHERE
-    athlete_id = @athlete_id;
+		athlete_load.athlete_id = @athlete_id;
 
 -- name: AthleteSyncedActivities :many
 SELECT

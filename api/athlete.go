@@ -109,9 +109,22 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	athlete := detailedLoad.Athlete
 	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.AthleteSyncSummary{
 		TotalSummary: int(detailedLoad.SummaryCount),
 		TotalDetail:  int(detailedLoad.DetailCount),
+		Athlete: modelsdk.AthleteSummary{
+			AthleteID:            modelsdk.StringInt(athlete.ID),
+			Summit:               athlete.Summit,
+			Username:             athlete.Username,
+			Firstname:            athlete.Firstname,
+			Lastname:             athlete.Lastname,
+			Sex:                  athlete.Sex,
+			ProfilePicLink:       athlete.ProfilePicLink,
+			ProfilePicLinkMedium: athlete.ProfilePicLinkMedium,
+			UpdatedAt:            athlete.UpdatedAt,
+			HugelCount:           int(detailedLoad.HugelCount),
+		},
 		Load: modelsdk.AthleteLoad{
 			AthleteID:                  load.AthleteID,
 			LastBackloadActivityStart:  load.LastBackloadActivityStart,

@@ -67,6 +67,7 @@ export interface AthleteSummary {
 export interface AthleteSyncSummary {
   readonly athlete_load: AthleteLoad
   readonly synced_activities: SyncActivitySummary[]
+  readonly athlete_summary: AthleteSummary
   readonly total_summary: number
   readonly total_detail: number
 }

@@ -679,18 +679,26 @@ func (q *sqlQuerier) GetAthleteLoad(ctx context.Context, athleteID int64) (Athle
 const getAthleteLoadDetailed = `-- name: GetAthleteLoadDetailed :one
 SELECT
     athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done,
+    athletes.id, athletes.summit, athletes.username, athletes.firstname, athletes.lastname, athletes.sex, athletes.city, athletes.state, athletes.country, athletes.follow_count, athletes.friend_count, athletes.measurement_preference, athletes.ftp, athletes.weight, athletes.clubs, athletes.created_at, athletes.updated_at, athletes.fetched_at, athletes.profile_pic_link, athletes.profile_pic_link_medium,
 	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = $1) AS summary_count,
-    (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = $1) AS detail_count
+    (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = $1) AS detail_count,
+	COALESCE(athlete_hugel_count.count, 0) AS hugel_count
 FROM
     athlete_load
+INNER JOIN
+    athletes ON athletes.id = athlete_load.athlete_id
+LEFT JOIN
+	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
 WHERE
-    athlete_id = $1
+		athlete_load.athlete_id = $1
 `
 
 type GetAthleteLoadDetailedRow struct {
 	AthleteLoad  AthleteLoad `db:"athlete_load" json:"athlete_load"`
+	Athlete      Athlete     `db:"athlete" json:"athlete"`
 	SummaryCount int64       `db:"summary_count" json:"summary_count"`
 	DetailCount  int64       `db:"detail_count" json:"detail_count"`
+	HugelCount   int64       `db:"hugel_count" json:"hugel_count"`
 }
 
 func (q *sqlQuerier) GetAthleteLoadDetailed(ctx context.Context, athleteID int64) (GetAthleteLoadDetailedRow, error) {
@@ -705,8 +713,29 @@ func (q *sqlQuerier) GetAthleteLoadDetailed(ctx context.Context, athleteID int64
 		&i.AthleteLoad.ActivitesLoadedLastAttempt,
 		&i.AthleteLoad.EarliestActivity,
 		&i.AthleteLoad.EarliestActivityDone,
+		&i.Athlete.ID,
+		&i.Athlete.Summit,
+		&i.Athlete.Username,
+		&i.Athlete.Firstname,
+		&i.Athlete.Lastname,
+		&i.Athlete.Sex,
+		&i.Athlete.City,
+		&i.Athlete.State,
+		&i.Athlete.Country,
+		&i.Athlete.FollowCount,
+		&i.Athlete.FriendCount,
+		&i.Athlete.MeasurementPreference,
+		&i.Athlete.Ftp,
+		&i.Athlete.Weight,
+		&i.Athlete.Clubs,
+		&i.Athlete.CreatedAt,
+		&i.Athlete.UpdatedAt,
+		&i.Athlete.FetchedAt,
+		&i.Athlete.ProfilePicLink,
+		&i.Athlete.ProfilePicLinkMedium,
 		&i.SummaryCount,
 		&i.DetailCount,
+		&i.HugelCount,
 	)
 	return i, err
 }

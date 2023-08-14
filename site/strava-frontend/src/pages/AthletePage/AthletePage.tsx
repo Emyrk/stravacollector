@@ -21,11 +21,23 @@ export const AthletePage: FC<{}> = ({}) => {
     queryFn: () => getAthlete(athlete_id || ""),
   });
 
+  const queryHugelsKey = ["hugels", athlete_id];
+  const {
+    data: athleteHugelsData,
+    error: athleteHugelsError,
+    isLoading: athleteHugelsLoading,
+    isFetched: athleteHugelsFetched,
+  } = useQuery({
+    queryKey,
+    enabled: !!athlete_id,
+    queryFn: () => getAthlete(athlete_id || ""),
+  });
+
   if (!athlete_id) {
     return <NotFound />;
   }
 
-  if (athleteLoading) {
+  if (athleteLoading || athleteHugelsLoading) {
     return <Loading />;
   }
 

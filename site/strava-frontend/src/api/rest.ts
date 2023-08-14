@@ -54,6 +54,19 @@ export const getSuperHugelLeaderBoard = async (): Promise<
   }
 };
 
+export const getAthleteHugels = async (
+  athlete_id: string
+): Promise<TypesGen.AthleteSummary | undefined> => {
+  try {
+    const response = await axios.get<TypesGen.AthleteSummary>(
+      `/api/v1/athlete/${athlete_id}/hugels`
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getAthlete = async (
   athlete_id: string
 ): Promise<TypesGen.AthleteSummary | undefined> => {
