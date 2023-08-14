@@ -43,9 +43,8 @@ func ExtractAthlete(db database.Store) func(next http.Handler) http.Handler {
 				})
 				return
 			}
-			athlete := row.Athlete
 
-			ctx = context.WithValue(ctx, athleteIDStateKey{}, athlete)
+			ctx = context.WithValue(ctx, athleteIDStateKey{}, row)
 			next.ServeHTTP(rw, r.WithContext(ctx))
 		})
 	}

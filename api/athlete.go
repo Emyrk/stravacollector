@@ -58,15 +58,19 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 		ctx  = r.Context()
 		id   = httpmw.AuthenticatedAthleteID(r)
 		page = r.URL.Query().Get("page")
+		err  error
 	)
 
-	pageNum, err := strconv.ParseInt(page, 10, 64)
-	if err != nil {
-		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
-			Message: "Invalid offset",
-			Detail:  err.Error(),
-		})
-		return
+	pageNum := int64(1)
+	if page != "" {
+		pageNum, err = strconv.ParseInt(page, 10, 64)
+		if err != nil {
+			httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+				Message: "Invalid offset",
+				Detail:  err.Error(),
+			})
+			return
+		}
 	}
 
 	detailedLoad, err := api.Opts.DB.GetAthleteLoadDetailed(ctx, id)
@@ -221,37 +225,20 @@ func convertActivitySummary(activity database.ActivitySummary) modelsdk.Activity
 	}
 }
 
-func convertHugelAthleteActivities(activities []database.AthleteHugelActivitesRow) []modelsdk.HugelLeaderBoardActivity {
-	sdk := make([]modelsdk.HugelLeaderBoardActivity, 0, len(activities))
+func convertHugelAthleteActivities(activities []database.AthleteHugelActivitesRow) []modelsdk.AthleteHugelActivity {
+	sdk := make([]modelsdk.AthleteHugelActivity, 0, len(activities))
 	for _, act := range activities {
 		sdk = append(sdk, convertHugelAthleteActivity(act))
 	}
 	return sdk
 }
 
-func convertHugelAthleteActivity(activity database.AthleteHugelActivitesRow) modelsdk.HugelLeaderBoardActivity {
+func convertHugelAthleteActivity(activity database.AthleteHugelActivitesRow) modelsdk.AthleteHugelActivity {
 	var efforts []modelsdk.SegmentEffort
-	_ = json.Unmarshal(activity.Efforts, &efforts)
-	return modelsdk.HugelLeaderBoardActivity{
-		RankOneElapsed: activity.BestTime,
-		ActivityID:     modelsdk.StringInt(activity.ActivityID),
-		AthleteID:      modelsdk.StringInt(activity.AthleteID),
-		Elapsed:        activity.TotalTimeSeconds,
-		Efforts:        efforts,
-		Athlete: modelsdk.MinAthlete{
-			AthleteID:      modelsdk.StringInt(activity.AthleteID),
-			Username:       activity.Username,
-			Firstname:      activity.Firstname,
-			Lastname:       activity.Lastname,
-			Sex:            activity.Sex,
-			ProfilePicLink: activity.ProfilePicLink,
-			HugelCount:     int(activity.HugelCount),
-		},
-		ActivityName:               activity.Name,
-		ActivityDistance:           activity.Distance,
-		ActivityMovingTime:         int64(activity.MovingTime),
-		ActivityElapsedTime:        int64(activity.ElapsedTime),
-		ActivityStartDate:          activity.StartDate,
-		ActivityTotalElevationGain: activity.TotalElevationGain,
+	_ = json.Unmarshal(activity.HugelActivity.Efforts, &efforts)
+	return modelsdk.AthleteHugelActivity{
+		Summary:          convertActivitySummary(activity.ActivitySummary),
+		Efforts:          efforts,
+		TotalTimeSeconds: activity.HugelActivity.TotalTimeSeconds,
 	}
 }

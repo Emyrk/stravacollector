@@ -4,6 +4,12 @@ import (
 	"time"
 )
 
+type AthleteHugelActivity struct {
+	Summary          ActivitySummary `json:"summary"`
+	Efforts          []SegmentEffort `json:"efforts"`
+	TotalTimeSeconds int64           `json:"total_time_seconds"`
+}
+
 type SyncActivitySummary struct {
 	ActivitySummary
 	Synced   bool      `json:"synced"`
@@ -41,7 +47,7 @@ type AthleteLogin struct {
 }
 
 type AthleteHugelActivities struct {
-	Activities []HugelLeaderBoardActivity `json:"activities"`
+	Activities []AthleteHugelActivity `json:"activities"`
 }
 
 type ActivitySummary struct {

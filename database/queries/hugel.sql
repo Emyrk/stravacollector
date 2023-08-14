@@ -1,44 +1,13 @@
 -- name: AthleteHugelActivites :many
 SELECT
-	(SELECT min(athlete_hugels.total_time_seconds) FROM hugel_activities) :: BIGINT AS best_time,
-	athlete_hugels.activity_id,
-	athlete_hugels.athlete_id,
-	athlete_hugels.total_time_seconds,
-	athlete_hugels.efforts,
-
-	activity_summary.name,
-	activity_summary.distance,
-	activity_summary.moving_time,
-	activity_summary.elapsed_time,
-	activity_summary.total_elevation_gain,
-	activity_summary.start_date,
-
-	athletes.firstname,
-	athletes.lastname,
-	athletes.username,
-	athletes.profile_pic_link,
-	athletes.sex,
-	hugel_count.count AS hugel_count
+    sqlc.embed(hugel_activities),
+    sqlc.embed(activity_summary)
 FROM
-	(
-		SELECT
-			*
-		FROM
-			hugel_activities
-		WHERE
-		    hugel_activities.athlete_id = @athlete_id
-		ORDER BY
-			athlete_id, hugel_activities.total_time_seconds ASC
-	) AS athlete_hugels
-		INNER JOIN
-	athletes ON athlete_hugels.athlete_id = athletes.id
-		INNER JOIN athlete_hugel_count AS hugel_count
-				   ON hugel_count.athlete_id = athlete_hugels.athlete_id
-		INNER JOIN
-	activity_summary ON athlete_hugels.activity_id = activity_summary.id
-ORDER BY
-	athlete_hugels.total_time_seconds ASC
-;
+    hugel_activities
+INNER JOIN
+	activity_summary ON hugel_activities.activity_id = activity_summary.id
+WHERE
+	hugel_activities.athlete_id = @athlete_id;
 
 
 -- name: HugelLeaderboard :many

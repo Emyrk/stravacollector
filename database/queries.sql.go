@@ -1068,64 +1068,19 @@ func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLo
 
 const athleteHugelActivites = `-- name: AthleteHugelActivites :many
 SELECT
-	(SELECT min(athlete_hugels.total_time_seconds) FROM hugel_activities) :: BIGINT AS best_time,
-	athlete_hugels.activity_id,
-	athlete_hugels.athlete_id,
-	athlete_hugels.total_time_seconds,
-	athlete_hugels.efforts,
-
-	activity_summary.name,
-	activity_summary.distance,
-	activity_summary.moving_time,
-	activity_summary.elapsed_time,
-	activity_summary.total_elevation_gain,
-	activity_summary.start_date,
-
-	athletes.firstname,
-	athletes.lastname,
-	athletes.username,
-	athletes.profile_pic_link,
-	athletes.sex,
-	hugel_count.count AS hugel_count
+    hugel_activities.activity_id, hugel_activities.athlete_id, hugel_activities.segment_ids, hugel_activities.total_time_seconds, hugel_activities.efforts,
+    activity_summary.id, activity_summary.athlete_id, activity_summary.upload_id, activity_summary.external_id, activity_summary.name, activity_summary.distance, activity_summary.moving_time, activity_summary.elapsed_time, activity_summary.total_elevation_gain, activity_summary.activity_type, activity_summary.sport_type, activity_summary.workout_type, activity_summary.start_date, activity_summary.start_date_local, activity_summary.timezone, activity_summary.utc_offset, activity_summary.achievement_count, activity_summary.kudos_count, activity_summary.comment_count, activity_summary.athlete_count, activity_summary.photo_count, activity_summary.map_id, activity_summary.trainer, activity_summary.commute, activity_summary.manual, activity_summary.private, activity_summary.flagged, activity_summary.gear_id, activity_summary.average_speed, activity_summary.max_speed, activity_summary.device_watts, activity_summary.has_heartrate, activity_summary.pr_count, activity_summary.total_photo_count, activity_summary.updated_at, activity_summary.average_heartrate, activity_summary.max_heartrate
 FROM
-	(
-		SELECT
-			activity_id, athlete_id, segment_ids, total_time_seconds, efforts
-		FROM
-			hugel_activities
-		WHERE
-		    hugel_activities.athlete_id = $1
-		ORDER BY
-			athlete_id, hugel_activities.total_time_seconds ASC
-	) AS athlete_hugels
-		INNER JOIN
-	athletes ON athlete_hugels.athlete_id = athletes.id
-		INNER JOIN athlete_hugel_count AS hugel_count
-				   ON hugel_count.athlete_id = athlete_hugels.athlete_id
-		INNER JOIN
-	activity_summary ON athlete_hugels.activity_id = activity_summary.id
-ORDER BY
-	athlete_hugels.total_time_seconds ASC
+    hugel_activities
+INNER JOIN
+	activity_summary ON hugel_activities.activity_id = activity_summary.id
+WHERE
+	hugel_activities.athlete_id = $1
 `
 
 type AthleteHugelActivitesRow struct {
-	BestTime           int64           `db:"best_time" json:"best_time"`
-	ActivityID         int64           `db:"activity_id" json:"activity_id"`
-	AthleteID          int64           `db:"athlete_id" json:"athlete_id"`
-	TotalTimeSeconds   int64           `db:"total_time_seconds" json:"total_time_seconds"`
-	Efforts            json.RawMessage `db:"efforts" json:"efforts"`
-	Name               string          `db:"name" json:"name"`
-	Distance           float64         `db:"distance" json:"distance"`
-	MovingTime         float64         `db:"moving_time" json:"moving_time"`
-	ElapsedTime        float64         `db:"elapsed_time" json:"elapsed_time"`
-	TotalElevationGain float64         `db:"total_elevation_gain" json:"total_elevation_gain"`
-	StartDate          time.Time       `db:"start_date" json:"start_date"`
-	Firstname          string          `db:"firstname" json:"firstname"`
-	Lastname           string          `db:"lastname" json:"lastname"`
-	Username           string          `db:"username" json:"username"`
-	ProfilePicLink     string          `db:"profile_pic_link" json:"profile_pic_link"`
-	Sex                string          `db:"sex" json:"sex"`
-	HugelCount         int64           `db:"hugel_count" json:"hugel_count"`
+	HugelActivity   HugelActivity   `db:"hugel_activity" json:"hugel_activity"`
+	ActivitySummary ActivitySummary `db:"activity_summary" json:"activity_summary"`
 }
 
 func (q *sqlQuerier) AthleteHugelActivites(ctx context.Context, athleteID int64) ([]AthleteHugelActivitesRow, error) {
@@ -1138,23 +1093,48 @@ func (q *sqlQuerier) AthleteHugelActivites(ctx context.Context, athleteID int64)
 	for rows.Next() {
 		var i AthleteHugelActivitesRow
 		if err := rows.Scan(
-			&i.BestTime,
-			&i.ActivityID,
-			&i.AthleteID,
-			&i.TotalTimeSeconds,
-			&i.Efforts,
-			&i.Name,
-			&i.Distance,
-			&i.MovingTime,
-			&i.ElapsedTime,
-			&i.TotalElevationGain,
-			&i.StartDate,
-			&i.Firstname,
-			&i.Lastname,
-			&i.Username,
-			&i.ProfilePicLink,
-			&i.Sex,
-			&i.HugelCount,
+			&i.HugelActivity.ActivityID,
+			&i.HugelActivity.AthleteID,
+			&i.HugelActivity.SegmentIds,
+			&i.HugelActivity.TotalTimeSeconds,
+			&i.HugelActivity.Efforts,
+			&i.ActivitySummary.ID,
+			&i.ActivitySummary.AthleteID,
+			&i.ActivitySummary.UploadID,
+			&i.ActivitySummary.ExternalID,
+			&i.ActivitySummary.Name,
+			&i.ActivitySummary.Distance,
+			&i.ActivitySummary.MovingTime,
+			&i.ActivitySummary.ElapsedTime,
+			&i.ActivitySummary.TotalElevationGain,
+			&i.ActivitySummary.ActivityType,
+			&i.ActivitySummary.SportType,
+			&i.ActivitySummary.WorkoutType,
+			&i.ActivitySummary.StartDate,
+			&i.ActivitySummary.StartDateLocal,
+			&i.ActivitySummary.Timezone,
+			&i.ActivitySummary.UtcOffset,
+			&i.ActivitySummary.AchievementCount,
+			&i.ActivitySummary.KudosCount,
+			&i.ActivitySummary.CommentCount,
+			&i.ActivitySummary.AthleteCount,
+			&i.ActivitySummary.PhotoCount,
+			&i.ActivitySummary.MapID,
+			&i.ActivitySummary.Trainer,
+			&i.ActivitySummary.Commute,
+			&i.ActivitySummary.Manual,
+			&i.ActivitySummary.Private,
+			&i.ActivitySummary.Flagged,
+			&i.ActivitySummary.GearID,
+			&i.ActivitySummary.AverageSpeed,
+			&i.ActivitySummary.MaxSpeed,
+			&i.ActivitySummary.DeviceWatts,
+			&i.ActivitySummary.HasHeartrate,
+			&i.ActivitySummary.PrCount,
+			&i.ActivitySummary.TotalPhotoCount,
+			&i.ActivitySummary.UpdatedAt,
+			&i.ActivitySummary.AverageHeartrate,
+			&i.ActivitySummary.MaxHeartrate,
 		); err != nil {
 			return nil, err
 		}
