@@ -12,8 +12,8 @@ WHERE
 
 -- name: HugelLeaderboard :many
 SELECT
-	(SELECT min(athlete_bests.total_time_seconds) FROM hugel_activities) :: BIGINT AS best_time,
-	ROW_NUMBER() over(ORDER BY athlete_bests.total_time_seconds ASC) AS rank,
+	(SELECT min(total_time_seconds) FROM hugel_activities) :: BIGINT AS best_time,
+	ROW_NUMBER() over(ORDER BY total_time_seconds ASC) AS rank,
 	athlete_bests.activity_id,
 	athlete_bests.athlete_id,
 	athlete_bests.total_time_seconds,
@@ -39,7 +39,7 @@ FROM
 		FROM
 			hugel_activities
 		ORDER BY
-			athlete_id, hugel_activities.total_time_seconds ASC
+			athlete_id, total_time_seconds ASC
 	) AS athlete_bests
 INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id
