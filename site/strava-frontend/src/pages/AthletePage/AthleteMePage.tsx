@@ -192,10 +192,10 @@ const AthleteMeHugelTable: FC<{ summary: AthleteSyncSummary }> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {summary.synced_activities.map((act) => {
+          {/* {summary.synced_activities.map((act) => {
             console.log(act);
             return <Tr>{act.ActivitySummary.activity_id}</Tr>;
-          })}
+          })} */}
         </Tbody>
       </Table>
     </TableContainer>
