@@ -204,7 +204,7 @@ const MobileNav2Item: React.FC<{ item: NavItem }> = ({ item }) => {
     return (
       <>
         {item.children.map((child) => {
-          return <MobileNav2Item key={item.label} item={child} />;
+          return <MobileNav2Item key={child.label} item={child} />;
         })}
       </>
     );

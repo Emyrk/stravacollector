@@ -6,18 +6,24 @@ import {
   extendTheme,
   createLocalStorageManager,
   theme as defaultTheme,
+  createMultiStyleConfigHelpers,
+  AlertProps,
 } from "@chakra-ui/react";
+import { alertAnatomy } from "@chakra-ui/anatomy";
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import { App } from "./App";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorker from "./serviceWorker";
 
+const { definePartsStyle, defineMultiStyleConfig } =
+  createMultiStyleConfigHelpers(alertAnatomy.keys);
+
 const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element");
 const root = ReactDOM.createRoot(container);
 
-// console.log("defaultTheme", defaultTheme.components.Link);
+console.log("defaultTheme", defaultTheme);
 const customComponents: Record<string, StyleConfig> = {
   Box: {
     variants: {
@@ -54,6 +60,54 @@ const customComponents: Record<string, StyleConfig> = {
         },
       }),
     },
+  },
+  // Alert: {
+  //   variants: {
+  //     moreOpaque: (props) => {
+  //       const { colorScheme: c } = props;
+
+  //       return {
+  //         bg: `${c}.500`,
+  //         color: `${c}.50`,
+  //       };
+  //     },
+  // },
+  Alert: {
+    baseStyle: definePartsStyle((props: AlertProps) => {
+      const { status } = props;
+      const num = "600";
+
+      const successBase = status === "success" && {
+        container: {
+          background: `green.${num}`,
+        },
+      };
+
+      const warningBase = status === "warning" && {
+        container: {
+          background: `yellow.${num}`,
+        },
+      };
+
+      const errorBase = status === "error" && {
+        container: {
+          background: `red.${num}`,
+        },
+      };
+
+      const infoBase = status === "info" && {
+        container: {
+          background: `blue.${num}`,
+        },
+      };
+
+      return {
+        ...successBase,
+        ...warningBase,
+        ...errorBase,
+        ...infoBase,
+      };
+    }),
   },
   // Flex: {
   //   variants: {

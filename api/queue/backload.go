@@ -61,6 +61,7 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 				LastLoadIncomplete:         false,
 				LastLoadError:              err.Error(),
 				ActivitesLoadedLastAttempt: 0,
+				EarliestActivityID:         athlete.AthleteLoad.EarliestActivityID,
 				EarliestActivity:           athlete.AthleteLoad.EarliestActivity,
 				EarliestActivityDone:       athlete.AthleteLoad.EarliestActivityDone,
 			})
@@ -147,6 +148,7 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 			LastLoadError:              "",
 			ActivitesLoadedLastAttempt: 0,
 			EarliestActivity:           athleteLoad.EarliestActivity,
+			EarliestActivityID:         athleteLoad.EarliestActivityID,
 			EarliestActivityDone:       true,
 		})
 		if err != nil {
@@ -228,11 +230,13 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 			LastLoadIncomplete:         true,
 			LastLoadError:              "",
 			ActivitesLoadedLastAttempt: int32(len(activities)),
+			EarliestActivityID:         athleteLoad.EarliestActivityID,
 			EarliestActivity:           athleteLoad.EarliestActivity,
 			EarliestActivityDone:       athleteLoad.EarliestActivityDone,
 		}
 		if backloadingHistory {
 			params.EarliestActivity = first.StartDate
+			params.EarliestActivityID = first.ID
 			params.EarliestActivityDone = false
 		}
 		_, err := store.UpsertAthleteLoad(ctx, params)

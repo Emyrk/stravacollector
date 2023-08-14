@@ -56,9 +56,9 @@ export const getSuperHugelLeaderBoard = async (): Promise<
 
 export const getAthleteHugels = async (
   athlete_id: string
-): Promise<TypesGen.AthleteSummary | undefined> => {
+): Promise<TypesGen.AthleteHugelActivities | undefined> => {
   try {
-    const response = await axios.get<TypesGen.AthleteSummary>(
+    const response = await axios.get<TypesGen.AthleteHugelActivities>(
       `/api/v1/athlete/${athlete_id}/hugels`
     );
     return response.data;
@@ -67,12 +67,24 @@ export const getAthleteHugels = async (
   }
 };
 
+export const getAthleteSyncSummary = async (): Promise<TypesGen.AthleteSyncSummary | undefined> => {
+  try {
+    const response = await axios.get<TypesGen.AthleteSyncSummary>(
+      `/api/v1/me/sync-summary`
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 export const getAthlete = async (
   athlete_id: string
 ): Promise<TypesGen.AthleteSummary | undefined> => {
   try {
     const response = await axios.get<TypesGen.AthleteSummary>(
-      `/api/v1/athlete/${athlete_id}`
+      `/api/v1/athlete/${athlete_id}/`
     );
     return response.data;
   } catch (error) {

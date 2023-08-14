@@ -194,7 +194,8 @@ type AthleteLoad struct {
 	// The earliest activity found for the athlete
 	EarliestActivity time.Time `db:"earliest_activity" json:"earliest_activity"`
 	// Loading backwards is done
-	EarliestActivityDone bool `db:"earliest_activity_done" json:"earliest_activity_done"`
+	EarliestActivityDone bool  `db:"earliest_activity_done" json:"earliest_activity_done"`
+	EarliestActivityID   int64 `db:"earliest_activity_id" json:"earliest_activity_id"`
 }
 
 type AthleteLogin struct {

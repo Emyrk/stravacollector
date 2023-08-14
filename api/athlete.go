@@ -103,9 +103,9 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 	sdk := make([]modelsdk.SyncActivitySummary, 0, len(activities))
 	for _, act := range activities {
 		sdk = append(sdk, modelsdk.SyncActivitySummary{
-			ActivitySummary: convertActivitySummary(act.ActivitySummary),
-			Synced:          act.DetailExists,
-			SyncedAt:        act.DetailUpdatedAt.Time,
+			Activity: convertActivitySummary(act.ActivitySummary),
+			Synced:   act.DetailExists,
+			SyncedAt: act.DetailUpdatedAt.Time,
 		})
 	}
 
@@ -133,6 +133,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 			LastLoadError:              load.LastLoadError,
 			ActivitesLoadedLastAttempt: load.ActivitesLoadedLastAttempt,
 			EarliestActivity:           load.EarliestActivity,
+			EarliestActivityID:         load.EarliestActivityID,
 			EarliestActivityDone:       load.EarliestActivityDone,
 		},
 		SyncedActivities: sdk,

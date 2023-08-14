@@ -7,7 +7,6 @@ import {
   VStack,
   Code,
   Grid,
-  extendTheme,
   Alert,
   AlertDescription,
   AlertIcon,

@@ -657,7 +657,7 @@ func (q *sqlQuerier) GetAthleteFull(ctx context.Context, athleteID int64) (GetAt
 }
 
 const getAthleteLoad = `-- name: GetAthleteLoad :one
-SELECT athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done FROM athlete_load WHERE athlete_id = $1
+SELECT athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done, earliest_activity_id FROM athlete_load WHERE athlete_id = $1
 `
 
 func (q *sqlQuerier) GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteLoad, error) {
@@ -672,13 +672,14 @@ func (q *sqlQuerier) GetAthleteLoad(ctx context.Context, athleteID int64) (Athle
 		&i.ActivitesLoadedLastAttempt,
 		&i.EarliestActivity,
 		&i.EarliestActivityDone,
+		&i.EarliestActivityID,
 	)
 	return i, err
 }
 
 const getAthleteLoadDetailed = `-- name: GetAthleteLoadDetailed :one
 SELECT
-    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done,
+    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id,
     athletes.id, athletes.summit, athletes.username, athletes.firstname, athletes.lastname, athletes.sex, athletes.city, athletes.state, athletes.country, athletes.follow_count, athletes.friend_count, athletes.measurement_preference, athletes.ftp, athletes.weight, athletes.clubs, athletes.created_at, athletes.updated_at, athletes.fetched_at, athletes.profile_pic_link, athletes.profile_pic_link_medium,
 	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = $1) AS summary_count,
     (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = $1) AS detail_count,
@@ -713,6 +714,7 @@ func (q *sqlQuerier) GetAthleteLoadDetailed(ctx context.Context, athleteID int64
 		&i.AthleteLoad.ActivitesLoadedLastAttempt,
 		&i.AthleteLoad.EarliestActivity,
 		&i.AthleteLoad.EarliestActivityDone,
+		&i.AthleteLoad.EarliestActivityID,
 		&i.Athlete.ID,
 		&i.Athlete.Summit,
 		&i.Athlete.Username,
@@ -824,7 +826,7 @@ func (q *sqlQuerier) GetAthleteLoginFull(ctx context.Context, athleteID int64) (
 
 const getAthleteNeedsLoad = `-- name: GetAthleteNeedsLoad :one
 SELECT
-    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id
+    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id, athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id
 FROM
 	athlete_load
 INNER JOIN
@@ -855,6 +857,7 @@ func (q *sqlQuerier) GetAthleteNeedsLoad(ctx context.Context) (GetAthleteNeedsLo
 		&i.AthleteLoad.ActivitesLoadedLastAttempt,
 		&i.AthleteLoad.EarliestActivity,
 		&i.AthleteLoad.EarliestActivityDone,
+		&i.AthleteLoad.EarliestActivityID,
 		&i.AthleteLogin.AthleteID,
 		&i.AthleteLogin.Summit,
 		&i.AthleteLogin.ProviderID,
@@ -984,10 +987,11 @@ INSERT INTO
 		last_load_error,
 		activites_loaded_last_attempt,
 		earliest_activity,
+	    earliest_activity_id,
 		earliest_activity_done
 	)
 VALUES
-	($1, $2, $3, $4, $5, $6, $7, $8)
+	($1, $2, $3, $4, $5, $6, $7, $8, $9)
 ON CONFLICT
 	(athlete_id)
 DO UPDATE SET
@@ -997,8 +1001,9 @@ DO UPDATE SET
 	last_load_error = $5,
 	activites_loaded_last_attempt = $6,
 	earliest_activity = $7,
-	earliest_activity_done = $8
-RETURNING athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done
+	earliest_activity_id = $8,
+	earliest_activity_done = $9
+RETURNING athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done, earliest_activity_id
 `
 
 type UpsertAthleteLoadParams struct {
@@ -1009,6 +1014,7 @@ type UpsertAthleteLoadParams struct {
 	LastLoadError              string    `db:"last_load_error" json:"last_load_error"`
 	ActivitesLoadedLastAttempt int32     `db:"activites_loaded_last_attempt" json:"activites_loaded_last_attempt"`
 	EarliestActivity           time.Time `db:"earliest_activity" json:"earliest_activity"`
+	EarliestActivityID         int64     `db:"earliest_activity_id" json:"earliest_activity_id"`
 	EarliestActivityDone       bool      `db:"earliest_activity_done" json:"earliest_activity_done"`
 }
 
@@ -1021,6 +1027,7 @@ func (q *sqlQuerier) UpsertAthleteLoad(ctx context.Context, arg UpsertAthleteLoa
 		arg.LastLoadError,
 		arg.ActivitesLoadedLastAttempt,
 		arg.EarliestActivity,
+		arg.EarliestActivityID,
 		arg.EarliestActivityDone,
 	)
 	var i AthleteLoad
@@ -1033,6 +1040,7 @@ func (q *sqlQuerier) UpsertAthleteLoad(ctx context.Context, arg UpsertAthleteLoa
 		&i.ActivitesLoadedLastAttempt,
 		&i.EarliestActivity,
 		&i.EarliestActivityDone,
+		&i.EarliestActivityID,
 	)
 	return i, err
 }
@@ -1221,8 +1229,8 @@ func (q *sqlQuerier) GetCompetitiveRoute(ctx context.Context, routeName string) 
 
 const hugelLeaderboard = `-- name: HugelLeaderboard :many
 SELECT
-	(SELECT min(athlete_bests.total_time_seconds) FROM hugel_activities) :: BIGINT AS best_time,
-	ROW_NUMBER() over(ORDER BY athlete_bests.total_time_seconds ASC) AS rank,
+	(SELECT min(total_time_seconds) FROM hugel_activities) :: BIGINT AS best_time,
+	ROW_NUMBER() over(ORDER BY total_time_seconds ASC) AS rank,
 	athlete_bests.activity_id,
 	athlete_bests.athlete_id,
 	athlete_bests.total_time_seconds,
@@ -1248,7 +1256,7 @@ FROM
 		FROM
 			hugel_activities
 		ORDER BY
-			athlete_id, hugel_activities.total_time_seconds ASC
+			athlete_id, total_time_seconds ASC
 	) AS athlete_bests
 INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id

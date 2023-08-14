@@ -45,10 +45,11 @@ INSERT INTO
 		last_load_error,
 		activites_loaded_last_attempt,
 		earliest_activity,
+	    earliest_activity_id,
 		earliest_activity_done
 	)
 VALUES
-	($1, $2, $3, $4, $5, $6, $7, $8)
+	($1, $2, $3, $4, $5, $6, $7, $8, $9)
 ON CONFLICT
 	(athlete_id)
 DO UPDATE SET
@@ -58,7 +59,8 @@ DO UPDATE SET
 	last_load_error = $5,
 	activites_loaded_last_attempt = $6,
 	earliest_activity = $7,
-	earliest_activity_done = $8
+	earliest_activity_id = $8,
+	earliest_activity_done = $9
 RETURNING *;
 ;
 

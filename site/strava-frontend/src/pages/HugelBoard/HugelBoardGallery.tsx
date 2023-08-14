@@ -122,12 +122,12 @@ const GalleryCard: React.FC<{
       <Flex justifyContent={"space-between"}>
         <Flex p={3}>
           <AthleteAvatar
-            firstName={firstname}
-            lastName={lastname}
-            athleteID={activity.athlete_id}
-            profilePicLink={profile_pic_link}
+            firstname={firstname}
+            lastname={lastname}
+            athlete_id={activity.athlete_id}
+            profile_pic_link={profile_pic_link}
             username={username}
-            hugelCount={hugel_count}
+            hugel_count={hugel_count}
             size="lg"
             styleProps={{
               mr: 3,

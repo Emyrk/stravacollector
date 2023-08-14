@@ -176,12 +176,12 @@ export const HugelBoardTableRow: FC<
             {activity.rank}
           </Text>
           <AthleteAvatar
-            firstName={firstname}
-            lastName={lastname}
-            athleteID={activity.athlete_id}
-            profilePicLink={profile_pic_link}
+            firstname={firstname}
+            lastname={lastname}
+            athlete_id={activity.athlete_id}
+            profile_pic_link={profile_pic_link}
             username={username}
-            hugelCount={hugel_count}
+            hugel_count={hugel_count}
             size="md"
             styleProps={{
               mr: 3,

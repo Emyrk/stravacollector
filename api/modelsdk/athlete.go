@@ -11,9 +11,9 @@ type AthleteHugelActivity struct {
 }
 
 type SyncActivitySummary struct {
-	ActivitySummary
-	Synced   bool      `json:"synced"`
-	SyncedAt time.Time `json:"synced_at"`
+	Activity ActivitySummary `json:"activity_summary"`
+	Synced   bool            `json:"synced"`
+	SyncedAt time.Time       `json:"synced_at"`
 }
 
 type AthleteSyncSummary struct {
@@ -37,7 +37,8 @@ type AthleteLoad struct {
 	LastLoadError              string `json:"last_load_error"`
 	ActivitesLoadedLastAttempt int32  `json:"activites_loaded_last_attempt"`
 	// The earliest activity found for the athlete
-	EarliestActivity time.Time `json:"earliest_activity"`
+	EarliestActivity   time.Time `json:"earliest_activity"`
+	EarliestActivityID int64     `json:"earliest_activity_id"`
 	// Loading backwards is done
 	EarliestActivityDone bool `json:"earliest_activity_done"`
 }

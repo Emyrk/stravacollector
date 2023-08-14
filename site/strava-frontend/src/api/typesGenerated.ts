@@ -40,6 +40,7 @@ export interface AthleteLoad {
   readonly last_load_error: string
   readonly activites_loaded_last_attempt: number
   readonly earliest_activity: string
+  readonly earliest_activity_id: number
   readonly earliest_activity_done: boolean
 }
 
