@@ -74,7 +74,7 @@ func (h *handler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	req.URL.Path = "/"
-	if h.serveHTML(resp, req, reqFile, state) {
+	if h.serveHTML(resp, req, "", state) {
 		return
 	}
 
