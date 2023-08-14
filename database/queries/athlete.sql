@@ -1,6 +1,34 @@
 -- name: GetAthleteLoad :one
 SELECT * FROM athlete_load WHERE athlete_id = @athlete_id;
 
+-- name: GetAthleteLoadDetailed :one
+SELECT
+    sqlc.embed(athlete_load),
+	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = @athlete_id) AS summary_count,
+    (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = @athlete_id) AS detail_count
+FROM
+    athlete_load
+WHERE
+    athlete_id = @athlete_id;
+
+-- name: AthleteSyncedActivities :many
+SELECT
+	sqlc.embed(activity_summary),
+	activity_detail.id IS NOT NULL :: boolean AS detail_exists,
+	activity_detail.updated_at AS detail_updated_at
+FROM
+	activity_summary
+LEFT JOIN
+	activity_detail ON
+		activity_summary.id = activity_detail.id
+WHERE
+	activity_summary.athlete_id = @athlete_id
+ORDER BY
+    activity_summary.start_date DESC
+LIMIT @_limit
+OFFSET @_offset
+;
+
 -- name: UpsertAthleteLoad :one
 INSERT INTO
 	athlete_load(
@@ -49,6 +77,17 @@ SELECT * FROM athlete_logins WHERE athlete_id = @athlete_id;
 -- name: DeleteAthleteLogin :exec
 DELETE FROM athlete_logins WHERE athlete_id = @athlete_id;
 
+
+-- name: GetAthleteFull :one
+SELECT
+	sqlc.embed(athletes),
+	COALESCE(athlete_hugel_count.count, 0) AS hugel_count
+FROM
+	athletes
+	LEFT JOIN
+	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
+WHERE
+	athletes.id = @athlete_id;
 
 -- name: GetAthleteLoginFull :one
 SELECT

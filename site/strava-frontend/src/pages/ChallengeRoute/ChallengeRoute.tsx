@@ -76,6 +76,7 @@ import { ResponsiveCard } from "../../components/ResponsiveCard/ResponsiveCard";
 import { ConditionalLink } from "../../components/ConditionalLink/ConditionalLink";
 import { CardStat } from "../../components/CardStat/CardStat";
 import { StravaLink } from "../../components/StravaLink/StravaLink";
+import { Loading } from "../../components/Loading/Loading";
 
 export const ChallengeRoute: FC<{}> = ({}) => {
   const { name } = useParams();
@@ -466,7 +467,7 @@ const SegmentCard: FC<{
             </ConditionalLink>
           </GridItem>
           <GridItem textAlign={"center"}>
-            <StarredIcon starred={segment.starred} />
+            {/* <StarredIcon starred={segment.starred} /> */}
             <Flex
               justifyContent="center"
               alignItems={"center"}
@@ -516,8 +517,4 @@ const StarredIcon: FC<{ starred?: boolean }> = ({ starred }) => {
       </Tooltip>
     </Box>
   );
-};
-
-export const Loading: FC = () => {
-  return <Text>Loading...</Text>;
 };

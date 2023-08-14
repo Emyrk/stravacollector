@@ -136,11 +136,23 @@ func (api *API) Routes() chi.Router {
 	})
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
+			r.Route("/athlete", func(r chi.Router) {
+				r.Use(httpmw.ExtractAthlete(api.Opts.DB))
+				r.Get("/{athlete_id}", api.athlete)
+				r.Route("/{athlete_id}/", func(r chi.Router) {
+					r.Get("/hugels", api.athleteHugels)
+				})
+			})
+		})
+		r.Group(func(r chi.Router) {
 			// Authenticated routes
 			r.Use(
 				httpmw.Authenticated(api.Auth, false),
 			)
 			r.Get("/whoami", api.whoAmI)
+			r.Route("/me", func(r chi.Router) {
+				r.Get("sync-summary", api.syncSummary)
+			})
 			r.Route("/fetch-activity", func(r chi.Router) {
 				r.Get("/{activity_id}", api.manualFetchActivity)
 			})

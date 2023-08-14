@@ -29,6 +29,7 @@ import { StravaLink } from "../../components/StravaLink/StravaLink";
 import { CardStat } from "../../components/CardStat/CardStat";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Loading } from "../../components/Loading/Loading";
 
 export const HugelBoardGallery: FC<HugelBoardProps> = ({
   data,
@@ -36,6 +37,9 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
   isLoading,
   isFetched,
 }) => {
+  if (isLoading) {
+    return <Loading />;
+  }
   return (
     <>
       <Grid

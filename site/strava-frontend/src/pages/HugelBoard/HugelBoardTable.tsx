@@ -58,6 +58,7 @@ import {
 import React from "react";
 import { CardStat } from "../../components/CardStat/CardStat";
 import { StravaLink } from "../../components/StravaLink/StravaLink";
+import { Loading } from "../../components/Loading/Loading";
 
 export const HugelBoardTable: FC<HugelBoardProps> = ({
   data,
@@ -75,6 +76,10 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
     queryKey,
     queryFn: getHugelSegments,
   });
+
+  if (isLoading || hugelSegmentsLoading) {
+    return <Loading />;
+  }
 
   const segmentMapping = hugelSegments?.segments.reduce((acc, segment) => {
     acc[segment.id] = segment;
@@ -183,9 +188,13 @@ export const HugelBoardTableRow: FC<
             }}
           />
           <Box>
-            <Text fontWeight="bold" textAlign="left">
-              {firstname} {lastname}
-            </Text>
+            <Link
+              href={`https://www.strava.com/athletes/${activity.athlete_id}`}
+            >
+              <Text fontWeight="bold" textAlign="left">
+                {firstname} {lastname}
+              </Text>
+            </Link>
             <Text
               fontSize="sm"
               fontFamily={"monospace"}
