@@ -211,14 +211,6 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func convertActivitySummaries(activities []database.ActivitySummary) []modelsdk.ActivitySummary {
-	sdk := make([]modelsdk.ActivitySummary, 0, len(activities))
-	for _, act := range activities {
-		sdk = append(sdk, convertActivitySummary(act))
-	}
-	return sdk
-}
-
 func convertActivitySummary(activity database.ActivitySummary) modelsdk.ActivitySummary {
 	return modelsdk.ActivitySummary{
 		ActivityID:     modelsdk.StringInt(activity.ID),
