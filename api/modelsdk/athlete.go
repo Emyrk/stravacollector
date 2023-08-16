@@ -18,6 +18,7 @@ type SyncActivitySummary struct {
 
 type AthleteSyncSummary struct {
 	Load             AthleteLoad           `json:"athlete_load"`
+	TotalActivities  int                   `json:"total_activities"`
 	SyncedActivities []SyncActivitySummary `json:"synced_activities"`
 	Athlete          AthleteSummary        `json:"athlete_summary"`
 

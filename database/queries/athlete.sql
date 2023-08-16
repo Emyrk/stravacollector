@@ -22,6 +22,7 @@ WHERE
 -- name: AthleteSyncedActivities :many
 SELECT
 	sqlc.embed(activity_summary),
+	COUNT(*) OVER() AS total,
 	activity_detail.id IS NOT NULL :: boolean AS detail_exists,
 	activity_detail.updated_at AS detail_updated_at
 FROM

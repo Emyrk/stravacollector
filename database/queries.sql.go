@@ -479,6 +479,7 @@ func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivi
 const athleteSyncedActivities = `-- name: AthleteSyncedActivities :many
 SELECT
 	activity_summary.id, activity_summary.athlete_id, activity_summary.upload_id, activity_summary.external_id, activity_summary.name, activity_summary.distance, activity_summary.moving_time, activity_summary.elapsed_time, activity_summary.total_elevation_gain, activity_summary.activity_type, activity_summary.sport_type, activity_summary.workout_type, activity_summary.start_date, activity_summary.start_date_local, activity_summary.timezone, activity_summary.utc_offset, activity_summary.achievement_count, activity_summary.kudos_count, activity_summary.comment_count, activity_summary.athlete_count, activity_summary.photo_count, activity_summary.map_id, activity_summary.trainer, activity_summary.commute, activity_summary.manual, activity_summary.private, activity_summary.flagged, activity_summary.gear_id, activity_summary.average_speed, activity_summary.max_speed, activity_summary.device_watts, activity_summary.has_heartrate, activity_summary.pr_count, activity_summary.total_photo_count, activity_summary.updated_at, activity_summary.average_heartrate, activity_summary.max_heartrate,
+	COUNT(*) OVER() AS total,
 	activity_detail.id IS NOT NULL :: boolean AS detail_exists,
 	activity_detail.updated_at AS detail_updated_at
 FROM
@@ -503,6 +504,7 @@ type AthleteSyncedActivitiesParams struct {
 
 type AthleteSyncedActivitiesRow struct {
 	ActivitySummary ActivitySummary `db:"activity_summary" json:"activity_summary"`
+	Total           int64           `db:"total" json:"total"`
 	DetailExists    bool            `db:"detail_exists" json:"detail_exists"`
 	DetailUpdatedAt sql.NullTime    `db:"detail_updated_at" json:"detail_updated_at"`
 }
@@ -554,6 +556,7 @@ func (q *sqlQuerier) AthleteSyncedActivities(ctx context.Context, arg AthleteSyn
 			&i.ActivitySummary.UpdatedAt,
 			&i.ActivitySummary.AverageHeartrate,
 			&i.ActivitySummary.MaxHeartrate,
+			&i.Total,
 			&i.DetailExists,
 			&i.DetailUpdatedAt,
 		); err != nil {

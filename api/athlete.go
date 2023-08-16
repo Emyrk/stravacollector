@@ -115,6 +115,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 		pageNum = 1
 	}
 	offset := (pageNum - 1) * limit
+	total := 0
 	activities, err := api.Opts.DB.AthleteSyncedActivities(ctx, database.AthleteSyncedActivitiesParams{
 		AthleteID: ath.Athlete.ID,
 		Offset:    int32(offset),
@@ -127,6 +128,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+
 	sdk := make([]modelsdk.SyncActivitySummary, 0, len(activities))
 	for _, act := range activities {
 		sdk = append(sdk, modelsdk.SyncActivitySummary{
@@ -134,6 +136,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 			Synced:   act.DetailExists,
 			SyncedAt: act.DetailUpdatedAt.Time,
 		})
+		total = int(act.Total)
 	}
 
 	athlete := detailedLoad.Athlete
@@ -163,6 +166,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 			EarliestActivityID:         load.EarliestActivityID,
 			EarliestActivityDone:       load.EarliestActivityDone,
 		},
+		TotalActivities:  total,
 		SyncedActivities: sdk,
 	})
 }
