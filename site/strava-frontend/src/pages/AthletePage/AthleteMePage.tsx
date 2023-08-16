@@ -27,7 +27,17 @@ import {
   CircularProgressLabel,
   useTheme,
   Tooltip,
+  WithCSSVar,
+  Th,
+  IconButton,
+  Select,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from "@chakra-ui/react";
+import { Dict } from "@chakra-ui/utils";
 import { Link, useParams } from "react-router-dom";
 import {
   getAthlete,
@@ -51,7 +61,20 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FormatDate } from "../HugelBoard/CalcActivity";
 import { StravaLink } from "../../components/StravaLink/StravaLink";
-import { Column, ColumnDef, useReactTable } from "@tanstack/react-table";
+import {
+  getCoreRowModel,
+  Column,
+  ColumnDef,
+  useReactTable,
+  flexRender,
+  getPaginationRowModel,
+} from "@tanstack/react-table";
+import {
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
+} from "@chakra-ui/icons";
 
 export const AthleteMePage: FC<{}> = ({}) => {
   const { athlete_id } = useParams();
@@ -111,6 +134,7 @@ export const AthleteMePage: FC<{}> = ({}) => {
 
 const AthleteMeTotals: FC<{ summary: AthleteSyncSummary }> = ({ summary }) => {
   const load = summary.athlete_load;
+  const theme = useTheme();
   return (
     <Stack spacing={0.5}>
       <Alert status={load.earliest_activity_done ? "success" : "warning"}>
@@ -182,19 +206,90 @@ const AthleteMeTotals: FC<{ summary: AthleteSyncSummary }> = ({ summary }) => {
         <AlertIcon />
         Chakra is going live on August 30th. Get ready!
       </Alert> */}
-      <AthleteMeHugelTable summary={summary} />
-      {/* <AthleteMeActivitiesTable
+      <AthleteMeActivitiesTable
         data={summary.synced_activities}
-        columns={activityColumns}
-      /> */}
+        columns={activityColumns(theme)}
+      />
     </Stack>
   );
 };
 
-const AthleteMeHugelTable: FC<{ summary: AthleteSyncSummary }> = ({
-  summary,
-}) => {
-  const theme = useTheme();
+const activityColumns = (theme: WithCSSVar<Dict>) => {
+  return [
+    {
+      header: "Synced",
+      accessor: "synced",
+      cell: (row) => {
+        const act = row.row.original;
+        return act.synced ? (
+          <Tooltip label={`Synced on ${FormatDate(act.synced_at)}`}>
+            <FontAwesomeIcon
+              cursor={"pointer"}
+              color={theme.colors.green["500"]}
+              icon={faCircleCheck}
+            />
+          </Tooltip>
+        ) : (
+          <FontAwesomeIcon
+            color={theme.colors.red["500"]}
+            icon={faCircleXmark}
+          />
+        );
+      },
+    },
+    {
+      header: "Activity",
+      accessor: "activity_summary.name",
+      cell: (row) => {
+        const act = row.row.original;
+        return (
+          <Flex flexDirection={"row"} gap="5px" alignItems={"center"}>
+            <StravaLink
+              href={`https://www.strava.com/activities/${act.activity_summary.activity_id}`}
+              target="_blank"
+              height={"24px"}
+              width={"24px"}
+            />
+            <Text
+              textAlign={"center"}
+              fontWeight={"bold"}
+              maxW="300px"
+              isTruncated
+            >
+              {act.activity_summary.name}
+            </Text>
+          </Flex>
+        );
+      },
+    },
+    {
+      header: "Date",
+      // accessor: "activity_summary.start_date_local",
+      cell: (row) => {
+        const act = row.row.original;
+        return FormatDate(act.activity_summary.start_date_local);
+      },
+    },
+  ] as ColumnDef<SyncActivitySummary>[];
+};
+
+interface ReactTableProps<T extends object> {
+  data: T[];
+  columns: ColumnDef<T>[];
+}
+
+const AthleteMeActivitiesTable = <T extends object>({
+  data,
+  columns,
+}: ReactTableProps<T>) => {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+  const pageIndex = 0;
+
   return (
     <TableContainer
       sx={{
@@ -203,82 +298,126 @@ const AthleteMeHugelTable: FC<{ summary: AthleteSyncSummary }> = ({
     >
       <Table>
         <Thead>
-          <Tr>
-            <Td>Synced</Td>
-            <Td>Activity</Td>
-            <Td>Date</Td>
-          </Tr>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <Th key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </Th>
+              ))}
+            </Tr>
+          ))}
         </Thead>
         <Tbody>
-          {summary.synced_activities.map((act) => {
-            return (
-              <Tr key={act.activity_summary.activity_id} padding={"0px"}>
-                <Td width="70px" textAlign={"center"}>
-                  {act.synced ? (
-                    <Tooltip label={`Synced on ${FormatDate(act.synced_at)}`}>
-                      <FontAwesomeIcon
-                        cursor={"pointer"}
-                        color={theme.colors.green["500"]}
-                        icon={faCircleCheck}
-                      />
-                    </Tooltip>
-                  ) : (
-                    <FontAwesomeIcon
-                      color={theme.colors.red["500"]}
-                      icon={faCircleXmark}
-                    />
-                  )}
+          {table.getRowModel().rows.map((row) => (
+            <Tr key={row.id}>
+              {row.getVisibleCells().map((cell, index) => (
+                <Td
+                  key={cell.id}
+                  width={index === 0 ? "20px" : ""}
+                  textAlign={index === 0 ? "center" : "inherit"}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </Td>
-                <Td>
-                  <Flex flexDirection={"row"} gap="5px" alignItems={"center"}>
-                    <StravaLink
-                      href={`https://www.strava.com/activities/${act.activity_summary.activity_id}`}
-                      target="_blank"
-                      height={"24px"}
-                      width={"24px"}
-                    />
-                    <Text
-                      textAlign={"center"}
-                      fontWeight={"bold"}
-                      maxW="300px"
-                      isTruncated
-                    >
-                      {act.activity_summary.name}
-                    </Text>
-                  </Flex>
-                </Td>
-                <Td>{FormatDate(act.activity_summary.start_date_local)}</Td>
-              </Tr>
-            );
-          })}
+              ))}
+            </Tr>
+          ))}
         </Tbody>
       </Table>
+
+      <Flex justifyContent="space-between" m={4} alignItems="center">
+        <Flex>
+          <Tooltip label="First Page">
+            <IconButton
+              // onClick={() => gotoPage(0)}
+              // isDisabled={!canPreviousPage}
+              icon={<ArrowLeftIcon h={3} w={3} />}
+              mr={4}
+              aria-label={""}
+            />
+          </Tooltip>
+          <Tooltip label="Previous Page">
+            <IconButton
+              // onClick={previousPage}
+              // isDisabled={!canPreviousPage}
+              icon={<ChevronLeftIcon h={6} w={6} />}
+              aria-label={""}
+            />
+          </Tooltip>
+        </Flex>
+
+        <Flex alignItems="center">
+          <Text flexShrink="0" mr={8}>
+            Page{" "}
+            <Text fontWeight="bold" as="span">
+              {pageIndex + 1}
+            </Text>{" "}
+            of{" "}
+            <Text fontWeight="bold" as="span">
+              {/* {pageOptions.length} */}
+              100
+            </Text>
+          </Text>
+          <Text flexShrink="0">Go to page:</Text>{" "}
+          <NumberInput
+            ml={2}
+            mr={8}
+            w={28}
+            min={1}
+            // max={pageOptions.length}
+            max={100}
+            // onChange={(value) => {
+            //   const page = value ? value - 1 : 0;
+            //   gotoPage(page);
+            // }}
+            defaultValue={pageIndex + 1}
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+          <Select
+            w={32}
+            // value={pageSize}
+            // onChange={(e) => {
+            //   setPageSize(Number(e.target.value));
+            // }}
+          >
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </Select>
+        </Flex>
+
+        <Flex>
+          <Tooltip label="Next Page">
+            <IconButton
+              // onClick={nextPage}
+              // isDisabled={!canNextPage}
+              icon={<ChevronRightIcon h={6} w={6} />}
+              aria-label={""}
+            />
+          </Tooltip>
+          <Tooltip label="Last Page">
+            <IconButton
+              // onClick={() => gotoPage(pageCount - 1)}
+              // isDisabled={!canNextPage}
+              icon={<ArrowRightIcon h={3} w={3} />}
+              ml={4}
+              aria-label={""}
+            />
+          </Tooltip>
+        </Flex>
+      </Flex>
     </TableContainer>
   );
 };
-
-const activityColumns = [
-  {
-    header: "Synced",
-  },
-  {
-    header: "Activity",
-    accessor: "name",
-  },
-  {
-    header: "Date",
-    accessor: "start_date_local",
-  },
-] as ColumnDef<SyncActivitySummary, any>[];
-
-// const AthleteMeActivitiesTable: FC<{
-//   data: SyncActivitySummary[];
-//   columns: Column[];
-// }> = ({ data, columns }) => {
-//   const { rows } = useReactTable({
-//     columns,
-//     data,
-//   });
-
-//   return <></>;
-// };
