@@ -186,7 +186,7 @@ const GalleryCard: React.FC<{
             href={
               "activity_id" in activity
                 ? `https://www.strava.com/activities/${activity.activity_id}`
-                : `https://www.strava.com/athletes/${activity.athlete_id}}`
+                : `https://www.strava.com/athletes/${activity.athlete_id}`
             }
           />
         </Flex>
