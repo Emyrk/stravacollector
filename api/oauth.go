@@ -46,30 +46,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			OauthTokenType:    state.Token.TokenType,
 		})
 		if err != nil {
-			return fmt.Errorf("upsert login: %w", err)
-		}
-
-		// Insert a load if we don't have one
-		_, err := store.GetAthleteLoad(ctx, athlete.ID)
-		if err != nil && errors.Is(err, sql.ErrNoRows) {
-			doLoad = true
-			// No load means we need to insert one
-			_, err = store.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
-				AthleteID:                  athlete.ID,
-				LastBackloadActivityStart:  time.Time{},
-				LastLoadAttempt:            time.Time{},
-				LastLoadIncomplete:         false,
-				LastLoadError:              "",
-				ActivitesLoadedLastAttempt: 0,
-				// Start from the future
-				EarliestActivity:     time.Now().Add(time.Hour * 360),
-				EarliestActivityDone: false,
-			})
-			if err != nil {
-				return fmt.Errorf("upsert load: %w", err)
-			}
-		} else if err != nil {
-			return fmt.Errorf("get load: %w", err)
+			return fmt.Errorf("upsert login for %d: %w", athlete.ID, err)
 		}
 
 		_, err = store.UpsertAthlete(ctx, database.UpsertAthleteParams{
@@ -95,6 +72,29 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		})
 		if err != nil {
 			return fmt.Errorf("upsert athlete: %w", err)
+		}
+
+		// Insert a load if we don't have one
+		_, err := store.GetAthleteLoad(ctx, athlete.ID)
+		if err != nil && errors.Is(err, sql.ErrNoRows) {
+			doLoad = true
+			// No load means we need to insert one
+			_, err = store.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
+				AthleteID:                  athlete.ID,
+				LastBackloadActivityStart:  time.Time{},
+				LastLoadAttempt:            time.Time{},
+				LastLoadIncomplete:         false,
+				LastLoadError:              "",
+				ActivitesLoadedLastAttempt: 0,
+				// Start from the future
+				EarliestActivity:     time.Now().Add(time.Hour * 360),
+				EarliestActivityDone: false,
+			})
+			if err != nil {
+				return fmt.Errorf("upsert load: %w", err)
+			}
+		} else if err != nil {
+			return fmt.Errorf("get load: %w", err)
 		}
 
 		return nil
