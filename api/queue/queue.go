@@ -206,6 +206,7 @@ func (m *Manager) newWorker(queue string, opts ...gue.WorkerOption) (*gue.Worker
 	opts = append(opts,
 		gue.WithWorkerQueue(queue),
 		gue.WithWorkerHooksJobDone(m.failedJobHook()),
+		gue.WithWorkerPollStrategy(gue.PriorityPollStrategy),
 	)
 	// All workers share the workmap
 	worker, err := gue.NewWorker(m.Client, m.workMap(),
@@ -249,7 +250,7 @@ func (m *Manager) jobStravaCheck(j *gue.Job, calls int64) error {
 		iBuf, dBuf = int64(50), int64(100)
 	}
 
-	ok, limitLogger := stravalimit.CanLogger(1, iBuf, dBuf, logger)
+	ok, limitLogger := stravalimit.CanLogger(calls, iBuf, dBuf, logger)
 	if !ok {
 		last := m.stravaLimitDebounce.Load()
 		now := time.Now()
@@ -270,6 +271,7 @@ func jobLogFields(logger zerolog.Logger, j *gue.Job) zerolog.Logger {
 		Str("queue", j.Queue).
 		Int32("err_count", j.ErrorCount).
 		Str("last_error", j.LastError.String).
+		Int16("priority", int16(j.Priority)).
 		Logger()
 }
 

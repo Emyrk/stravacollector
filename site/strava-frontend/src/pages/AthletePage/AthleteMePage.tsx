@@ -226,7 +226,10 @@ const AthleteMeTotals: FC<{
           <Text>
             Loaded activities still need to be synced one by one to find all
             segment details. {lastSummary.total_detail} of{" "}
-            {lastSummary.total_summary} activities are complete.
+            {lastSummary.total_summary} activities are complete. Historical
+            activities will take a long time to complete due to rate limitations
+            with the Strava API. Please be very patient for historical Hugel
+            efforts.
           </Text>
         </Flex>
       </Alert>

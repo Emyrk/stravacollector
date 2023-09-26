@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/vgarvardt/gue/v5"
+
 	"github.com/Emyrk/strava/strava/stravalimit"
 
 	"github.com/Emyrk/strava/database"
@@ -41,7 +43,7 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 			continue
 		}
 
-		// Fetch an that needs some loading.
+		// Fetch an athlete that needs some loading.
 		athlete := m.athleteToLoad(ctx)
 		if athlete == nil {
 			// No athletes to load, wait a bit.
@@ -211,7 +213,7 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 
 			// Backload bike rides for more deets
 			if isBikeRide(act.Type) || isBikeRide(act.SportType) {
-				err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID)
+				err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID, activityGuePriority(act))
 				if err != nil {
 					return fmt.Errorf("enqueue fetch activity: %w", err)
 				}
@@ -251,6 +253,26 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 	m.backloadActivitiesLoaded.Add(float64(len(activities)))
 
 	return nil
+}
+
+func activityGuePriority(summary strava.ActivitySummary) gue.JobPriority {
+	priority := gue.JobPriorityDefault
+	if time.Since(summary.StartDate) < (time.Hour * 24 * 7) {
+		// Add priority for recent activities
+		priority -= 2000
+	}
+
+	if database.DistanceToMiles(summary.Distance) > 80 {
+		// Priority for long activites
+		priority -= 500
+	}
+
+	if database.DistanceToFeet(summary.TotalElevationGain) > 8000 {
+		// Priority for high vert
+		priority -= 500
+	}
+
+	return priority
 }
 
 // isBikeRide covers the weird stuff like "VirtualRide", "EBikeRide", "MountainBikeRide"

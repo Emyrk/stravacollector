@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/vgarvardt/gue/v5"
+
 	"github.com/Emyrk/strava/database"
 	"github.com/go-chi/chi/v5"
 
@@ -229,7 +231,8 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = api.Manager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, id, actID)
+	// Highest priority for manual activities.
+	err = api.Manager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, id, actID, gue.JobPriorityHighest)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
 			Message: "Enqueue fetch",

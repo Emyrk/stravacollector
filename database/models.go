@@ -151,6 +151,14 @@ type ActivitySummary struct {
 	MaxHeartrate       float64   `db:"max_heartrate" json:"max_heartrate"`
 }
 
+func DistanceToMiles(distance float64) float64 {
+	return distance / 1609.34
+}
+
+func DistanceToFeet(distance float64) float64 {
+	return distance / 3.28084
+}
+
 type Athlete struct {
 	ID          int64  `db:"id" json:"id"`
 	Summit      bool   `db:"summit" json:"summit"`

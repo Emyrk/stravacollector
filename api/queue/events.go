@@ -3,6 +3,8 @@ package queue
 import (
 	"context"
 
+	"github.com/vgarvardt/gue/v5"
+
 	"github.com/Emyrk/strava/database"
 
 	"github.com/Emyrk/strava/api/webhooks"
@@ -60,7 +62,9 @@ func (m *Manager) newActivity(ctx context.Context, event webhooks.WebhookEvent) 
 	var qErr error
 	switch event.AspectType {
 	case "create":
-		qErr = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceWebhook, event.OwnerID, event.ObjectID)
+		// Set a low priority for webhooked events.
+		priority := gue.JobPriorityDefault - 10000
+		qErr = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceWebhook, event.OwnerID, event.ObjectID, priority)
 	case "update":
 		qErr = m.EnqueueUpdateActivity(ctx, event)
 	case "delete":

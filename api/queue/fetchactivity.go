@@ -19,7 +19,7 @@ type fetchActivityJobArgs struct {
 	AthleteID  int64                         `json:"athlete_id"`
 }
 
-func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64) error {
+func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, priority gue.JobPriority) error {
 	data, err := json.Marshal(fetchActivityJobArgs{
 		ActivityID: activityID,
 		AthleteID:  athleteID,
@@ -30,9 +30,10 @@ func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.Acti
 	}
 
 	return m.Client.Enqueue(ctx, &gue.Job{
-		Type:  fetchActivityJob,
-		Queue: stravaFetchQueue,
-		Args:  data,
+		Type:     fetchActivityJob,
+		Queue:    stravaFetchQueue,
+		Args:     data,
+		Priority: priority,
 	})
 }
 
