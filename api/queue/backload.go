@@ -31,7 +31,11 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 		}
 
 		iBuf, dBuf := int64(100), int64(500)
-		if stravalimit.NextDailyReset(time.Now()) < time.Hour*3 {
+		now := time.Now()
+		if stravalimit.NextDailyReset(now) < time.Hour*3 {
+			iBuf, dBuf = 50, 300
+		}
+		if stravalimit.NextDailyReset(now) < time.Hour*1 {
 			iBuf, dBuf = 50, 100
 		}
 

@@ -157,15 +157,17 @@ func Remaining() (int64, int64) {
 	return limiter.Remaining()
 }
 
-func CanLogger(calls, buffer int64, dailyBuffer int64, logger zerolog.Logger) (bool, zerolog.Logger) {
+// CanLogger
+// Buffer is how many calls to reserve
+func CanLogger(calls, intervalBuffer int64, dailyBuffer int64, logger zerolog.Logger) (bool, zerolog.Logger) {
 	i, d := Remaining()
 
-	if i < buffer+calls || d < dailyBuffer+calls {
+	if i < intervalBuffer+calls || d < dailyBuffer+calls {
 		return false, logger.With().
 			Int64("interval_remaining", i).
 			Int64("daily_remaining", d).
 			Int64("calls", calls).
-			Int64("interval_buffer", buffer).
+			Int64("interval_buffer", intervalBuffer).
 			Int64("daily_buffer", dailyBuffer).
 
 			// Remove
