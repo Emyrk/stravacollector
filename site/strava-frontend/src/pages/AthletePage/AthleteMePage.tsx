@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   AbsoluteCenter,
   AlertIcon,
@@ -36,6 +36,7 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Skeleton,
 } from "@chakra-ui/react";
 import { Dict } from "@chakra-ui/utils";
 import { Link, useParams } from "react-router-dom";
@@ -51,6 +52,7 @@ import { Loading } from "../../components/Loading/Loading";
 import { useAuthenticated } from "../../contexts/Authenticated";
 import { AthletePageHeader } from "./AthleteHeader";
 import {
+  AthleteSummary,
   AthleteSyncSummary,
   SyncActivitySummary,
 } from "../../api/typesGenerated";
@@ -75,21 +77,40 @@ import {
   ChevronRightIcon,
   ChevronLeftIcon,
 } from "@chakra-ui/icons";
+import { Maybe } from "../../components/Maybe/Maybe";
+
+const initialTableState = {
+  limit: 10,
+  page: 0,
+};
 
 export const AthleteMePage: FC<{}> = ({}) => {
   const { athlete_id } = useParams();
   const { authenticatedUser } = useAuthenticated();
+  const [activityLimit, setActivityLimit] = useState(10);
+  const [activityPage, setActivityPage] = useState(0);
+  const [athleteSummary, setAthleteSummary] = useState<AthleteSummary>();
+  const [lastSyncSummary, setLastSyncSummary] = useState<AthleteSyncSummary>();
 
-  const queryKey = ["sync-summary"];
+  const queryKey = ["sync-summary", activityLimit, activityPage];
   const {
     data: athleteData,
     error: athleteError,
     isLoading: athleteLoading,
     isFetched: athleteFetched,
+    // refetch: athleteRefetch,
   } = useQuery({
     queryKey,
     enabled: !!athlete_id,
-    queryFn: () => getAthleteSyncSummary(athlete_id || "me"),
+    queryFn: () =>
+      getAthleteSyncSummary(athlete_id || "me", {
+        limit: activityLimit,
+        page: activityPage,
+      }),
+    onSuccess: (data) => {
+      setAthleteSummary(data?.athlete_summary);
+      setLastSyncSummary(data);
+    },
   });
 
   const queryHugelsKey = ["hugels", athlete_id];
@@ -104,18 +125,25 @@ export const AthleteMePage: FC<{}> = ({}) => {
     queryFn: () => getAthleteHugels(athlete_id || ""),
   });
 
-  if (athleteLoading || athleteHugelsLoading) {
+  if (athleteHugelsLoading || (!athleteSummary && !lastSyncSummary)) {
     return <Loading />;
   }
 
-  if (!athlete_id || !athleteData || !athleteHugelsData) {
+  if (
+    // No athlete
+    !athlete_id ||
+    !athleteSummary ||
+    (!athleteData && !athleteLoading) ||
+    !athleteHugelsData ||
+    !lastSyncSummary
+  ) {
     return <NotFound />;
   }
 
   return (
     <>
       <AthletePageHeader
-        athlete={athleteData?.athlete_summary}
+        athlete={athleteSummary}
         hugel_efforts={athleteHugelsData}
       />
       <Box position="relative" padding="10">
@@ -126,14 +154,34 @@ export const AthleteMePage: FC<{}> = ({}) => {
       </Box>
 
       <Container maxW="3xl">
-        <AthleteMeTotals summary={athleteData} />
+        <AthleteMeTotals
+          lastSummary={lastSyncSummary}
+          summary={athleteData}
+          page={activityPage}
+          limit={activityLimit}
+          setLimit={(limit: number) => {
+            setActivityLimit(limit);
+            // athleteRefetch();
+          }}
+          setPage={(page: number) => {
+            setActivityPage(page);
+            // athleteRefetch();
+          }}
+        />
       </Container>
     </>
   );
 };
 
-const AthleteMeTotals: FC<{ summary: AthleteSyncSummary }> = ({ summary }) => {
-  const load = summary.athlete_load;
+const AthleteMeTotals: FC<{
+  lastSummary: AthleteSyncSummary;
+  summary?: AthleteSyncSummary;
+  limit: number;
+  page: number;
+  setLimit: (limit: number) => void;
+  setPage: (page: number) => void;
+}> = ({ lastSummary, summary, limit, page, setLimit, setPage }) => {
+  const load = lastSummary.athlete_load;
   const theme = useTheme();
   return (
     <Stack spacing={0.5}>
@@ -149,20 +197,24 @@ const AthleteMeTotals: FC<{ summary: AthleteSyncSummary }> = ({ summary }) => {
       </Alert>
       <Alert
         status={
-          summary.total_summary === summary.total_detail ? "success" : "warning"
+          lastSummary.total_summary === lastSummary.total_detail
+            ? "success"
+            : "warning"
         }
       >
         <Flex flexDirection={"row"} alignItems={"center"} gap="15px">
           <Box>
             <CircularProgress
               value={
-                Math.ceil(summary.total_detail / summary.total_summary) * 100
+                Math.ceil(
+                  lastSummary.total_detail / lastSummary.total_summary
+                ) * 100
               }
               color="green.400"
             >
               <CircularProgressLabel>
                 {Math.ceil(
-                  (summary.total_detail / summary.total_summary) * 100
+                  (lastSummary.total_detail / lastSummary.total_summary) * 100
                 )}
                 %
               </CircularProgressLabel>
@@ -170,12 +222,11 @@ const AthleteMeTotals: FC<{ summary: AthleteSyncSummary }> = ({ summary }) => {
           </Box>
           <Text>
             Loaded activities still need to be synced one by one to find all
-            segment details. {summary.total_detail} of {summary.total_summary}{" "}
-            activities are complete.
+            segment details. {lastSummary.total_detail} of{" "}
+            {lastSummary.total_summary} activities are complete.
           </Text>
         </Flex>
       </Alert>
-
       {load.last_load_error && (
         <Alert flexDirection={"column"} status="error">
           <Flex>
@@ -207,8 +258,13 @@ const AthleteMeTotals: FC<{ summary: AthleteSyncSummary }> = ({ summary }) => {
         Chakra is going live on August 30th. Get ready!
       </Alert> */}
       <AthleteMeActivitiesTable
-        data={summary.synced_activities}
+        data={summary?.synced_activities || []}
         columns={activityColumns(theme)}
+        limit={limit}
+        page={page}
+        setLimit={setLimit}
+        setPage={setPage}
+        total={lastSummary?.total_summary || 0}
       />
     </Stack>
   );
@@ -276,19 +332,31 @@ const activityColumns = (theme: WithCSSVar<Dict>) => {
 interface ReactTableProps<T extends object> {
   data: T[];
   columns: ColumnDef<T>[];
+  total: number;
+  limit: number;
+  page: number;
+  setLimit: (limit: number) => void;
+  setPage: (page: number) => void;
 }
 
 const AthleteMeActivitiesTable = <T extends object>({
   data,
   columns,
+  total,
+  limit,
+  page,
+  setLimit,
+  setPage,
 }: ReactTableProps<T>) => {
+  const totalPages = Math.ceil(total / limit) + 1;
   const table = useReactTable({
     data,
     columns,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    pageCount: totalPages,
   });
-  const pageIndex = 0;
 
   return (
     <TableContainer
@@ -314,19 +382,36 @@ const AthleteMeActivitiesTable = <T extends object>({
           ))}
         </Thead>
         <Tbody>
-          {table.getRowModel().rows.map((row) => (
-            <Tr key={row.id}>
-              {row.getVisibleCells().map((cell, index) => (
-                <Td
-                  key={cell.id}
-                  width={index === 0 ? "20px" : ""}
-                  textAlign={index === 0 ? "center" : "inherit"}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </Td>
+          {data.length === 0 || data === undefined
+            ? [...Array(limit || 10)].map((_, index) => (
+                <Tr key={index}>
+                  <Td>
+                    <Skeleton height="1em"></Skeleton>
+                  </Td>
+                  <Td>
+                    <Skeleton height="1em"></Skeleton>
+                  </Td>
+                  <Td>
+                    <Skeleton height="1em"></Skeleton>
+                  </Td>
+                </Tr>
+              ))
+            : table.getRowModel().rows.map((row) => (
+                <Tr key={row.id}>
+                  {row.getVisibleCells().map((cell, index) => (
+                    <Td
+                      key={cell.id}
+                      width={index === 0 ? "20px" : ""}
+                      textAlign={index === 0 ? "center" : "inherit"}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Td>
+                  ))}
+                </Tr>
               ))}
-            </Tr>
-          ))}
         </Tbody>
       </Table>
 
@@ -334,7 +419,7 @@ const AthleteMeActivitiesTable = <T extends object>({
         <Flex>
           <Tooltip label="First Page">
             <IconButton
-              // onClick={() => gotoPage(0)}
+              onClick={() => setPage(0)}
               // isDisabled={!canPreviousPage}
               icon={<ArrowLeftIcon h={3} w={3} />}
               mr={4}
@@ -343,8 +428,8 @@ const AthleteMeActivitiesTable = <T extends object>({
           </Tooltip>
           <Tooltip label="Previous Page">
             <IconButton
-              // onClick={previousPage}
-              // isDisabled={!canPreviousPage}
+              onClick={() => setPage(page - 1)}
+              isDisabled={page <= 0}
               icon={<ChevronLeftIcon h={6} w={6} />}
               aria-label={""}
             />
@@ -355,12 +440,11 @@ const AthleteMeActivitiesTable = <T extends object>({
           <Text flexShrink="0" mr={8}>
             Page{" "}
             <Text fontWeight="bold" as="span">
-              {pageIndex + 1}
+              {page + 1}
             </Text>{" "}
             of{" "}
             <Text fontWeight="bold" as="span">
-              {/* {pageOptions.length} */}
-              100
+              {totalPages}
             </Text>
           </Text>
           <Text flexShrink="0">Go to page:</Text>{" "}
@@ -370,12 +454,13 @@ const AthleteMeActivitiesTable = <T extends object>({
             w={28}
             min={1}
             // max={pageOptions.length}
-            max={100}
-            // onChange={(value) => {
-            //   const page = value ? value - 1 : 0;
-            //   gotoPage(page);
-            // }}
-            defaultValue={pageIndex + 1}
+            max={totalPages}
+            onChange={(value) => {
+              const page = value ? (value as unknown as number) - 1 : 0;
+              setPage(page);
+              // gotoPage(page);
+            }}
+            defaultValue={page + 1}
           >
             <NumberInputField />
             <NumberInputStepper>
@@ -385,10 +470,14 @@ const AthleteMeActivitiesTable = <T extends object>({
           </NumberInput>
           <Select
             w={32}
-            // value={pageSize}
-            // onChange={(e) => {
-            //   setPageSize(Number(e.target.value));
-            // }}
+            value={limit}
+            onChange={(e) => {
+              const newLimit = e.target.value as unknown as number;
+              setLimit(newLimit);
+              if (page > Math.ceil(total / newLimit)) {
+                setPage(0);
+              }
+            }}
           >
             {[10, 20, 30, 40, 50].map((pageSize) => (
               <option key={pageSize} value={pageSize}>
@@ -401,15 +490,15 @@ const AthleteMeActivitiesTable = <T extends object>({
         <Flex>
           <Tooltip label="Next Page">
             <IconButton
-              // onClick={nextPage}
-              // isDisabled={!canNextPage}
+              onClick={() => setPage(page + 1)}
+              isDisabled={page >= totalPages - 1}
               icon={<ChevronRightIcon h={6} w={6} />}
               aria-label={""}
             />
           </Tooltip>
           <Tooltip label="Last Page">
             <IconButton
-              // onClick={() => gotoPage(pageCount - 1)}
+              onClick={() => setPage(totalPages - 1)}
               // isDisabled={!canNextPage}
               icon={<ArrowRightIcon h={3} w={3} />}
               ml={4}

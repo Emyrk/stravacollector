@@ -17,6 +17,12 @@ export type ApiError = AxiosError<TypesGen.Response> & {
   response: AxiosResponse<TypesGen.Response>;
 };
 
+
+export interface Pagination {
+  readonly page?: number;
+  readonly limit?: number;
+}
+
 export const getAuthenticatedUser = async (): Promise<
   TypesGen.AthleteSummary | undefined
 > => {
@@ -68,11 +74,12 @@ export const getAthleteHugels = async (
 };
 
 export const getAthleteSyncSummary = async (
-  athlete_id: string
+  athlete_id: string,
+  options: Pagination = {},
 ): Promise<TypesGen.AthleteSyncSummary | undefined> => {
   try {
     const response = await axios.get<TypesGen.AthleteSyncSummary>(
-      `/api/v1/athlete/${athlete_id}/sync-summary`
+      getURLWithSearchParams(`/api/v1/athlete/${athlete_id}/sync-summary`, options)
     );
     return response.data;
   } catch (error) {
@@ -86,7 +93,10 @@ export const getAthlete = async (
 ): Promise<TypesGen.AthleteSummary | undefined> => {
   try {
     const response = await axios.get<TypesGen.AthleteSummary>(
-      `/api/v1/athlete/${athlete_id}/`
+      `/api/v1/athlete/${athlete_id}/`,
+      {
+        
+      }
     );
     return response.data;
   } catch (error) {
@@ -172,6 +182,27 @@ export const toAPIError = (err: unknown): ApiError => {
   }
   return ax.response.data;
 };
+
+export const getURLWithSearchParams = (
+  basePath: string,
+  options?: Pagination,
+): string => {
+  if (options) {
+    const searchParams = new URLSearchParams();
+    const keys = Object.keys(options) as (keyof Pagination)[];
+    keys.forEach((key) => {
+      const value = options[key];
+      if (value !== undefined ) { //&& value !== "") {
+        searchParams.append(key, value.toString());
+      }
+    });
+    const searchString = searchParams.toString();
+    return searchString ? `${basePath}?${searchString}` : basePath;
+  } else {
+    return basePath;
+  }
+};
+
 
 /**
  *
