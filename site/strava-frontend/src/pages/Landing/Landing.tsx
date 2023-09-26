@@ -28,7 +28,7 @@ export const Landing: FC = () => {
         <Text>
           Austin, Texas is home to the notorious Tour das Hügel — a challenging
           bike route boasting over 100 miles of treacherous hills and climbs
-          totaling over 13,000 feet. The "race" is unsanctioned and is done on
+          totaling over 13,000 feet. The event is unsanctioned and is done on
           open roads. To help cyclists stay safe and get the most out of their
           Tour das Hügel experience, our site provides a Gran Fondo type timing
           system. The solution only times riders on the famous climbs, allowing

@@ -299,7 +299,7 @@ const NAV_ITEMS: Array<NavItem> = [
       },
       {
         label: "Das Hugel Super Scores",
-        subLabel: "Have not done a Das Hugel?",
+        subLabel: "Your best segments across all your rides.",
         href: "/superhugelboard",
       },
       {
