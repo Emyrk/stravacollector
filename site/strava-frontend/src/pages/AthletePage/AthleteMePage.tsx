@@ -125,7 +125,10 @@ export const AthleteMePage: FC<{}> = ({}) => {
     queryFn: () => getAthleteHugels(athlete_id || ""),
   });
 
-  if (athleteHugelsLoading || (!athleteSummary && !lastSyncSummary)) {
+  if (
+    athleteHugelsLoading ||
+    (!athleteSummary && !lastSyncSummary && athleteLoading)
+  ) {
     return <Loading />;
   }
 
