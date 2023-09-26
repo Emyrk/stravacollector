@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Emyrk/strava/api/modelsdk"
@@ -49,6 +50,11 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			return fmt.Errorf("upsert login for %d: %w", athlete.ID, err)
 		}
 
+		api.Opts.Logger.Info().
+			Str("clubs", string(athlete.Clubs)).
+			Int64("athlete_id", athlete.ID).
+			Msg("athlete_login")
+
 		_, err = store.UpsertAthlete(ctx, database.UpsertAthleteParams{
 			ID:                    athlete.ID,
 			CreatedAt:             athlete.CreatedAt,
@@ -71,7 +77,33 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			ProfilePicLinkMedium:  athlete.ProfileMedium,
 		})
 		if err != nil {
-			return fmt.Errorf("upsert athlete: %w", err)
+			if strings.Contains(err.Error(), "json") {
+				// Try again, nuke the clubs
+				_, err = store.UpsertAthlete(ctx, database.UpsertAthleteParams{
+					ID:                    athlete.ID,
+					CreatedAt:             athlete.CreatedAt,
+					UpdatedAt:             athlete.UpdatedAt,
+					Summit:                athlete.Summit || athlete.Premium,
+					Username:              athlete.Username,
+					Firstname:             athlete.Firstname,
+					Lastname:              athlete.Lastname,
+					Sex:                   athlete.Sex,
+					City:                  athlete.City,
+					State:                 athlete.State,
+					Country:               athlete.Country,
+					FollowCount:           int32(athlete.FollowerCount),
+					FriendCount:           int32(athlete.FriendCount),
+					MeasurementPreference: athlete.MeasurementPreference,
+					Ftp:                   athlete.Ftp,
+					Weight:                athlete.Weight,
+					Clubs:                 []byte("[]"),
+					ProfilePicLink:        athlete.Profile,
+					ProfilePicLinkMedium:  athlete.ProfileMedium,
+				})
+			}
+			if err != nil {
+				return fmt.Errorf("upsert athlete: %w", err)
+			}
 		}
 
 		// Insert a load if we don't have one
