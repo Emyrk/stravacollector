@@ -31,9 +31,8 @@ export const Landing: FC = () => {
           totaling over 13,000 feet. The "race" is unsanctioned and is done on
           open roads. To help cyclists stay safe and get the most out of their
           Tour das Hügel experience, our site provides a Gran Fondo type timing
-          system. The solution calculates the best times for riders on the on
-          the famous climbs, allowing them to avoid being penalized for stop
-          signs or traffic jams.
+          system. The solution only times riders on the famous climbs, allowing
+          them to avoid being penalized for stop signs or traffic jams.
         </Text>
       </Box>
 
