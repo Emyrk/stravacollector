@@ -186,6 +186,9 @@ const AthleteMeTotals: FC<{
 }> = ({ lastSummary, summary, limit, page, setLimit, setPage }) => {
   const load = lastSummary.athlete_load;
   const theme = useTheme();
+  const percentDone = Math.ceil(
+    (lastSummary.total_detail / lastSummary.total_summary) * 100
+  );
   return (
     <Stack spacing={0.5}>
       <Alert status={load.earliest_activity_done ? "success" : "warning"}>
@@ -208,19 +211,12 @@ const AthleteMeTotals: FC<{
         <Flex flexDirection={"row"} alignItems={"center"} gap="15px">
           <Box>
             <CircularProgress
-              value={
-                Math.ceil(
-                  lastSummary.total_detail / lastSummary.total_summary
-                ) * 100
-              }
-              color="green.400"
+              min={0}
+              max={100}
+              value={percentDone}
+              color={percentDone >= 100 ? "green.400" : "yellow.400"}
             >
-              <CircularProgressLabel>
-                {Math.ceil(
-                  (lastSummary.total_detail / lastSummary.total_summary) * 100
-                )}
-                %
-              </CircularProgressLabel>
+              <CircularProgressLabel>{percentDone}%</CircularProgressLabel>
             </CircularProgress>
           </Box>
           <Text>
