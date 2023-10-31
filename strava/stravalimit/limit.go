@@ -88,6 +88,7 @@ func (l *Limiter) RegisterMetrics(reg *prometheus.Registry) {
 	reg.MustRegister(
 		l.PromCurrentDailyUsage, l.PromCurrentIntervalUsage,
 		l.PromDailyLimit, l.PromIntervalLimit,
+		l.PromCurrentInterval, l.PromCurrentDay,
 	)
 }
 
