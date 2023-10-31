@@ -102,7 +102,7 @@ func GetInterval(t time.Time) int64 {
 }
 
 func GetDay(t time.Time) int64 {
-	return int64(t.YearDay())
+	return int64(t.UTC().YearDay())
 }
 
 func (l *Limiter) UpdateUsage(intervalUsage, intervalLimit, dailyUsage, dailyLimit int64) {
