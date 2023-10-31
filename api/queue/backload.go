@@ -60,8 +60,15 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 		err := m.backloadAthlete(ctx, *athlete)
 		m.backloadHistogram.WithLabelValues(strconv.FormatBool(err == nil)).Observe(time.Since(start).Seconds())
 		if err != nil {
+			sleepFor := time.Second
 			next := time.Now().Add(time.Hour)
 			if se := strava.IsAPIError(err); se != nil {
+				if se.Response.StatusCode == http.StatusTooManyRequests {
+					next = time.Now().Add(time.Minute * 15)
+					err = fmt.Errorf("wait at least 15min: %w", err)
+					sleepFor = time.Minute
+				}
+
 				if se.Response.StatusCode == http.StatusUnauthorized || se.Response.StatusCode == http.StatusForbidden {
 					// This person needs to be fixed....
 					// We should delete them?
@@ -69,6 +76,8 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 					next = time.Now().Add(time.Hour * 48)
 					err = fmt.Errorf("unauthorized: %w", err)
 				}
+			} else {
+				sleepFor = time.Second * 5
 			}
 			// This could be bad
 			_, dbErr := m.DB.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
@@ -88,6 +97,7 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 				AnErr("db_error", dbErr).
 				Err(err).
 				Msg("backload athlete failed")
+			time.Sleep(sleepFor)
 			continue
 		}
 	}
