@@ -136,8 +136,8 @@ func (l *Limiter) Update(headers http.Header) {
 	if headers == nil {
 		return
 	}
-	lInt, lDay := splitInts(headers.Get("X-RateLimit-Limit"))
-	uInt, uDay := splitInts(headers.Get("X-RateLimit-Usage"))
+	lInt, lDay := splitInts(headers.Get("X-Readratelimit-Limit"))
+	uInt, uDay := splitInts(headers.Get("X-Readratelimit-Usage"))
 	if lInt == -1 || lDay == -1 || uInt == -1 || uDay == -1 {
 		return
 	}

@@ -85,8 +85,8 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 		id, athleteLoggedIn = httpmw.AuthenticatedAthleteIDOptional(r)
 	)
 
-	before, _ := strconv.ParseInt(r.URL.Query().Get("before"), 64, 10)
-	after, _ := strconv.ParseInt(r.URL.Query().Get("after"), 64, 10)
+	before, _ := strconv.ParseInt(r.URL.Query().Get("before"), 10, 64)
+	after, _ := strconv.ParseInt(r.URL.Query().Get("after"), 10, 64)
 	present, _ := strconv.ParseBool(r.URL.Query().Get("2023"))
 	var beforeTime time.Time
 	var afterTime time.Time
