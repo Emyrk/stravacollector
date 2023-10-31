@@ -1297,9 +1297,21 @@ INNER JOIN
 	activity_summary ON athlete_bests.activity_id = activity_summary.id
 WHERE
     CASE WHEN $1 > 0 THEN athlete_bests.athlete_id = $1 ELSE TRUE END
-ORDER BY
-	athlete_bests.total_time_seconds ASC
+    AND
+	CASE WHEN
+    	$2 :: timestamp != '0001-01-01 00:00:00Z'
+    		AND $3 :: timestamp != '0001-01-01 00:00:00Z' THEN
+			activity_summary.start_date >= $2 :: timestamp AND activity_summary.start_date <= $3 :: timestamp
+    	ELSE TRUE END
+	ORDER BY
+		athlete_bests.total_time_seconds ASC
 `
+
+type HugelLeaderboardParams struct {
+	AthleteID interface{} `db:"athlete_id" json:"athlete_id"`
+	After     time.Time   `db:"after" json:"after"`
+	Before    time.Time   `db:"before" json:"before"`
+}
 
 type HugelLeaderboardRow struct {
 	BestTime           int64           `db:"best_time" json:"best_time"`
@@ -1322,8 +1334,8 @@ type HugelLeaderboardRow struct {
 	HugelCount         int64           `db:"hugel_count" json:"hugel_count"`
 }
 
-func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, athleteID interface{}) ([]HugelLeaderboardRow, error) {
-	rows, err := q.db.QueryContext(ctx, hugelLeaderboard, athleteID)
+func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardParams) ([]HugelLeaderboardRow, error) {
+	rows, err := q.db.QueryContext(ctx, hugelLeaderboard, arg.AthleteID, arg.After, arg.Before)
 	if err != nil {
 		return nil, err
 	}

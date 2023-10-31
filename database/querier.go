@@ -31,7 +31,7 @@ type sqlcQuerier interface {
 	// For authenticated users
 	GetPersonalSegments(ctx context.Context, arg GetPersonalSegmentsParams) ([]GetPersonalSegmentsRow, error)
 	GetSegments(ctx context.Context, segmentIds []int64) ([]GetSegmentsRow, error)
-	HugelLeaderboard(ctx context.Context, athleteID interface{}) ([]HugelLeaderboardRow, error)
+	HugelLeaderboard(ctx context.Context, arg HugelLeaderboardParams) ([]HugelLeaderboardRow, error)
 	InsertFailedJob(ctx context.Context, rawJson string) (FailedJob, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
 	LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, error)

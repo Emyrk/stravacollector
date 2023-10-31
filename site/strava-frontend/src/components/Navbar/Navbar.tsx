@@ -297,11 +297,11 @@ const NAV_ITEMS: Array<NavItem> = [
         subLabel: "See how you stack up in the Das Hugel Leaderboard",
         href: "/hugelboard",
       },
-      {
-        label: "Das Hugel Super Scores",
-        subLabel: "Your best segments across all your rides.",
-        href: "/superhugelboard",
-      },
+      // {
+      //   label: "Das Hugel Super Scores",
+      //   subLabel: "Your best segments across all your rides.",
+      //   href: "/superhugelboard",
+      // },
       {
         label: "Das Hugel Route",
         subLabel: "See segments required for a Das Hugel route",

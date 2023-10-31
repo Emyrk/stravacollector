@@ -3,14 +3,16 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
-
-	"github.com/Emyrk/strava/database"
 
 	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/httpmw"
 	"github.com/Emyrk/strava/api/modelsdk"
+	"github.com/Emyrk/strava/database"
+	"github.com/Emyrk/strava/internal/hugeldate"
 )
 
 func (api *API) competitiveRoute(rw http.ResponseWriter, r *http.Request) {
@@ -83,7 +85,36 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 		id, athleteLoggedIn = httpmw.AuthenticatedAthleteIDOptional(r)
 	)
 
-	activities, err := api.HugelBoardCache.Load(ctx)
+	before, _ := strconv.ParseInt(r.URL.Query().Get("before"), 64, 10)
+	after, _ := strconv.ParseInt(r.URL.Query().Get("after"), 64, 10)
+	present, _ := strconv.ParseBool(r.URL.Query().Get("2023"))
+	var beforeTime time.Time
+	var afterTime time.Time
+	var activities []database.HugelLeaderboardRow
+	var err error
+
+	if before > 0 && after > 0 {
+		if id != 2661162 {
+			httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
+				Message: "Not authorized",
+			})
+			return
+		}
+		activities, err = api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
+			AthleteID: -1,
+			After:     beforeTime,
+			Before:    afterTime,
+		})
+	} else {
+		if present {
+			activities, err = api.HugelBoard2023Cache.Load(ctx)
+			beforeTime = hugeldate.StartHugel
+			afterTime = hugeldate.EndHugel
+		} else {
+			activities, err = api.HugelBoardCache.Load(ctx)
+		}
+	}
+
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 			Message: "Failed to load leaderboard",
@@ -107,7 +138,11 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		if board.PersonalBest == nil {
-			athleteAct, err := api.Opts.DB.HugelLeaderboard(ctx, id)
+			athleteAct, err := api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
+				AthleteID: id,
+				Before:    beforeTime,
+				After:     afterTime,
+			})
 			if err == nil {
 				if len(athleteAct) == 1 {
 					pb := convertHugelActivity(athleteAct[0])

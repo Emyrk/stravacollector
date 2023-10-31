@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"github.com/Emyrk/strava/internal/hugeldate"
 	"net/http"
 	"time"
 
@@ -15,16 +15,7 @@ import (
 	"github.com/vgarvardt/gue/v5"
 )
 
-var centralTimeZone *time.Location
 
-func init() {
-	var err error
-	centralTimeZone, err = time.LoadLocation("US/Central")
-	if err != nil {
-		log.Printf("error loading central timezone: %v", err)
-		centralTimeZone = time.Local
-	}
-}
 
 type fetchActivityJobArgs struct {
 	Source     database.ActivityDetailSource `json:"source"`
@@ -62,7 +53,7 @@ type failedJob struct {
 }
 
 func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
-	now := time.Now().In(centralTimeZone)
+	now := time.Now().In(hugeldate.CentralTimeZone)
 	err := m.jobStravaCheck(j, 1)
 	if err != nil {
 		return err

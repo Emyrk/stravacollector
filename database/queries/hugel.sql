@@ -49,8 +49,14 @@ INNER JOIN
 	activity_summary ON athlete_bests.activity_id = activity_summary.id
 WHERE
     CASE WHEN @athlete_id > 0 THEN athlete_bests.athlete_id = @athlete_id ELSE TRUE END
-ORDER BY
-	athlete_bests.total_time_seconds ASC
+    AND
+	CASE WHEN
+    	@after :: timestamp != '0001-01-01 00:00:00Z'
+    		AND @before :: timestamp != '0001-01-01 00:00:00Z' THEN
+			activity_summary.start_date >= @after :: timestamp AND activity_summary.start_date <= @before :: timestamp
+    	ELSE TRUE END
+	ORDER BY
+		athlete_bests.total_time_seconds ASC
 ;
 
 -- name: SuperHugelLeaderboard :many

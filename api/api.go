@@ -8,25 +8,21 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus"
-
-	"github.com/Emyrk/strava/api/httpapi"
-	"github.com/Emyrk/strava/api/modelsdk"
-
-	"github.com/Emyrk/strava/database/gencache"
-
-	"github.com/Emyrk/strava/api/auth"
-
-	server "github.com/Emyrk/strava/site"
-
 	"github.com/go-chi/chi/v5"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 	"golang.org/x/oauth2"
 
+	"github.com/Emyrk/strava/api/auth"
+	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/httpmw"
+	"github.com/Emyrk/strava/api/modelsdk"
 	"github.com/Emyrk/strava/api/queue"
 	"github.com/Emyrk/strava/api/webhooks"
 	"github.com/Emyrk/strava/database"
+	"github.com/Emyrk/strava/database/gencache"
+	"github.com/Emyrk/strava/internal/hugeldate"
+	server "github.com/Emyrk/strava/site"
 )
 
 type Options struct {
@@ -55,6 +51,7 @@ type API struct {
 
 	SuperHugelBoardCache *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]
 	HugelBoardCache      *gencache.LazyCache[[]database.HugelLeaderboardRow]
+	HugelBoard2023Cache  *gencache.LazyCache[[]database.HugelLeaderboardRow]
 	HugelRouteCache      *gencache.LazyCache[database.GetCompetitiveRouteRow]
 
 	// Metrics
@@ -101,7 +98,18 @@ func New(opts Options) (*API, error) {
 		return api.Opts.DB.SuperHugelLeaderboard(ctx, 0)
 	})
 	api.HugelBoardCache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
-		return api.Opts.DB.HugelLeaderboard(ctx, 0)
+		return api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
+			AthleteID: -1,
+			After:     time.Time{},
+			Before:    time.Time{},
+		})
+	})
+	api.HugelBoard2023Cache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+		return api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
+			AthleteID: -1,
+			After:     hugeldate.StartHugel,
+			Before:    hugeldate.EndHugel,
+		})
 	})
 	api.HugelRouteCache = gencache.New(time.Minute, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {
 		return api.Opts.DB.GetCompetitiveRoute(ctx, "das-hugel")
