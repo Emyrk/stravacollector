@@ -4,15 +4,14 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	server "github.com/Emyrk/strava/site"
 	"net/http"
 	"time"
 
-	"github.com/Emyrk/strava/api/modelsdk"
-
 	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/httpmw"
+	"github.com/Emyrk/strava/api/modelsdk"
 	"github.com/Emyrk/strava/database"
+	server "github.com/Emyrk/strava/site"
 	"github.com/Emyrk/strava/strava"
 	"golang.org/x/oauth2"
 )
