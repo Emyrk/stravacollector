@@ -1,10 +1,12 @@
 import {
+  chakra,
   Box,
   Text,
   Container,
   Image,
   Flex,
   useColorModeValue,
+  Link,
 } from "@chakra-ui/react";
 import { FC } from "react";
 
@@ -71,11 +73,25 @@ export const Footer: FC = () => {
       >
         <Logo />
       </Flex>
-      <Flex justifyContent={"center"}>
-        <Text pt={6} fontSize={"sm"} textAlign={"center"}>
+      <Flex
+        paddingTop={"5px"}
+        justifyContent={"center"}
+        direction="row"
+        alignItems={"center"}
+      >
+        <Link href="https://github.com/Emyrk/stravacollector">
+          <chakra.img
+            src="/img/github-mark-white.svg"
+            height={"1.75rem"}
+            width={"1.75rem"}
+            marginRight={"20px"}
+          />
+        </Link>
+
+        <Text fontSize={"sm"} textAlign={"center"}>
           © 2023 {gitTag}@{gitCommit}
           <br />
-          Updated at {buildTime}
+          Updated on {buildTime}{" "}
         </Text>
       </Flex>
     </Box>
