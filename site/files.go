@@ -19,3 +19,6 @@ func FS() fs.FS {
 	}
 	return static
 }
+
+//go:embed staticpages/Login429.html
+var LoginFailed string

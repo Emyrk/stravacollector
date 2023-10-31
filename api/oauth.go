@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	server "github.com/Emyrk/strava/site"
 	"net/http"
 	"time"
 
@@ -27,6 +28,14 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 	scli := strava.NewOAuthClient(oauthClient)
 	athlete, err := scli.GetAuthenticatedAthelete(ctx)
 	if err != nil {
+		if se := strava.IsAPIError(err); se != nil && se.Response.StatusCode == http.StatusTooManyRequests {
+			logger.
+				Error().
+				Msg("failed to login from strava rate limit")
+			rw.WriteHeader(http.StatusTooManyRequests)
+			_, _ = rw.Write([]byte(server.LoginFailed))
+			return
+		}
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 			Message: "Failed to get authenticated athlete",
 			Detail:  err.Error(),
