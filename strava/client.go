@@ -125,7 +125,10 @@ func (c *Client) DecodeResponse(res *http.Response, v any, expectedCode int) err
 
 	if res.StatusCode != expectedCode {
 		body, _ := io.ReadAll(res.Body)
-		return fmt.Errorf("status code: %d\nbody: %s", res.StatusCode, string(body))
+		return &StravaAPIError{
+			Response: res,
+			Body:     body,
+		}
 	}
 	return json.NewDecoder(res.Body).Decode(v)
 }

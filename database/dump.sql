@@ -194,7 +194,8 @@ CREATE TABLE athlete_load (
     activites_loaded_last_attempt integer NOT NULL,
     earliest_activity timestamp with time zone DEFAULT (now())::timestamp without time zone NOT NULL,
     earliest_activity_done boolean DEFAULT false NOT NULL,
-    earliest_activity_id bigint DEFAULT 0 NOT NULL
+    earliest_activity_id bigint DEFAULT 0 NOT NULL,
+    next_load_not_before timestamp with time zone DEFAULT now() NOT NULL
 );
 
 COMMENT ON TABLE athlete_load IS 'Tracks loading athlete activities. Must be an authenticated athlete.';
@@ -223,6 +224,18 @@ CREATE TABLE athlete_logins (
 );
 
 COMMENT ON COLUMN athlete_logins.provider_id IS 'Oauth app client ID';
+
+CREATE TABLE failed_jobs (
+    id uuid NOT NULL,
+    recorded_at timestamp without time zone NOT NULL,
+    raw text NOT NULL
+);
+
+COMMENT ON TABLE failed_jobs IS 'A table to store failed job information for potential debugging.';
+
+COMMENT ON COLUMN failed_jobs.id IS 'Some random uuid';
+
+COMMENT ON COLUMN failed_jobs.raw IS 'Some text. Probably a JSON string.';
 
 CREATE TABLE gue_jobs (
     job_id text NOT NULL,
@@ -342,6 +355,9 @@ ALTER TABLE ONLY athletes
 
 ALTER TABLE ONLY competitive_routes
     ADD CONSTRAINT competitive_routes_pkey PRIMARY KEY (name);
+
+ALTER TABLE ONLY failed_jobs
+    ADD CONSTRAINT failed_jobs_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY gue_jobs
     ADD CONSTRAINT gue_jobs_pkey PRIMARY KEY (job_id);

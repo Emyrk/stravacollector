@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/Emyrk/strava/database"
@@ -52,6 +53,12 @@ func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.Acti
 		Args:     data,
 		Priority: priority,
 	})
+}
+
+type failedJob struct {
+	Job   *gue.Job
+	Args  fetchActivityJobArgs
+	Error string
 }
 
 func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
@@ -114,6 +121,19 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 
 	activity, err := cli.GetActivity(ctx, args.ActivityID, true)
 	if err != nil {
+		if se := strava.IsAPIError(err); se != nil && se.Response.StatusCode != http.StatusTooManyRequests {
+			// Kill the job, since we can't fetch this activity due to some other error.
+			// Insert the error to review later.
+			j.LastError.Valid = true
+			j.LastError.String = err.Error()
+			jobData, _ := json.Marshal(failedJob{
+				Job:   j,
+				Args:  args,
+				Error: err.Error(),
+			})
+			_, _ = m.DB.InsertFailedJob(ctx, string(jobData))
+			return nil
+		}
 		return err
 	}
 

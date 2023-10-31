@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -59,6 +60,15 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 		err := m.backloadAthlete(ctx, *athlete)
 		m.backloadHistogram.WithLabelValues(strconv.FormatBool(err == nil)).Observe(time.Since(start).Seconds())
 		if err != nil {
+			next := time.Now().Add(time.Hour)
+			if se := strava.IsAPIError(err); se != nil {
+				if se.Response.StatusCode == http.StatusUnauthorized || se.Response.StatusCode == http.StatusForbidden {
+					// This person needs to be fixed....
+					// We should delete them?
+					// TODO: Handle these people.
+					next = time.Now().Add(time.Hour * 25)
+				}
+			}
 			// This could be bad
 			_, dbErr := m.DB.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
 				AthleteID:                  athlete.AthleteLoad.AthleteID,
@@ -70,12 +80,12 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 				EarliestActivityID:         athlete.AthleteLoad.EarliestActivityID,
 				EarliestActivity:           athlete.AthleteLoad.EarliestActivity,
 				EarliestActivityDone:       athlete.AthleteLoad.EarliestActivityDone,
+				NextLoadNotBefore:          next,
 			})
 			logger.Error().
 				AnErr("db_error", dbErr).
 				Err(err).
 				Msg("backload athlete failed")
-			time.Sleep(backloadWait)
 			continue
 		}
 	}
@@ -84,7 +94,7 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 
 func (m *Manager) athleteToLoad(ctx context.Context) *database.GetAthleteNeedsLoadRow {
 	// Fetch an that needs some loading.
-	athlete, err := m.DB.GetAthleteNeedsLoad(ctx)
+	athletes, err := m.DB.GetAthleteNeedsLoad(ctx)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil
 	}
@@ -93,18 +103,22 @@ func (m *Manager) athleteToLoad(ctx context.Context) *database.GetAthleteNeedsLo
 		return nil
 	}
 
-	// If the athlete is incomplete, always return
-	if athlete.AthleteLoad.LastLoadIncomplete {
-		return &athlete
-	}
+	for _, athlete := range athletes {
+		athlete := athlete
 
-	if !athlete.AthleteLoad.EarliestActivityDone {
-		return &athlete
-	}
+		// If the athlete is incomplete, always return
+		if athlete.AthleteLoad.LastLoadIncomplete {
+			return &athlete
+		}
 
-	// If it has been over 24 hours, return it
-	if time.Since(athlete.AthleteLoad.LastLoadAttempt) > time.Hour*24 {
-		return &athlete
+		if !athlete.AthleteLoad.EarliestActivityDone {
+			return &athlete
+		}
+
+		// If it has been over 24 hours, return it
+		if time.Since(athlete.AthleteLoad.LastLoadAttempt) > time.Hour*24 {
+			return &athlete
+		}
 	}
 
 	return nil
@@ -156,6 +170,7 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 			EarliestActivity:           athleteLoad.EarliestActivity,
 			EarliestActivityID:         athleteLoad.EarliestActivityID,
 			EarliestActivityDone:       true,
+			NextLoadNotBefore:          time.Now().Add(time.Minute * 15),
 		})
 		if err != nil {
 			return fmt.Errorf("update athlete load: %w", err)
@@ -239,6 +254,8 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 			EarliestActivityID:         athleteLoad.EarliestActivityID,
 			EarliestActivity:           athleteLoad.EarliestActivity,
 			EarliestActivityDone:       athleteLoad.EarliestActivityDone,
+			// When we are not done, do not prevent loading more.
+			NextLoadNotBefore: time.Now(),
 		}
 		if backloadingHistory {
 			params.EarliestActivity = first.StartDate

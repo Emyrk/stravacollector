@@ -94,6 +94,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 				LastLoadIncomplete:         false,
 				LastLoadError:              "",
 				ActivitesLoadedLastAttempt: 0,
+				NextLoadNotBefore:          time.Now().Add(time.Hour * -1),
 				// Start from the future
 				EarliestActivity:     time.Now().Add(time.Hour * 360),
 				EarliestActivityDone: false,

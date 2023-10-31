@@ -50,10 +50,11 @@ INSERT INTO
 		activites_loaded_last_attempt,
 		earliest_activity,
 	    earliest_activity_id,
-		earliest_activity_done
+		earliest_activity_done,
+		next_load_not_before
 	)
 VALUES
-	($1, $2, $3, $4, $5, $6, $7, $8, $9)
+	($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 ON CONFLICT
 	(athlete_id)
 DO UPDATE SET
@@ -68,7 +69,7 @@ DO UPDATE SET
 RETURNING *;
 ;
 
--- name: GetAthleteNeedsLoad :one
+-- name: GetAthleteNeedsLoad :many
 SELECT
     sqlc.embed(athlete_load), sqlc.embed(athlete_logins)
 FROM
@@ -77,11 +78,13 @@ INNER JOIN
 	athlete_logins
 ON
     athlete_load.athlete_id = athlete_logins.athlete_id
+WHERE
+    athlete_load.next_load_not_before < Now()
 ORDER BY
-  -- Athletes with oldest load attempt first.
+	-- Athletes with oldest load attempt first.
 	-- Order is [false, true]. 
 	not last_load_incomplete, earliest_activity_done, last_load_attempt
-LIMIT 1;
+LIMIT 5;
 
 -- name: GetAthleteLogin :one
 SELECT * FROM athlete_logins WHERE athlete_id = @athlete_id;

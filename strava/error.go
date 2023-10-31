@@ -3,10 +3,28 @@ package strava
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 )
 
 // {"message":"Rate Limit Exceeded","errors":[{"resource":"Application","field":"overall rate limit","code":"exceeded"}]}
+
+type StravaAPIError struct {
+	Response *http.Response
+	Body     []byte
+}
+
+func (e StravaAPIError) Error() string {
+	return fmt.Sprintf("status code: %d\nbody: %s", e.Response.StatusCode, string(e.Body))
+}
+
+func IsAPIError(err error) *StravaAPIError {
+	var e *StravaAPIError
+	if errors.As(err, &e) {
+		return e
+	}
+	return nil
+}
 
 func IsRateLimitError(err error) bool {
 	if err == nil {
