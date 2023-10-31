@@ -31,6 +31,8 @@ type Limiter struct {
 	PromCurrentDailyUsage    prometheus.Gauge
 	PromIntervalLimit        prometheus.Gauge
 	PromDailyLimit           prometheus.Gauge
+	PromCurrentDay           prometheus.Gauge
+	PromCurrentInterval      prometheus.Gauge
 
 	Registry *prometheus.Registry
 	sync.Mutex
@@ -66,6 +68,18 @@ func New() *Limiter {
 			Subsystem: "api_limiter",
 			Name:      "daily_limit",
 			Help:      "Daily limit",
+		}),
+		PromCurrentDay: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "strava",
+			Subsystem: "api_limiter",
+			Name:      "current_day",
+			Help:      "Current Day",
+		}),
+		PromCurrentInterval: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "strava",
+			Subsystem: "api_limiter",
+			Name:      "current_interval",
+			Help:      "Current Interval",
 		}),
 	}
 }
@@ -104,6 +118,8 @@ func (l *Limiter) UpdateUsage(intervalUsage, intervalLimit, dailyUsage, dailyLim
 	l.PromCurrentIntervalUsage.Set(float64(l.CurrentIntervalUsage))
 	l.PromDailyLimit.Set(float64(l.DailyLimit))
 	l.PromIntervalLimit.Set(float64(l.IntervalLimit))
+	l.PromCurrentDay.Set(float64(l.CurrentDay))
+	l.PromCurrentInterval.Set(float64(l.CurrentInterval))
 }
 
 func (l *Limiter) Remaining() (int64, int64) {
