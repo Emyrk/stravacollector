@@ -100,10 +100,12 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
+		beforeTime = time.Unix(before, 0)
+		afterTime = time.Unix(after, 0)
 		activities, err = api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
 			AthleteID: -1,
-			After:     beforeTime,
-			Before:    afterTime,
+			Before:    beforeTime,
+			After:     afterTime,
 		})
 	} else {
 		if present {
