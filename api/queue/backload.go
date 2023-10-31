@@ -217,7 +217,7 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 
 			// Backload bike rides for more deets
 			if isBikeRide(act.Type) || isBikeRide(act.SportType) {
-				err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID, activityGuePriority(act))
+				err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID, canBeHugel(act), activityGuePriority(act))
 				if err != nil {
 					return fmt.Errorf("enqueue fetch activity: %w", err)
 				}
@@ -257,6 +257,12 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 	m.backloadActivitiesLoaded.Add(float64(len(activities)))
 
 	return nil
+}
+
+func canBeHugel(summary strava.ActivitySummary) bool {
+	return database.DistanceToMiles(summary.Distance) > 80 &&
+		database.DistanceToFeet(summary.TotalElevationGain) > 8000 &&
+		summary.StartDateLocal.Month() == time.November && summary.StartDateLocal.Day() > 9
 }
 
 func activityGuePriority(summary strava.ActivitySummary) gue.JobPriority {

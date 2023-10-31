@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/Emyrk/strava/database"
@@ -13,17 +14,33 @@ import (
 	"github.com/vgarvardt/gue/v5"
 )
 
+var centralTimeZone *time.Location
+
+func init() {
+	var err error
+	centralTimeZone, err = time.LoadLocation("US/Central")
+	if err != nil {
+		log.Printf("error loading central timezone: %v", err)
+		centralTimeZone = time.Local
+	}
+}
+
 type fetchActivityJobArgs struct {
 	Source     database.ActivityDetailSource `json:"source"`
 	ActivityID int64                         `json:"activity_id"`
 	AthleteID  int64                         `json:"athlete_id"`
+	// HugelPotential is a boolean that helps filter which events to
+	// sync during the hugel event.
+	// TODO: Remove this after november.
+	HugelPotential bool `json:"can_be_hugel"`
 }
 
-func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, priority gue.JobPriority) error {
+func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, hugelPotential bool, priority gue.JobPriority) error {
 	data, err := json.Marshal(fetchActivityJobArgs{
-		ActivityID: activityID,
-		AthleteID:  athleteID,
-		Source:     source,
+		ActivityID:     activityID,
+		AthleteID:      athleteID,
+		Source:         source,
+		HugelPotential: hugelPotential,
 	})
 	if err != nil {
 		return fmt.Errorf("json marshal: %w", err)
@@ -38,6 +55,7 @@ func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.Acti
 }
 
 func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
+	now := time.Now().In(centralTimeZone)
 	err := m.jobStravaCheck(j, 1)
 	if err != nil {
 		return err
@@ -59,6 +77,19 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 		Int64("athlete_id", args.AthleteID).
 		Str("source", string(args.Source)).
 		Logger()
+
+	// Hugel is Nov 11. Do not sync anything that cannot be a hugel on these
+	// days to prio hugel events.
+	// TODO: Remove this after the event.
+	if now.Month() == time.November && (now.Day() >= 9 && now.Day() <= 13) {
+		// Hugel is Nov 11. We do not want to sync anything but hugel events
+		// to save our strava api rate limits. Manual syncs can still be synced.
+		if args.Source != database.ActivityDetailSourceManual {
+			if !args.HugelPotential {
+				return fmt.Errorf("[During Hugel Event] activity %d not a hugel, job skipped", args.ActivityID)
+			}
+		}
+	}
 
 	// Only track athletes we have in our database
 	athlete, err := m.DB.GetAthleteLogin(ctx, args.AthleteID)

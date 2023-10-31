@@ -232,7 +232,7 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// Highest priority for manual activities.
-	err = api.Manager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, id, actID, gue.JobPriorityHighest)
+	err = api.Manager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, id, actID, true, gue.JobPriorityHighest)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
 			Message: "Enqueue fetch",

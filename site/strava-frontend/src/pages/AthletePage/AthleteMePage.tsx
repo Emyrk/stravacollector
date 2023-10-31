@@ -195,7 +195,8 @@ const AthleteMeTotals: FC<{
         <AlertIcon />
         {load.earliest_activity_done
           ? "All historical activities have been loaded!"
-          : "Not all historical activities have been loaded. Loading starts with the oldest activity, and walks forward in time."}
+          : "Historical activity syncing is paused until after the Das Hugel. Strava has strict rate limits, please be patient!"}
+        {/* "Not all historical activities have been loaded. Loading starts with the oldest activity, and walks forward in time." */}
         <br />- Earliest activity synced:
         {FormatDate(load.earliest_activity)}
         <br />- Latest activity loaded:
