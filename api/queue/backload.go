@@ -66,7 +66,8 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 					// This person needs to be fixed....
 					// We should delete them?
 					// TODO: Handle these people.
-					next = time.Now().Add(time.Hour * 25)
+					next = time.Now().Add(time.Hour * 48)
+					err = fmt.Errorf("unauthorized: %w", err)
 				}
 			}
 			// This could be bad
@@ -83,6 +84,7 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 				NextLoadNotBefore:          next,
 			})
 			logger.Error().
+				Int64("athlete_id", athlete.AthleteLogin.AthleteID).
 				AnErr("db_error", dbErr).
 				Err(err).
 				Msg("backload athlete failed")
