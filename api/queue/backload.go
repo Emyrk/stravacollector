@@ -90,11 +90,12 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 				EarliestActivityID:         athlete.AthleteLoad.EarliestActivityID,
 				EarliestActivity:           athlete.AthleteLoad.EarliestActivity,
 				EarliestActivityDone:       athlete.AthleteLoad.EarliestActivityDone,
-				NextLoadNotBefore:          next,
+				NextLoadNotBefore:          next.UTC(),
 			})
 			logger.Error().
 				Int64("athlete_id", athlete.AthleteLogin.AthleteID).
 				AnErr("db_error", dbErr).
+				Time("next_load_not_before", next).
 				Err(err).
 				Msg("backload athlete failed")
 			time.Sleep(sleepFor)
