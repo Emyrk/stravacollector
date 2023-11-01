@@ -65,7 +65,8 @@ DO UPDATE SET
 	activites_loaded_last_attempt = $6,
 	earliest_activity = $7,
 	earliest_activity_id = $8,
-	earliest_activity_done = $9
+	earliest_activity_done = $9,
+    next_load_not_before = $10
 RETURNING *;
 ;
 

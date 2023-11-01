@@ -1030,7 +1030,8 @@ DO UPDATE SET
 	activites_loaded_last_attempt = $6,
 	earliest_activity = $7,
 	earliest_activity_id = $8,
-	earliest_activity_done = $9
+	earliest_activity_done = $9,
+    next_load_not_before = $10
 RETURNING athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done, earliest_activity_id, next_load_not_before
 `
 
