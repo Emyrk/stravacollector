@@ -293,8 +293,8 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "Das Hugel",
     children: [
       {
-        label: "Das Hugel Leaderboard",
-        subLabel: "See how you stack up in the Das Hugel Leaderboard",
+        label: "Das Hugel Results",
+        subLabel: "See how you stack up in the 2023 Das Hugel results",
         href: "/hugelboard",
       },
       // {

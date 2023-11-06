@@ -52,6 +52,10 @@ export interface HugelBoardProps {
 }
 
 export const HugelBoard: FC = () => {
+  let present = true;
+  if (window.location.search.includes("all=true")) {
+    present = false;
+  }
   const queryKey = ["hugel-leaderboard"];
   const {
     data: hugelLeaderboard,
@@ -60,27 +64,7 @@ export const HugelBoard: FC = () => {
     isFetched: hugelFetched,
   } = useQuery({
     queryKey,
-    queryFn: () => getHugelLeaderBoard(true),
-    // queryFn: async () => {
-    //   const data = await getHugelLeaderBoard();
-    //   // return data
-    //   if (!data || !data.activities) {
-    //     return data;
-    //   }
-    //   // Add some extra rows for some editing purposes
-    //   return {
-    //     ...data,
-    //     activities: [
-    //       ...data.activities,
-    //       data.activities[0],
-    //       data.activities[0],
-    //       data.activities[0],
-    //       data.activities[0],
-    //       data.activities[0],
-    //       data.activities[0],
-    //     ],
-    //   };
-    // },
+    queryFn: () => getHugelLeaderBoard(present),
   });
 
   return (

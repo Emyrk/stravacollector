@@ -1,11 +1,12 @@
 import React from "react";
 import { useAuthenticated } from "../../contexts/Authenticated";
 import { AthleteAvatarDropdown } from "./AthleteAvatarDropdown";
-import { Link, IconButton, LinkProps } from "@chakra-ui/react";
+import { Link, IconButton, LinkProps, Image, chakra } from "@chakra-ui/react";
 
 export const StravaConnectOrUser: React.FC<{
   styleProps?: LinkProps;
-}> = ({ styleProps }) => {
+  useSquareLogo?: boolean;
+}> = ({ useSquareLogo, styleProps }) => {
   const { authenticatedUser, isFetched: athleteFetched } = useAuthenticated();
   const connectURL =
     "/oauth2/callback?redirect=" +
@@ -18,10 +19,32 @@ export const StravaConnectOrUser: React.FC<{
   }
 
   return (
+    <StravaConnect styleProps={styleProps} useSquareLogo={useSquareLogo} />
+  );
+};
+
+export const StravaConnect: React.FC<{
+  styleProps?: LinkProps;
+  useSquareLogo?: boolean;
+}> = ({ useSquareLogo, styleProps }) => {
+  const { authenticatedUser, isFetched: athleteFetched } = useAuthenticated();
+  const connectURL =
+    "/oauth2/callback?redirect=" +
+    (window.location.pathname
+      ? encodeURIComponent(window.location.pathname)
+      : "/");
+
+  return (
     <Link href={connectURL} {...styleProps}>
       <IconButton
         aria-label={"strava sign in"}
-        icon={<StravaConnectSVG />}
+        icon={
+          useSquareLogo ? (
+            <chakra.img src={"/logos/stravalogo.png"} />
+          ) : (
+            <StravaConnectSVG />
+          )
+        }
         bg="transparent"
         _hover={{ backgroundColor: "transparent" }}
       />

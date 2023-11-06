@@ -32,6 +32,9 @@ import {
   TabPanel,
   Tooltip,
   GridItem,
+  Heading,
+  Divider,
+  AbsoluteCenter,
 } from "@chakra-ui/react";
 import {
   getErrorDetail,
@@ -99,7 +102,7 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
       )}
       <TableContainer>
         <Table size="sm" variant="striped" colorScheme="gray">
-          <TableCaption>Das Hugel Leaderboad</TableCaption>
+          <TableCaption>Das Hugel Results</TableCaption>
           <Thead>
             <Tr>
               <Th>Athlete</Th>
@@ -108,6 +111,26 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
             </Tr>
           </Thead>
           <Tbody>
+            {data?.personal_best && (
+              <HugelBoardTableRow
+                key={`tbr-${data?.personal_best.athlete_id}`}
+                activity={data?.personal_best}
+                segmentSummaries={segmentMapping}
+                personal={true}
+              />
+            )}
+            {data?.personal_best && (
+              <Tr>
+                <Td colSpan={6}>
+                  <Box position="relative" padding="10">
+                    <Divider />
+                    <AbsoluteCenter bg="gray.800" px="4">
+                      <Heading size="md"> Results </Heading>
+                    </AbsoluteCenter>
+                  </Box>
+                </Td>
+              </Tr>
+            )}
             {data &&
               data.activities?.map((activity) => {
                 return (
@@ -127,10 +150,11 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
 
 export const HugelBoardTableRow: FC<
   PropsWithChildren<{
+    personal?: boolean;
     activity: HugelLeaderBoardActivity | SuperHugelLeaderBoardActivity;
     segmentSummaries?: { [key: string]: SegmentSummary };
   }>
-> = ({ activity, segmentSummaries }) => {
+> = ({ personal, activity, segmentSummaries }) => {
   const { firstname, lastname, profile_pic_link, username, hugel_count } =
     activity.athlete;
 
@@ -171,6 +195,13 @@ export const HugelBoardTableRow: FC<
   return (
     <Tr key={`row-${activity.athlete_id}`}>
       <Td>
+        {personal && (
+          <Flex justifyContent={"center"} width={"100%"} paddingBottom={"10px"}>
+            <Heading size="md" color={"#fc4c02"}>
+              Personal Best
+            </Heading>
+          </Flex>
+        )}
         <Flex pl={3} alignItems={"center"}>
           <Text fontWeight="bold" fontSize={30} pr={5}>
             {activity.rank}
@@ -212,12 +243,7 @@ export const HugelBoardTableRow: FC<
       </Td>
       {"activity_id" in activity && (
         <Td>
-          <Flex
-            direction={"column"}
-            // alignContent={"center"}
-            // justifyContent={"center"}
-            // alignItems={"center"}
-          >
+          <Flex direction={"column"}>
             <Text
               textAlign={"center"}
               fontWeight={"bold"}

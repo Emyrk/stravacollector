@@ -34,7 +34,8 @@ export const AthleteAvatar: FC<{
 
   return (
     <Avatar name={name} src={profilePicLink} size={size} {...styleProps}>
-      {hugelCount && hugelCount > 0 ? (
+      {/* Disable Hugel count for now */}
+      {/* {hugelCount && hugelCount > 0 ? (
         <AvatarBadge
           boxSize={boxSize}
           bg="green.500"
@@ -45,7 +46,7 @@ export const AthleteAvatar: FC<{
         </AvatarBadge>
       ) : (
         ""
-      )}
+      )} */}
     </Avatar>
   );
 };
