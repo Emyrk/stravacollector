@@ -55,7 +55,7 @@ export const Landing: FC = () => {
             lineHeight={"110%"}
           >
             Welcome to{" "}
-            <Text as={"span"} color={"orange.400"}>
+            <Text as={"span"} color={"brand.stravaOrange"}>
               Tour Das Hügel!
             </Text>
           </Heading>
