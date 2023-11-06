@@ -28,6 +28,6 @@ func (a *Floats) Scan(src interface{}) error {
 	return nil
 }
 
-func (a *Floats) Value() (driver.Value, error) {
+func (a Floats) Value() (driver.Value, error) {
 	return pq.Array(a).Value()
 }
