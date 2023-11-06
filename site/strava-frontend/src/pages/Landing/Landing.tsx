@@ -68,14 +68,7 @@ export const Landing: FC = () => {
             an unsanctioned event held on open roads, our system ensures riders
             are not penalized for things like stop signs or traffic congestion.
           </Text>
-          <Stack
-            spacing={6}
-            direction={useBreakpointValue({
-              base: "row",
-              sm: "column",
-              md: "row",
-            })}
-          >
+          <Stack spacing={6} direction={{ base: "column", md: "row" }}>
             <LandingCard
               heading={"Connect With Strava"}
               icon={<StravaConnect useSquareLogo={true} />}
