@@ -67,6 +67,7 @@ export interface AthleteSummary {
 // From codersdk/athlete.go
 export interface AthleteSyncSummary {
   readonly athlete_load: AthleteLoad
+  readonly total_activities: number
   readonly synced_activities: SyncActivitySummary[]
   readonly athlete_summary: AthleteSummary
   readonly total_summary: number
@@ -216,6 +217,11 @@ export interface SyncActivitySummary {
   readonly activity_summary: ActivitySummary
   readonly synced: boolean
   readonly synced_at: string
+}
+
+// From codersdk/route.go
+export interface VerifyRouteResponse {
+  readonly missing_segments: SegmentSummary[]
 }
 
 // From codersdk/int.go
