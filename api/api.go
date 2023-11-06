@@ -175,6 +175,7 @@ func (api *API) Routes() chi.Router {
 			r.Get("/hugelboard", api.hugelboard)
 			r.Route("/route", func(r chi.Router) {
 				r.Get("/{route-name}", api.competitiveRoute)
+				r.Get("/{route-name}/verify/{route-id}", api.verifyRoute)
 			})
 			r.Route("/segments", func(r chi.Router) {
 				r.Post("/", api.getSegments)

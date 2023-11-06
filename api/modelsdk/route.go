@@ -2,6 +2,10 @@ package modelsdk
 
 import "time"
 
+type VerifyRouteResponse struct {
+	MissingSegments []SegmentSummary `json:"missing_segments"`
+}
+
 type CompetitiveRoute struct {
 	Name        string           `json:"name"`
 	DisplayName string           `json:"display_name"`

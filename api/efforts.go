@@ -13,7 +13,89 @@ import (
 	"github.com/Emyrk/strava/api/modelsdk"
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/internal/hugeldate"
+	"github.com/Emyrk/strava/strava"
 )
+
+// verifyRoute is janky
+func (api *API) verifyRoute(rw http.ResponseWriter, r *http.Request) {
+	var (
+		ctx                 = r.Context()
+		id, athleteLoggedIn = httpmw.AuthenticatedAthleteIDOptional(r)
+	)
+	routeName := chi.URLParam(r, "route-name")
+	verify := chi.URLParam(r, "route-id")
+
+	if routeName != "das-hugel" {
+		// Only support hugel for now
+		httpapi.Write(ctx, rw, http.StatusNotFound, modelsdk.Response{
+			Message: "Route not found",
+		})
+	}
+
+	if !athleteLoggedIn || id != 2661162 {
+		if id != 2661162 {
+			httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
+				Message: "Not authorized",
+			})
+			return
+		}
+	}
+
+	verifyID, err := strconv.ParseInt(verify, 10, 64)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+			Message: "Invalid route id",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	login, err := api.Opts.DB.GetAthleteLogin(ctx, id)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+			Message: "Failed to load user login",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	cli := strava.NewOAuthClient(api.OAuthConfig.Client(ctx, login.OAuthToken()))
+	stravaRoute, err := cli.GetRoute(ctx, verifyID)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+			Message: "Failed fetch strava route",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	route, err := api.HugelRouteCache.Load(ctx)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+			Message: "Failed fetch internal route",
+			Detail:  err.Error(),
+		})
+		return
+	}
+	hugel := convertRoute(route)
+	required := make(map[int64]modelsdk.SegmentSummary)
+	for _, seg := range hugel.Segments {
+		required[int64(seg.ID)] = seg
+	}
+
+	for _, have := range stravaRoute.Segments {
+		delete(required, have.ID)
+	}
+
+	missingArr := make([]modelsdk.SegmentSummary, 0, len(required))
+	for _, missing := range required {
+		missingArr = append(missingArr, missing)
+	}
+
+	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.VerifyRouteResponse{
+		MissingSegments: missingArr,
+	})
+}
 
 func (api *API) competitiveRoute(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
