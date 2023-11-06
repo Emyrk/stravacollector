@@ -206,9 +206,9 @@ export const ChallengeRoute: FC<{}> = ({}) => {
           <Flex flexDirection={"column"} pb="0.5em">
             <Heading fontSize={"4em"}>{routeData.display_name}</Heading>
             <Text maxWidth={"1050px"} pt="1em">
-              Tour das Hugel is a 111.4 mile bike ride in Austin, Texas. The
+              Tour das Hugel is a 111.5 mile bike ride in Austin, Texas. The
               ride is considered unsanctioned and super hilly. The organizers
-              manage to squeeze about 14,000 feet of climbing out of 107 miles
+              manage to squeeze about 12,000 feet of climbing out of 111.5 miles
               in and around Austin. The ride is annual and takes place on
               Saturday, November 12th in 2022. To be considered a Hugel, the
               route must include all the following Strava segments.
