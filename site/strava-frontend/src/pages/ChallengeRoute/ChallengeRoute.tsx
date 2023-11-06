@@ -203,9 +203,9 @@ export const ChallengeRoute: FC<{}> = ({}) => {
           alignItems={"center"}
           textAlign="center"
         >
-          <Flex flexDirection={"column"}>
+          <Flex flexDirection={"column"} pb="0.5em">
             <Heading fontSize={"4em"}>{routeData.display_name}</Heading>
-            <Text>
+            <Text maxWidth={"1050px"} pt="1em">
               Tour das Hugel is a 111.4 mile bike ride in Austin, Texas. The
               ride is considered unsanctioned and super hilly. The organizers
               manage to squeeze about 14,000 feet of climbing out of 107 miles
