@@ -28,7 +28,7 @@ func (m *Manager) BackLoadRouteSegments(ctx context.Context) {
 		}
 		// First one does not sleep
 		if !first {
-			time.Sleep(segmentWait / 10)
+			time.Sleep(segmentWait)
 		} else {
 			first = false
 		}
@@ -134,7 +134,8 @@ func (m *Manager) BackLoadRouteSegments(ctx context.Context) {
 				return nil
 			}, nil)
 			if err != nil {
-				logger.Error().Err(err).Int64("segment", segmentID).Msg("failed to insert segment")
+				logger.Error().Err(err).Int64("segment", segmentID).Msg("failed to insert segment, waiting 1 hour")
+				time.Sleep(time.Hour)
 				continue
 			}
 		}
