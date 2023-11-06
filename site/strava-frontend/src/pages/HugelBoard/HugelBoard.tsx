@@ -70,7 +70,7 @@ export const HugelBoard: FC = () => {
   return (
     <>
       <Flex w="100%" justifyContent={"center"}>
-        <Heading>Tour Das Hugel</Heading>
+        <Heading>Tour Das Hügel 2023 Results</Heading>
       </Flex>
       <Tabs isFitted align="center" p="0 1rem">
         <TabList>

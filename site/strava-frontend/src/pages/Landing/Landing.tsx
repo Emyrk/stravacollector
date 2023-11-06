@@ -60,14 +60,13 @@ export const Landing: FC = () => {
             </Text>
           </Heading>
           <Text color={"gray.300"} maxW={"3xl"}>
-            Austin, Texas is home to the notorious Tour das Hügel — a
-            challenging bike route boasting over 100 miles of treacherous hills
-            and climbs totaling over 13,000 feet. The event is unsanctioned and
-            is done on open roads. To help cyclists stay safe and get the most
-            out of their Tour das Hügel experience, our site provides a Gran
-            Fondo type timing system. The solution only times riders on the
-            famous climbs, allowing them to avoid being penalized for stop signs
-            or traffic jams.
+            Austin, Texas is home to the notorious Tour das Hügel, a challenging
+            bike route with 111.5 miles of difficult climbs that reach a total
+            elevation gain of 11,669 feet. To help cyclists stay safe and get
+            the most out of their experience, our site provides a timing system
+            that exclusively records times on the iconic climbs. Because this is
+            an unsanctioned event held on open roads, our system ensures riders
+            are not penalized for things like stop signs or traffic congestion.
           </Text>
           <Stack
             spacing={6}
@@ -81,25 +80,25 @@ export const Landing: FC = () => {
               heading={"Connect With Strava"}
               icon={<StravaConnect useSquareLogo={true} />}
               description={
-                "Link your Strava account to our site to get started and unlock exclusive benefits."
+                "Link your Strava account to our site to get started and access exclusive benefits."
               }
               hrefText={""}
               href={""}
             />
             <LandingCard
-              heading={"Ride the Hugel!"}
+              heading={"Ride Das Hügel"}
               icon={<FontAwesomeIcon icon={faFlagCheckered} size="2x" />}
               description={
-                "Challenge yourself on this epic ride and see how you stack up against others!"
+                "Challenge yourself on this epic ride and see how you compare to others!"
               }
               hrefText={"Hugel route"}
               href={"/route/das-hugel"}
             />
             <LandingCard
-              heading={"See your results!"}
+              heading={"See Your Results"}
               icon={<FontAwesomeIcon icon={faList} size="2x" />}
               description={
-                "The results page will show all athletes that completed the hugel and their times."
+                "Explore results for all athletes who completed the ride."
               }
               hrefText={"Results"}
               href={"/hugelboard"}

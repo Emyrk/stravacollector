@@ -294,7 +294,7 @@ const NAV_ITEMS: Array<NavItem> = [
     children: [
       {
         label: "Das Hugel Results",
-        subLabel: "See how you stack up in the 2023 Das Hugel results",
+        subLabel: "See how you did on the 2023 Tour Das Hügel",
         href: "/hugelboard",
       },
       // {
@@ -304,7 +304,7 @@ const NAV_ITEMS: Array<NavItem> = [
       // },
       {
         label: "Das Hugel Route",
-        subLabel: "See segments required for a Das Hugel route",
+        subLabel: "Plan your ride with the required segments",
         href: "/route/das-hugel",
       },
     ],

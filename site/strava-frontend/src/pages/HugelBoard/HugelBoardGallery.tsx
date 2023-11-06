@@ -42,7 +42,10 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
   }
   if (data && data.activities.length === 0) {
     return (
-      <>No Hugels completed yet around Nov 11, 2023. Stay tuned for results!</>
+      <>
+        No rides completed this year. Stay tuned for results from the November
+        11, 2023 event.
+      </>
     );
   }
   return (
