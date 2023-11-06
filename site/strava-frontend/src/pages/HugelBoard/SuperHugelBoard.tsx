@@ -1,20 +1,23 @@
-import { FC } from "react"
+import { FC } from "react";
 import {
-  Tabs, TabList, TabPanels, Tab, TabPanel,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
   useTheme,
   Heading,
   Flex,
-} from '@chakra-ui/react'
-import { getErrorDetail, getErrorMessage, getHugelLeaderBoard, getSuperHugelLeaderBoard } from "../../api/rest"
+} from "@chakra-ui/react";
+import { getSuperHugelLeaderBoard } from "../../api/rest";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
-import * as TypesGen from "./../../api/typesGenerated"
+import * as TypesGen from "./../../api/typesGenerated";
 import { HugelBoardGallery } from "./HugelBoardGallery";
 import { HugelBoardTable } from "./HugelBoardTable";
 
-
 export const SuperHugelBoard: FC = () => {
-  const queryKey = ["hugel-leaderboard"]
+  const queryKey = ["hugel-leaderboard"];
   const {
     data: hugelLeaderboard,
     error: hugelLeaderboardError,

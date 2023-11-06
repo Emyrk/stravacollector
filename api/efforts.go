@@ -87,7 +87,7 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 
 	before, _ := strconv.ParseInt(r.URL.Query().Get("before"), 10, 64)
 	after, _ := strconv.ParseInt(r.URL.Query().Get("after"), 10, 64)
-	present, _ := strconv.ParseBool(r.URL.Query().Get("2023"))
+	present, _ := strconv.ParseBool(r.URL.Query().Get("present"))
 	var beforeTime time.Time
 	var afterTime time.Time
 	var activities []database.HugelLeaderboardRow

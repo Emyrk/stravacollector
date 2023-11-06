@@ -40,6 +40,11 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
   if (isLoading) {
     return <Loading />;
   }
+  if (data && data.activities.length === 0) {
+    return (
+      <>No Hugels completed yet around Nov 11, 2023. Stay tuned for results!</>
+    );
+  }
   return (
     <>
       <Grid

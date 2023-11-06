@@ -60,7 +60,7 @@ export const HugelBoard: FC = () => {
     isFetched: hugelFetched,
   } = useQuery({
     queryKey,
-    queryFn: getHugelLeaderBoard,
+    queryFn: () => getHugelLeaderBoard(true),
     // queryFn: async () => {
     //   const data = await getHugelLeaderBoard();
     //   // return data

@@ -34,12 +34,14 @@ export const getAuthenticatedUser = async (): Promise<
   }
 };
 
-export const getHugelLeaderBoard = async (): Promise<
+export const getHugelLeaderBoard = async (
+  present: boolean
+): Promise<
   TypesGen.HugelLeaderBoard | undefined
 > => {
   try {
     const response = await axios.get<TypesGen.HugelLeaderBoard>(
-      "/api/v1/hugelboard"
+      "/api/v1/hugelboard?present=" + present
     );
     return response.data;
   } catch (error) {
@@ -47,7 +49,8 @@ export const getHugelLeaderBoard = async (): Promise<
   }
 };
 
-export const getSuperHugelLeaderBoard = async (): Promise<
+export const getSuperHugelLeaderBoard = async (
+): Promise<
   TypesGen.SuperHugelLeaderBoard | undefined
 > => {
   try {
