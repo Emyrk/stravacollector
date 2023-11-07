@@ -307,6 +307,12 @@ func activityGuePriority(summary strava.ActivitySummary) gue.JobPriority {
 		priority -= 500
 	}
 
+	if database.DistanceToMiles(summary.Distance) > 40 {
+		// Longer rides should just sync before shorter rides.
+		// Even if they are non-hugels. We get more value from them.
+		priority -= -1
+	}
+
 	if database.DistanceToFeet(summary.TotalElevationGain) > 8000 {
 		// Priority for high vert
 		priority -= 500
