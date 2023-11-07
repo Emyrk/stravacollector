@@ -177,7 +177,7 @@ const LandingCard = ({
         </Box>
         {href !== "" && (
           <Link as={RouteLink} to={href}>
-            <Button variant={"link"} color={"#fc4c02"} size={"sm"}>
+            <Button variant={"link"} color="brand.stravaOrange" size={"sm"}>
               {hrefText}
             </Button>
           </Link>

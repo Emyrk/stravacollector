@@ -214,10 +214,24 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               for the 2023 ride, scheduled for Saturday, November 11. To qualify
               as a Hügel, the route must incorporate all the following segments.
             </Text>
-            <Link href="https://www.strava.com/routes/3156303815316294790">
-              <Text color="brand.stravaOrange" pt="25px">
-                2023 Official Route
-              </Text>
+            <Link
+              href="https://www.strava.com/routes/3156303815316294790"
+              pt="25px"
+              pb="2px"
+            >
+              <Flex
+                direction={"row"}
+                alignItems={"center"}
+                justifyContent={"center"}
+              >
+                <chakra.img
+                  height="1.5em"
+                  width="1.5em"
+                  src={"/logos/stravalogo.png"}
+                  mr="5px"
+                />
+                <Text color="brand.stravaOrange">2023 Official Route</Text>
+              </Flex>
             </Link>
             <Text>
               When: Saturday, November 11, 2023 7 a.m. Meetup and 7:15 a.m.
