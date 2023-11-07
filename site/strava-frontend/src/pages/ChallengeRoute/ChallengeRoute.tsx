@@ -31,6 +31,7 @@ import {
   background,
   Button,
   Card,
+  chakra,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import {
@@ -213,6 +214,39 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               for the 2023 ride, scheduled for Saturday, November 11. To qualify
               as a Hügel, the route must incorporate all the following segments.
             </Text>
+            <Link href="https://www.strava.com/routes/3156303815316294790">
+              <Text color="brand.stravaOrange" pt="25px">
+                2023 Official Route
+              </Text>
+            </Link>
+            <Text>
+              When: Saturday, November 11, 2023 7 a.m. Meetup and 7:15 a.m.
+              Rollout
+            </Text>
+            <Text>
+              Where:{" "}
+              <Link
+                target="_blank"
+                href="https://www.google.com/maps/place/30%C2%B016'18.3%22N+97%C2%B046'22.3%22W/@30.271743,-97.772862,17z/data=!3m1!4b1!4m4!3m3!8m2!3d30.271743!4d-97.772862?entry=tts"
+              >
+                Under Mopac Expressway Off Stratford Next To Zilker Park
+              </Link>
+            </Text>
+            <Link target="_blank" href="https://www.facebook.com/tourdashugel">
+              <Flex
+                direction={"row"}
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
+                <chakra.img
+                  src="/logos/facebook.svg"
+                  width="2em"
+                  height="2em"
+                />
+
+                <Text>@tourdashugel</Text>
+              </Flex>
+            </Link>
           </Flex>
         </Flex>
 

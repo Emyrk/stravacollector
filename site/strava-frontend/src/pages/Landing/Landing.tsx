@@ -84,7 +84,7 @@ export const Landing: FC = () => {
               description={
                 "Challenge yourself on this epic ride and see how you compare to others!"
               }
-              hrefText={"Hugel route"}
+              hrefText={"Hügel Route"}
               href={"/route/das-hugel"}
             />
             <LandingCard
@@ -177,7 +177,7 @@ const LandingCard = ({
         </Box>
         {href !== "" && (
           <Link as={RouteLink} to={href}>
-            <Button variant={"link"} colorScheme={"blue"} size={"sm"}>
+            <Button variant={"link"} color={"#fc4c02"} size={"sm"}>
               {hrefText}
             </Button>
           </Link>

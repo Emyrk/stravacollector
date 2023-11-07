@@ -102,7 +102,7 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
       )}
       <TableContainer>
         <Table size="sm" variant="striped" colorScheme="gray">
-          <TableCaption>Das Hugel Results</TableCaption>
+          <TableCaption>Das Hügel Results</TableCaption>
           <Thead>
             <Tr>
               <Th>Athlete</Th>

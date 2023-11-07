@@ -290,20 +290,20 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Das Hugel",
+    label: "Das Hügel",
     children: [
       {
-        label: "Das Hugel Results",
+        label: "Das Hügel Results",
         subLabel: "See how you did on the 2023 Tour Das Hügel",
         href: "/hugelboard",
       },
       // {
-      //   label: "Das Hugel Super Scores",
+      //   label: "Das Hügel Super Scores",
       //   subLabel: "Your best segments across all your rides.",
       //   href: "/superhugelboard",
       // },
       {
-        label: "Das Hugel Route",
+        label: "Das Hügel Route",
         subLabel: "Plan your ride with the required segments",
         href: "/route/das-hugel",
       },
