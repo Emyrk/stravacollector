@@ -9,6 +9,8 @@ import {
   Link,
 } from "@chakra-ui/react";
 import { FC } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 const Logo = (props: any) => {
   return (
@@ -79,12 +81,14 @@ export const Footer: FC = () => {
         direction="row"
         alignItems={"center"}
       >
-        <Link href="https://github.com/Emyrk/stravacollector">
+        <Link
+          marginRight={"20px"}
+          href="https://github.com/Emyrk/stravacollector"
+        >
           <chakra.img
             src="/img/github-mark-white.svg"
             height={"1.75rem"}
             width={"1.75rem"}
-            marginRight={"20px"}
           />
         </Link>
 
@@ -93,6 +97,9 @@ export const Footer: FC = () => {
           <br />
           Updated on {buildTime}{" "}
         </Text>
+        <Link marginLeft={"20px"} href="mailto: help@dashugel.bike">
+          <FontAwesomeIcon size="2x" icon={faEnvelope} />
+        </Link>
       </Flex>
     </Box>
   );
