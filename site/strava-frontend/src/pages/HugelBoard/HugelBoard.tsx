@@ -77,8 +77,9 @@ export const HugelBoard: FC = () => {
       >
         <Heading>Tour Das Hügel 2023 Results</Heading>
         <Text color="gray.400" pt="5px">
-          If your ride is not showing after 24hrs, please email
-          help@dashugel.bike with the link to your Hugel activity.
+          If your ride is not showing after 24hrs, please email{" "}
+          <a href="mailto: help@dashugel.bike">help@dashugel.bike</a> with the
+          link to your Hügel activity.
         </Text>
       </Flex>
       <Tabs isFitted align="center" p="0 1rem">
