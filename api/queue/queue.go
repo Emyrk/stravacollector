@@ -218,7 +218,7 @@ func (m *Manager) Run(ctx context.Context) error {
 		}
 		summaries, err := m.DB.TotalRideActivitySummariesCount(ctx)
 		if err == nil {
-			m.rideActivityDetails.Set(float64(summaries))
+			m.rideActivitySummaries.Set(float64(summaries))
 		}
 		job, err := m.DB.TotalJobCount(ctx)
 		if err == nil {
