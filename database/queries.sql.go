@@ -160,6 +160,28 @@ func (q *sqlQuerier) GetActivitySummary(ctx context.Context, id int64) (Activity
 	return i, err
 }
 
+const totalActivityDetailsCount = `-- name: TotalActivityDetailsCount :one
+SELECT count(*) FROM activity_summary
+`
+
+func (q *sqlQuerier) TotalActivityDetailsCount(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, totalActivityDetailsCount)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const totalRideActivitySummariesCount = `-- name: TotalRideActivitySummariesCount :one
+SELECT count(*) FROM activity_summary WHERE activity_type = 'Ride'
+`
+
+func (q *sqlQuerier) TotalRideActivitySummariesCount(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, totalRideActivitySummariesCount)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const updateActivityName = `-- name: UpdateActivityName :exec
 UPDATE activity_summary
 SET
@@ -1475,6 +1497,17 @@ func (q *sqlQuerier) InsertFailedJob(ctx context.Context, rawJson string) (Faile
 	var i FailedJob
 	err := row.Scan(&i.ID, &i.RecordedAt, &i.Raw)
 	return i, err
+}
+
+const totalJobCount = `-- name: TotalJobCount :one
+SELECT count(*) FROM gue_jobs
+`
+
+func (q *sqlQuerier) TotalJobCount(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, totalJobCount)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const upsertMapData = `-- name: UpsertMapData :one

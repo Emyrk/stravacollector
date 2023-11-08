@@ -1,3 +1,9 @@
+-- name: TotalRideActivitySummariesCount :one
+SELECT count(*) FROM activity_summary WHERE activity_type = 'Ride';
+
+-- name: TotalActivityDetailsCount :one
+SELECT count(*) FROM activity_summary;
+
 -- name: DeleteActivity :one
 DELETE FROM
 	activity_summary

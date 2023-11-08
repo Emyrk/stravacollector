@@ -37,6 +37,9 @@ type sqlcQuerier interface {
 	LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, error)
 	StarSegments(ctx context.Context, arg StarSegmentsParams) error
 	SuperHugelLeaderboard(ctx context.Context, athleteID interface{}) ([]SuperHugelLeaderboardRow, error)
+	TotalActivityDetailsCount(ctx context.Context) (int64, error)
+	TotalJobCount(ctx context.Context) (int64, error)
+	TotalRideActivitySummariesCount(ctx context.Context) (int64, error)
 	UpdateActivityName(ctx context.Context, arg UpdateActivityNameParams) error
 	UpsertActivityDetail(ctx context.Context, arg UpsertActivityDetailParams) (ActivityDetail, error)
 	UpsertActivitySummary(ctx context.Context, arg UpsertActivitySummaryParams) (ActivitySummary, error)

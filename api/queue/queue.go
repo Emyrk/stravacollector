@@ -67,6 +67,9 @@ type Manager struct {
 	backloadHistogram        *prometheus.HistogramVec
 	backgroundJobHistogram   *prometheus.HistogramVec
 	backloadActivitiesLoaded prometheus.Counter
+	rideActivitySummaries    prometheus.Gauge
+	rideActivityDetails      prometheus.Gauge
+	jobsGauge                prometheus.Gauge
 }
 
 func New(ctx context.Context, opts Options) (*Manager, error) {
@@ -129,6 +132,24 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			Help:      "Each time we run a background job",
 			Buckets:   []float64{0.001, 0.005, 0.01, 0.25, 0.5, 1, 2, 5},
 		}, []string{"type", "success"}),
+		rideActivitySummaries: factory.NewGauge(prometheus.GaugeOpts{
+			Namespace: "strava",
+			Subsystem: "manager",
+			Name:      "activity_summary_total",
+			Help:      "The total number of ride activities known about",
+		}),
+		rideActivityDetails: factory.NewGauge(prometheus.GaugeOpts{
+			Namespace: "strava",
+			Subsystem: "manager",
+			Name:      "activity_detail_total",
+			Help:      "The total number of ride activities synced",
+		}),
+		jobsGauge: factory.NewGauge(prometheus.GaugeOpts{
+			Namespace: "strava",
+			Subsystem: "manager",
+			Name:      "jobs_total",
+			Help:      "The total number of jobs",
+		}),
 	}, nil
 }
 
@@ -182,6 +203,28 @@ func (m *Manager) Run(ctx context.Context) error {
 	go func() {
 		// TODO: Make this able to scale horizontally
 		m.BackLoadRouteSegments(ctx)
+	}()
+
+	go func() {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+
+		detailed, err := m.DB.TotalActivityDetailsCount(ctx)
+		if err == nil {
+			m.rideActivityDetails.Set(float64(detailed))
+		}
+		summaries, err := m.DB.TotalRideActivitySummariesCount(ctx)
+		if err == nil {
+			m.rideActivityDetails.Set(float64(summaries))
+		}
+		job, err := m.DB.TotalJobCount(ctx)
+		if err == nil {
+			m.jobsGauge.Set(float64(job))
+		}
+		time.Sleep(time.Minute * 8)
 	}()
 
 	return nil
