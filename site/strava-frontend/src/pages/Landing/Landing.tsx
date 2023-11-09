@@ -64,9 +64,10 @@ export const Landing: FC = () => {
             bike route with 111.5 miles of difficult climbs that reach a total
             elevation gain of 11,669 feet. To help cyclists stay safe and get
             the most out of their experience, our site provides a timing system
-            that exclusively records times on the iconic climbs. Because this is
-            an unsanctioned event held on open roads, our system ensures riders
-            are not penalized for things like stop signs or traffic congestion.
+            that exclusively records times on the iconic climbs (segments).
+            Because this is an unsanctioned event held on open roads, our system
+            ensures riders are not penalized for things like stop signs or
+            traffic congestion.
           </Text>
           <Stack spacing={6} direction={{ base: "column", md: "row" }}>
             <LandingCard
