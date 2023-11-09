@@ -474,7 +474,7 @@ const SegmentCard: FC<{
           </GridItem>
           <GridItem>
             <CardStat
-              title={"Avg Grade"}
+              title={"Elevation"}
               value={
                 DistanceToLocalElevation(
                   segment.detailed_segment.total_elevation_gain
