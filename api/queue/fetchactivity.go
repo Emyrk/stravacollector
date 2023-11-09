@@ -6,16 +6,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Emyrk/strava/internal/hugeldate"
 	"net/http"
 	"time"
+
+	"github.com/Emyrk/strava/internal/hugeldate"
 
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/strava"
 	"github.com/vgarvardt/gue/v5"
 )
-
-
 
 type fetchActivityJobArgs struct {
 	Source     database.ActivityDetailSource `json:"source"`
@@ -79,7 +78,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 	// Hugel is Nov 11. Do not sync anything that cannot be a hugel on these
 	// days to prio hugel events.
 	// TODO: Remove this after the event.
-	if now.Month() == time.November && (now.Day() >= 9 && now.Day() <= 13) {
+	if now.Month() == time.November && (now.Day() >= 10 && now.Day() <= 13) {
 		// Hugel is Nov 11. We do not want to sync anything but hugel events
 		// to save our strava api rate limits. Manual syncs can still be synced.
 		if args.Source != database.ActivityDetailSourceManual {
