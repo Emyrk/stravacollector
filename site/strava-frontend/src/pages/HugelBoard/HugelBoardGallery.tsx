@@ -51,14 +51,16 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
   return (
     <>
       <Grid
-        gridTemplateColumns={{
-          base: "repeat(1, 1fr)",
-          // md: "repeat(3, 1fr)",
-        }}
+        gridTemplateColumns={
+          {
+            // base: "repeat(1, 1fr)",
+            // md: "repeat(3, 1fr)",
+          }
+        }
         //   templateAreas={`"first first first first first"
         // "" "second "third" "" ""`}
         alignItems={"center"}
-        maxW={"1100px"}
+        maxW={"1200px"}
       >
         <GridItem colSpan={3}>
           <GalleryCard activity={data?.activities[0]} position={1} />
