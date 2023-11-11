@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -208,7 +209,7 @@ func (api *API) whoAmI(rw http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
+func (api *API) missingSegments(rw http.ResponseWriter, r *http.Request) {
 	var (
 		ctx = r.Context()
 		id  = httpmw.AuthenticatedAthleteID(r)
@@ -231,8 +232,54 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	missing, err := api.Opts.DB.MissingSegments(ctx, actID)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+			Message: "Failed to fetch missing segments",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.Response{
+		Message: fmt.Sprintf("Missing %v", missing),
+	})
+}
+
+func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
+	var (
+		ctx = r.Context()
+		id  = httpmw.AuthenticatedAthleteID(r)
+	)
+
+	// Only steven can do this
+	if id != 2661162 {
+		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
+			Message: "Not authorized",
+		})
+		return
+	}
+
+	athleteID, err := strconv.ParseInt(chi.URLParam(r, "athlete_id"), 10, 64)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+			Message: "Invalid athlete ID",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	actID, err := strconv.ParseInt(chi.URLParam(r, "activity_id"), 10, 64)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+			Message: "Invalid activity ID",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
 	// Highest priority for manual activities.
-	err = api.Manager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, id, actID, true, gue.JobPriorityHighest)
+	err = api.Manager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, athleteID, actID, true, gue.JobPriorityHighest)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
 			Message: "Enqueue fetch",
@@ -242,7 +289,7 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.Response{
-		Message: "Enqueued",
+		Message: fmt.Sprintf("Enqueued %d", actID),
 	})
 }
 

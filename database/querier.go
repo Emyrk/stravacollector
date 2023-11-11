@@ -35,6 +35,7 @@ type sqlcQuerier interface {
 	InsertFailedJob(ctx context.Context, rawJson string) (FailedJob, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
 	LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, error)
+	MissingSegments(ctx context.Context, activitiesID int64) ([]string, error)
 	StarSegments(ctx context.Context, arg StarSegmentsParams) error
 	SuperHugelLeaderboard(ctx context.Context, athleteID interface{}) ([]SuperHugelLeaderboardRow, error)
 	TotalActivityDetailsCount(ctx context.Context) (int64, error)

@@ -160,6 +160,25 @@ func (q *sqlQuerier) GetActivitySummary(ctx context.Context, id int64) (Activity
 	return i, err
 }
 
+const missingSegments = `-- name: MissingSegments :one
+with diff_data as (
+	select unnest(segments) as data
+	from (SELECT segments FROM competitive_routes WHERE name = 'das-hugel') as hugel
+	except
+	select segment_id as data
+	from segment_efforts WHERE activities_id = $1
+)
+select array_agg(data order by data) :: text[]  as diff
+from diff_data
+`
+
+func (q *sqlQuerier) MissingSegments(ctx context.Context, activitiesID int64) ([]string, error) {
+	row := q.db.QueryRowContext(ctx, missingSegments, activitiesID)
+	var diff []string
+	err := row.Scan(pq.Array(&diff))
+	return diff, err
+}
+
 const totalActivityDetailsCount = `-- name: TotalActivityDetailsCount :one
 SELECT count(*) FROM activity_detail
 `

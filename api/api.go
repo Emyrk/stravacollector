@@ -163,7 +163,10 @@ func (api *API) Routes() chi.Router {
 			)
 			r.Get("/whoami", api.whoAmI)
 			r.Route("/fetch-activity", func(r chi.Router) {
-				r.Get("/{activity_id}", api.manualFetchActivity)
+				r.Get("/{athlete_id}-{activity_id}", api.manualFetchActivity)
+			})
+			r.Route("/missing", func(r chi.Router) {
+				r.Get("/{activity_id}", api.missingSegments)
 			})
 		})
 		r.Group(func(r chi.Router) {

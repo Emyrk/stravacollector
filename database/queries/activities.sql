@@ -12,6 +12,17 @@ WHERE
 RETURNING *
 ;
 
+-- name: MissingSegments :one
+with diff_data as (
+	select unnest(segments) as data
+	from (SELECT segments FROM competitive_routes WHERE name = 'das-hugel') as hugel
+	except
+	select segment_id as data
+	from segment_efforts WHERE activities_id = $1
+)
+select array_agg(data order by data) :: text[]  as diff
+from diff_data;
+
 -- name: GetActivityDetail :one
 SELECT
 	*
