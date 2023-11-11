@@ -161,7 +161,7 @@ func (q *sqlQuerier) GetActivitySummary(ctx context.Context, id int64) (Activity
 }
 
 const totalActivityDetailsCount = `-- name: TotalActivityDetailsCount :one
-SELECT count(*) FROM activity_summary
+SELECT count(*) FROM activity_detail
 `
 
 func (q *sqlQuerier) TotalActivityDetailsCount(ctx context.Context) (int64, error) {
