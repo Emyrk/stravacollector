@@ -267,10 +267,11 @@ func stravaRateLimitLog(ctx context.Context, logger zerolog.Logger) {
 				return
 			case <-ticker.C:
 				i, d := stravalimit.Remaining()
-				logger.Debug().
-					Int64("IntervalLeft", i).
-					Int64("DailyLeft", d).
-					Msg("Strava Rate Limits")
+				var _, _ = i, d
+				//logger.Debug().
+				//	Int64("IntervalLeft", i).
+				//	Int64("DailyLeft", d).
+				//	Msg("Strava Rate Limits")
 			}
 		}
 	}()

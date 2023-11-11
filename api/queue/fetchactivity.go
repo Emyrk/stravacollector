@@ -102,7 +102,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 	act, err := m.DB.GetActivityDetail(ctx, args.ActivityID)
 	if err == nil {
 		// We already fetched this today.
-		if time.Since(act.UpdatedAt) < time.Hour*24 {
+		if args.Source != database.ActivityDetailSourceManual && time.Since(act.UpdatedAt) < time.Hour*24 {
 			return nil
 		}
 	}
@@ -127,7 +127,10 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 		return err
 	}
 
-	logger.Info().Int64("activity_id", activity.ID).Msg("activity fetched")
+	logger.Info().
+		Int64("activity_id", activity.ID).
+		Int("segment_count", len(activity.SegmentEfforts)).
+		Msg("activity fetched")
 
 	// Parse the activity, save all efforts.
 	err = m.DB.InTx(func(store database.Store) error {
