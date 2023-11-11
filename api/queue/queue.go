@@ -160,14 +160,15 @@ func (m *Manager) failedJobHook() func(ctx context.Context, j *gue.Job, err erro
 			if errors.Is(err, rateLimitJobFail) {
 				return
 			}
-			m.Logger.Error().
-				Err(err).
-				Str("job_id", j.ID.String()).
-				Str("job", j.Type).
-				Str("queue", j.Queue).
-				Int32("err_count", j.ErrorCount).
-				Str("last_error", j.LastError.String).
-				Msg("job failed")
+			//
+			//m.Logger.Error().
+			//	Err(err).
+			//	Str("job_id", j.ID.String()).
+			//	Str("job", j.Type).
+			//	Str("queue", j.Queue).
+			//	Int32("err_count", j.ErrorCount).
+			//	Str("last_error", j.LastError.String).
+			//	Msg("job failed")
 		}
 	}
 }

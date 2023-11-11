@@ -37,7 +37,7 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 			iBuf, dBuf = 50, 300
 		}
 		if stravalimit.NextDailyReset(now) < time.Hour*1 {
-			iBuf, dBuf = 50, 100
+			iBuf, dBuf = 50, 150
 		}
 
 		if ok, limitLogger := stravalimit.CanLogger(1, iBuf, dBuf, logger); !ok {
