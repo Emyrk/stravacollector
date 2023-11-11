@@ -85,9 +85,10 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		return nil, fmt.Errorf("new pool: %w", err)
 	}
 
+	logger := opts.Logger.Level(zerolog.InfoLevel)
 	poolAdapter := pgxv5.NewConnPool(pool)
 	cli, err := gue.NewClient(poolAdapter,
-		gue.WithClientLogger(zadapter.New(opts.Logger)),
+		gue.WithClientLogger(zadapter.New(logger)),
 		gue.WithClientBackoff(gue.NewExponentialBackoff(exp.Config{
 			BaseDelay:  time.Second * 5,
 			Multiplier: 1.6,
