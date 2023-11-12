@@ -26,7 +26,7 @@ type fetchActivityJobArgs struct {
 	HugelPotential bool `json:"can_be_hugel"`
 }
 
-func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, hugelPotential bool, priority gue.JobPriority) error {
+func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, hugelPotential bool, priority gue.JobPriority, opts ...func(j *gue.Job)) error {
 	data, err := json.Marshal(fetchActivityJobArgs{
 		ActivityID:     activityID,
 		AthleteID:      athleteID,
@@ -37,12 +37,17 @@ func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.Acti
 		return fmt.Errorf("json marshal: %w", err)
 	}
 
-	return m.Client.Enqueue(ctx, &gue.Job{
+	j := &gue.Job{
 		Type:     fetchActivityJob,
 		Queue:    stravaFetchQueue,
 		Args:     data,
 		Priority: priority,
-	})
+	}
+
+	for _, opt := range opts {
+		opt(j)
+	}
+	return m.Client.Enqueue(ctx, j)
 }
 
 type failedJob struct {

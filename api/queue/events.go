@@ -2,6 +2,7 @@ package queue
 
 import (
 	"context"
+	"time"
 
 	"github.com/vgarvardt/gue/v5"
 
@@ -66,7 +67,9 @@ func (m *Manager) newActivity(ctx context.Context, event webhooks.WebhookEvent) 
 		priority := gue.JobPriorityDefault - 10000
 		// Hugel potential is always there for new events. This is kinda unfortunate, but
 		// the webhook gives us no intel into the event.
-		qErr = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceWebhook, event.OwnerID, event.ObjectID, true, priority)
+		qErr = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceWebhook, event.OwnerID, event.ObjectID, true, priority, func(j *gue.Job) {
+			j.RunAt = time.Now().Add(time.Minute * 15)
+		})
 	case "update":
 		qErr = m.EnqueueUpdateActivity(ctx, event)
 	case "delete":
