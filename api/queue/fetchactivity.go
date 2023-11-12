@@ -270,7 +270,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 		return fmt.Errorf("in tx: %w", err)
 	}
 
-	logger.Info().Int64("activity_id", activity.ID).Msg("activity inserted!")
+	//logger.Info().Int64("activity_id", activity.ID).Msg("activity inserted!")
 
 	return nil
 }
