@@ -288,11 +288,20 @@ func (m *Manager) instrumentJob(runJob func(ctx context.Context, j *gue.Job) err
 	}
 }
 
-func (m *Manager) jobStravaCheck(j *gue.Job, calls int64) error {
+func (m *Manager) jobStravaCheck(j *gue.Job, calls int64, extraInterval, extraDaily int64) error {
 	logger := jobLogFields(m.Logger, j)
-	iBuf, dBuf := int64(100), int64(500)
+	iBuf, dBuf := int64(105), int64(605)
 	if stravalimit.NextDailyReset(time.Now()) < time.Hour*3 {
-		iBuf, dBuf = int64(50), int64(100)
+		iBuf, dBuf = int64(55), int64(205)
+	}
+	// Adjust
+	iBuf -= extraInterval
+	dBuf -= extraDaily
+	if iBuf <= 0 {
+		iBuf = 0
+	}
+	if dBuf <= 0 {
+		dBuf = 0
 	}
 
 	ok, limitLogger := stravalimit.CanLogger(calls, iBuf, dBuf, logger)

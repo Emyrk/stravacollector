@@ -55,15 +55,10 @@ type failedJob struct {
 }
 
 func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
-	err := m.jobStravaCheck(j, 1)
-	if err != nil {
-		return err
-	}
-
 	logger := jobLogFields(m.Logger, j)
 
 	var args fetchActivityJobArgs
-	err = json.Unmarshal(j.Args, &args)
+	err := json.Unmarshal(j.Args, &args)
 	if err != nil {
 		logger.Error().Err(err).Msg("json unmarshal, job abandoned")
 		return nil
@@ -76,6 +71,22 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 		Int64("athlete_id", args.AthleteID).
 		Str("source", string(args.Source)).
 		Logger()
+
+	adjustInt := int64(0)
+	adjustDaily := int64(0)
+	if args.HugelPotential {
+		adjustInt = 5
+		adjustDaily = 50
+	}
+	if args.Source == database.ActivityDetailSourceManual {
+		adjustInt = 10
+		adjustDaily = 115
+	}
+
+	err = m.jobStravaCheck(j, 1, adjustInt, adjustDaily)
+	if err != nil {
+		return err
+	}
 
 	// Only track athletes we have in our database
 	athlete, err := m.DB.GetAthleteLogin(ctx, args.AthleteID)
