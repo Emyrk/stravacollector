@@ -158,7 +158,7 @@ const GalleryCard: React.FC<{
             <Text
               isTruncated
               pl={"20px"}
-              maxW="180px"
+              maxW="170px"
               textAlign={"right"}
               // noOfLines={1}
               fontWeight={"bold"}

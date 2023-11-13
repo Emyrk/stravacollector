@@ -9,8 +9,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Emyrk/strava/internal/hugeldate"
-
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/strava"
 	"github.com/vgarvardt/gue/v5"
@@ -57,7 +55,6 @@ type failedJob struct {
 }
 
 func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
-	now := time.Now().In(hugeldate.CentralTimeZone)
 	err := m.jobStravaCheck(j, 1)
 	if err != nil {
 		return err
@@ -79,19 +76,6 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 		Int64("athlete_id", args.AthleteID).
 		Str("source", string(args.Source)).
 		Logger()
-
-	// Hugel is Nov 11. Do not sync anything that cannot be a hugel on these
-	// days to prio hugel events.
-	// TODO: Remove this after the event.
-	if now.Month() == time.November && (now.Day() >= 10 && now.Day() <= 13) {
-		// Hugel is Nov 11. We do not want to sync anything but hugel events
-		// to save our strava api rate limits. Manual syncs can still be synced.
-		if args.Source != database.ActivityDetailSourceManual {
-			if !args.HugelPotential {
-				return fmt.Errorf("[During Hugel Event] activity %d not a hugel, job skipped", args.ActivityID)
-			}
-		}
-	}
 
 	// Only track athletes we have in our database
 	athlete, err := m.DB.GetAthleteLogin(ctx, args.AthleteID)
