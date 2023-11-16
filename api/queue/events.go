@@ -68,7 +68,7 @@ func (m *Manager) newActivity(ctx context.Context, event webhooks.WebhookEvent) 
 		// Hugel potential is always there for new events. This is kinda unfortunate, but
 		// the webhook gives us no intel into the event.
 		qErr = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceWebhook, event.OwnerID, event.ObjectID, true, priority, func(j *gue.Job) {
-			j.RunAt = time.Now().Add(time.Minute * 15)
+			j.RunAt = time.Now().Add(time.Minute * 30)
 		})
 	case "update":
 		qErr = m.EnqueueUpdateActivity(ctx, event)

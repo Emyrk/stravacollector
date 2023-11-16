@@ -292,7 +292,7 @@ func (m *Manager) jobStravaCheck(j *gue.Job, calls int64, extraInterval, extraDa
 	logger := jobLogFields(m.Logger, j)
 	iBuf, dBuf := int64(105), int64(605)
 	if stravalimit.NextDailyReset(time.Now()) < time.Hour*3 {
-		iBuf, dBuf = int64(55), int64(205)
+		iBuf, dBuf = int64(75), int64(205)
 	}
 	// Adjust
 	iBuf -= extraInterval
