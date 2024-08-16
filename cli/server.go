@@ -199,7 +199,9 @@ func serverCmd() *cobra.Command {
 			logger.Info().Bool("setup_hook", !skipWebhookSetup).Msg("Server is up, starting webhook")
 			eq, err := srv.StartWebhook(ctx, !skipWebhookSetup)
 			if err == nil {
-				logger.Info().Msgf("Webhook listening to %s", srv.Events.Callback.String())
+				logger.Info().
+					Bool("skipped_webhook", skipWebhookSetup).
+					Msgf("Webhook listening to %s", srv.Events.Callback.String())
 				go func() {
 					manager.HandleWebhookEvents(ctx, eq)
 				}()
