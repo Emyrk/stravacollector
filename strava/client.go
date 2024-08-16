@@ -134,16 +134,20 @@ func (c *Client) DecodeResponse(res *http.Response, v any, expectedCode int) err
 }
 
 func (c *Client) Request(ctx context.Context, method string, path string, body any, values url.Values) (*http.Response, error) {
-	data, err := json.Marshal(body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal body: %w", err)
+	var bodyData io.Reader
+	if body != nil {
+		data, err := json.Marshal(body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal body: %w", err)
+		}
+		bodyData = bytes.NewBuffer(data)
 	}
 
 	u := fmt.Sprintf("https://strava.com/api/v3/%s", strings.TrimPrefix(path, "/"))
 	if len(values) > 0 {
 		u += "?" + values.Encode()
 	}
-	req, err := http.NewRequestWithContext(ctx, method, u, bytes.NewBuffer(data))
+	req, err := http.NewRequestWithContext(ctx, method, u, bodyData)
 	if err != nil {
 		return nil, fmt.Errorf("new request: %w", err)
 	}
