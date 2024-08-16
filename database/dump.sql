@@ -377,7 +377,13 @@ ALTER TABLE ONLY starred_segments
 ALTER TABLE ONLY webhook_dump
     ADD CONSTRAINT webhook_dump_pkey PRIMARY KEY (id);
 
+CREATE INDEX activity_summary_start_date_idx ON activity_summary USING btree (start_date);
+
 CREATE INDEX idx_gue_jobs_selector ON gue_jobs USING btree (queue, run_at, priority);
+
+CREATE INDEX segment_efforts_distinct_idx ON segment_efforts USING btree (activities_id, segment_id);
+
+CREATE INDEX segment_efforts_elapsed_time_idx ON segment_efforts USING btree (elapsed_time);
 
 ALTER TABLE ONLY activity_detail
     ADD CONSTRAINT activities_athletes_id_fk FOREIGN KEY (athlete_id) REFERENCES athletes(id);
