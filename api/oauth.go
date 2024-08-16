@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -42,9 +43,10 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			Time("expiry", state.Token.Expiry).
 			Str("type", state.Token.TokenType).
 			Msg("Failed to get authenticated athlete")
+		data, _ := json.Marshal(state)
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 			Message: "Failed to get authenticated athlete",
-			Detail:  err.Error(),
+			Detail:  err.Error() + "--" + string(data),
 		})
 		return
 	}
