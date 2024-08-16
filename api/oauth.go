@@ -36,7 +36,8 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		api.Opts.Logger.Err(err).
+		logger.Error().
+			Err(err).
 			Str("token", state.Token.AccessToken).
 			Time("expiry", state.Token.Expiry).
 			Str("type", state.Token.TokenType).
