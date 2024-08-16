@@ -35,6 +35,12 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			_, _ = rw.Write([]byte(server.LoginFailed))
 			return
 		}
+
+		api.Opts.Logger.Err(err).
+			Str("token", state.Token.AccessToken).
+			Time("expiry", state.Token.Expiry).
+			Str("type", state.Token.TokenType).
+			Msg("Failed to get authenticated athlete")
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 			Message: "Failed to get authenticated athlete",
 			Detail:  err.Error(),
