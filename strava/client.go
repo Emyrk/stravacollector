@@ -147,7 +147,10 @@ func (c *Client) Request(ctx context.Context, method string, path string, body a
 	if err != nil {
 		return nil, fmt.Errorf("new request: %w", err)
 	}
-	req.Header.Add("Authorization", "Bearer "+c.AccessToken)
+
+	if c.AccessToken != "" {
+		req.Header.Add("Authorization", "Bearer "+c.AccessToken)
+	}
 
 	return c.Client.Do(req)
 }
