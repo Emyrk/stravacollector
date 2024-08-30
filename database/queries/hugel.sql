@@ -1,3 +1,6 @@
+-- name: RefreshHugelActivities :exec
+REFRESH MATERIALIZED VIEW CONCURRENTLY hugel_activities;
+
 -- name: AthleteHugelActivites :many
 SELECT
     sqlc.embed(hugel_activities),

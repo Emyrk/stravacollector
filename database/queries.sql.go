@@ -1418,6 +1418,15 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardP
 	return items, nil
 }
 
+const refreshHugelActivities = `-- name: RefreshHugelActivities :exec
+REFRESH MATERIALIZED VIEW CONCURRENTLY hugel_activities
+`
+
+func (q *sqlQuerier) RefreshHugelActivities(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, refreshHugelActivities)
+	return err
+}
+
 const superHugelLeaderboard = `-- name: SuperHugelLeaderboard :many
 SELECT
 	(SELECT min(total_time_seconds) FROM super_hugel_activities) :: BIGINT AS best_time,

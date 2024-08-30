@@ -208,6 +208,10 @@ func (m *Manager) Run(ctx context.Context) error {
 	}()
 
 	go func() {
+		m.refreshViews(ctx)
+	}()
+
+	go func() {
 		select {
 		case <-ctx.Done():
 			return
