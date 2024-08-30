@@ -297,7 +297,7 @@ CREATE TABLE starred_segments (
     updated_at timestamp with time zone NOT NULL
 );
 
-CREATE VIEW super_hugel_activities AS
+CREATE MATERIALIZED VIEW super_hugel_activities AS
  SELECT merged.athlete_id,
     merged.segment_ids,
     merged.total_time_seconds,
@@ -331,7 +331,8 @@ CREATE VIEW super_hugel_activities AS
           GROUP BY hugel_efforts.athlete_id) merged
   WHERE (merged.segment_ids @> ARRAY( SELECT competitive_routes.segments
            FROM competitive_routes
-          WHERE (competitive_routes.name = 'das-hugel'::text)));
+          WHERE (competitive_routes.name = 'das-hugel'::text)))
+  WITH NO DATA;
 
 CREATE TABLE webhook_dump (
     id uuid NOT NULL,

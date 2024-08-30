@@ -179,6 +179,48 @@ func (q *sqlQuerier) MissingSegments(ctx context.Context, activitiesID int64) ([
 	return diff, err
 }
 
+const needsARefresh = `-- name: NeedsARefresh :many
+SELECT
+	activity_detail.athlete_id AS athlete_id, activity_detail.id AS activity_id
+FROM
+	activity_detail
+		LEFT JOIN
+	activity_summary ON activity_detail.id = activity_summary.id
+WHERE
+	activity_detail.updated_at > Now() - '60 hours' ::interval
+  AND activity_summary.sport_type = 'Ride'
+  AND
+	(SELECT count(*) FROM segment_efforts WHERE activities_id = activity_detail.id) = 0
+`
+
+type NeedsARefreshRow struct {
+	AthleteID  int64 `db:"athlete_id" json:"athlete_id"`
+	ActivityID int64 `db:"activity_id" json:"activity_id"`
+}
+
+func (q *sqlQuerier) NeedsARefresh(ctx context.Context) ([]NeedsARefreshRow, error) {
+	rows, err := q.db.QueryContext(ctx, needsARefresh)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []NeedsARefreshRow
+	for rows.Next() {
+		var i NeedsARefreshRow
+		if err := rows.Scan(&i.AthleteID, &i.ActivityID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const totalActivityDetailsCount = `-- name: TotalActivityDetailsCount :one
 SELECT count(*) FROM activity_detail
 `

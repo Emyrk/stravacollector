@@ -141,3 +141,17 @@ ON CONFLICT
 	calories = $21,
 	source = $22
 RETURNING *;
+
+-- name: NeedsARefresh :many
+SELECT
+	activity_detail.athlete_id AS athlete_id, activity_detail.id AS activity_id
+FROM
+	activity_detail
+		LEFT JOIN
+	activity_summary ON activity_detail.id = activity_summary.id
+WHERE
+	activity_detail.updated_at > Now() - '60 hours' ::interval
+  AND activity_summary.sport_type = 'Ride'
+  AND
+	(SELECT count(*) FROM segment_efforts WHERE activities_id = activity_detail.id) = 0
+;

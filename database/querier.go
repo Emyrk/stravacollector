@@ -36,6 +36,7 @@ type sqlcQuerier interface {
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
 	LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, error)
 	MissingSegments(ctx context.Context, activitiesID int64) ([]string, error)
+	NeedsARefresh(ctx context.Context) ([]NeedsARefreshRow, error)
 	RefreshHugelActivities(ctx context.Context) error
 	StarSegments(ctx context.Context, arg StarSegmentsParams) error
 	SuperHugelLeaderboard(ctx context.Context, athleteID interface{}) ([]SuperHugelLeaderboardRow, error)
