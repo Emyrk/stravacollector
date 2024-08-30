@@ -138,7 +138,7 @@ COMMENT ON COLUMN segment_efforts.distance IS 'Distance is in meters';
 
 COMMENT ON COLUMN segment_efforts.activities_id IS 'FK to activities table';
 
-CREATE VIEW hugel_activities AS
+CREATE MATERIALIZED VIEW hugel_activities AS
  SELECT merged.activity_id,
     merged.athlete_id,
     merged.segment_ids,
@@ -174,9 +174,10 @@ CREATE VIEW hugel_activities AS
           GROUP BY hugel_efforts.activities_id, hugel_efforts.athlete_id) merged
   WHERE (merged.segment_ids @> ARRAY( SELECT competitive_routes.segments
            FROM competitive_routes
-          WHERE (competitive_routes.name = 'das-hugel'::text)));
+          WHERE (competitive_routes.name = 'das-hugel'::text)))
+  WITH NO DATA;
 
-COMMENT ON VIEW hugel_activities IS 'This view contains all activities that classify as a "hugel" and their best efforts on each segment.';
+COMMENT ON MATERIALIZED VIEW hugel_activities IS 'This view contains all activities that classify as a "hugel" and their best efforts on each segment.';
 
 CREATE VIEW athlete_hugel_count AS
  SELECT hugel_activities.athlete_id,

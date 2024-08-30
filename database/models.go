@@ -242,7 +242,6 @@ type GueJob struct {
 	UpdatedAt  time.Time      `db:"updated_at" json:"updated_at"`
 }
 
-// This view contains all activities that classify as a "hugel" and their best efforts on each segment.
 type HugelActivity struct {
 	ActivityID       int64           `db:"activity_id" json:"activity_id"`
 	AthleteID        int64           `db:"athlete_id" json:"athlete_id"`
