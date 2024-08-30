@@ -25,7 +25,13 @@ func New[T any](stale time.Duration, fetch func(ctx context.Context) (T, error))
 }
 
 func (c *LazyCache[T]) Load(ctx context.Context) (T, error) {
-	if time.Since(c.fetched) > c.Stale {
+	stale := c.Stale
+	// Errors should not persist for very long
+	if c.lastError != nil {
+		stale = time.Second * 5
+	}
+
+	if time.Since(c.fetched) > stale {
 		c.updateCache(ctx)
 	}
 
