@@ -108,14 +108,15 @@ WHERE
 -- name: GetAthleteLoginFull :one
 SELECT
     sqlc.embed(athlete_logins),
-    sqlc.embed(athletes),
-    COALESCE(athlete_hugel_count.count, 0) AS hugel_count
+    sqlc.embed(athletes)
+-- This was waaaaaaay to slow
+--     COALESCE(athlete_hugel_count.count, 0) AS hugel_count
 FROM
     athlete_logins
 INNER JOIN
     athletes ON athlete_logins.athlete_id = athletes.id
-LEFT JOIN
-	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
+-- LEFT JOIN
+-- 	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
 WHERE
 	athlete_logins.athlete_id = @athlete_id;
 
