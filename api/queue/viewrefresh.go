@@ -3,6 +3,7 @@ package queue
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -18,11 +19,32 @@ func (m *Manager) refreshViews(ctx context.Context) {
 
 		time.Sleep(time.Minute * 5)
 
+		wg := sync.WaitGroup{}
 		start := time.Now()
-		err := m.DB.RefreshHugelActivities(ctx)
-		logger.Error().
-			Err(err).
-			Str("duration", fmt.Sprintf("%.3fs", time.Since(start).Seconds())).
+
+		var hugelDone, superDone time.Duration
+		var hugelErr, superErr error
+
+		wg.Add(1)
+		go func() {
+			hugelErr = m.DB.RefreshHugelActivities(ctx)
+			hugelDone = time.Since(start)
+			wg.Done()
+		}()
+
+		wg.Add(1)
+		go func() {
+			superErr = m.DB.RefreshSuperHugelActivities(ctx)
+			superDone = time.Since(start)
+			wg.Done()
+		}()
+
+		wg.Wait()
+		logger.Info().
+			AnErr("super_err", superErr).
+			AnErr("hugel_err", hugelErr).
+			Str("super_duration", fmt.Sprintf("%.3fs", superDone.Seconds())).
+			Str("hugel_duration", fmt.Sprintf("%.3fs", hugelDone.Seconds())).
 			Msg("refresh views")
 	}
 }

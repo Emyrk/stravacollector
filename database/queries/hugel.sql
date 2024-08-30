@@ -1,5 +1,9 @@
 -- name: RefreshHugelActivities :exec
-REFRESH MATERIALIZED VIEW CONCURRENTLY hugel_activities;
+REFRESH MATERIALIZED VIEW hugel_activities;
+
+-- name: RefreshSuperHugelActivities :exec
+REFRESH MATERIALIZED VIEW super_hugel_activities;
+
 
 -- name: AthleteHugelActivites :many
 SELECT
