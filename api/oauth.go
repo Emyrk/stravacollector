@@ -68,8 +68,8 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		if len(athlete.Clubs) == 0 || string(athlete.Clubs) == "" {
 			athlete.Clubs = []byte("{}")
 		}
+
 		api.Opts.Logger.Info().
-			Str("clubs", string(athlete.Clubs)).
 			Int64("athlete_id", athlete.ID).
 			Msg("athlete_login")
 

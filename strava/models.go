@@ -391,3 +391,43 @@ type Route struct {
 	EstimatedMovingTime int              `json:"estimated_moving_time"`
 	Segments            []SegmentSummary `json:"segments"`
 }
+
+type Club struct {
+	ID            int    `json:"id"`
+	ResourceState int    `json:"resource_state"`
+	Name          string `json:"name"`
+	ProfileMedium string `json:"profile_medium"`
+	Profile       string `json:"profile"`
+	// These can be null
+	CoverPhoto      *string `json:"cover_photo"`
+	CoverPhotoSmall *string `json:"cover_photo_small"`
+	// ActivityTypes Examples
+	//		"Handcycle",
+	//		"EBikeRide",
+	//		"VirtualRide",
+	//		"Velomobile",
+	//		"Ride"
+	ActivityTypes     []string `json:"activity_types"`
+	ActivityTypesIcon string   `json:"activity_types_icon"`
+	// Dimension example
+	//		"distance",
+	//		"num_activities",
+	//		"best_activities_distance",
+	//		"velocity",
+	//		"elev_gain",
+	//		"moving_time"
+	Dimensions         []string `json:"dimensions"`
+	SportType          string   `json:"sport_type"`
+	LocalizedSportType string   `json:"localized_sport_type"`
+	City               string   `json:"city"`
+	State              string   `json:"state"`
+	Country            string   `json:"country"`
+	Private            bool     `json:"private"`
+	MemberCount        int      `json:"member_count"`
+	Featured           bool     `json:"featured"`
+	Verified           bool     `json:"verified"`
+	URL                string   `json:"url"`
+	Membership         string   `json:"membership"`
+	Admin              bool     `json:"admin"`
+	Owner              bool     `json:"owner"`
+}
