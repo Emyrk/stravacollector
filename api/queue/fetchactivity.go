@@ -111,6 +111,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 
 	activity, err := cli.GetActivity(ctx, args.ActivityID, true)
 	if err != nil {
+
 		if se := strava.IsAPIError(err); se != nil && se.Response.StatusCode != http.StatusTooManyRequests {
 			// Kill the job, since we can't fetch this activity due to some other error.
 			// Insert the error to review later.
@@ -121,6 +122,12 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 				Args:  args,
 				Error: err.Error(),
 			})
+			// Insert a failed job for debugging if not expected.
+			if se.Response.StatusCode == http.StatusNotFound {
+				// No activity? Just drop the job, nothing to do.
+				return nil
+			}
+
 			_, _ = m.DB.InsertFailedJob(ctx, string(jobData))
 			return nil
 		}
