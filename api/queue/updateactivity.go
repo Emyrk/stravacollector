@@ -91,6 +91,14 @@ func (m *Manager) updateActivity(ctx context.Context, j *gue.Job) error {
 				if err != nil {
 					return fmt.Errorf("update activity name: %w", err)
 				}
+			case "type":
+				err := store.UpdateActivityType(ctx, database.UpdateActivityTypeParams{
+					ID:   args.ObjectID,
+					Type: v,
+				})
+				if err != nil {
+					return fmt.Errorf("update activity type: %w", err)
+				}
 			default:
 				return fmt.Errorf("unknown update type: %s", k)
 			}
