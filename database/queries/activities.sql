@@ -46,6 +46,14 @@ SET
 WHERE
     id = $1;
 
+-- name: UpdateActivityType :exec
+UPDATE activity_summary
+SET
+	sport_type = @type,
+	activity_type = @type
+WHERE
+	id = $1;
+
 -- name: UpsertActivitySummary :one
 INSERT INTO
 	activity_summary(
