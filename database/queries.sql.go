@@ -1479,6 +1479,71 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardP
 	return items, nil
 }
 
+const missingHugelSegments = `-- name: MissingHugelSegments :many
+SELECT
+	id, name, activity_type, distance, average_grade, maximum_grade, elevation_high, elevation_low, start_latlng, end_latlng, elevation_profile, climb_category, city, state, country, private, hazardous, created_at, updated_at, total_elevation_gain, map_id, total_effort_count, total_athlete_count, total_star_count, fetched_at
+FROM
+	segments
+WHERE
+	id = ANY(
+		select unnest(segments) as data
+		from (SELECT segments FROM competitive_routes WHERE name = 'das-hugel') as hugel
+		except
+		select segment_id as data
+		from segment_efforts WHERE
+		    activities_id = $1
+	)
+`
+
+func (q *sqlQuerier) MissingHugelSegments(ctx context.Context, activityID int64) ([]Segment, error) {
+	rows, err := q.db.QueryContext(ctx, missingHugelSegments, activityID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Segment
+	for rows.Next() {
+		var i Segment
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ActivityType,
+			&i.Distance,
+			&i.AverageGrade,
+			&i.MaximumGrade,
+			&i.ElevationHigh,
+			&i.ElevationLow,
+			&i.StartLatlng,
+			&i.EndLatlng,
+			&i.ElevationProfile,
+			&i.ClimbCategory,
+			&i.City,
+			&i.State,
+			&i.Country,
+			&i.Private,
+			&i.Hazardous,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.TotalElevationGain,
+			&i.MapID,
+			&i.TotalEffortCount,
+			&i.TotalAthleteCount,
+			&i.TotalStarCount,
+			&i.FetchedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const refreshHugelActivities = `-- name: RefreshHugelActivities :exec
 REFRESH MATERIALIZED VIEW hugel_activities
 `

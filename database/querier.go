@@ -35,6 +35,7 @@ type sqlcQuerier interface {
 	InsertFailedJob(ctx context.Context, rawJson string) (FailedJob, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
 	LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, error)
+	MissingHugelSegments(ctx context.Context, activityID int64) ([]Segment, error)
 	MissingSegments(ctx context.Context, activitiesID int64) ([]string, error)
 	NeedsARefresh(ctx context.Context) ([]NeedsARefreshRow, error)
 	RefreshHugelActivities(ctx context.Context) error

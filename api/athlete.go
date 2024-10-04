@@ -232,7 +232,7 @@ func (api *API) missingSegments(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	missing, err := api.Opts.DB.MissingSegments(ctx, actID)
+	missing, err := api.Opts.DB.MissingHugelSegments(ctx, actID)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 			Message: "Failed to fetch missing segments",
@@ -241,9 +241,7 @@ func (api *API) missingSegments(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.Response{
-		Message: fmt.Sprintf("Missing %v", missing),
-	})
+	httpapi.Write(ctx, rw, http.StatusOK, missing)
 }
 
 func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {

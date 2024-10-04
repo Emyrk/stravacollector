@@ -120,3 +120,19 @@ FROM
 WHERE
 	competitive_routes.name = @route_name
 LIMIT 1;
+
+
+-- name: MissingHugelSegments :many
+SELECT
+	*
+FROM
+	segments
+WHERE
+	id = ANY(
+		select unnest(segments) as data
+		from (SELECT segments FROM competitive_routes WHERE name = 'das-hugel') as hugel
+		except
+		select segment_id as data
+		from segment_efforts WHERE
+		    activities_id = @activity_id
+	);
