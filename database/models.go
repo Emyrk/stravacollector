@@ -18,11 +18,12 @@ import (
 type ActivityDetailSource string
 
 const (
-	ActivityDetailSourceWebhook   ActivityDetailSource = "webhook"
-	ActivityDetailSourceBackload  ActivityDetailSource = "backload"
-	ActivityDetailSourceRequested ActivityDetailSource = "requested"
-	ActivityDetailSourceManual    ActivityDetailSource = "manual"
-	ActivityDetailSourceUnknown   ActivityDetailSource = "unknown"
+	ActivityDetailSourceWebhook            ActivityDetailSource = "webhook"
+	ActivityDetailSourceBackload           ActivityDetailSource = "backload"
+	ActivityDetailSourceRequested          ActivityDetailSource = "requested"
+	ActivityDetailSourceManual             ActivityDetailSource = "manual"
+	ActivityDetailSourceUnknown            ActivityDetailSource = "unknown"
+	ActivityDetailSourceZeroSegmentRefetch ActivityDetailSource = "zero_segment_refetch"
 )
 
 func (e *ActivityDetailSource) Scan(src interface{}) error {
@@ -66,7 +67,8 @@ func (e ActivityDetailSource) Valid() bool {
 		ActivityDetailSourceBackload,
 		ActivityDetailSourceRequested,
 		ActivityDetailSourceManual,
-		ActivityDetailSourceUnknown:
+		ActivityDetailSourceUnknown,
+		ActivityDetailSourceZeroSegmentRefetch:
 		return true
 	}
 	return false
@@ -79,6 +81,7 @@ func AllActivityDetailSourceValues() []ActivityDetailSource {
 		ActivityDetailSourceRequested,
 		ActivityDetailSourceManual,
 		ActivityDetailSourceUnknown,
+		ActivityDetailSourceZeroSegmentRefetch,
 	}
 }
 
@@ -149,6 +152,7 @@ type ActivitySummary struct {
 	UpdatedAt          time.Time `db:"updated_at" json:"updated_at"`
 	AverageHeartrate   float64   `db:"average_heartrate" json:"average_heartrate"`
 	MaxHeartrate       float64   `db:"max_heartrate" json:"max_heartrate"`
+	DownloadCount      int32     `db:"download_count" json:"download_count"`
 }
 
 type Athlete struct {

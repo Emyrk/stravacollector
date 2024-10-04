@@ -54,6 +54,13 @@ SET
 WHERE
 	id = $1;
 
+-- name: IncrementActivitySummaryDownload :exec
+UPDATE activity_summary
+SET
+	download_count = download_count + 1
+WHERE
+	id = $1;
+
 -- name: UpsertActivitySummary :one
 INSERT INTO
 	activity_summary(

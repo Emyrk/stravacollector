@@ -32,6 +32,7 @@ type sqlcQuerier interface {
 	GetPersonalSegments(ctx context.Context, arg GetPersonalSegmentsParams) ([]GetPersonalSegmentsRow, error)
 	GetSegments(ctx context.Context, segmentIds []int64) ([]GetSegmentsRow, error)
 	HugelLeaderboard(ctx context.Context, arg HugelLeaderboardParams) ([]HugelLeaderboardRow, error)
+	IncrementActivitySummaryDownload(ctx context.Context, id int64) error
 	InsertFailedJob(ctx context.Context, rawJson string) (FailedJob, error)
 	InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error)
 	LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, error)

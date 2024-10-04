@@ -18,7 +18,7 @@ DELETE FROM
 	activity_summary
 WHERE
 	id = $1
-RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate
+RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate, download_count
 `
 
 func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error) {
@@ -62,6 +62,7 @@ func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySumm
 		&i.UpdatedAt,
 		&i.AverageHeartrate,
 		&i.MaxHeartrate,
+		&i.DownloadCount,
 	)
 	return i, err
 }
@@ -108,7 +109,7 @@ func (q *sqlQuerier) GetActivityDetail(ctx context.Context, id int64) (ActivityD
 
 const getActivitySummary = `-- name: GetActivitySummary :one
 SELECT
-	id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate
+	id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate, download_count
 FROM
     activity_summary
 WHERE
@@ -156,8 +157,22 @@ func (q *sqlQuerier) GetActivitySummary(ctx context.Context, id int64) (Activity
 		&i.UpdatedAt,
 		&i.AverageHeartrate,
 		&i.MaxHeartrate,
+		&i.DownloadCount,
 	)
 	return i, err
+}
+
+const incrementActivitySummaryDownload = `-- name: IncrementActivitySummaryDownload :exec
+UPDATE activity_summary
+SET
+	download_count = download_count + 1
+WHERE
+	id = $1
+`
+
+func (q *sqlQuerier) IncrementActivitySummaryDownload(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, incrementActivitySummaryDownload, id)
+	return err
 }
 
 const missingSegments = `-- name: MissingSegments :one
@@ -454,7 +469,7 @@ ON CONFLICT
 		total_photo_count = $34,
 		average_heartrate = $35,
 		max_heartrate = $36
-RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate
+RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate, download_count
 `
 
 type UpsertActivitySummaryParams struct {
@@ -574,13 +589,14 @@ func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivi
 		&i.UpdatedAt,
 		&i.AverageHeartrate,
 		&i.MaxHeartrate,
+		&i.DownloadCount,
 	)
 	return i, err
 }
 
 const athleteSyncedActivities = `-- name: AthleteSyncedActivities :many
 SELECT
-	activity_summary.id, activity_summary.athlete_id, activity_summary.upload_id, activity_summary.external_id, activity_summary.name, activity_summary.distance, activity_summary.moving_time, activity_summary.elapsed_time, activity_summary.total_elevation_gain, activity_summary.activity_type, activity_summary.sport_type, activity_summary.workout_type, activity_summary.start_date, activity_summary.start_date_local, activity_summary.timezone, activity_summary.utc_offset, activity_summary.achievement_count, activity_summary.kudos_count, activity_summary.comment_count, activity_summary.athlete_count, activity_summary.photo_count, activity_summary.map_id, activity_summary.trainer, activity_summary.commute, activity_summary.manual, activity_summary.private, activity_summary.flagged, activity_summary.gear_id, activity_summary.average_speed, activity_summary.max_speed, activity_summary.device_watts, activity_summary.has_heartrate, activity_summary.pr_count, activity_summary.total_photo_count, activity_summary.updated_at, activity_summary.average_heartrate, activity_summary.max_heartrate,
+	activity_summary.id, activity_summary.athlete_id, activity_summary.upload_id, activity_summary.external_id, activity_summary.name, activity_summary.distance, activity_summary.moving_time, activity_summary.elapsed_time, activity_summary.total_elevation_gain, activity_summary.activity_type, activity_summary.sport_type, activity_summary.workout_type, activity_summary.start_date, activity_summary.start_date_local, activity_summary.timezone, activity_summary.utc_offset, activity_summary.achievement_count, activity_summary.kudos_count, activity_summary.comment_count, activity_summary.athlete_count, activity_summary.photo_count, activity_summary.map_id, activity_summary.trainer, activity_summary.commute, activity_summary.manual, activity_summary.private, activity_summary.flagged, activity_summary.gear_id, activity_summary.average_speed, activity_summary.max_speed, activity_summary.device_watts, activity_summary.has_heartrate, activity_summary.pr_count, activity_summary.total_photo_count, activity_summary.updated_at, activity_summary.average_heartrate, activity_summary.max_heartrate, activity_summary.download_count,
 	COUNT(*) OVER() AS total,
 	activity_detail.id IS NOT NULL :: boolean AS detail_exists,
 	activity_detail.updated_at AS detail_updated_at
@@ -658,6 +674,7 @@ func (q *sqlQuerier) AthleteSyncedActivities(ctx context.Context, arg AthleteSyn
 			&i.ActivitySummary.UpdatedAt,
 			&i.ActivitySummary.AverageHeartrate,
 			&i.ActivitySummary.MaxHeartrate,
+			&i.ActivitySummary.DownloadCount,
 			&i.Total,
 			&i.DetailExists,
 			&i.DetailUpdatedAt,
@@ -1240,7 +1257,7 @@ func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLo
 const athleteHugelActivites = `-- name: AthleteHugelActivites :many
 SELECT
     hugel_activities.activity_id, hugel_activities.athlete_id, hugel_activities.segment_ids, hugel_activities.total_time_seconds, hugel_activities.efforts,
-    activity_summary.id, activity_summary.athlete_id, activity_summary.upload_id, activity_summary.external_id, activity_summary.name, activity_summary.distance, activity_summary.moving_time, activity_summary.elapsed_time, activity_summary.total_elevation_gain, activity_summary.activity_type, activity_summary.sport_type, activity_summary.workout_type, activity_summary.start_date, activity_summary.start_date_local, activity_summary.timezone, activity_summary.utc_offset, activity_summary.achievement_count, activity_summary.kudos_count, activity_summary.comment_count, activity_summary.athlete_count, activity_summary.photo_count, activity_summary.map_id, activity_summary.trainer, activity_summary.commute, activity_summary.manual, activity_summary.private, activity_summary.flagged, activity_summary.gear_id, activity_summary.average_speed, activity_summary.max_speed, activity_summary.device_watts, activity_summary.has_heartrate, activity_summary.pr_count, activity_summary.total_photo_count, activity_summary.updated_at, activity_summary.average_heartrate, activity_summary.max_heartrate
+    activity_summary.id, activity_summary.athlete_id, activity_summary.upload_id, activity_summary.external_id, activity_summary.name, activity_summary.distance, activity_summary.moving_time, activity_summary.elapsed_time, activity_summary.total_elevation_gain, activity_summary.activity_type, activity_summary.sport_type, activity_summary.workout_type, activity_summary.start_date, activity_summary.start_date_local, activity_summary.timezone, activity_summary.utc_offset, activity_summary.achievement_count, activity_summary.kudos_count, activity_summary.comment_count, activity_summary.athlete_count, activity_summary.photo_count, activity_summary.map_id, activity_summary.trainer, activity_summary.commute, activity_summary.manual, activity_summary.private, activity_summary.flagged, activity_summary.gear_id, activity_summary.average_speed, activity_summary.max_speed, activity_summary.device_watts, activity_summary.has_heartrate, activity_summary.pr_count, activity_summary.total_photo_count, activity_summary.updated_at, activity_summary.average_heartrate, activity_summary.max_heartrate, activity_summary.download_count
 FROM
     hugel_activities
 INNER JOIN
@@ -1306,6 +1323,7 @@ func (q *sqlQuerier) AthleteHugelActivites(ctx context.Context, athleteID int64)
 			&i.ActivitySummary.UpdatedAt,
 			&i.ActivitySummary.AverageHeartrate,
 			&i.ActivitySummary.MaxHeartrate,
+			&i.ActivitySummary.DownloadCount,
 		); err != nil {
 			return nil, err
 		}

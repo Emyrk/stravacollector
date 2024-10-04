@@ -5,7 +5,8 @@ CREATE TYPE activity_detail_source AS ENUM (
     'backload',
     'requested',
     'manual',
-    'unknown'
+    'unknown',
+    'zero_segment_refetch'
 );
 
 COMMENT ON TYPE activity_detail_source IS 'The source of the activity fetching.';
@@ -77,7 +78,8 @@ CREATE TABLE activity_summary (
     total_photo_count integer NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     average_heartrate double precision DEFAULT 0 NOT NULL,
-    max_heartrate double precision DEFAULT 0 NOT NULL
+    max_heartrate double precision DEFAULT 0 NOT NULL,
+    download_count integer DEFAULT 0 NOT NULL
 );
 
 COMMENT ON TABLE activity_summary IS 'Activity is missing many detailed fields';

@@ -101,8 +101,9 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 	// First check if we just fetched this from another source.
 	act, err := m.DB.GetActivityDetail(ctx, args.ActivityID)
 	if err == nil {
-		// We already fetched this today.
-		if args.Source != database.ActivityDetailSourceManual && time.Since(act.UpdatedAt) < time.Hour*24 {
+		// We already fetched this today. Only re-fetch if it's a manual fetch
+		// or a re-download.
+		if !(args.Source == database.ActivityDetailSourceManual || args.Source == database.ActivityDetailSourceZeroSegmentRefetch) && time.Since(act.UpdatedAt) < time.Hour*24 {
 			return nil
 		}
 	}
@@ -111,7 +112,6 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 
 	activity, err := cli.GetActivity(ctx, args.ActivityID, true)
 	if err != nil {
-
 		if se := strava.IsAPIError(err); se != nil && se.Response.StatusCode != http.StatusTooManyRequests {
 			// Kill the job, since we can't fetch this activity due to some other error.
 			// Insert the error to review later.
@@ -221,6 +221,11 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			return fmt.Errorf("upsert activity details: %w", err)
 		}
 
+		err = store.IncrementActivitySummaryDownload(ctx, activity.ID)
+		if err != nil {
+			return fmt.Errorf("increment download count: %w", err)
+		}
+
 		// Insert efforts.
 		starAtheletes := make([]int64, 0, len(activity.SegmentEfforts))
 		starSegments := make([]int64, 0, len(activity.SegmentEfforts))
@@ -277,6 +282,27 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 		return fmt.Errorf("in tx: %w", err)
 	}
 
+	// Potentially re-fetch the activity if it has 0 segment efforts.
+	// Strava is slow sometimes. If less than 5 miles though, just ignore it.
+	if len(activity.SegmentEfforts) == 0 && database.DistanceToMiles(activity.Distance) > 5 {
+		summary, err := m.DB.GetActivitySummary(ctx, activity.ID)
+		if err == nil {
+			if summary.DownloadCount == 0 {
+				// If 0 segment efforts, and has never been redownloaded. Retry in 1hr.
+				// This might be correct, but we should check again.
+				err := m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceZeroSegmentRefetch, args.AthleteID, args.ActivityID, args.HugelPotential, j.Priority, func(j *gue.Job) {
+					j.RunAt = time.Now().Add(time.Hour * 2)
+				})
+				if err != nil {
+					logger.Error().
+						Err(err).
+						Int("activity_id", int(args.ActivityID)).
+						Int("athlete_id", int(args.AthleteID)).
+						Msg("error re-enqueuing activity with 0 segments")
+				}
+			}
+		}
+	}
 	//logger.Info().Int64("activity_id", activity.ID).Msg("activity inserted!")
 
 	return nil
