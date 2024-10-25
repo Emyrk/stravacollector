@@ -13,6 +13,11 @@ sql:
         emit_enum_valid_method: true
         emit_all_enum_values: true
         overrides:
+          - column: "hugel_activities.efforts"
+            go_type:
+              import: ""
+              package: ""
+              type: "SegmentEfforts"
           - column: "segments.start_latlng"
             go_type:
               import: ""

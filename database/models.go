@@ -247,11 +247,11 @@ type GueJob struct {
 }
 
 type HugelActivity struct {
-	ActivityID       int64           `db:"activity_id" json:"activity_id"`
-	AthleteID        int64           `db:"athlete_id" json:"athlete_id"`
-	SegmentIds       interface{}     `db:"segment_ids" json:"segment_ids"`
-	TotalTimeSeconds int64           `db:"total_time_seconds" json:"total_time_seconds"`
-	Efforts          json.RawMessage `db:"efforts" json:"efforts"`
+	ActivityID       int64          `db:"activity_id" json:"activity_id"`
+	AthleteID        int64          `db:"athlete_id" json:"athlete_id"`
+	SegmentIds       interface{}    `db:"segment_ids" json:"segment_ids"`
+	TotalTimeSeconds int64          `db:"total_time_seconds" json:"total_time_seconds"`
+	Efforts          SegmentEfforts `db:"efforts" json:"efforts"`
 }
 
 type Map struct {
