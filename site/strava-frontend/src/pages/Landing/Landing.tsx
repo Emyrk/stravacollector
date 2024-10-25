@@ -18,7 +18,6 @@ import {
   useStyleConfig,
 } from "@chakra-ui/react";
 import { FC, ReactElement } from "react";
-import { Logo } from "../../Logo";
 import { Link as RouteLink } from "react-router-dom";
 import { StravaConnect } from "../../components/Navbar/StravaConnect";
 import {

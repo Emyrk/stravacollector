@@ -17,7 +17,6 @@ import {
   ThemeConfig,
   Container,
 } from "@chakra-ui/react";
-import { Logo } from "./Logo";
 import {
   BrowserRouter as Router,
   Route,

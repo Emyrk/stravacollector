@@ -22,13 +22,13 @@ export interface ActivitySummary {
 
 // From modelsdk/athlete.go
 export interface AthleteHugelActivities {
-	readonly activities: Readonly<Array<AthleteHugelActivity>>;
+	readonly activities: Array<AthleteHugelActivity>;
 }
 
 // From modelsdk/athlete.go
 export interface AthleteHugelActivity {
 	readonly summary: ActivitySummary;
-	readonly efforts: Readonly<Array<SegmentEffort>>;
+	readonly efforts: Array<SegmentEffort>;
 	readonly total_time_seconds: number;
 }
 
@@ -69,7 +69,7 @@ export interface AthleteSummary {
 export interface AthleteSyncSummary {
 	readonly athlete_load: AthleteLoad;
 	readonly total_activities: number;
-	readonly synced_activities: Readonly<Array<SyncActivitySummary>>;
+	readonly synced_activities: Array<SyncActivitySummary>;
 	readonly athlete_summary: AthleteSummary;
 	readonly total_summary: number;
 	readonly total_detail: number;
@@ -80,7 +80,7 @@ export interface CompetitiveRoute {
 	readonly name: string;
 	readonly display_name: string;
 	readonly description: string;
-	readonly segments: Readonly<Array<SegmentSummary>>;
+	readonly segments: Array<SegmentSummary>;
 }
 
 // From modelsdk/route.go
@@ -93,8 +93,8 @@ export interface DetailedSegment {
 	readonly maximum_grade: number;
 	readonly elevation_high: number;
 	readonly elevation_low: number;
-	readonly start_latlng: Readonly<Array<number>>;
-	readonly end_latlng: Readonly<Array<number>>;
+	readonly start_latlng: Array<number>;
+	readonly end_latlng: Array<number>;
 	readonly elevation_profile: string;
 	readonly climb_category: number;
 	readonly city: string;
@@ -116,7 +116,7 @@ export interface DetailedSegment {
 export interface HugelLeaderBoard {
 	readonly personal_best?: HugelLeaderBoardActivity;
 	readonly superlatives: SuperlativeList;
-	readonly activities: Readonly<Array<HugelLeaderBoardActivity>>;
+	readonly activities: Array<HugelLeaderBoardActivity>;
 }
 
 // From modelsdk/athlete.go
@@ -126,7 +126,7 @@ export interface HugelLeaderBoardActivity {
 	readonly athlete_id: string;
 	readonly elapsed: number;
 	readonly rank: number;
-	readonly efforts: Readonly<Array<SegmentEffort>>;
+	readonly efforts: Array<SegmentEffort>;
 	readonly athlete: MinAthlete;
 	readonly activity_name: string;
 	readonly activity_distance: number;
@@ -203,7 +203,7 @@ export interface SegmentSummary {
 // From modelsdk/athlete.go
 export interface SuperHugelLeaderBoard {
 	readonly personal_best?: SuperHugelLeaderBoardActivity;
-	readonly activities: Readonly<Array<SuperHugelLeaderBoardActivity>>;
+	readonly activities: Array<SuperHugelLeaderBoardActivity>;
 }
 
 // From modelsdk/athlete.go
@@ -212,7 +212,7 @@ export interface SuperHugelLeaderBoardActivity {
 	readonly athlete_id: string;
 	readonly elapsed: number;
 	readonly rank: number;
-	readonly efforts: Readonly<Array<SegmentEffort>>;
+	readonly efforts: Array<SegmentEffort>;
 	readonly athlete: MinAthlete;
 }
 
@@ -225,7 +225,7 @@ export interface SyncActivitySummary {
 
 // From modelsdk/route.go
 export interface VerifyRouteResponse {
-	readonly missing_segments: Readonly<Array<SegmentSummary>>;
+	readonly missing_segments: Array<SegmentSummary>;
 }
 
 // From modelsdk/int.go

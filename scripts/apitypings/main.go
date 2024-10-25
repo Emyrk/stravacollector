@@ -812,10 +812,10 @@ func (g *Generator) typescriptType(ty types.Type) (TypescriptType, error) {
 			genValue := ""
 
 			if underlying.GenericValue != "" {
-				genValue = "Readonly<Array<" + underlying.GenericValue + ">>"
+				genValue = "Array<" + underlying.GenericValue + ">"
 			}
 			return TypescriptType{
-				ValueType:     "Readonly<Array<" + underlying.ValueType + ">>",
+				ValueType:     "Array<" + underlying.ValueType + ">",
 				GenericValue:  genValue,
 				AboveTypeLine: underlying.AboveTypeLine,
 				GenericTypes:  underlying.GenericTypes,
