@@ -357,7 +357,7 @@ type Maps struct {
 
 // objName prepends the package name of a type if it is outside of modelsdk.
 func objName(obj types.Object) string {
-	if pkgName := obj.Pkg().Name(); pkgName != "modelsdk" && pkgName != "superlative" {
+	if pkgName := obj.Pkg().Name(); pkgName != "modelsdk" {
 		return cases.Title(language.English).String(pkgName) + obj.Name()
 	}
 	return obj.Name()

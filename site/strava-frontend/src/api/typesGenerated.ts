@@ -115,7 +115,7 @@ export interface DetailedSegment {
 // From modelsdk/athlete.go
 export interface HugelLeaderBoard {
 	readonly personal_best?: HugelLeaderBoardActivity;
-	readonly superlatives: List;
+	readonly superlatives: SuperlativeList;
 	readonly activities: Readonly<Array<HugelLeaderBoardActivity>>;
 }
 
@@ -239,24 +239,24 @@ export const StringInts: StringInt[] = []
 // The code below is generated from api/superlative.
 
 // From superlative/superlative.go
-export interface Entry<T extends comparable> {
+export interface SuperlativeEntry<T extends comparable> {
 	readonly activity_id: string;
 	readonly value: T;
 }
 
 // From superlative/superlative.go
-export interface List {
-	readonly early_bird: Entry<string>;
-	readonly night_owl: Entry<string>;
-	readonly most_stoppage: Entry<number>;
-	readonly least_stoppage: Entry<number>;
-	readonly most_watts: Entry<number>;
-	readonly most_cadence: Entry<number>;
-	readonly least_cadence: Entry<number>;
-	readonly most_suffer: Entry<number>;
-	readonly most_achievements: Entry<number>;
-	readonly longest_ride: Entry<number>;
-	readonly shortest_ride: Entry<number>;
+export interface SuperlativeList {
+	readonly early_bird: SuperlativeEntry<string>;
+	readonly night_owl: SuperlativeEntry<string>;
+	readonly most_stoppage: SuperlativeEntry<number>;
+	readonly least_stoppage: SuperlativeEntry<number>;
+	readonly most_watts: SuperlativeEntry<number>;
+	readonly most_cadence: SuperlativeEntry<number>;
+	readonly least_cadence: SuperlativeEntry<number>;
+	readonly most_suffer: SuperlativeEntry<number>;
+	readonly most_achievements: SuperlativeEntry<number>;
+	readonly longest_ride: SuperlativeEntry<number>;
+	readonly shortest_ride: SuperlativeEntry<number>;
 }
 
 export type comparable = boolean | number | string | any
