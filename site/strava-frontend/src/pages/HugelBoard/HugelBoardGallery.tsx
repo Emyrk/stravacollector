@@ -13,6 +13,8 @@ import {
   VisuallyHidden,
   GridItem,
   FlexProps,
+  Stack,
+  AvatarGroup,
 } from "@chakra-ui/react";
 import {
   HugelLeaderBoardActivity,
@@ -67,6 +69,11 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
         </GridItem>
         <GridItem colSpan={3}>
           <Flex
+            gap={{
+              // 6
+              lg: "6",
+              md: "1",
+            }}
             flexDirection={{
               base: "column",
               lg: "row",
@@ -127,8 +134,19 @@ const GalleryCard: React.FC<{
 
   const isSuper = !("activity_name" in activity);
 
+  // TODO: Pass in superlatives somehow
+  const superlatives: string[] = [];
+
   return (
     <GalleryCardBox>
+      {/* Superlatives */}
+      <Box position="relative" top="0px" left="0px">
+        <Stack dir="column" position={"absolute"} top="70px" left="-20px">
+          {superlatives.map((item) => (
+            <Avatar key={item} src={""} name={item} />
+          ))}
+        </Stack>
+      </Box>
       <Flex justifyContent={"space-between"}>
         <Flex p={3}>
           <AthleteAvatar
@@ -253,7 +271,7 @@ const GalleryCardBox: React.FC<PropsWithChildren<BoxProps>> = ({
   ...props
 }) => {
   return (
-    <ResponsiveCard m={"10px"} w="100%" maxW="350px" h="270px" {...props}>
+    <ResponsiveCard m={"10px"} w="350px" maxW="350px" h="270px" {...props}>
       {children}
     </ResponsiveCard>
   );
