@@ -3,7 +3,7 @@ package superlative
 import (
 	"time"
 
-	"github.com/Emyrk/strava/api/modelsdk"
+	"github.com/Emyrk/strava/api/modelsdk/sdktype"
 	"github.com/Emyrk/strava/database"
 )
 
@@ -27,12 +27,12 @@ type List struct {
 }
 
 type Entry[T comparable] struct {
-	Activity modelsdk.StringInt `json:"activity_id"`
-	Value    T                  `json:"value"`
+	Activity sdktype.StringInt `json:"activity_id"`
+	Value    T                 `json:"value"`
 }
 
 func entry[T comparable](id int64, v T) Entry[T] {
-	return Entry[T]{Activity: modelsdk.StringInt(id), Value: v}
+	return Entry[T]{Activity: sdktype.StringInt(id), Value: v}
 }
 
 func Parse(activities []database.HugelLeaderboardRow) List {
