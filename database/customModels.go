@@ -10,7 +10,9 @@ import (
 	"github.com/lib/pq"
 )
 
-type SegmentEfforts struct {
+type HugelSegmentEfforts []HugelSegmentEffort
+
+type HugelSegmentEffort struct {
 	ActivityID   int64     `json:"activity_id"`
 	EffortID     int64     `json:"effort_id"`
 	StartDate    time.Time `json:"start_date"`
@@ -21,7 +23,7 @@ type SegmentEfforts struct {
 	AverageWatts float64   `json:"average_watts"`
 }
 
-func (a *SegmentEfforts) Scan(src interface{}) error {
+func (a *HugelSegmentEfforts) Scan(src interface{}) error {
 	switch v := src.(type) {
 	case string:
 		return json.Unmarshal([]byte(v), &a)
@@ -31,7 +33,7 @@ func (a *SegmentEfforts) Scan(src interface{}) error {
 	return fmt.Errorf("unexpected type %T", src)
 }
 
-func (a *SegmentEfforts) Value() (driver.Value, error) {
+func (a *HugelSegmentEfforts) Value() (driver.Value, error) {
 	return json.Marshal(a)
 }
 

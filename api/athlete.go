@@ -325,7 +325,7 @@ func convertHugelAthleteActivity(activity database.AthleteHugelActivitesRow) mod
 	}
 }
 
-func convertHugelSegmentEfforts(dbEfforts []database.SegmentEfforts) []modelsdk.SegmentEffort {
+func convertHugelSegmentEfforts(dbEfforts []database.HugelSegmentEffort) []modelsdk.SegmentEffort {
 	var efforts []modelsdk.SegmentEffort
 	for _, e := range dbEfforts {
 		efforts = append(efforts, modelsdk.SegmentEffort{

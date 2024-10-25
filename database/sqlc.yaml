@@ -17,7 +17,7 @@ sql:
             go_type:
               import: ""
               package: ""
-              type: "[]SegmentEfforts"
+              type: "HugelSegmentEfforts"
           - column: "segments.start_latlng"
             go_type:
               import: ""
