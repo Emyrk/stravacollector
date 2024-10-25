@@ -2,6 +2,8 @@ package modelsdk
 
 import (
 	"time"
+
+	"github.com/Emyrk/strava/api/superlative"
 )
 
 type AthleteHugelActivity struct {
@@ -87,6 +89,7 @@ type AthleteSummary struct {
 
 type HugelLeaderBoard struct {
 	PersonalBest *HugelLeaderBoardActivity  `json:"personal_best,omitempty"`
+	Superlatives superlative.List           `json:"superlatives"`
 	Activities   []HugelLeaderBoardActivity `json:"activities"`
 }
 

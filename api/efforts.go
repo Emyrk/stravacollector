@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Emyrk/strava/api/superlative"
 	"github.com/go-chi/chi/v5"
 
 	"github.com/Emyrk/strava/api/httpapi"
@@ -211,6 +212,8 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 		PersonalBest: nil,
 		Activities:   convertHugelActivities(activities),
 	}
+
+	board.Superlatives = superlative.Parse(activities)
 
 	if athleteLoggedIn {
 		for _, act := range board.Activities {
