@@ -288,27 +288,13 @@ func convertHugelActivities(activites []database.HugelLeaderboardRow) []modelsdk
 }
 
 func convertHugelActivity(activity database.HugelLeaderboardRow) modelsdk.HugelLeaderBoardActivity {
-	var efforts []modelsdk.SegmentEffort
-	for _, e := range activity.Efforts {
-		efforts = append(efforts, modelsdk.SegmentEffort{
-			ActivityID:   modelsdk.StringInt(e.ActivityID),
-			EffortID:     modelsdk.StringInt(e.EffortID),
-			StartDate:    e.StartDate,
-			SegmentID:    modelsdk.StringInt(e.SegmentID),
-			ElapsedTime:  int64(e.ElapsedTime),
-			MovingTime:   int64(e.MovingTime),
-			DeviceWatts:  e.DeviceWatts,
-			AverageWatts: e.AverageWatts,
-		})
-	}
-
 	return modelsdk.HugelLeaderBoardActivity{
 		RankOneElapsed: activity.BestTime,
 		ActivityID:     modelsdk.StringInt(activity.ActivityID),
 		AthleteID:      modelsdk.StringInt(activity.AthleteID),
 		Elapsed:        activity.TotalTimeSeconds,
 		Rank:           activity.Rank,
-		Efforts:        efforts,
+		Efforts:        convertHugelSegmentEfforts(activity.Efforts),
 		Athlete: modelsdk.MinAthlete{
 			AthleteID:      modelsdk.StringInt(activity.AthleteID),
 			Username:       activity.Username,
@@ -324,5 +310,7 @@ func convertHugelActivity(activity database.HugelLeaderboardRow) modelsdk.HugelL
 		ActivityElapsedTime:        int64(activity.ElapsedTime),
 		ActivityStartDate:          activity.StartDate,
 		ActivityTotalElevationGain: activity.TotalElevationGain,
+		ActivitySufferScore:        int(activity.SufferScore),
+		ActivityAchievementCount:   int(activity.AchievementCount),
 	}
 }

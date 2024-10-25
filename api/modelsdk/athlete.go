@@ -106,6 +106,8 @@ type HugelLeaderBoardActivity struct {
 	ActivityElapsedTime        int64     `json:"activity_elapsed_time"`
 	ActivityStartDate          time.Time `json:"activity_start_date"`
 	ActivityTotalElevationGain float64   `json:"activity_total_elevation_gain"`
+	ActivitySufferScore        int       `json:"activity_suffer_score"`
+	ActivityAchievementCount   int       `json:"activity_achievement_count"`
 }
 
 type SuperHugelLeaderBoard struct {

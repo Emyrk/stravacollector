@@ -32,6 +32,9 @@ SELECT
 	activity_summary.elapsed_time,
 	activity_summary.total_elevation_gain,
 	activity_summary.start_date,
+	activity_summary.achievement_count,
+
+	activity_detail.suffer_score,
 
 	athletes.firstname,
 	athletes.lastname,
@@ -54,6 +57,8 @@ INNER JOIN athlete_hugel_count AS hugel_count
 	ON hugel_count.athlete_id = athlete_bests.athlete_id
 INNER JOIN
 	activity_summary ON athlete_bests.activity_id = activity_summary.id
+INNER JOIN
+	activity_detail ON athlete_bests.activity_id = activity_detail.id
 WHERE
     CASE WHEN @athlete_id > 0 THEN athlete_bests.athlete_id = @athlete_id ELSE TRUE END
     AND

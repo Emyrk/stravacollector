@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -319,11 +318,26 @@ func convertHugelAthleteActivities(activities []database.AthleteHugelActivitesRo
 }
 
 func convertHugelAthleteActivity(activity database.AthleteHugelActivitesRow) modelsdk.AthleteHugelActivity {
-	var efforts []modelsdk.SegmentEffort
-	_ = json.Unmarshal(activity.HugelActivity.Efforts, &efforts)
 	return modelsdk.AthleteHugelActivity{
 		Summary:          convertActivitySummary(activity.ActivitySummary),
-		Efforts:          efforts,
+		Efforts:          convertHugelSegmentEfforts(activity.HugelActivity.Efforts),
 		TotalTimeSeconds: activity.HugelActivity.TotalTimeSeconds,
 	}
+}
+
+func convertHugelSegmentEfforts(dbEfforts []database.SegmentEfforts) []modelsdk.SegmentEffort {
+	var efforts []modelsdk.SegmentEffort
+	for _, e := range dbEfforts {
+		efforts = append(efforts, modelsdk.SegmentEffort{
+			ActivityID:   modelsdk.StringInt(e.ActivityID),
+			EffortID:     modelsdk.StringInt(e.EffortID),
+			StartDate:    e.StartDate,
+			SegmentID:    modelsdk.StringInt(e.SegmentID),
+			ElapsedTime:  int64(e.ElapsedTime),
+			MovingTime:   int64(e.MovingTime),
+			DeviceWatts:  e.DeviceWatts,
+			AverageWatts: e.AverageWatts,
+		})
+	}
+	return efforts
 }

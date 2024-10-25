@@ -1394,6 +1394,9 @@ SELECT
 	activity_summary.elapsed_time,
 	activity_summary.total_elevation_gain,
 	activity_summary.start_date,
+	activity_summary.achievement_count,
+
+	activity_detail.suffer_score,
 
 	athletes.firstname,
 	athletes.lastname,
@@ -1416,6 +1419,8 @@ INNER JOIN athlete_hugel_count AS hugel_count
 	ON hugel_count.athlete_id = athlete_bests.athlete_id
 INNER JOIN
 	activity_summary ON athlete_bests.activity_id = activity_summary.id
+INNER JOIN
+	activity_detail ON athlete_bests.activity_id = activity_detail.id
 WHERE
     CASE WHEN $1 > 0 THEN athlete_bests.athlete_id = $1 ELSE TRUE END
     AND
@@ -1447,6 +1452,8 @@ type HugelLeaderboardRow struct {
 	ElapsedTime        float64          `db:"elapsed_time" json:"elapsed_time"`
 	TotalElevationGain float64          `db:"total_elevation_gain" json:"total_elevation_gain"`
 	StartDate          time.Time        `db:"start_date" json:"start_date"`
+	AchievementCount   int32            `db:"achievement_count" json:"achievement_count"`
+	SufferScore        int32            `db:"suffer_score" json:"suffer_score"`
 	Firstname          string           `db:"firstname" json:"firstname"`
 	Lastname           string           `db:"lastname" json:"lastname"`
 	Username           string           `db:"username" json:"username"`
@@ -1477,6 +1484,8 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardP
 			&i.ElapsedTime,
 			&i.TotalElevationGain,
 			&i.StartDate,
+			&i.AchievementCount,
+			&i.SufferScore,
 			&i.Firstname,
 			&i.Lastname,
 			&i.Username,
