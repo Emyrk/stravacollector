@@ -1285,7 +1285,7 @@ func (q *sqlQuerier) AthleteHugelActivites(ctx context.Context, athleteID int64)
 			&i.HugelActivity.AthleteID,
 			&i.HugelActivity.SegmentIds,
 			&i.HugelActivity.TotalTimeSeconds,
-			&i.HugelActivity.Efforts,
+			pq.Array(&i.HugelActivity.Efforts),
 			&i.ActivitySummary.ID,
 			&i.ActivitySummary.AthleteID,
 			&i.ActivitySummary.UploadID,
@@ -1435,24 +1435,24 @@ type HugelLeaderboardParams struct {
 }
 
 type HugelLeaderboardRow struct {
-	BestTime           int64          `db:"best_time" json:"best_time"`
-	Rank               int64          `db:"rank" json:"rank"`
-	ActivityID         int64          `db:"activity_id" json:"activity_id"`
-	AthleteID          int64          `db:"athlete_id" json:"athlete_id"`
-	TotalTimeSeconds   int64          `db:"total_time_seconds" json:"total_time_seconds"`
-	Efforts            SegmentEfforts `db:"efforts" json:"efforts"`
-	Name               string         `db:"name" json:"name"`
-	Distance           float64        `db:"distance" json:"distance"`
-	MovingTime         float64        `db:"moving_time" json:"moving_time"`
-	ElapsedTime        float64        `db:"elapsed_time" json:"elapsed_time"`
-	TotalElevationGain float64        `db:"total_elevation_gain" json:"total_elevation_gain"`
-	StartDate          time.Time      `db:"start_date" json:"start_date"`
-	Firstname          string         `db:"firstname" json:"firstname"`
-	Lastname           string         `db:"lastname" json:"lastname"`
-	Username           string         `db:"username" json:"username"`
-	ProfilePicLink     string         `db:"profile_pic_link" json:"profile_pic_link"`
-	Sex                string         `db:"sex" json:"sex"`
-	HugelCount         int64          `db:"hugel_count" json:"hugel_count"`
+	BestTime           int64            `db:"best_time" json:"best_time"`
+	Rank               int64            `db:"rank" json:"rank"`
+	ActivityID         int64            `db:"activity_id" json:"activity_id"`
+	AthleteID          int64            `db:"athlete_id" json:"athlete_id"`
+	TotalTimeSeconds   int64            `db:"total_time_seconds" json:"total_time_seconds"`
+	Efforts            []SegmentEfforts `db:"efforts" json:"efforts"`
+	Name               string           `db:"name" json:"name"`
+	Distance           float64          `db:"distance" json:"distance"`
+	MovingTime         float64          `db:"moving_time" json:"moving_time"`
+	ElapsedTime        float64          `db:"elapsed_time" json:"elapsed_time"`
+	TotalElevationGain float64          `db:"total_elevation_gain" json:"total_elevation_gain"`
+	StartDate          time.Time        `db:"start_date" json:"start_date"`
+	Firstname          string           `db:"firstname" json:"firstname"`
+	Lastname           string           `db:"lastname" json:"lastname"`
+	Username           string           `db:"username" json:"username"`
+	ProfilePicLink     string           `db:"profile_pic_link" json:"profile_pic_link"`
+	Sex                string           `db:"sex" json:"sex"`
+	HugelCount         int64            `db:"hugel_count" json:"hugel_count"`
 }
 
 func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardParams) ([]HugelLeaderboardRow, error) {
@@ -1470,7 +1470,7 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardP
 			&i.ActivityID,
 			&i.AthleteID,
 			&i.TotalTimeSeconds,
-			&i.Efforts,
+			pq.Array(&i.Efforts),
 			&i.Name,
 			&i.Distance,
 			&i.MovingTime,

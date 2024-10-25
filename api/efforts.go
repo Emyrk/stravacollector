@@ -289,7 +289,19 @@ func convertHugelActivities(activites []database.HugelLeaderboardRow) []modelsdk
 
 func convertHugelActivity(activity database.HugelLeaderboardRow) modelsdk.HugelLeaderBoardActivity {
 	var efforts []modelsdk.SegmentEffort
-	_ = json.Unmarshal(activity.Efforts, &efforts)
+	for _, e := range activity.Efforts {
+		efforts = append(efforts, modelsdk.SegmentEffort{
+			ActivityID:   modelsdk.StringInt(e.ActivityID),
+			EffortID:     modelsdk.StringInt(e.EffortID),
+			StartDate:    e.StartDate,
+			SegmentID:    modelsdk.StringInt(e.SegmentID),
+			ElapsedTime:  int64(e.ElapsedTime),
+			MovingTime:   int64(e.MovingTime),
+			DeviceWatts:  e.DeviceWatts,
+			AverageWatts: e.AverageWatts,
+		})
+	}
+
 	return modelsdk.HugelLeaderBoardActivity{
 		RankOneElapsed: activity.BestTime,
 		ActivityID:     modelsdk.StringInt(activity.ActivityID),

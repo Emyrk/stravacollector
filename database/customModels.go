@@ -11,10 +11,10 @@ import (
 )
 
 type SegmentEfforts struct {
-	ActivityID   string    `json:"activity_id"`
-	EffortID     string    `json:"effort_id"`
+	ActivityID   int64     `json:"activity_id"`
+	EffortID     int64     `json:"effort_id"`
 	StartDate    time.Time `json:"start_date"`
-	SegmentID    string    `json:"segment_id"`
+	SegmentID    int       `json:"segment_id"`
 	ElapsedTime  int       `json:"elapsed_time"`
 	MovingTime   int       `json:"moving_time"`
 	DeviceWatts  bool      `json:"device_watts"`
