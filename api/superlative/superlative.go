@@ -8,8 +8,8 @@ import (
 )
 
 type List struct {
-	EarliestStart Entry[time.Time] `json:"early_bird"`
-	LatestEnd     Entry[time.Time] `json:"night_owl"`
+	EarliestStart Entry[time.Time] `json:"earliest_start"`
+	LatestEnd     Entry[time.Time] `json:"latest_end"`
 	// MostStoppage value is in seconds
 	MostStoppage Entry[int64] `json:"most_stoppage"`
 	// LeastStoppage value is in seconds

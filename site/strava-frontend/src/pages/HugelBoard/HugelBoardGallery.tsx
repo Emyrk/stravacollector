@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from "react";
+import { act, FC, PropsWithChildren } from "react";
 import { HugelBoardProps } from "./HugelBoard";
 import {
   Flex,
@@ -19,6 +19,7 @@ import {
 import {
   HugelLeaderBoardActivity,
   SuperHugelLeaderBoardActivity,
+  SuperlativeEntry,
 } from "../../api/typesGenerated";
 import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
 import {
@@ -32,6 +33,7 @@ import { CardStat } from "../../components/CardStat/CardStat";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Loading } from "../../components/Loading/Loading";
+import { Superlative } from "../../components/Superlative/Superlative";
 
 export const HugelBoardGallery: FC<HugelBoardProps> = ({
   data,
@@ -50,6 +52,19 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
       </>
     );
   }
+
+  var superlatives: Record<string, Record<string, SuperlativeEntry<any>>> = {};
+  if (data && "superlatives" in data) {
+    for (const [key, value] of Object.entries(data.superlatives)) {
+      const entry = value as SuperlativeEntry<any>;
+      if (!superlatives[entry.activity_id]) {
+        superlatives[entry.activity_id] = {};
+      }
+
+      superlatives[entry.activity_id][key] = entry;
+    }
+  }
+
   return (
     <>
       <Grid
@@ -87,17 +102,30 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
             <GalleryCard activity={data?.activities[2]} position={3} />
           </Flex>
         </GridItem>
-        {data?.activities.slice(3).map((activity, index) => (
-          <GridItem
-            key={`activity-${index}`}
-            colSpan={{
-              base: 3,
-              lg: 1,
-            }}
-          >
-            <GalleryCard activity={activity} position={index + 4} />
-          </GridItem>
-        ))}
+        {data?.activities.slice(3).map((activity, index) => {
+          let athSuperlatives:
+            | Record<string, SuperlativeEntry<any>>
+            | undefined = undefined;
+          if (superlatives && "activity_id" in activity) {
+            athSuperlatives = superlatives[activity.activity_id as string];
+          }
+
+          return (
+            <GridItem
+              key={`activity-${index}`}
+              colSpan={{
+                base: 3,
+                lg: 1,
+              }}
+            >
+              <GalleryCard
+                activity={activity}
+                position={index + 4}
+                superlatives={athSuperlatives}
+              />
+            </GridItem>
+          );
+        })}
       </Grid>
     </>
   );
@@ -112,7 +140,8 @@ const SkeletonGalleryCard: React.FC<{
 const GalleryCard: React.FC<{
   activity?: HugelLeaderBoardActivity | SuperHugelLeaderBoardActivity;
   position: number;
-}> = ({ activity, position }) => {
+  superlatives?: Record<string, SuperlativeEntry<any>>;
+}> = ({ activity, position, superlatives }) => {
   if (!activity) {
     return <GalleryCardBox display="none" />;
   }
@@ -134,17 +163,22 @@ const GalleryCard: React.FC<{
 
   const isSuper = !("activity_name" in activity);
 
-  // TODO: Pass in superlatives somehow
-  const superlatives: string[] = [];
-
   return (
     <GalleryCardBox>
       {/* Superlatives */}
       <Box position="relative" top="0px" left="0px">
         <Stack dir="column" position={"absolute"} top="70px" left="-20px">
-          {superlatives.map((item) => (
-            <Avatar key={item} src={""} name={item} />
-          ))}
+          {
+            superlatives &&
+              Object.entries(superlatives).map(([key, value]) => {
+                return <Superlative category={key} entry={value} />;
+              })
+
+            // Object.entries(superlatives).map((item) => (
+            //   <Superlative category="earliest_start" />
+            //   // <Avatar key={item} src={""} name={item} />
+            // ))
+          }
         </Stack>
       </Box>
       <Flex justifyContent={"space-between"}>
