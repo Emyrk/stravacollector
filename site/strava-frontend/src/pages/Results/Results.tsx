@@ -16,7 +16,12 @@ import {
   StravaConnect,
   StravaConnectHref,
 } from "../../components/Navbar/StravaConnect";
-import { faFlagCheckered, faList } from "@fortawesome/free-solid-svg-icons";
+import {
+  faList,
+  faMountain,
+  faMountainCity,
+  faMound,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LandingCard } from "../Landing/Landing";
 export const Results: FC<{}> = ({}) => {
@@ -33,83 +38,74 @@ export const Results: FC<{}> = ({}) => {
           textAlign={"center"}
           align={"center"}
           spacing={{ base: 8, md: 10 }}
-          py={{ base: 20, md: 28 }}
+          py={{ base: 12, md: 16 }}
         >
           <Heading
             fontWeight={600}
             fontSize={{ base: "3xl", sm: "4xl", md: "6xl" }}
             lineHeight={"110%"}
           >
-            Welcome to the{" "}
-            <Text as={"span"} color={"brand.stravaOrange"}>
-              Tour Das Hügel
-            </Text>
+            Tour Das Hügel Results
           </Heading>
           <Text color={"gray.300"} maxW={"3xl"}>
-            Austin, Texas is home to the notorious Tour das Hügel, a challenging
-            bike route with over 110 miles of strenuous climbs that reach a
-            total elevation gain of over 11,500 feet. To help cyclists stay safe
-            and get the most out of their experience, we offer a timing system
-            that exclusively records times on the iconic climbs (segments).
-            Because this is an unsanctioned event held on open roads, our system
-            ensures riders are not penalized for things like stop signs or
-            traffic congestion.
+            Congratulations on finishing the Tour Das Hügel! Explore our
+            leaderboards below to see how you stack up against other athletes.
           </Text>
           <Stack spacing={6} direction={{ base: "column", md: "row" }}>
             <LandingCard
-              heading={"Connect to Strava"}
-              icon={<StravaConnect useSquareLogo={true} />}
+              heading={"2024 Das Hügel"}
+              icon={<FontAwesomeIcon icon={faMountain} size="2x" />}
               description={
-                "Link your Strava account to our site to explore your stats."
+                "See how you did on the Hügel this year and find out who won our superlatives."
               }
               hrefText={"Connect"}
-              href={StravaConnectHref()}
+              href={"/hugelboard/2024"}
             />
             <LandingCard
-              heading={"Ride Das Hügel"}
-              icon={<FontAwesomeIcon icon={faFlagCheckered} size="2x" />}
+              heading={"2024 Hügel Lite"}
+              icon={<FontAwesomeIcon icon={faMound} size="2x" />}
               description={
-                "Challenge yourself on this epic ride and see how you compare to others!"
+                "Full Hügel not in the cards this year? See how you did on the first 40 miles!"
               }
               hrefText={"Route"}
-              href={"/route/das-hugel"}
+              href={"/hugelboard/2024"}
             />
             <LandingCard
-              heading={"Explore Your Stats"}
+              heading={"Super Hügel"}
               icon={<FontAwesomeIcon icon={faList} size="2x" />}
-              description={"See results for all participating athletes."}
+              description={
+                "Improve your time on each individual segment to become the ultimate Hügeler."
+              }
               hrefText={"Results"}
-              href={"/hugelboard"}
+              href={"/superhugelboard"}
             />
-
-            {/* <LandingCard
-          heading={"Wait to Sync"}
-          icon={<FontAwesomeIcon icon={faSpinner} size="2x" />}
-          description={
-            "Our API may be slow to load due to our current alpha stage. We are actively working on improving its speed and performance. Please come back after signing in and your data should be available shortly. Thank you for your patience!"
-          }
-          href={"#"}
-        /> */}
-            {/* <Button
-          rounded={"full"}
-          px={6}
-          colorScheme={"orange"}
-          bg={"orange.400"}
-          _hover={{ bg: "orange.500" }}
-        >
-          Get started
-        </Button>
-        <Button rounded={"full"} px={6}>
-          Learn more
-        </Button> */}
           </Stack>
-          <Flex w={"full"}>
-            {/* <chakra.img
-        src="/img/hill-rider.svg"
-        height={{ sm: "24rem", lg: "28rem" }}
-        mt={{ base: 12, sm: 16 }}
-      /> */}
-          </Flex>
+          <Stack
+            textAlign={"center"}
+            align={"center"}
+            spacing={{ base: 8, md: 10 }}
+            py={{ base: 8, md: 12 }}
+          >
+            <Heading
+              fontWeight={400}
+              fontSize={{ base: "1xl", sm: "2xl", md: "4xl" }}
+              lineHeight={"110%"}
+            >
+              Tour Das Hügel Hall of Fame
+            </Heading>
+
+            <Heading
+              fontWeight={400}
+              fontSize={{ base: "xl" }}
+              lineHeight={"110%"}
+            >
+              <Link as={RouteLink} to={"/hugelboard/2023"}>
+                <Button variant={"link"} color="brand.stravaOrange" size={"xl"}>
+                  2023 Das Hügel
+                </Button>
+              </Link>
+            </Heading>
+          </Stack>
         </Stack>
       </Container>
     </Flex>

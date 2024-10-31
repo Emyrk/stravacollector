@@ -61,7 +61,7 @@ export const App = () => {
                 {/* Navbar and statics */}
                 <Route path="/" element={<Landing />} />
                 <Route path="/athlete/:athlete_id" element={<AthletePage />} />
-                <Route path="/hugelboard" element={<HugelBoard />} />
+                <Route path="/hugelboard/:year" element={<HugelBoard />} />
                 <Route path="/superhugelboard" element={<SuperHugelBoard />} />
                 <Route path="/results" element={<Results />} />
                 <Route path="/activity/:activity_id" element={<Activity />} />

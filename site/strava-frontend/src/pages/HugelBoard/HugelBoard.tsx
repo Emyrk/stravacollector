@@ -43,6 +43,7 @@ import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
 import * as TypesGen from "./../../api/typesGenerated";
 import { HugelBoardGallery } from "./HugelBoardGallery";
 import { HugelBoardTable } from "./HugelBoardTable";
+import { useParams } from "react-router-dom";
 
 export interface HugelBoardProps {
   data?: TypesGen.HugelLeaderBoard | TypesGen.SuperHugelLeaderBoard;
@@ -53,12 +54,10 @@ export interface HugelBoardProps {
 
 export const HugelBoard: FC = () => {
   const params = new URLSearchParams(window.location.search);
-  var year = 2024;
 
-  const yearParam = params.get("year");
-  if (yearParam) {
-    year = parseInt(yearParam);
-  }
+  const { year } = useParams();
+  // Default to this year
+  const yearNumber = parseInt(year || "2024");
 
   const queryKey = ["hugel-leaderboard"];
   const {
@@ -68,7 +67,7 @@ export const HugelBoard: FC = () => {
     isFetched: hugelFetched,
   } = useQuery({
     queryKey,
-    queryFn: () => getHugelLeaderBoard(year),
+    queryFn: () => getHugelLeaderBoard(yearNumber),
   });
 
   return (

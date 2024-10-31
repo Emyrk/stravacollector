@@ -34,6 +34,7 @@ import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Loading } from "../../components/Loading/Loading";
 import { Superlative } from "../../components/Superlative/Superlative";
+import { ErrorBox } from "../../components/ErrorBox/ErrorBox";
 
 export const HugelBoardGallery: FC<HugelBoardProps> = ({
   data,
@@ -43,6 +44,9 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
 }) => {
   if (isLoading) {
     return <Loading />;
+  }
+  if (error) {
+    return <ErrorBox error={error.toString()} />;
   }
   if (data && data.activities.length === 0) {
     return (
