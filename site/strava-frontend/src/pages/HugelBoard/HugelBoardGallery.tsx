@@ -65,6 +65,16 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
     }
   }
 
+  var athSuperlatives = (
+    activity?: SuperHugelLeaderBoardActivity | HugelLeaderBoardActivity
+  ): Record<string, SuperlativeEntry<any>> | undefined => {
+    // let sups: Record<string, SuperlativeEntry<any>> | undefined = undefined;
+    if (superlatives && activity && "activity_id" in activity) {
+      return superlatives[activity.activity_id as string];
+    }
+    return undefined;
+  };
+
   return (
     <>
       <Grid
@@ -98,18 +108,19 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
             alignItems={"center"}
             justifyContent={"center"}
           >
-            <GalleryCard activity={data?.activities[1]} position={2} />
-            <GalleryCard activity={data?.activities[2]} position={3} />
+            <GalleryCard
+              activity={data?.activities[1]}
+              position={2}
+              superlatives={athSuperlatives(data?.activities[1])}
+            />
+            <GalleryCard
+              activity={data?.activities[2]}
+              position={3}
+              superlatives={athSuperlatives(data?.activities[2])}
+            />
           </Flex>
         </GridItem>
         {data?.activities.slice(3).map((activity, index) => {
-          let athSuperlatives:
-            | Record<string, SuperlativeEntry<any>>
-            | undefined = undefined;
-          if (superlatives && "activity_id" in activity) {
-            athSuperlatives = superlatives[activity.activity_id as string];
-          }
-
           return (
             <GridItem
               key={`activity-${index}`}
@@ -121,7 +132,7 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
               <GalleryCard
                 activity={activity}
                 position={index + 4}
-                superlatives={athSuperlatives}
+                superlatives={athSuperlatives(activity)}
               />
             </GridItem>
           );

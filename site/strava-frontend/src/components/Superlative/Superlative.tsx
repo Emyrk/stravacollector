@@ -3,6 +3,11 @@ import { FC } from "react";
 import { SuperlativeEntry } from "../../api/typesGenerated";
 import { Tooltip, TooltipProps } from "@chakra-ui/react";
 import { ResponsiveCard } from "../ResponsiveCard/ResponsiveCard";
+import {
+  ElapsedDurationText,
+  FormatDate,
+  FormatDateTime,
+} from "../../pages/HugelBoard/CalcActivity";
 
 export type SuperlativeProps = AvatarProps & {
   category: string;
@@ -31,9 +36,18 @@ export const SuperlativeCard: FC<SuperlativeProps> = ({ category, entry }) => {
   const [title, value] = mutate(category, entry);
 
   return (
-    <ResponsiveCard width={"200px"} height={"100px"} border={"white"}>
+    <ResponsiveCard
+      width={"200px"}
+      height={"100px"}
+      border={"white"}
+      borderStyle={"solid"}
+      opacity={"99%"}
+      color={"white"}
+      p={"10px"}
+      // boxShadow={"#fc4c02 0px 3px 6px"}
+    >
       <Stack>
-        <Text>{title}</Text>
+        <Text fontSize={"2em"}>{title}</Text>
         <Text>{value}</Text>
       </Stack>
     </ResponsiveCard>
@@ -47,15 +61,22 @@ const mutate = (
   switch (category) {
     case "early_bird":
     case "earliest_start":
-      return ["Early Bird", entry.value as string];
+      const d = new Date(entry.value);
+      return ["Early Bird", `Started at ${FormatDateTime(entry.value)}!`];
     case "night_owl":
     case "latest_end":
-      return ["Night Owl", entry.value as string];
+      return ["Night Owl", `Ended at ${FormatDateTime(entry.value)}!`];
     case "most_stoppage":
-      return ["Most Relaxed", entry.value as string];
+      return [
+        "Most Relaxed",
+        `Total break of ${ElapsedDurationText(entry.value, false)}`,
+      ];
     case "least_stoppage":
       // TODO: Rename
-      return ["Extreme", entry.value as string];
+      return [
+        "Extreme",
+        `Total break of ${ElapsedDurationText(entry.value, false)}`,
+      ];
     case "most_watts":
       return ["Watt Machine", entry.value as string];
     case "most_cadence":

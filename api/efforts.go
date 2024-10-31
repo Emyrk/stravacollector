@@ -222,10 +222,7 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 		Activities:   convertHugelActivities(activities),
 	}
 
-	// TODO: this feels odd to have this condition twice.
-	if year == 2024 {
-		board.Superlatives = superlative.Parse(activities)
-	}
+	board.Superlatives = superlative.Parse(activities)
 
 	if athleteLoggedIn {
 		for _, act := range board.Activities {

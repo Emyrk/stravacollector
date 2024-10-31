@@ -3,18 +3,11 @@ import {
   Flex,
   Text,
   Box,
-  Grid,
-  VStack,
-  Code,
   Heading,
   useColorModeValue,
   Button,
   Container,
   Stack,
-  Image,
-  chakra,
-  useBreakpointValue,
-  Icon,
   useStyleConfig,
 } from "@chakra-ui/react";
 import { FC, ReactElement } from "react";
@@ -23,11 +16,7 @@ import {
   StravaConnect,
   StravaConnectHref,
 } from "../../components/Navbar/StravaConnect";
-import {
-  faSpinner,
-  faFlagCheckered,
-  faList,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFlagCheckered, faList } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const bgColors = {
@@ -140,7 +129,7 @@ interface LandingCardProps {
   hrefText: string;
 }
 
-const LandingCard = ({
+export const LandingCard = ({
   heading,
   description,
   icon,

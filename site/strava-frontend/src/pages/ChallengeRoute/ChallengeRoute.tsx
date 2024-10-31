@@ -501,6 +501,7 @@ const SegmentCard: FC<{
                   segment.personal_best
                     ? ElapsedDurationText(
                         segment.personal_best.best_effort_elapsed_time,
+                        true,
                         false
                       )
                     : "--:--"

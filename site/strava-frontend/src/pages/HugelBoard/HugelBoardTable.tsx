@@ -328,7 +328,7 @@ const EffortPair: FC<{
                   isTruncated: true,
                 }}
                 pb={index !== 0 ? "0px" : "10px"}
-                value={`${ElapsedDurationText(effort.elapsed_time, false)} @ ${
+                value={`${ElapsedDurationText(effort.elapsed_time, true, false)} @ ${
                   effort.device_watts
                     ? effort.average_watts.toFixed(0) + "w"
                     : "--"

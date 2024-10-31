@@ -36,6 +36,21 @@ export const FormatDate = (
   return new Date(data).toLocaleDateString(undefined, options);
 };
 
+export const FormatDateTime = (data: string): string => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: undefined,
+    month: undefined,
+    day: undefined,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  };
+  // 2022-11-27T15:42:54Z
+  // Dates come over in UTC
+  return new Date(data).toLocaleTimeString(undefined, options);
+};
+
 export const CalculateActivity = (
   activity: HugelLeaderBoardActivity | SuperHugelLeaderBoardActivity
 ): ActivityCalResults => {
@@ -79,6 +94,7 @@ export const CalculateActivity = (
     activity.activity_elapsed_time,
     true,
     true,
+    true,
     false
   );
   const elevationText = `${
@@ -104,13 +120,15 @@ export const CalculateActivity = (
 
 export const ElapsedDurationText = (
   seconds: number,
+  paddedHour: boolean = true,
   h: boolean = true,
   m: boolean = true,
   s: boolean = true
 ): string => {
   let msg = [];
   if (h) {
-    msg.push(`${PaddedNumber(Math.floor(seconds / 3600))}`);
+    const pad = paddedHour ? 2 : 1;
+    msg.push(`${PaddedNumber(Math.floor(seconds / 3600), pad)}`);
   }
   if (m) {
     msg.push(`${PaddedNumber(Math.floor(seconds / 60) % 60)}`);
@@ -121,8 +139,8 @@ export const ElapsedDurationText = (
   return msg.join(":");
 };
 
-const PaddedNumber = (num: number): string => {
-  return num.toString().padStart(2, "0");
+const PaddedNumber = (num: number, padLength: number = 2): string => {
+  return num.toString().padStart(padLength, "0");
 };
 
 export const SortSegments = (efforts: SegmentSummary[]): SegmentSummary[] => {
