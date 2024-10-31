@@ -39,7 +39,6 @@ import {
 import {
   getErrorDetail,
   getErrorMessage,
-  getHugelLeaderBoard,
   getHugelSegments,
 } from "../../api/rest";
 import { useMutation, useQuery } from "@tanstack/react-query";

@@ -52,10 +52,14 @@ export interface HugelBoardProps {
 }
 
 export const HugelBoard: FC = () => {
-  let present = true;
-  if (window.location.search.includes("all=true")) {
-    present = false;
+  const params = new URLSearchParams(window.location.search);
+  var year = 2024;
+
+  const yearParam = params.get("year");
+  if (yearParam) {
+    year = parseInt(yearParam);
   }
+
   const queryKey = ["hugel-leaderboard"];
   const {
     data: hugelLeaderboard,
@@ -64,7 +68,7 @@ export const HugelBoard: FC = () => {
     isFetched: hugelFetched,
   } = useQuery({
     queryKey,
-    queryFn: () => getHugelLeaderBoard(present),
+    queryFn: () => getHugelLeaderBoard(year),
   });
 
   return (

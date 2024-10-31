@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -170,7 +171,7 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 
 	before, _ := strconv.ParseInt(r.URL.Query().Get("before"), 10, 64)
 	after, _ := strconv.ParseInt(r.URL.Query().Get("after"), 10, 64)
-	present, _ := strconv.ParseBool(r.URL.Query().Get("present"))
+	year, _ := strconv.ParseInt(r.URL.Query().Get("year"), 10, 64)
 	var beforeTime time.Time
 	var afterTime time.Time
 	var activities []database.HugelLeaderboardRow
@@ -191,12 +192,20 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 			After:     afterTime,
 		})
 	} else {
-		if present {
+		switch year {
+		case 2023:
 			activities, err = api.HugelBoard2023Cache.Load(ctx)
-			beforeTime = hugeldate.StartHugel
-			afterTime = hugeldate.EndHugel
-		} else {
-			activities, err = api.HugelBoardCache.Load(ctx)
+			beforeTime = hugeldate.Year2023.Start
+			afterTime = hugeldate.Year2023.End
+		case 2024:
+			activities, err = api.HugelBoard2024Cache.Load(ctx)
+			beforeTime = hugeldate.Year2024.Start
+			afterTime = hugeldate.Year2024.End
+		default:
+			httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+				Message: fmt.Sprintf("Invalid year %d", year),
+			})
+			return
 		}
 	}
 
@@ -213,7 +222,10 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 		Activities:   convertHugelActivities(activities),
 	}
 
-	board.Superlatives = superlative.Parse(activities)
+	// TODO: this feels odd to have this condition twice.
+	if year == 2024 {
+		board.Superlatives = superlative.Parse(activities)
+	}
 
 	if athleteLoggedIn {
 		for _, act := range board.Activities {

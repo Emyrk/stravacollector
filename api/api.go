@@ -52,6 +52,7 @@ type API struct {
 	SuperHugelBoardCache *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]
 	HugelBoardCache      *gencache.LazyCache[[]database.HugelLeaderboardRow]
 	HugelBoard2023Cache  *gencache.LazyCache[[]database.HugelLeaderboardRow]
+	HugelBoard2024Cache  *gencache.LazyCache[[]database.HugelLeaderboardRow]
 	HugelRouteCache      *gencache.LazyCache[database.GetCompetitiveRouteRow]
 
 	// Metrics
@@ -107,8 +108,15 @@ func New(opts Options) (*API, error) {
 	api.HugelBoard2023Cache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
 		return api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
 			AthleteID: -1,
-			After:     hugeldate.StartHugel,
-			Before:    hugeldate.EndHugel,
+			After:     hugeldate.Year2023.Start,
+			Before:    hugeldate.Year2023.End,
+		})
+	})
+	api.HugelBoard2024Cache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+		return api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
+			AthleteID: -1,
+			After:     hugeldate.Year2024.Start,
+			Before:    hugeldate.Year2024.End,
 		})
 	})
 	api.HugelRouteCache = gencache.New(time.Minute, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {

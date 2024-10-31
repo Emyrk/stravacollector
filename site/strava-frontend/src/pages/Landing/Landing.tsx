@@ -19,7 +19,10 @@ import {
 } from "@chakra-ui/react";
 import { FC, ReactElement } from "react";
 import { Link as RouteLink } from "react-router-dom";
-import { StravaConnect } from "../../components/Navbar/StravaConnect";
+import {
+  StravaConnect,
+  StravaConnectHref,
+} from "../../components/Navbar/StravaConnect";
 import {
   faSpinner,
   faFlagCheckered,
@@ -53,16 +56,16 @@ export const Landing: FC = () => {
             fontSize={{ base: "3xl", sm: "4xl", md: "6xl" }}
             lineHeight={"110%"}
           >
-            Welcome to{" "}
+            Welcome to the{" "}
             <Text as={"span"} color={"brand.stravaOrange"}>
-              Tour Das Hügel!
+              Tour Das Hügel
             </Text>
           </Heading>
           <Text color={"gray.300"} maxW={"3xl"}>
             Austin, Texas is home to the notorious Tour das Hügel, a challenging
-            bike route with 111.5 miles of difficult climbs that reach a total
-            elevation gain of 11,669 feet. To help cyclists stay safe and get
-            the most out of their experience, our site provides a timing system
+            bike route with over 110 miles of strenuous climbs that reach a
+            total elevation gain of over 11,500 feet. To help cyclists stay safe
+            and get the most out of their experience, we offer a timing system
             that exclusively records times on the iconic climbs (segments).
             Because this is an unsanctioned event held on open roads, our system
             ensures riders are not penalized for things like stop signs or
@@ -70,13 +73,13 @@ export const Landing: FC = () => {
           </Text>
           <Stack spacing={6} direction={{ base: "column", md: "row" }}>
             <LandingCard
-              heading={"Connect With Strava"}
+              heading={"Connect to Strava"}
               icon={<StravaConnect useSquareLogo={true} />}
               description={
-                "Link your Strava account to our site to get started and access exclusive benefits."
+                "Link your Strava account to our site to explore your stats."
               }
-              hrefText={""}
-              href={""}
+              hrefText={"Connect"}
+              href={StravaConnectHref()}
             />
             <LandingCard
               heading={"Ride Das Hügel"}
@@ -84,15 +87,13 @@ export const Landing: FC = () => {
               description={
                 "Challenge yourself on this epic ride and see how you compare to others!"
               }
-              hrefText={"Hügel Route"}
+              hrefText={"Route"}
               href={"/route/das-hugel"}
             />
             <LandingCard
-              heading={"See Your Results"}
+              heading={"Explore Your Stats"}
               icon={<FontAwesomeIcon icon={faList} size="2x" />}
-              description={
-                "Explore results for all athletes who completed the ride."
-              }
+              description={"See results for all participating athletes."}
               hrefText={"Results"}
               href={"/hugelboard"}
             />

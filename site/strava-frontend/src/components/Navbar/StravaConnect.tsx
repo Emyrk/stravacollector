@@ -23,16 +23,21 @@ export const StravaConnectOrUser: React.FC<{
   );
 };
 
+export const StravaConnectHref = (): string => {
+  return (
+    "/oauth2/callback?redirect=" +
+    (window.location.pathname
+      ? encodeURIComponent(window.location.pathname)
+      : "/")
+  );
+};
+
 export const StravaConnect: React.FC<{
   styleProps?: LinkProps;
   useSquareLogo?: boolean;
 }> = ({ useSquareLogo, styleProps }) => {
   const { authenticatedUser, isFetched: athleteFetched } = useAuthenticated();
-  const connectURL =
-    "/oauth2/callback?redirect=" +
-    (window.location.pathname
-      ? encodeURIComponent(window.location.pathname)
-      : "/");
+  const connectURL = StravaConnectHref();
 
   return (
     <Link href={connectURL} {...styleProps}>

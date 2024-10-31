@@ -34,12 +34,7 @@ import {
   chakra,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
-import {
-  getDetailedSegments,
-  getErrorMessage,
-  getHugelLeaderBoard,
-  getRoute,
-} from "../../api/rest";
+import { getDetailedSegments, getErrorMessage, getRoute } from "../../api/rest";
 import { NotFound } from "../404/404";
 import { useQuery } from "@tanstack/react-query";
 import {

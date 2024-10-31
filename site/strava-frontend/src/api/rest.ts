@@ -17,7 +17,6 @@ export type ApiError = AxiosError<TypesGen.Response> & {
   response: AxiosResponse<TypesGen.Response>;
 };
 
-
 export interface Pagination {
   readonly page?: number;
   readonly limit?: number;
@@ -35,13 +34,11 @@ export const getAuthenticatedUser = async (): Promise<
 };
 
 export const getHugelLeaderBoard = async (
-  present: boolean
-): Promise<
-  TypesGen.HugelLeaderBoard | undefined
-> => {
+  year: number
+): Promise<TypesGen.HugelLeaderBoard | undefined> => {
   try {
     const response = await axios.get<TypesGen.HugelLeaderBoard>(
-      "/api/v1/hugelboard?present=" + present
+      "/api/v1/hugelboard?year=" + year
     );
     return response.data;
   } catch (error) {
@@ -49,8 +46,7 @@ export const getHugelLeaderBoard = async (
   }
 };
 
-export const getSuperHugelLeaderBoard = async (
-): Promise<
+export const getSuperHugelLeaderBoard = async (): Promise<
   TypesGen.SuperHugelLeaderBoard | undefined
 > => {
   try {
@@ -78,18 +74,20 @@ export const getAthleteHugels = async (
 
 export const getAthleteSyncSummary = async (
   athlete_id: string,
-  options: Pagination = {},
+  options: Pagination = {}
 ): Promise<TypesGen.AthleteSyncSummary | undefined> => {
   try {
     const response = await axios.get<TypesGen.AthleteSyncSummary>(
-      getURLWithSearchParams(`/api/v1/athlete/${athlete_id}/sync-summary`, options)
+      getURLWithSearchParams(
+        `/api/v1/athlete/${athlete_id}/sync-summary`,
+        options
+      )
     );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
-
 
 export const getAthlete = async (
   athlete_id: string
@@ -97,16 +95,13 @@ export const getAthlete = async (
   try {
     const response = await axios.get<TypesGen.AthleteSummary>(
       `/api/v1/athlete/${athlete_id}/`,
-      {
-        
-      }
+      {}
     );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
-
 
 export const getRoute = async (
   routeName: string
@@ -188,14 +183,15 @@ export const toAPIError = (err: unknown): ApiError => {
 
 export const getURLWithSearchParams = (
   basePath: string,
-  options?: Pagination,
+  options?: Pagination
 ): string => {
   if (options) {
     const searchParams = new URLSearchParams();
     const keys = Object.keys(options) as (keyof Pagination)[];
     keys.forEach((key) => {
       const value = options[key];
-      if (value !== undefined ) { //&& value !== "") {
+      if (value !== undefined) {
+        //&& value !== "") {
         searchParams.append(key, value.toString());
       }
     });
@@ -205,7 +201,6 @@ export const getURLWithSearchParams = (
     return basePath;
   }
 };
-
 
 /**
  *

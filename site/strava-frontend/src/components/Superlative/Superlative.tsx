@@ -2,6 +2,7 @@ import { Avatar, AvatarProps, Box, Stack, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { SuperlativeEntry } from "../../api/typesGenerated";
 import { Tooltip, TooltipProps } from "@chakra-ui/react";
+import { ResponsiveCard } from "../ResponsiveCard/ResponsiveCard";
 
 export type SuperlativeProps = AvatarProps & {
   category: string;
@@ -16,6 +17,9 @@ export const Superlative: FC<SuperlativeProps> = ({
   return (
     <Tooltip
       placement="right-start"
+      background={"none"}
+      p="0px"
+      m="0px"
       label={<SuperlativeCard category={category} entry={entry} />}
     >
       <Avatar key={category} src={""} name={category} />
@@ -27,12 +31,12 @@ export const SuperlativeCard: FC<SuperlativeProps> = ({ category, entry }) => {
   const [title, value] = mutate(category, entry);
 
   return (
-    <Box width={"200px"} height={"100px"}>
+    <ResponsiveCard width={"200px"} height={"100px"} border={"white"}>
       <Stack>
         <Text>{title}</Text>
         <Text>{value}</Text>
       </Stack>
-    </Box>
+    </ResponsiveCard>
   );
 };
 
@@ -41,8 +45,10 @@ const mutate = (
   entry: SuperlativeEntry<any>
 ): [string, string] => {
   switch (category) {
+    case "early_bird":
     case "earliest_start":
       return ["Early Bird", entry.value as string];
+    case "night_owl":
     case "latest_end":
       return ["Night Owl", entry.value as string];
     case "most_stoppage":
