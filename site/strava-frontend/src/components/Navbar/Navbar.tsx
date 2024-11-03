@@ -91,82 +91,98 @@ const DesktopNav: React.FC<{ display: { base: string; md: string } }> = ({
 }) => {
   return (
     <Stack direction={"row"} spacing={4} display={display}>
-      {NAV_ITEMS.map((navItem, index) => (
-        <Box key={navItem.label}>
-          <Popover trigger={"hover"} placement={"bottom-end"}>
-            <PopoverTrigger>
-              <Container p={2} fontSize={"md"} fontWeight={500}>
-                <RouteLink to={navItem.href ?? "#"}>
-                  <Tag p={3} display={"flex"} gap={2} borderRadius={"2px"}>
-                    <FontAwesomeIcon icon={faTrophy} />
-                    <Text>{navItem.label}</Text>
-                  </Tag>
-                </RouteLink>
-              </Container>
-            </PopoverTrigger>
+      {NAV_ITEMS.map((navItem, index) => {
+        console.log(navItem);
+        return (
+          <Box key={navItem.label}>
+            <Popover trigger={"hover"} placement={"bottom-end"}>
+              <PopoverTrigger>
+                <Container p={2} fontSize={"md"} fontWeight={500}>
+                  <RouteLink to={navItem.href ?? "#"}>
+                    <Tag p={3} display={"flex"} gap={2} borderRadius={"2px"}>
+                      <FontAwesomeIcon icon={faTrophy} />
+                      <Text>{navItem.label}</Text>
+                    </Tag>
+                  </RouteLink>
+                </Container>
+              </PopoverTrigger>
 
-            {navItem.children && (
-              <PopoverContent
-                border={0}
-                boxShadow={"xl"}
-                p={4}
-                rounded={"xl"}
-                minW={"sm"}
-              >
-                <Stack>
-                  {navItem.children.map((child) => (
-                    <DesktopSubNav key={child.label} {...child} />
-                  ))}
-                </Stack>
-              </PopoverContent>
-            )}
-          </Popover>
-        </Box>
-      ))}
+              {navItem.children && (
+                <PopoverContent
+                  border={0}
+                  boxShadow={"xl"}
+                  p={4}
+                  rounded={"xl"}
+                  minW={"sm"}
+                >
+                  <Stack>
+                    {navItem.children.map((child) => (
+                      <DesktopSubNav key={child.label} {...child} depth={0} />
+                    ))}
+                  </Stack>
+                </PopoverContent>
+              )}
+            </Popover>
+          </Box>
+        );
+      })}
     </Stack>
   );
 };
 
-const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
+const DesktopSubNav = ({
+  label,
+  href,
+  subLabel,
+  children,
+  depth,
+}: NavItem & { depth: number }) => {
   return (
-    <Container
-      role={"group"}
-      display={"block"}
-      p={2}
-      rounded={"md"}
-      _hover={{ bg: useColorModeValue("pink.50", "gray.900") }}
-    >
-      <RouteLink to={href || "#"}>
-        <Stack direction={"row"} align={"center"}>
-          <Box>
-            <Text
+    <>
+      <Container
+        p={2}
+        pl={depth > 0 ? depth * 30 + "px" : 2}
+        role={"group"}
+        display={"block"}
+        rounded={"md"}
+        _hover={{ bg: useColorModeValue("pink.50", "gray.900") }}
+      >
+        <RouteLink to={href || "#"}>
+          <Stack direction={"row"} align={"center"}>
+            <Box>
+              <Text
+                transition={"all .3s ease"}
+                _groupHover={{ color: "brand.stravaOrange" }}
+                fontWeight={500}
+              >
+                {label}
+              </Text>
+              <Text fontSize={"sm"}>{subLabel}</Text>
+            </Box>
+            <Flex
               transition={"all .3s ease"}
-              _groupHover={{ color: "brand.stravaOrange" }}
-              fontWeight={500}
+              transform={"translateX(-10px)"}
+              opacity={0}
+              _groupHover={{ opacity: "100%", transform: "translateX(0)" }}
+              justify={"flex-end"}
+              align={"center"}
+              flex={1}
             >
-              {label}
-            </Text>
-            <Text fontSize={"sm"}>{subLabel}</Text>
-          </Box>
-          <Flex
-            transition={"all .3s ease"}
-            transform={"translateX(-10px)"}
-            opacity={0}
-            _groupHover={{ opacity: "100%", transform: "translateX(0)" }}
-            justify={"flex-end"}
-            align={"center"}
-            flex={1}
-          >
-            <Icon
-              color={"brand.stravaOrange"}
-              w={5}
-              h={5}
-              as={ChevronRightIcon}
-            />
-          </Flex>
-        </Stack>
-      </RouteLink>
-    </Container>
+              <Icon
+                color={"brand.stravaOrange"}
+                w={5}
+                h={5}
+                as={ChevronRightIcon}
+              />
+            </Flex>
+          </Stack>
+        </RouteLink>
+      </Container>
+      {children &&
+        children.map((child) => (
+          <DesktopSubNav key={child.label} depth={depth + 1} {...child} />
+        ))}
+    </>
   );
 };
 
@@ -216,71 +232,6 @@ const MobileNav2Item: React.FC<{ item: NavItem }> = ({ item }) => {
   );
 };
 
-const MobileNav: React.FC<{ display: { base: string; md: string } }> = ({
-  display,
-}) => {
-  return (
-    <Stack bg={useColorModeValue("white", "gray.800")} p={4} display={display}>
-      {NAV_ITEMS.map((navItem) => (
-        <MobileNavItem key={navItem.label} {...navItem} />
-      ))}
-    </Stack>
-  );
-};
-
-const MobileNavItem = ({ label, children, href }: NavItem) => {
-  const { isOpen, onToggle } = useDisclosure();
-
-  return (
-    <Stack spacing={4} onClick={children && onToggle}>
-      <Flex
-        py={2}
-        as={Link}
-        href={href ?? "#"}
-        justify={"space-between"}
-        alignItems={"center"}
-        _hover={{
-          textDecoration: "none",
-        }}
-      >
-        <Text
-          fontWeight={600}
-          color={useColorModeValue("gray.600", "gray.200")}
-        >
-          {label}
-        </Text>
-        {children && (
-          <Icon
-            as={ChevronDownIcon}
-            transition={"all .25s ease-in-out"}
-            transform={isOpen ? "rotate(180deg)" : ""}
-            w={6}
-            h={6}
-          />
-        )}
-      </Flex>
-
-      <Collapse in={isOpen} animateOpacity style={{ marginTop: "0!important" }}>
-        <Stack
-          mt={2}
-          pl={4}
-          borderLeft={1}
-          borderStyle={"solid"}
-          borderColor={useColorModeValue("gray.200", "gray.700")}
-          align={"start"}
-        >
-          {children &&
-            children.map((child) => (
-              <Container py={2} key={child.label}>
-                <RouteLink to={child.href || "#"}>{child.label}</RouteLink>
-              </Container>
-            ))}
-        </Stack>
-      </Collapse>
-    </Stack>
-  );
-};
-
 interface NavItem {
   label: string;
   subLabel?: string;
@@ -292,11 +243,6 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: "Das Hügel",
     children: [
-      {
-        label: "Das Hügel Results",
-        subLabel: "See how you did on the 2023 Tour Das Hügel",
-        href: "/hugelboard",
-      },
       // {
       //   label: "Das Hügel Super Scores",
       //   subLabel: "Your best segments across all your rides.",
@@ -306,6 +252,27 @@ const NAV_ITEMS: Array<NavItem> = [
         label: "Das Hügel Route",
         subLabel: "Plan your ride with the required segments",
         href: "/route/das-hugel",
+      },
+      {
+        label: "Das Hügel Results",
+        subLabel: "See how you did on the Tour Das Hügel",
+        href: "/results",
+        children: [
+          {
+            label: "2024 Das Hügel Results",
+            href: "/hugelboard/2024",
+          },
+          {
+            label: "2024 Das Hügel Lite Results",
+            // subLabel: "See how you did on the Tour Das Hügel",
+            href: "/hugelboard/2024",
+          },
+          {
+            label: "Other Results",
+            // subLabel: "See how you did on the Tour Das Hügel",
+            href: "/results",
+          },
+        ],
       },
     ],
   },

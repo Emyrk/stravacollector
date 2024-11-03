@@ -84,7 +84,7 @@ export const Landing: FC = () => {
               icon={<FontAwesomeIcon icon={faList} size="2x" />}
               description={"See results for all participating athletes."}
               hrefText={"Results"}
-              href={"/hugelboard"}
+              href={"/results"}
             />
 
             {/* <LandingCard

@@ -49,12 +49,7 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
     return <ErrorBox error={error.toString()} />;
   }
   if (data && data.activities.length === 0) {
-    return (
-      <>
-        No rides completed this year. Stay tuned for results from the November
-        11, 2023 event.
-      </>
-    );
+    return <>No rides completed for this year.</>;
   }
 
   var superlatives: Record<string, Record<string, SuperlativeEntry<any>>> = {};
