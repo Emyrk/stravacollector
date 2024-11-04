@@ -9,6 +9,7 @@ import {
   Container,
   Stack,
   useStyleConfig,
+  Image,
 } from "@chakra-ui/react";
 import { FC, ReactElement } from "react";
 import { Link as RouteLink } from "react-router-dom";
@@ -72,7 +73,7 @@ export const Landing: FC = () => {
             />
             <LandingCard
               heading={"Ride Das Hügel"}
-              icon={<FontAwesomeIcon icon={faFlagCheckered} size="2x" />}
+              icon={<Image src="/img/icons/Home2.png" />}
               description={
                 "Challenge yourself on this epic ride and see how you compare to others!"
               }
@@ -81,7 +82,7 @@ export const Landing: FC = () => {
             />
             <LandingCard
               heading={"Explore Your Stats"}
-              icon={<FontAwesomeIcon icon={faList} size="2x" />}
+              icon={<Image src="/img/icons/Home3.png" />}
               description={"See results for all participating athletes."}
               hrefText={"Results"}
               href={"/results"}
@@ -151,16 +152,16 @@ export const LandingCard = ({
         <Flex
           direction={"row"}
           align={"center"}
-          gap={"2em"}
+          gap={"1em"}
           width={"100%"}
           justifyContent={"center"}
         >
-          <Flex w={15} h={15} align={"center"} justify={"center"}>
+          <Flex w={"48px"} h={"48px"} align={"center"} justify={"center"}>
             {icon}
           </Flex>
           <Heading size="md">{heading}</Heading>
         </Flex>
-        <Box mt={2}>
+        <Box mt={0.5}>
           <Text mt={1} fontSize={"sm"}>
             {description}
           </Text>

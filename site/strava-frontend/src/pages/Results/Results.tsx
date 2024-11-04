@@ -9,6 +9,7 @@ import {
   Container,
   Stack,
   useStyleConfig,
+  Image,
 } from "@chakra-ui/react";
 import { FC, ReactElement } from "react";
 import { Link as RouteLink } from "react-router-dom";
@@ -54,31 +55,31 @@ export const Results: FC<{}> = ({}) => {
           <Stack spacing={6} direction={{ base: "column", md: "row" }}>
             <LandingCard
               heading={"2024 Das Hügel"}
-              icon={<FontAwesomeIcon icon={faMountain} size="2x" />}
+              icon={<Image src="/img/icons/Results2.png" />}
               description={
                 "See how you did on the Hügel this year and find out who won our superlatives."
               }
-              hrefText={"Connect"}
+              hrefText={"Results"}
               href={"/hugelboard/2024"}
             />
             <LandingCard
               heading={"2024 Hügel Lite"}
-              icon={<FontAwesomeIcon icon={faMound} size="2x" />}
+              icon={<Image src="/img/icons/Results1.png" />}
               description={
                 "Full Hügel not in the cards this year? See how you did on the first 40 miles!"
               }
-              hrefText={"Route"}
+              hrefText={"Results"}
               href={"/hugelboard/2024"}
             />
-            <LandingCard
+            {/* <LandingCard
               heading={"Super Hügel"}
-              icon={<FontAwesomeIcon icon={faList} size="2x" />}
+              icon={<Image src="/img/icons/Results3.png" />}
               description={
                 "Improve your time on each individual segment to become the ultimate Hügeler."
               }
               hrefText={"Results"}
               href={"/superhugelboard"}
-            />
+            /> */}
           </Stack>
           <Stack
             textAlign={"center"}
