@@ -5,11 +5,11 @@ package strava
 //	ClientSecret string
 //}
 //
-//func NewAppClient() *AppClient {
+// func NewAppClient() *AppClient {
 //
 //}
 //
-//func (c *AppClient) Subscription(ctx context.Context) (any, error) {
+// func (c *AppClient) Subscription(ctx context.Context) (any, error) {
 //	formData := url.Values{}
 //
 //	resp, err := c.Request(ctx, http.MethodPost, "https://www.strava.com/api/v3/push_subscriptions", formData.Encode(), nil)

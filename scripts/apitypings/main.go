@@ -776,9 +776,9 @@ func (g *Generator) typescriptType(ty types.Type) (TypescriptType, error) {
 
 		aboveTypeLine := keyType.AboveTypeLine
 		if aboveTypeLine != "" && valueType.AboveTypeLine != "" {
-			aboveTypeLine = aboveTypeLine + "\n"
+			aboveTypeLine += "\n"
 		}
-		aboveTypeLine = aboveTypeLine + valueType.AboveTypeLine
+		aboveTypeLine += valueType.AboveTypeLine
 
 		mergeGens := keyType.GenericTypes
 		for k, v := range valueType.GenericTypes {

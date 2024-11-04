@@ -91,7 +91,8 @@ export const ChallengeRoute: FC<{}> = ({}) => {
     enabled: !!name,
   });
 
-  const mainRoute = routeData?.routes["das-hugel"];
+  const mainRoute = routeData?.routes[name || ""];
+  const liteRoute = routeData?.routes["lite-" + name];
 
   const {
     data: segmentsData,

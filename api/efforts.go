@@ -258,7 +258,7 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		// Do not do this
-		//if board.PersonalBest == nil {
+		// if board.PersonalBest == nil {
 		//	athleteAct, err := api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
 		//		AthleteID: id,
 		//		Before:    beforeTime,
@@ -272,6 +272,8 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 		//	}
 		//}
 	}
+
+	var _, _ = beforeTime, afterTime
 	httpapi.Write(ctx, rw, http.StatusOK, board)
 }
 

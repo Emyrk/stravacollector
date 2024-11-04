@@ -27,7 +27,7 @@ type List struct {
 	ShortestRide          Entry[float64] `json:"shortest_ride"`
 
 	// Most elevation = mountain climber
-	//Best of $Segment
+	// Best of $Segment
 }
 
 type Entry[T comparable] struct {

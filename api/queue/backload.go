@@ -245,7 +245,7 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 
 			// Backload bike rides for more deets
 			if isBikeRide(act.Type) || isBikeRide(act.SportType) {
-				err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID, canBeHugel(act), activityGuePriority(act), func(j *gue.Job) {
+				err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID, canBeHugel(act), onHugelDate(act), activityGuePriority(act), func(j *gue.Job) {
 					// Delay by 5minutes.
 					// We do this because sometimes strava loads 0 segments for a ride, and it takes some time
 					// for segments to be populated.
@@ -297,6 +297,16 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 func canBeHugel(summary strava.ActivitySummary) bool {
 	return database.DistanceToMiles(summary.Distance) > 80 &&
 		database.DistanceToFeet(summary.TotalElevationGain) > 8000
+}
+
+func onHugelDate(summary strava.ActivitySummary) bool {
+	if summary.StartDate.Year() == 2024 && summary.StartDate.Month() == time.November {
+		if summary.StartDate.Day() > 7 && summary.StartDate.Day() < 12 {
+			return true
+		}
+
+	}
+	return false
 }
 
 func activityGuePriority(summary strava.ActivitySummary) gue.JobPriority {

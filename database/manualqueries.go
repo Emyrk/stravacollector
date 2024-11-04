@@ -19,11 +19,11 @@ func (q *sqlQuerier) YearlyHugelLeaderboard(ctx context.Context, arg YearlyHugel
 	query := hugelLeaderboard
 
 	if arg.RouteYear == 2023 {
-		query = strings.Replace(query, "hugel_activities", "hugel_activities_2023", -1)
+		query = strings.ReplaceAll(query, "hugel_activities", "hugel_activities_2023")
 	}
 
 	if arg.Lite {
-		query = strings.Replace(query, "hugel_activities", "lite_hugel_activities", -1)
+		query = strings.ReplaceAll(query, "hugel_activities", "lite_hugel_activities")
 	}
 
 	rows, err := q.db.QueryContext(ctx, query, arg.AthleteID, arg.After, arg.Before)

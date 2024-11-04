@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Emyrk/strava/database"
+	"github.com/Emyrk/strava/internal/hugeldate"
 	"github.com/Emyrk/strava/strava"
 	"github.com/vgarvardt/gue/v5"
 )
@@ -22,14 +23,16 @@ type fetchActivityJobArgs struct {
 	// sync during the hugel event.
 	// TODO: Remove this after november.
 	HugelPotential bool `json:"can_be_hugel"`
+	OnHugelDates   bool `json:"on_hugel_dates"`
 }
 
-func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, hugelPotential bool, priority gue.JobPriority, opts ...func(j *gue.Job)) error {
+func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, hugelPotential bool, onHugelDates bool, priority gue.JobPriority, opts ...func(j *gue.Job)) error {
 	data, err := json.Marshal(fetchActivityJobArgs{
 		ActivityID:     activityID,
 		AthleteID:      athleteID,
 		Source:         source,
 		HugelPotential: hugelPotential,
+		OnHugelDates:   onHugelDates,
 	})
 	if err != nil {
 		return fmt.Errorf("json marshal: %w", err)
@@ -55,6 +58,7 @@ type failedJob struct {
 }
 
 func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
+	now := time.Now().In(hugeldate.CentralTimeZone)
 	logger := jobLogFields(m.Logger, j)
 
 	var args fetchActivityJobArgs
@@ -81,6 +85,19 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 	if args.Source == database.ActivityDetailSourceManual {
 		adjustInt = 10
 		adjustDaily = 115
+	}
+
+	// Hugel is Nov 9. Do not sync anything that cannot be a hugel on these
+	// days to prio hugel events.
+	// TODO: Remove this after the event.
+	if now.Month() == time.November && (now.Day() >= 8 && now.Day() <= 12) {
+		// Hugel is Nov 9. We do not want to sync anything but hugel events
+		// to save our strava api rate limits. Manual syncs can still be synced.
+		if args.Source != database.ActivityDetailSourceManual {
+			if !args.HugelPotential {
+				return fmt.Errorf("[During Hugel Event] activity %d not a hugel, job skipped", args.ActivityID)
+			}
+		}
 	}
 
 	err = m.jobStravaCheck(j, 1, adjustInt, adjustDaily)
@@ -290,7 +307,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			if summary.DownloadCount == 0 {
 				// If 0 segment efforts, and has never been redownloaded. Retry in 1hr.
 				// This might be correct, but we should check again.
-				err := m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceZeroSegmentRefetch, args.AthleteID, args.ActivityID, args.HugelPotential, j.Priority, func(j *gue.Job) {
+				err := m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceZeroSegmentRefetch, args.AthleteID, args.ActivityID, args.HugelPotential, args.OnHugelDates, j.Priority, func(j *gue.Job) {
 					j.RunAt = time.Now().Add(time.Hour * 2)
 				})
 				if err != nil {
