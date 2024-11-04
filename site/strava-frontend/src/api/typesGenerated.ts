@@ -87,6 +87,7 @@ export interface CompetitiveRoute {
 export interface DetailedSegment {
 	readonly id: string;
 	readonly name: string;
+	readonly friendly_name: string;
 	readonly activity_type: string;
 	readonly distance: number;
 	readonly average_grade: number;
@@ -246,13 +247,17 @@ export interface SuperlativeEntry<T extends comparable> {
 
 // From superlative/superlative.go
 export interface SuperlativeList {
-	readonly early_bird: SuperlativeEntry<string>;
-	readonly night_owl: SuperlativeEntry<string>;
+	readonly earliest_start: SuperlativeEntry<string>;
+	readonly latest_end: SuperlativeEntry<string>;
 	readonly most_stoppage: SuperlativeEntry<number>;
 	readonly least_stoppage: SuperlativeEntry<number>;
-	readonly most_watts: SuperlativeEntry<number>;
-	readonly most_cadence: SuperlativeEntry<number>;
-	readonly least_cadence: SuperlativeEntry<number>;
+	readonly most_avg_watts: SuperlativeEntry<number>;
+	readonly most_avg_cadence: SuperlativeEntry<number>;
+	readonly least_avg_cadence: SuperlativeEntry<number>;
+	readonly most_avg_speed: SuperlativeEntry<number>;
+	readonly least_avg_speed: SuperlativeEntry<number>;
+	readonly most_avg_hr: SuperlativeEntry<number>;
+	readonly least_avg_hr: SuperlativeEntry<number>;
 	readonly most_suffer: SuperlativeEntry<number>;
 	readonly most_achievements: SuperlativeEntry<number>;
 	readonly longest_ride: SuperlativeEntry<number>;
