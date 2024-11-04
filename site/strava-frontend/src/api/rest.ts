@@ -105,9 +105,9 @@ export const getAthlete = async (
 
 export const getRoute = async (
   routeName: string
-): Promise<TypesGen.CompetitiveRoute | undefined> => {
+): Promise<TypesGen.CompetitiveRoutesResponse | undefined> => {
   try {
-    const response = await axios.get<TypesGen.CompetitiveRoute>(
+    const response = await axios.get<TypesGen.CompetitiveRoutesResponse>(
       `/api/v1/route/${routeName}`
     );
     return response.data;

@@ -84,6 +84,11 @@ export interface CompetitiveRoute {
 }
 
 // From modelsdk/route.go
+export interface CompetitiveRoutesResponse {
+	readonly routes: Record<string, CompetitiveRoute>;
+}
+
+// From modelsdk/route.go
 export interface DetailedSegment {
 	readonly id: string;
 	readonly name: string;

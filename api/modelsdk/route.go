@@ -6,6 +6,10 @@ type VerifyRouteResponse struct {
 	MissingSegments []SegmentSummary `json:"missing_segments"`
 }
 
+type CompetitiveRoutesResponse struct {
+	Routes map[string]CompetitiveRoute `json:"routes"`
+}
+
 type CompetitiveRoute struct {
 	Name        string           `json:"name"`
 	DisplayName string           `json:"display_name"`

@@ -49,10 +49,13 @@ type API struct {
 	Events      *webhooks.ActivityEvents
 	Manager     *queue.Manager
 
-	SuperHugelBoardCache *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]
-	HugelBoard2023Cache  *gencache.LazyCache[[]database.HugelLeaderboardRow]
-	HugelBoard2024Cache  *gencache.LazyCache[[]database.HugelLeaderboardRow]
-	HugelRouteCache      *gencache.LazyCache[database.GetCompetitiveRouteRow]
+	SuperHugelBoardCache    *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]
+	HugelBoard2023Cache     *gencache.LazyCache[[]database.HugelLeaderboardRow]
+	HugelBoard2024Cache     *gencache.LazyCache[[]database.HugelLeaderboardRow]
+	HugelBoard2024LiteCache *gencache.LazyCache[[]database.HugelLeaderboardRow]
+
+	HugelRouteCache     *gencache.LazyCache[database.GetCompetitiveRouteRow]
+	HugelLiteRouteCache *gencache.LazyCache[database.GetCompetitiveRouteRow]
 
 	// Metrics
 	Registry *prometheus.Registry
@@ -117,11 +120,31 @@ func New(opts Options) (*API, error) {
 			},
 		})
 	})
+	api.HugelBoard2024LiteCache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
+			Lite: true,
+			HugelLeaderboardParams: database.HugelLeaderboardParams{
+				AthleteID: -1,
+				After:     hugeldate.Year2024.Start,
+				Before:    hugeldate.Year2024.End,
+			},
+		})
+	})
 	api.HugelRouteCache = gencache.New(time.Minute, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {
 		return api.Opts.DB.GetCompetitiveRoute(ctx, "das-hugel")
 	})
+	api.HugelLiteRouteCache = gencache.New(time.Minute, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {
+		return api.Opts.DB.GetCompetitiveRoute(ctx, "lite-das-hugel")
+	})
 
 	return api, nil
+}
+
+func (api *API) HugelRoute(ctx context.Context, lite bool) (database.GetCompetitiveRouteRow, error) {
+	if lite {
+		return api.HugelLiteRouteCache.Load(ctx)
+	}
+	return api.HugelRouteCache.Load(ctx)
 }
 
 // StartWebhook needs to be called after the API is served.

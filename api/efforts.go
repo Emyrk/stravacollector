@@ -27,11 +27,16 @@ func (api *API) verifyRoute(rw http.ResponseWriter, r *http.Request) {
 	routeName := chi.URLParam(r, "route-name")
 	verify := chi.URLParam(r, "route-id")
 
-	if routeName != "das-hugel" {
-		// Only support hugel for now
+	lite := false
+	switch routeName {
+	case "das-hugel":
+	case "das-hugel-lite":
+		lite = true
+	default:
 		httpapi.Write(ctx, rw, http.StatusNotFound, modelsdk.Response{
 			Message: "Route not found",
 		})
+		return
 	}
 
 	if !athleteLoggedIn || id != 2661162 {
@@ -71,7 +76,7 @@ func (api *API) verifyRoute(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	route, err := api.HugelRouteCache.Load(ctx)
+	route, err := api.HugelRoute(ctx, lite)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
 			Message: "Failed fetch internal route",
@@ -111,7 +116,21 @@ func (api *API) competitiveRoute(rw http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
-		httpapi.Write(ctx, rw, http.StatusOK, convertRoute(route))
+
+		liteRoute, err := api.HugelLiteRouteCache.Load(ctx)
+		if err != nil {
+			httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+				Message: "Failed to load lite route",
+				Detail:  err.Error(),
+			})
+			return
+		}
+		httpapi.Write(ctx, rw, http.StatusOK, modelsdk.CompetitiveRoutesResponse{
+			Routes: map[string]modelsdk.CompetitiveRoute{
+				"das-hugel":      convertRoute(route),
+				"lite-das-hugel": convertRoute(liteRoute),
+			},
+		})
 		return
 	}
 

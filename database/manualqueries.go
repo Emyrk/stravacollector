@@ -12,12 +12,18 @@ type manualQuerier interface {
 type YearlyHugelLeaderboardParams struct {
 	HugelLeaderboardParams
 	RouteYear int
+	Lite      bool
 }
 
 func (q *sqlQuerier) YearlyHugelLeaderboard(ctx context.Context, arg YearlyHugelLeaderboardParams) ([]HugelLeaderboardRow, error) {
 	query := hugelLeaderboard
+
 	if arg.RouteYear == 2023 {
 		query = strings.Replace(query, "hugel_activities", "hugel_activities_2023", -1)
+	}
+
+	if arg.Lite {
+		query = strings.Replace(query, "hugel_activities", "lite_hugel_activities", -1)
 	}
 
 	rows, err := q.db.QueryContext(ctx, query, arg.AthleteID, arg.After, arg.Before)

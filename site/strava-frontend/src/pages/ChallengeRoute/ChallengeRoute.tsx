@@ -91,6 +91,8 @@ export const ChallengeRoute: FC<{}> = ({}) => {
     enabled: !!name,
   });
 
+  const mainRoute = routeData?.routes["das-hugel"];
+
   const {
     data: segmentsData,
     error: segmentsError,
@@ -99,7 +101,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
   } = useQuery({
     queryKey: ["hugel-segments", name],
     queryFn: () =>
-      getDetailedSegments(routeData?.segments.map((e) => e.id) || []),
+      getDetailedSegments(mainRoute?.segments.map((e) => e.id) || []),
     enabled: !!name && !!routeData,
   });
 
@@ -200,7 +202,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
           textAlign="center"
         >
           <Flex flexDirection={"column"} pb="0.5em">
-            <Heading fontSize={"4em"}>{routeData.display_name}</Heading>
+            <Heading fontSize={"4em"}>{mainRoute?.display_name}</Heading>
             <Text maxWidth={"1050px"} pt="1em">
               The Tour das Hügel is an unsanctioned over 110-mile bike ride that
               takes place in Austin, Texas. The organizers have incorporated
