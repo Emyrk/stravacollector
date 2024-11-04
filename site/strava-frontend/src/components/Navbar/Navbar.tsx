@@ -92,7 +92,6 @@ const DesktopNav: React.FC<{ display: { base: string; md: string } }> = ({
   return (
     <Stack direction={"row"} spacing={4} display={display}>
       {NAV_ITEMS.map((navItem, index) => {
-        console.log(navItem);
         return (
           <Box key={navItem.label}>
             <Popover trigger={"hover"} placement={"bottom-end"}>

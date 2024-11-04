@@ -12,15 +12,16 @@ import { AthleteMePage } from "./AthleteMePage";
 export const AthletePage: FC<{}> = ({}) => {
   const { athlete_id } = useParams();
   const { authenticatedUser, isLoading } = useAuthenticated();
+  console.log(athlete_id, authenticatedUser?.athlete_id);
 
   if (isLoading) {
     return <Loading />;
   }
 
   if (
-    authenticatedUser?.athlete_id === athlete_id ||
+    authenticatedUser?.athlete_id?.toString() === athlete_id?.toString() ||
     // Or Steven
-    authenticatedUser?.athlete_id === "2661162"
+    authenticatedUser?.athlete_id?.toString() === "2661162"
   ) {
     return <AthleteMePage />;
   }

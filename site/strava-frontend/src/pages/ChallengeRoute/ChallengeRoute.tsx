@@ -219,25 +219,46 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               for the 2024 ride, scheduled for Saturday, November 9. To qualify
               as a Hügel, the route must incorporate all the following segments.
             </Text>
-            <Link
-              href="https://www.strava.com/routes/3287834903479380952"
-              pt="25px"
-              pb="2px"
+            <Flex
+              direction={"row"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              gap={"2em"}
+              pt="15px"
+              pb="15px"
             >
-              <Flex
-                direction={"row"}
-                alignItems={"center"}
-                justifyContent={"center"}
-              >
-                <chakra.img
-                  height="1.5em"
-                  width="1.5em"
-                  src={"/logos/stravalogo.png"}
-                  mr="5px"
-                />
-                <Text color="brand.stravaOrange">2024 Official Route</Text>
-              </Flex>
-            </Link>
+              <Link href="https://www.strava.com/routes/3287834903479380952">
+                <Flex
+                  direction={"row"}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  <chakra.img
+                    height="1.5em"
+                    width="1.5em"
+                    src={"/logos/stravalogo.png"}
+                    mr="5px"
+                  />
+                  <Text color="brand.stravaOrange">2024 Official Route</Text>
+                </Flex>
+              </Link>
+              <Link href="https://www.strava.com/routes/3287834903479380952">
+                <Flex
+                  direction={"row"}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  <chakra.img
+                    height="1.5em"
+                    width="1.5em"
+                    src={"/logos/stravalogo.png"}
+                    mr="5px"
+                  />
+                  <Text color={LiteRouteColor}>2024 Official Lite Route</Text>
+                </Flex>
+              </Link>
+            </Flex>
+
             <Text>
               When: Saturday, November 9, 2024 7 a.m. Meetup and 7:15 a.m.
               Rollout
