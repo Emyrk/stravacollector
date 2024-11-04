@@ -191,6 +191,7 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 	before, _ := strconv.ParseInt(r.URL.Query().Get("before"), 10, 64)
 	after, _ := strconv.ParseInt(r.URL.Query().Get("after"), 10, 64)
 	year, _ := strconv.ParseInt(r.URL.Query().Get("year"), 10, 64)
+	lite, _ := strconv.ParseBool(r.URL.Query().Get("lite"))
 	var beforeTime time.Time
 	var afterTime time.Time
 	var activities []database.HugelLeaderboardRow
@@ -217,7 +218,11 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 			beforeTime = hugeldate.Year2023.Start
 			afterTime = hugeldate.Year2023.End
 		case 2024:
-			activities, err = api.HugelBoard2024Cache.Load(ctx)
+			if lite {
+				activities, err = api.HugelBoard2024LiteCache.Load(ctx)
+			} else {
+				activities, err = api.HugelBoard2024Cache.Load(ctx)
+			}
 			beforeTime = hugeldate.Year2024.Start
 			afterTime = hugeldate.Year2024.End
 		default:

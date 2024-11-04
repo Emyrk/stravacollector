@@ -34,11 +34,12 @@ export const getAuthenticatedUser = async (): Promise<
 };
 
 export const getHugelLeaderBoard = async (
-  year: number
+  year: number,
+  lite: boolean = false
 ): Promise<TypesGen.HugelLeaderBoard | undefined> => {
   try {
     const response = await axios.get<TypesGen.HugelLeaderBoard>(
-      "/api/v1/hugelboard?year=" + year
+      `/api/v1/hugelboard?year=${year}&lite=${lite}`
     );
     return response.data;
   } catch (error) {

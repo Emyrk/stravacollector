@@ -60,8 +60,9 @@ export const HugelBoard: FC = () => {
   // Default to this year
   const yearNumber = parseInt(year || "2024");
   const disableSuperlatives = year !== "2024";
+  const lite = params.get("lite") === "true";
 
-  const queryKey = ["hugel-leaderboard", year];
+  const queryKey = ["hugel-leaderboard", year, lite];
   const {
     data: hugelLeaderboard,
     error: hugelLeaderboardError,
@@ -70,7 +71,7 @@ export const HugelBoard: FC = () => {
   } = useQuery({
     queryKey,
     queryFn: () => {
-      return getHugelLeaderBoard(yearNumber);
+      return getHugelLeaderBoard(yearNumber, lite);
     },
   });
 
