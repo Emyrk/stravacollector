@@ -46,6 +46,7 @@ import { HugelBoardTable } from "./HugelBoardTable";
 import { useParams } from "react-router-dom";
 
 export interface HugelBoardProps {
+  disableSuperlatives?: boolean;
   data?: TypesGen.HugelLeaderBoard | TypesGen.SuperHugelLeaderBoard;
   error?: Error | unknown;
   isLoading: boolean;
@@ -58,6 +59,7 @@ export const HugelBoard: FC = () => {
   const { year } = useParams();
   // Default to this year
   const yearNumber = parseInt(year || "2024");
+  const disableSuperlatives = year !== "2024";
 
   const queryKey = ["hugel-leaderboard"];
   const {
@@ -67,7 +69,9 @@ export const HugelBoard: FC = () => {
     isFetched: hugelFetched,
   } = useQuery({
     queryKey,
-    queryFn: () => getHugelLeaderBoard(yearNumber),
+    queryFn: () => {
+      return getHugelLeaderBoard(yearNumber);
+    },
   });
 
   return (
@@ -93,6 +97,7 @@ export const HugelBoard: FC = () => {
         <TabPanels>
           <TabPanel key="gallery">
             <HugelBoardGallery
+              disableSuperlatives={disableSuperlatives}
               data={hugelLeaderboard}
               error={hugelLeaderboardError}
               isLoading={hugelLoading}

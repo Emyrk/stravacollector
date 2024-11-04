@@ -41,6 +41,7 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
   error,
   isLoading,
   isFetched,
+  disableSuperlatives,
 }) => {
   if (isLoading) {
     return <Loading />;
@@ -53,7 +54,7 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
   }
 
   var superlatives: Record<string, Record<string, SuperlativeEntry<any>>> = {};
-  if (data && "superlatives" in data) {
+  if (!disableSuperlatives && data && "superlatives" in data) {
     for (const [key, value] of Object.entries(data.superlatives)) {
       const entry = value as SuperlativeEntry<any>;
       if (!superlatives[entry.activity_id]) {
