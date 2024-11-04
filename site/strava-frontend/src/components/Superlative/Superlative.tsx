@@ -19,22 +19,25 @@ export const Superlative: FC<SuperlativeProps> = ({
   entry,
   ...props
 }) => {
+  const [src, title, value] = SuperlativeLookup(category, entry);
+
   return (
     <Tooltip
       placement="right-start"
       background={"none"}
       p="0px"
       m="0px"
-      label={<SuperlativeCard category={category} entry={entry} />}
+      label={<SuperlativeCard title={title} value={value} />}
     >
-      <Avatar key={category} src={""} name={category} />
+      <Avatar key={category} src={`/img/superlatives/${src}`} name={category} />
     </Tooltip>
   );
 };
 
-export const SuperlativeCard: FC<SuperlativeProps> = ({ category, entry }) => {
-  const [title, value] = mutate(category, entry);
-
+export const SuperlativeCard: FC<{ title: string; value: any }> = ({
+  title,
+  value,
+}) => {
   return (
     <ResponsiveCard
       width={"200px"}
@@ -54,44 +57,88 @@ export const SuperlativeCard: FC<SuperlativeProps> = ({ category, entry }) => {
   );
 };
 
-const mutate = (
+const SuperlativeLookup = (
   category: string,
   entry: SuperlativeEntry<any>
-): [string, string] => {
+): [string, string, string] => {
   switch (category) {
     case "early_bird":
     case "earliest_start":
       const d = new Date(entry.value);
-      return ["Early Bird", `Started at ${FormatDateTime(entry.value)}!`];
+      return [
+        "EarlyBird.png",
+        "Early Bird",
+        `Gets the worm with their ${FormatDateTime(entry.value)} start time.`,
+      ];
     case "night_owl":
     case "latest_end":
-      return ["Night Owl", `Ended at ${FormatDateTime(entry.value)}!`];
+      return [
+        "NightOwn.png",
+        "Night Owl",
+        `Aren’t you glad you didn’t wait up with their ${FormatDateTime(
+          entry.value
+        )} end time?`,
+      ];
     case "most_stoppage":
       return [
-        "Most Relaxed",
-        `Total break of ${ElapsedDurationText(entry.value, false)}`,
+        "CoffeeBreak.png",
+        "Coffee Break",
+        `Stopped and smelled the roses with ${(entry.value / 3600).toFixed(
+          0
+        )} minutes of stoppage.`,
       ];
     case "least_stoppage":
       // TODO: Rename
       return [
-        "Extreme",
-        `Total break of ${ElapsedDurationText(entry.value, false)}`,
+        "Dory.png",
+        "Dory",
+        `Just keep swimming. Only ${(entry.value / 3600).toFixed(
+          0
+        )} minutes of stoppage.`,
       ];
     case "most_watts":
-      return ["Watt Machine", entry.value as string];
+      return [
+        "TheEdison.png",
+        "The Edison",
+        `Powering Austin with ${entry.value} average watts.`,
+      ];
     case "most_cadence":
-      return ["Spin to Win", entry.value as string];
+      return [
+        "Roadrunner.png",
+        "Roadrunner",
+        `Legs a’blur with average cadence of ${entry.value} rpm.`,
+      ];
     case "least_cadence":
-      return ["Grinder", entry.value as string];
+      return [
+        "Mortar&Pestle.png",
+        "Mortar & Pestle",
+        `Grinding so hard with average cadence of ${entry.value} rpm.`,
+      ];
     case "most_suffer":
-      return ["Most Pain", entry.value as string];
+      return [
+        "Masochist.png",
+        "Masochist",
+        `Definitely type 2 fun with this ${entry.value} suffer score.`,
+      ];
     case "most_achievements":
-      return ["Most Decorated", entry.value as string];
+      return [
+        "Overachiever.png",
+        "Overachiever",
+        `Thinking they’re so cool with ${entry.value} achievements.`,
+      ];
     case "longest_ride":
-      return ["Has no car", entry.value as string];
+      return [
+        "Wanderer.png",
+        "Wanderer",
+        `Must’ve gotten lost taking ${entry.value} miles to finish.`,
+      ];
     case "shortest_ride":
-      return ["Most Efficient", entry.value as string];
+      return [
+        "MVP.png",
+        "MVP",
+        `Most Vigilant Path-Follower took no detours with only ${entry.value} miles to finish.`,
+      ];
   }
 
-  return [category, entry.value as string];
+  return ["", category, entry.value as string];
 };

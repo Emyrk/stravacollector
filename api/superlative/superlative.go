@@ -13,14 +13,18 @@ type List struct {
 	// MostStoppage value is in seconds
 	MostStoppage Entry[int64] `json:"most_stoppage"`
 	// LeastStoppage value is in seconds
-	LeastStoppage    Entry[int64]   `json:"least_stoppage"`
-	MostWatts        Entry[float64] `json:"most_watts"`
-	MostCadence      Entry[float64] `json:"most_cadence"`
-	LeastCadence     Entry[float64] `json:"least_cadence"`
-	MostSuffer       Entry[int]     `json:"most_suffer"`
-	MostAchievements Entry[int]     `json:"most_achievements"`
-	LongestRide      Entry[float64] `json:"longest_ride"`
-	ShortestRide     Entry[float64] `json:"shortest_ride"`
+	LeastStoppage         Entry[int64]   `json:"least_stoppage"`
+	MostAverageWatts      Entry[float64] `json:"most_avg_watts"`
+	MostAverageCadence    Entry[float64] `json:"most_avg_cadence"`
+	LeastAverageCadence   Entry[float64] `json:"least_avg_cadence"`
+	MostAverageSpeed      Entry[float64] `json:"most_avg_speed"`
+	LeastAverageSpeed     Entry[float64] `json:"least_avg_speed"`
+	MostAverageHeartRate  Entry[float64] `json:"most_avg_hr"`
+	LeastAverageHeartRate Entry[float64] `json:"least_avg_hr"`
+	MostSuffer            Entry[int]     `json:"most_suffer"`
+	MostAchievements      Entry[int]     `json:"most_achievements"`
+	LongestRide           Entry[float64] `json:"longest_ride"`
+	ShortestRide          Entry[float64] `json:"shortest_ride"`
 
 	//Most elevation = mountain climber
 	//Best of $Segment
@@ -58,18 +62,33 @@ func Parse(activities []database.HugelLeaderboardRow) List {
 			list.LeastStoppage = entry(activity.ActivityID, stoppage)
 		}
 
-		// TODO: Loop over efforts
-		//if list.MostWatts.Value == 0 || list.MostWatts.Value < activity. {
-		//	list.MostWatts = entry(activity.ActivityID, activity.AverageWatts)
-		//}
+		if list.MostAverageWatts.Value == 0 || list.MostAverageWatts.Value < activity.AverageWatts {
+			list.MostAverageWatts = entry(activity.ActivityID, activity.AverageWatts)
+		}
 
-		//if list.MostCadence.Value == 0 || list.MostCadence.Value < activity. {
-		//	list.MostCadence = entry(activity.ActivityID, activity.AverageCadence)
-		//}
+		if list.MostAverageCadence.Value == 0 || list.MostAverageCadence.Value < activity.AverageCadence {
+			list.MostAverageCadence = entry(activity.ActivityID, activity.AverageCadence)
+		}
 
-		//if list.LeastCadence.Value == 0 || list.LeastCadence.Value > activity. {
-		//	list.LeastCadence = entry(activity.ActivityID, activity.AverageCadence)
-		//}
+		if list.LeastAverageCadence.Value == 0 || list.LeastAverageCadence.Value > activity.AverageCadence {
+			list.LeastAverageCadence = entry(activity.ActivityID, activity.AverageCadence)
+		}
+
+		if list.MostAverageSpeed.Value == 0 || list.MostAverageSpeed.Value < activity.AverageSpeed {
+			list.MostAverageSpeed = entry(activity.ActivityID, activity.AverageSpeed)
+		}
+
+		if list.LeastAverageSpeed.Value == 0 || list.LeastAverageSpeed.Value > activity.AverageSpeed {
+			list.LeastAverageSpeed = entry(activity.ActivityID, activity.AverageSpeed)
+		}
+
+		if list.MostAverageHeartRate.Value == 0 || list.MostAverageHeartRate.Value < activity.AverageHeartrate {
+			list.MostAverageHeartRate = entry(activity.ActivityID, activity.AverageHeartrate)
+		}
+
+		if list.LeastAverageHeartRate.Value == 0 || list.LeastAverageHeartRate.Value > activity.AverageHeartrate {
+			list.LeastAverageHeartRate = entry(activity.ActivityID, activity.AverageHeartrate)
+		}
 
 		if list.MostSuffer.Value == 0 || list.MostSuffer.Value < int(activity.SufferScore) {
 			list.MostSuffer = entry(activity.ActivityID, int(activity.SufferScore))

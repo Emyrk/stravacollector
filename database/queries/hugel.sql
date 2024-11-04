@@ -27,14 +27,19 @@ SELECT
 	athlete_bests.efforts,
 
 	activity_summary.name,
+	activity_summary.device_watts,
 	activity_summary.distance,
 	activity_summary.moving_time,
 	activity_summary.elapsed_time,
 	activity_summary.total_elevation_gain,
 	activity_summary.start_date,
 	activity_summary.achievement_count,
+	activity_summary.average_heartrate,
+	activity_summary.average_speed,
 
 	activity_detail.suffer_score,
+	activity_detail.average_watts,
+	activity_detail.average_cadence,
 
 	athletes.firstname,
 	athletes.lastname,

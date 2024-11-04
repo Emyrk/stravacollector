@@ -1389,14 +1389,19 @@ SELECT
 	athlete_bests.efforts,
 
 	activity_summary.name,
+	activity_summary.device_watts,
 	activity_summary.distance,
 	activity_summary.moving_time,
 	activity_summary.elapsed_time,
 	activity_summary.total_elevation_gain,
 	activity_summary.start_date,
 	activity_summary.achievement_count,
+	activity_summary.average_heartrate,
+	activity_summary.average_speed,
 
 	activity_detail.suffer_score,
+	activity_detail.average_watts,
+	activity_detail.average_cadence,
 
 	athletes.firstname,
 	athletes.lastname,
@@ -1447,13 +1452,18 @@ type HugelLeaderboardRow struct {
 	TotalTimeSeconds   int64               `db:"total_time_seconds" json:"total_time_seconds"`
 	Efforts            HugelSegmentEfforts `db:"efforts" json:"efforts"`
 	Name               string              `db:"name" json:"name"`
+	DeviceWatts        bool                `db:"device_watts" json:"device_watts"`
 	Distance           float64             `db:"distance" json:"distance"`
 	MovingTime         float64             `db:"moving_time" json:"moving_time"`
 	ElapsedTime        float64             `db:"elapsed_time" json:"elapsed_time"`
 	TotalElevationGain float64             `db:"total_elevation_gain" json:"total_elevation_gain"`
 	StartDate          time.Time           `db:"start_date" json:"start_date"`
 	AchievementCount   int32               `db:"achievement_count" json:"achievement_count"`
+	AverageHeartrate   float64             `db:"average_heartrate" json:"average_heartrate"`
+	AverageSpeed       float64             `db:"average_speed" json:"average_speed"`
 	SufferScore        int32               `db:"suffer_score" json:"suffer_score"`
+	AverageWatts       float64             `db:"average_watts" json:"average_watts"`
+	AverageCadence     float64             `db:"average_cadence" json:"average_cadence"`
 	Firstname          string              `db:"firstname" json:"firstname"`
 	Lastname           string              `db:"lastname" json:"lastname"`
 	Username           string              `db:"username" json:"username"`
@@ -1479,13 +1489,18 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardP
 			&i.TotalTimeSeconds,
 			&i.Efforts,
 			&i.Name,
+			&i.DeviceWatts,
 			&i.Distance,
 			&i.MovingTime,
 			&i.ElapsedTime,
 			&i.TotalElevationGain,
 			&i.StartDate,
 			&i.AchievementCount,
+			&i.AverageHeartrate,
+			&i.AverageSpeed,
 			&i.SufferScore,
+			&i.AverageWatts,
+			&i.AverageCadence,
 			&i.Firstname,
 			&i.Lastname,
 			&i.Username,
