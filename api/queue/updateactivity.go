@@ -77,7 +77,7 @@ func (m *Manager) updateActivity(ctx context.Context, j *gue.Job) error {
 			return fmt.Errorf("get activity: %w", err)
 		}
 		//// The update is older than the activity fetch, ignore it.
-		//if act.UpdatedAt.Unix() > args.EventTime {
+		// if act.UpdatedAt.Unix() > args.EventTime {
 		//	return nil
 		//}
 

@@ -1,6 +1,6 @@
 package strava
 
-//type AppClient struct {
+// type AppClient struct {
 //	ClientID     string
 //	ClientSecret string
 //}

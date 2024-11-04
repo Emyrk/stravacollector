@@ -162,7 +162,7 @@ func (m *Manager) failedJobHook() func(ctx context.Context, j *gue.Job, err erro
 				return
 			}
 			//
-			//m.Logger.Error().
+			// m.Logger.Error().
 			//	Err(err).
 			//	Str("job_id", j.ID.String()).
 			//	Str("job", j.Type).

@@ -26,7 +26,7 @@ type List struct {
 	LongestRide           Entry[float64] `json:"longest_ride"`
 	ShortestRide          Entry[float64] `json:"shortest_ride"`
 
-	//Most elevation = mountain climber
+	// Most elevation = mountain climber
 	//Best of $Segment
 }
 

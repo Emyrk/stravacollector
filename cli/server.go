@@ -270,7 +270,7 @@ func stravaRateLimitLog(ctx context.Context, logger zerolog.Logger) {
 			case <-ticker.C:
 				i, d := stravalimit.Remaining()
 				var _, _ = i, d
-				//logger.Debug().
+				// logger.Debug().
 				//	Int64("IntervalLeft", i).
 				//	Int64("DailyLeft", d).
 				//	Msg("Strava Rate Limits")
@@ -303,7 +303,7 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper, always bool) {
 		configName := f.Name
 		// If using camelCase in the config file, replace hyphens with a camelCased string.
 		// Since viper does case-insensitive comparisons, we don't need to bother fixing the case, and only need to remove the hyphens.
-		//if replaceHyphenWithCamelCase {
+		// if replaceHyphenWithCamelCase {
 		//	configName = strings.ReplaceAll(f.Name, "-", "")
 		//}
 
