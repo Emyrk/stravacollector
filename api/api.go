@@ -50,7 +50,6 @@ type API struct {
 	Manager     *queue.Manager
 
 	SuperHugelBoardCache *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]
-	HugelBoardCache      *gencache.LazyCache[[]database.HugelLeaderboardRow]
 	HugelBoard2023Cache  *gencache.LazyCache[[]database.HugelLeaderboardRow]
 	HugelBoard2024Cache  *gencache.LazyCache[[]database.HugelLeaderboardRow]
 	HugelRouteCache      *gencache.LazyCache[database.GetCompetitiveRouteRow]
@@ -98,25 +97,24 @@ func New(opts Options) (*API, error) {
 	api.SuperHugelBoardCache = gencache.New(time.Minute, func(ctx context.Context) ([]database.SuperHugelLeaderboardRow, error) {
 		return api.Opts.DB.SuperHugelLeaderboard(ctx, 0)
 	})
-	api.HugelBoardCache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
-		return api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
-			AthleteID: -1,
-			After:     time.Time{},
-			Before:    time.Time{},
-		})
-	})
+
 	api.HugelBoard2023Cache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
-		return api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
-			AthleteID: -1,
-			After:     hugeldate.Year2023.Start,
-			Before:    hugeldate.Year2023.End,
+		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
+			RouteYear: 2023,
+			HugelLeaderboardParams: database.HugelLeaderboardParams{
+				AthleteID: -1,
+				After:     hugeldate.Year2023.Start,
+				Before:    hugeldate.Year2023.End,
+			},
 		})
 	})
 	api.HugelBoard2024Cache = gencache.New(time.Minute, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
-		return api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
-			AthleteID: -1,
-			After:     hugeldate.Year2024.Start,
-			Before:    hugeldate.Year2024.End,
+		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
+			HugelLeaderboardParams: database.HugelLeaderboardParams{
+				AthleteID: -1,
+				After:     hugeldate.Year2024.Start,
+				Before:    hugeldate.Year2024.End,
+			},
 		})
 	})
 	api.HugelRouteCache = gencache.New(time.Minute, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {

@@ -233,19 +233,20 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if board.PersonalBest == nil {
-			athleteAct, err := api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
-				AthleteID: id,
-				Before:    beforeTime,
-				After:     afterTime,
-			})
-			if err == nil {
-				if len(athleteAct) == 1 {
-					pb := convertHugelActivity(athleteAct[0])
-					board.PersonalBest = &pb
-				}
-			}
-		}
+		// Do not do this
+		//if board.PersonalBest == nil {
+		//	athleteAct, err := api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
+		//		AthleteID: id,
+		//		Before:    beforeTime,
+		//		After:     afterTime,
+		//	})
+		//	if err == nil {
+		//		if len(athleteAct) == 1 {
+		//			pb := convertHugelActivity(athleteAct[0])
+		//			board.PersonalBest = &pb
+		//		}
+		//	}
+		//}
 	}
 	httpapi.Write(ctx, rw, http.StatusOK, board)
 }
