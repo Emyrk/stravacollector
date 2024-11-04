@@ -166,7 +166,7 @@ const SuperlativeLookup = (
     case "most_avg_hr":
       // TODO
       return [
-        "Cardiac Arrest",
+        "CardiacArrest.png",
         "Cardiac Arrest",
         <Text>
           Anyone have a defib? Gonna need it with this {entry.value} bpm average

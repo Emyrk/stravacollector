@@ -59,7 +59,7 @@ export const HugelBoard: FC = () => {
   const { year } = useParams();
   // Default to this year
   const yearNumber = parseInt(year || "2024");
-  const disableSuperlatives = year !== "2024" && false;
+  const disableSuperlatives = year !== "2024";
 
   const queryKey = ["hugel-leaderboard"];
   const {

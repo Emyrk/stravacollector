@@ -390,8 +390,8 @@ const SegmentCard: FC<{
     ? `https://www.strava.com/activities/${segment.personal_best.best_effort_activities_id}/segments/${segment.personal_best.best_effort_id}`
     : "";
 
-  // const segmentName =
-  //   segment.detailed_segment.friendly_name || segment.detailed_segment.name;
+  const segmentName =
+    segment.detailed_segment.friendly_name || segment.detailed_segment.name;
 
   return (
     <ResponsiveCard height={"170px"} width={"350px"}>
@@ -410,14 +410,18 @@ const SegmentCard: FC<{
           <GridItem colSpan={3}>
             <Grid templateColumns="repeat(13, 1fr)" columnGap={2}>
               <GridItem
-                fontSize={
-                  segment.detailed_segment.name.length < 20 ? "1.2rem" : "1rem"
-                }
+                fontSize={segmentName.length < 20 ? "1.2rem" : "1rem"}
                 // fontSize={segment.detailed_segment.name.length < 20 ? "2em" : "1em"}
                 textAlign={"center"}
                 colSpan={10}
               >
-                {segment.detailed_segment.name}
+                {segment.detailed_segment.friendly_name !== "" ? (
+                  <Tooltip label={segment.detailed_segment.name}>
+                    {segment.detailed_segment.friendly_name}
+                  </Tooltip>
+                ) : (
+                  segmentName
+                )}
               </GridItem>
               <GridItem colSpan={3}>
                 <Flex columnGap={3}>
