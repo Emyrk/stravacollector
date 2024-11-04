@@ -210,7 +210,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               as a Hügel, the route must incorporate all the following segments.
             </Text>
             <Link
-              href="https://www.strava.com/routes/3156303815316294790"
+              href="https://www.strava.com/routes/3287834903479380952"
               pt="25px"
               pb="2px"
             >
@@ -225,7 +225,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
                   src={"/logos/stravalogo.png"}
                   mr="5px"
                 />
-                <Text color="brand.stravaOrange">2023 Official Route</Text>
+                <Text color="brand.stravaOrange">2024 Official Route</Text>
               </Flex>
             </Link>
             <Text>
