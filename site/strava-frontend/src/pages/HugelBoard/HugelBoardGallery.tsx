@@ -1,4 +1,4 @@
-import { act, FC, PropsWithChildren } from "react";
+import { FC, PropsWithChildren } from "react";
 import { HugelBoardProps } from "./HugelBoard";
 import {
   Flex,
