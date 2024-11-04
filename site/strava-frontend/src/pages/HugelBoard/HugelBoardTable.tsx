@@ -83,10 +83,13 @@ export const HugelBoardTable: FC<HugelBoardProps> = ({
     return <Loading />;
   }
 
-  const segmentMapping = hugelSegments?.segments.reduce((acc, segment) => {
-    acc[segment.id] = segment;
-    return acc;
-  }, {} as { [key: string]: SegmentSummary });
+  const segmentMapping = hugelSegments?.routes["das-hugel"].segments.reduce(
+    (acc, segment) => {
+      acc[segment.id] = segment;
+      return acc;
+    },
+    {} as { [key: string]: SegmentSummary }
+  );
 
   return (
     <>
@@ -328,7 +331,11 @@ const EffortPair: FC<{
                   isTruncated: true,
                 }}
                 pb={index !== 0 ? "0px" : "10px"}
-                value={`${ElapsedDurationText(effort.elapsed_time, true, false)} @ ${
+                value={`${ElapsedDurationText(
+                  effort.elapsed_time,
+                  true,
+                  false
+                )} @ ${
                   effort.device_watts
                     ? effort.average_watts.toFixed(0) + "w"
                     : "--"

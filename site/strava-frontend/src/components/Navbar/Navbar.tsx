@@ -265,7 +265,7 @@ const NAV_ITEMS: Array<NavItem> = [
           {
             label: "2024 Das Hügel Lite Results",
             // subLabel: "See how you did on the Tour Das Hügel",
-            href: "/hugelboard/2024",
+            href: "/hugelboard/2024?lite=true",
           },
           {
             label: "Other Results",

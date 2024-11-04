@@ -6,11 +6,14 @@ import {
   ReactNode,
   useState,
   useEffect,
+  useMemo,
 } from "react";
 import {
   AthleteSummary,
+  CompetitiveRoute,
   DetailedSegment,
   PersonalSegment,
+  SegmentSummary,
 } from "../../api/typesGenerated";
 import {
   Image,
@@ -32,6 +35,7 @@ import {
   Button,
   Card,
   chakra,
+  position,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { getDetailedSegments, getErrorMessage, getRoute } from "../../api/rest";
@@ -57,7 +61,7 @@ import {
   DistanceToLocal,
   DistanceToLocalElevation,
 } from "../../lib/Distance/Distance";
-import L, { LatLngBoundsExpression, Layer } from "leaflet";
+import L, { Control, LatLngBoundsExpression, Layer, map } from "leaflet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
@@ -73,6 +77,9 @@ import { ConditionalLink } from "../../components/ConditionalLink/ConditionalLin
 import { CardStat } from "../../components/CardStat/CardStat";
 import { StravaLink } from "../../components/StravaLink/StravaLink";
 import { Loading } from "../../components/Loading/Loading";
+
+const LongRouteColor = "#fc4c02";
+const LiteRouteColor = "#fc02e3";
 
 export const ChallengeRoute: FC<{}> = ({}) => {
   const { name } = useParams();
@@ -286,6 +293,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               segments={segmentsData}
               selectedSegment={selectedSegment}
               outerBounds={strictBounds}
+              liteRoute={liteRoute}
             />
             <TileLayer
               attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
@@ -301,6 +309,11 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               <SegmentCard
                 segment={segment}
                 setSelectedSegment={setSelectedSegment}
+                liteSegment={Boolean(
+                  liteRoute?.segments.find(
+                    (e) => e.id === segment.detailed_segment.id
+                  )
+                )}
               />
             </Box>
           ))}
@@ -315,8 +328,51 @@ const MapController: FC<{
   selectedSegment: string;
   segments: PersonalSegment[];
   outerBounds: LatLngBoundsExpression;
-}> = ({ selectedSegment, segments, outerBounds }) => {
+  liteRoute?: CompetitiveRoute;
+}> = ({ selectedSegment, segments, outerBounds, liteRoute }) => {
   const mapRef = useMap();
+
+  useEffect(() => {
+    const legend = new L.Control({
+      position: "bottomright",
+    });
+
+    legend.onAdd = function () {
+      const existing = document.getElementsByClassName("legend");
+      if (existing && existing.length > 0) {
+        existing[0].remove();
+      }
+      const container = L.DomUtil.create("div", "legend"); // Create the legend container
+
+      // Style the container (optional)
+      container.style.backgroundColor = "white";
+      container.style.padding = "10px";
+      container.style.border = "2px solid #ccc";
+      container.style.color = "black";
+
+      // Define the HTML content for the legend
+      container.innerHTML = `
+        <h4>Color Legend</h4>
+        <div><span style="background-color: ${LongRouteColor}; width: 10px; height: 10px; display: inline-block;"></span> Das Hügel</div>
+        <div><span style="background-color: ${LiteRouteColor}; width: 10px; height: 10px; display: inline-block;"></span> Lite Route</div>
+    `;
+      legend.onRemove = function () {};
+
+      return container;
+    };
+    legend.addTo(mapRef);
+  }, [mapRef]);
+  // const legend = new LegendControl();
+
+  const segmentLineColor = (segmentID: string): string => {
+    if (
+      liteRoute &&
+      liteRoute.segments.find((e) => e.id === segmentID) !== undefined
+    ) {
+      return LiteRouteColor;
+    }
+    return LongRouteColor;
+  };
 
   const [polys, setPolys] = useState([] as [string, L.Polyline][]);
   useEffect(() => {
@@ -326,7 +382,7 @@ const MapController: FC<{
       // const popUp = <Popup>{segment.detailed_segment.name}</Popup>;
       const poly = L.polyline(points, {
         weight: 3,
-        color: "#fc4c02",
+        color: segmentLineColor(segment.detailed_segment.id),
       });
       const start = L.circleMarker(points[0], {
         radius: circleRadius,
@@ -357,7 +413,7 @@ const MapController: FC<{
         mapRef.panTo(poly.getBounds().getCenter());
         mapRef.fitBounds(poly.getBounds());
       } else {
-        poly.setStyle({ color: "#fc4c02", weight: 3 });
+        poly.setStyle({ color: segmentLineColor(id), weight: 3 });
       }
     });
   }, [mapRef, polys, selectedSegment, outerBounds]);
@@ -386,7 +442,8 @@ const SegmentCardContainer: FC<PropsWithChildren<{}>> = ({ children }) => {
 const SegmentCard: FC<{
   segment: PersonalSegment;
   setSelectedSegment: (id: string) => void;
-}> = ({ segment, setSelectedSegment }) => {
+  liteSegment?: boolean;
+}> = ({ segment, setSelectedSegment, liteSegment }) => {
   const { authenticatedUser } = useAuthenticated();
 
   const bestActHref = segment.personal_best
@@ -417,6 +474,7 @@ const SegmentCard: FC<{
                 // fontSize={segment.detailed_segment.name.length < 20 ? "2em" : "1em"}
                 textAlign={"center"}
                 colSpan={10}
+                color={liteSegment ? LiteRouteColor : LongRouteColor}
               >
                 {segment.detailed_segment.friendly_name !== "" ? (
                   <Tooltip label={segment.detailed_segment.name}>
@@ -430,9 +488,9 @@ const SegmentCard: FC<{
                 <Flex columnGap={3}>
                   <Link
                     as="span"
-                    onClick={() =>
-                      setSelectedSegment(segment.detailed_segment.id)
-                    }
+                    onClick={() => {
+                      setSelectedSegment(segment.detailed_segment.id);
+                    }}
                     transition={"all .1s ease"}
                     _hover={{
                       transform: "scale(1.1)",

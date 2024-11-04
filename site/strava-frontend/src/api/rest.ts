@@ -104,6 +104,12 @@ export const getAthlete = async (
   }
 };
 
+export const getHugelSegments = async (): Promise<
+  TypesGen.CompetitiveRoutesResponse | undefined
+> => {
+  return getRoute("das-hugel");
+};
+
 export const getRoute = async (
   routeName: string
 ): Promise<TypesGen.CompetitiveRoutesResponse | undefined> => {
@@ -136,19 +142,6 @@ export const getDetailedSegments = async (
         return 0;
       });
     }
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getHugelSegments = async (): Promise<
-  TypesGen.CompetitiveRoute | undefined
-> => {
-  try {
-    const response = await axios.get<TypesGen.CompetitiveRoute>(
-      "/api/v1/route/das-hugel"
-    );
     return response.data;
   } catch (error) {
     throw error;
