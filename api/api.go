@@ -125,8 +125,8 @@ func New(opts Options) (*API, error) {
 			Lite: true,
 			HugelLeaderboardParams: database.HugelLeaderboardParams{
 				AthleteID: -1,
-				After:     hugeldate.Year2024.Start,
-				Before:    hugeldate.Year2024.End,
+				After:     hugeldate.Year2023.Start,
+				Before:    hugeldate.Year2023.End,
 			},
 		})
 	})
