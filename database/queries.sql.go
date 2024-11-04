@@ -1408,7 +1408,7 @@ SELECT
 	athletes.username,
 	athletes.profile_pic_link,
 	athletes.sex,
-	hugel_count.count AS hugel_count
+	COALESCE(hugel_count.count, 0) AS hugel_count
 FROM
 	(
 		SELECT DISTINCT ON (athlete_id)
@@ -1420,7 +1420,7 @@ FROM
 	) AS athlete_bests
 INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id
-INNER JOIN athlete_hugel_count AS hugel_count
+LEFT JOIN athlete_hugel_count AS hugel_count
 	ON hugel_count.athlete_id = athlete_bests.athlete_id
 INNER JOIN
 	activity_summary ON athlete_bests.activity_id = activity_summary.id
