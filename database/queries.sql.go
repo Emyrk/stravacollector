@@ -1587,6 +1587,15 @@ func (q *sqlQuerier) MissingHugelSegments(ctx context.Context, activityID int64)
 	return items, nil
 }
 
+const refreshHugel2023Activities = `-- name: RefreshHugel2023Activities :exec
+REFRESH MATERIALIZED VIEW hugel_activities_2023
+`
+
+func (q *sqlQuerier) RefreshHugel2023Activities(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, refreshHugel2023Activities)
+	return err
+}
+
 const refreshHugelActivities = `-- name: RefreshHugelActivities :exec
 REFRESH MATERIALIZED VIEW hugel_activities
 `

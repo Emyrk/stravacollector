@@ -18,6 +18,7 @@ import (
 // It extends the generated interface to add transaction support.
 type Store interface {
 	sqlcQuerier
+	manualQuerier
 
 	Ping(ctx context.Context) (time.Duration, error)
 	InTx(func(Store) error, *sql.TxOptions) error

@@ -39,6 +39,7 @@ type sqlcQuerier interface {
 	MissingHugelSegments(ctx context.Context, activityID int64) ([]Segment, error)
 	MissingSegments(ctx context.Context, activitiesID int64) ([]string, error)
 	NeedsARefresh(ctx context.Context) ([]NeedsARefreshRow, error)
+	RefreshHugel2023Activities(ctx context.Context) error
 	RefreshHugelActivities(ctx context.Context) error
 	RefreshSuperHugelActivities(ctx context.Context) error
 	StarSegments(ctx context.Context, arg StarSegmentsParams) error

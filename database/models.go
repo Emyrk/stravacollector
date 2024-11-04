@@ -184,6 +184,11 @@ type AthleteHugelCount struct {
 	Count     int64 `db:"count" json:"count"`
 }
 
+type AthleteHugelCount2023 struct {
+	AthleteID int64 `db:"athlete_id" json:"athlete_id"`
+	Count     int64 `db:"count" json:"count"`
+}
+
 // Tracks loading athlete activities. Must be an authenticated athlete.
 type AthleteLoad struct {
 	AthleteID int64 `db:"athlete_id" json:"athlete_id"`
@@ -244,6 +249,14 @@ type GueJob struct {
 	Queue      string         `db:"queue" json:"queue"`
 	CreatedAt  time.Time      `db:"created_at" json:"created_at"`
 	UpdatedAt  time.Time      `db:"updated_at" json:"updated_at"`
+}
+
+type HugelActivities2023 struct {
+	ActivityID       int64           `db:"activity_id" json:"activity_id"`
+	AthleteID        int64           `db:"athlete_id" json:"athlete_id"`
+	SegmentIds       interface{}     `db:"segment_ids" json:"segment_ids"`
+	TotalTimeSeconds int64           `db:"total_time_seconds" json:"total_time_seconds"`
+	Efforts          json.RawMessage `db:"efforts" json:"efforts"`
 }
 
 type HugelActivity struct {
