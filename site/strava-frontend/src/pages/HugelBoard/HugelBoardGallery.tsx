@@ -90,7 +90,11 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
         maxW={"1200px"}
       >
         <GridItem colSpan={3}>
-          <GalleryCard activity={data?.activities[0]} position={1} />
+          <GalleryCard
+            activity={data?.activities[0]}
+            position={1}
+            superlatives={athSuperlatives(data?.activities[0])}
+          />
         </GridItem>
         <GridItem colSpan={3}>
           <Flex

@@ -1,5 +1,5 @@
 import { Avatar, AvatarProps, Box, Stack, Text } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, ReactElement } from "react";
 import { SuperlativeEntry } from "../../api/typesGenerated";
 import { Tooltip, TooltipProps } from "@chakra-ui/react";
 import { ResponsiveCard } from "../ResponsiveCard/ResponsiveCard";
@@ -8,6 +8,7 @@ import {
   FormatDate,
   FormatDateTime,
 } from "../../pages/HugelBoard/CalcActivity";
+import { DistanceToMiles } from "../../lib/Distance/Distance";
 
 export type SuperlativeProps = AvatarProps & {
   category: string;
@@ -40,18 +41,18 @@ export const SuperlativeCard: FC<{ title: string; value: any }> = ({
 }) => {
   return (
     <ResponsiveCard
-      width={"200px"}
-      height={"100px"}
-      border={"white"}
-      borderStyle={"solid"}
-      opacity={"99%"}
+      width={"270px"}
+      // height={"100px"}
+      opacity={"93%"}
       color={"white"}
       p={"10px"}
       // boxShadow={"#fc4c02 0px 3px 6px"}
     >
       <Stack>
-        <Text fontSize={"2em"}>{title}</Text>
-        <Text>{value}</Text>
+        <Text fontSize={"1em"} fontWeight={600}>
+          {title}
+        </Text>
+        {value}
       </Stack>
     </ResponsiveCard>
   );
@@ -60,7 +61,7 @@ export const SuperlativeCard: FC<{ title: string; value: any }> = ({
 const SuperlativeLookup = (
   category: string,
   entry: SuperlativeEntry<any>
-): [string, string, string] => {
+): [string, string, ReactElement] => {
   switch (category) {
     case "early_bird":
     case "earliest_start":
@@ -68,77 +69,123 @@ const SuperlativeLookup = (
       return [
         "EarlyBird.png",
         "Early Bird",
-        `Gets the worm with their ${FormatDateTime(entry.value)} start time.`,
+        <Text>
+          Gets the worm with their {FormatDateTime(entry.value)} start time.
+        </Text>,
       ];
     case "night_owl":
     case "latest_end":
       return [
-        "NightOwn.png",
+        "NightOwl.png",
         "Night Owl",
-        `Aren’t you glad you didn’t wait up with their ${FormatDateTime(
-          entry.value
-        )} end time?`,
+        <Text>
+          Aren’t you glad you didn’t wait up with their{" "}
+          {FormatDateTime(entry.value)} end time?
+        </Text>,
       ];
     case "most_stoppage":
       return [
         "CoffeeBreak.png",
         "Coffee Break",
-        `Stopped and smelled the roses with ${(entry.value / 3600).toFixed(
-          0
-        )} minutes of stoppage.`,
+        <Text>
+          Stopped and smelled the roses with {Math.floor(entry.value / 3600)}{" "}
+          hrs and {((entry.value / 60) % 60).toFixed(0)} minutes of stoppage.
+        </Text>,
       ];
     case "least_stoppage":
       // TODO: Rename
       return [
         "Dory.png",
         "Dory",
-        `Just keep swimming. Only ${(entry.value / 3600).toFixed(
-          0
-        )} minutes of stoppage.`,
+        <Text>
+          Just keep swimming. Only {(entry.value / 60).toFixed(0)} minutes of
+          stoppage.
+        </Text>,
       ];
+    case "most_avg_watts":
     case "most_watts":
       return [
         "TheEdison.png",
         "The Edison",
-        `Powering Austin with ${entry.value} average watts.`,
+        <Text>Powering Austin with {entry.value} average watts.</Text>,
       ];
-    case "most_cadence":
+    case "most_avg_cadence":
       return [
         "Roadrunner.png",
         "Roadrunner",
-        `Legs a’blur with average cadence of ${entry.value} rpm.`,
+        <Text>Legs a'blur with average cadence of {entry.value} rpm.</Text>,
       ];
-    case "least_cadence":
+    case "least_avg_cadence":
       return [
         "Mortar&Pestle.png",
         "Mortar & Pestle",
-        `Grinding so hard with average cadence of ${entry.value} rpm.`,
+        <Text>
+          Grinding so hard with average cadence of {entry.value.toFixed(0)} rpm.
+        </Text>,
       ];
     case "most_suffer":
       return [
         "Masochist.png",
         "Masochist",
-        `Definitely type 2 fun with this ${entry.value} suffer score.`,
+        <Text>
+          Definitely type 2 fun with this {entry.value} suffer score.
+        </Text>,
       ];
     case "most_achievements":
       return [
         "Overachiever.png",
         "Overachiever",
-        `Thinking they’re so cool with ${entry.value} achievements.`,
+        <Text>Thinking they're so cool with {entry.value} achievements.</Text>,
       ];
     case "longest_ride":
       return [
         "Wanderer.png",
         "Wanderer",
-        `Must’ve gotten lost taking ${entry.value} miles to finish.`,
+        <Text>
+          Must've gotten lost taking {DistanceToMiles(entry.value).toFixed(1)}{" "}
+          miles to finish.
+        </Text>,
       ];
     case "shortest_ride":
       return [
         "MVP.png",
         "MVP",
-        `Most Vigilant Path-Follower took no detours with only ${entry.value} miles to finish.`,
+        <Text>
+          Most Vigilant Path-Follower took no detours with only{" "}
+          {DistanceToMiles(entry.value).toFixed(1)} miles to finish.
+        </Text>,
+      ];
+    case "least_avg_hr":
+      return [
+        "Yawner.png",
+        "Yawner",
+        <Text>
+          Not working hard with a {entry.value.toFixed(0)} bpm average heart
+          rate.
+        </Text>,
+      ];
+    case "most_avg_hr":
+      // TODO
+      return ["", category, <></>];
+    case "least_avg_speed":
+      return [
+        "Turtle.png",
+        "Turtle",
+        <Text>
+          Taking their sweet time with an average of{" "}
+          {DistanceToMiles(entry.value * 3600).toFixed(2)} mph.
+        </Text>,
+      ];
+    case "most_avg_speed":
+      return [
+        "Hare.png",
+        "Hare",
+        <Text>
+          Must’ve wanted the ride to be over with an average of{" "}
+          {DistanceToMiles(entry.value * 3600).toFixed(2)} mph.
+        </Text>,
       ];
   }
 
-  return ["", category, entry.value as string];
+  return ["", category, <></>];
 };

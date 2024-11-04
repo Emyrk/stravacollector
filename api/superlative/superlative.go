@@ -63,7 +63,10 @@ func Parse(activities []database.HugelLeaderboardRow) List {
 		}
 
 		if list.MostAverageWatts.Value == 0 || list.MostAverageWatts.Value < activity.AverageWatts {
-			list.MostAverageWatts = entry(activity.ActivityID, activity.AverageWatts)
+			if activity.DeviceWatts {
+				// Only if device watts. Not estimates
+				list.MostAverageWatts = entry(activity.ActivityID, activity.AverageWatts)
+			}
 		}
 
 		if list.MostAverageCadence.Value == 0 || list.MostAverageCadence.Value < activity.AverageCadence {
