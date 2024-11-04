@@ -285,12 +285,15 @@ CREATE TABLE segments (
     total_effort_count integer NOT NULL,
     total_athlete_count integer NOT NULL,
     total_star_count integer NOT NULL,
-    fetched_at timestamp without time zone NOT NULL
+    fetched_at timestamp without time zone NOT NULL,
+    friendly_name text DEFAULT ''::text NOT NULL
 );
 
 COMMENT ON COLUMN segments.elevation_profile IS 'A small image of the elevation profile of this segment.';
 
 COMMENT ON COLUMN segments.fetched_at IS 'The time at which this segment was fetched from the Strava API.';
+
+COMMENT ON COLUMN segments.friendly_name IS 'Human friendly name for the segment';
 
 CREATE TABLE starred_segments (
     athlete_id bigint NOT NULL,

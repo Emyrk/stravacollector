@@ -49,7 +49,7 @@ export const SuperlativeCard: FC<{ title: string; value: any }> = ({
       // boxShadow={"#fc4c02 0px 3px 6px"}
     >
       <Stack>
-        <Text fontSize={"1em"} fontWeight={600}>
+        <Text fontSize={"1.2em"} fontWeight={800}>
           {title}
         </Text>
         {value}
@@ -93,7 +93,6 @@ const SuperlativeLookup = (
         </Text>,
       ];
     case "least_stoppage":
-      // TODO: Rename
       return [
         "Dory.png",
         "Dory",
@@ -166,7 +165,14 @@ const SuperlativeLookup = (
       ];
     case "most_avg_hr":
       // TODO
-      return ["", category, <></>];
+      return [
+        "Cardiac Arrest",
+        "Cardiac Arrest",
+        <Text>
+          Anyone have a defib? Gonna need it with this {entry.value} bpm average
+          heart rate.
+        </Text>,
+      ];
     case "least_avg_speed":
       return [
         "Turtle.png",

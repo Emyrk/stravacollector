@@ -39,6 +39,7 @@ type PersonalBestSegmentEffort struct {
 type DetailedSegment struct {
 	ID            StringInt `json:"id"`
 	Name          string    `json:"name"`
+	FriendlyName  string    `json:"friendly_name"`
 	ActivityType  string    `json:"activity_type"`
 	Distance      float64   `json:"distance"`
 	AverageGrade  float64   `json:"average_grade"`

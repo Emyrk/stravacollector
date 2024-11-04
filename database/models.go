@@ -289,6 +289,8 @@ type Segment struct {
 	TotalStarCount     int32     `db:"total_star_count" json:"total_star_count"`
 	// The time at which this segment was fetched from the Strava API.
 	FetchedAt time.Time `db:"fetched_at" json:"fetched_at"`
+	// Human friendly name for the segment
+	FriendlyName string `db:"friendly_name" json:"friendly_name"`
 }
 
 type SegmentEffort struct {

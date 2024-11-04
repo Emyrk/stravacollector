@@ -98,6 +98,7 @@ func convertSegmentRow[S segmentRow](row S) modelsdk.PersonalSegment {
 		DetailedSegment: modelsdk.DetailedSegment{
 			ID:                 modelsdk.StringInt(segment.ID),
 			Name:               segment.Name,
+			FriendlyName:       segment.FriendlyName,
 			ActivityType:       segment.ActivityType,
 			Distance:           segment.Distance,
 			AverageGrade:       segment.AverageGrade,

@@ -1523,7 +1523,7 @@ func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardP
 
 const missingHugelSegments = `-- name: MissingHugelSegments :many
 SELECT
-	id, name, activity_type, distance, average_grade, maximum_grade, elevation_high, elevation_low, start_latlng, end_latlng, elevation_profile, climb_category, city, state, country, private, hazardous, created_at, updated_at, total_elevation_gain, map_id, total_effort_count, total_athlete_count, total_star_count, fetched_at
+	id, name, activity_type, distance, average_grade, maximum_grade, elevation_high, elevation_low, start_latlng, end_latlng, elevation_profile, climb_category, city, state, country, private, hazardous, created_at, updated_at, total_elevation_gain, map_id, total_effort_count, total_athlete_count, total_star_count, fetched_at, friendly_name
 FROM
 	segments
 WHERE
@@ -1572,6 +1572,7 @@ func (q *sqlQuerier) MissingHugelSegments(ctx context.Context, activityID int64)
 			&i.TotalAthleteCount,
 			&i.TotalStarCount,
 			&i.FetchedAt,
+			&i.FriendlyName,
 		); err != nil {
 			return nil, err
 		}
@@ -1872,7 +1873,7 @@ func (q *sqlQuerier) BestRouteEfforts(ctx context.Context, expectedSegments []in
 
 const getPersonalSegments = `-- name: GetPersonalSegments :many
 SELECT
-	segments.id, segments.name, segments.activity_type, segments.distance, segments.average_grade, segments.maximum_grade, segments.elevation_high, segments.elevation_low, segments.start_latlng, segments.end_latlng, segments.elevation_profile, segments.climb_category, segments.city, segments.state, segments.country, segments.private, segments.hazardous, segments.created_at, segments.updated_at, segments.total_elevation_gain, segments.map_id, segments.total_effort_count, segments.total_athlete_count, segments.total_star_count, segments.fetched_at,
+	segments.id, segments.name, segments.activity_type, segments.distance, segments.average_grade, segments.maximum_grade, segments.elevation_high, segments.elevation_low, segments.start_latlng, segments.end_latlng, segments.elevation_profile, segments.climb_category, segments.city, segments.state, segments.country, segments.private, segments.hazardous, segments.created_at, segments.updated_at, segments.total_elevation_gain, segments.map_id, segments.total_effort_count, segments.total_athlete_count, segments.total_star_count, segments.fetched_at, segments.friendly_name,
 	maps.id, maps.polyline, maps.summary_polyline, maps.updated_at,
 	COALESCE(starred_segments.starred, false) as starred,
 
@@ -1963,6 +1964,7 @@ func (q *sqlQuerier) GetPersonalSegments(ctx context.Context, arg GetPersonalSeg
 			&i.Segment.TotalAthleteCount,
 			&i.Segment.TotalStarCount,
 			&i.Segment.FetchedAt,
+			&i.Segment.FriendlyName,
 			&i.Map.ID,
 			&i.Map.Polyline,
 			&i.Map.SummaryPolyline,
@@ -1992,7 +1994,7 @@ func (q *sqlQuerier) GetPersonalSegments(ctx context.Context, arg GetPersonalSeg
 
 const getSegments = `-- name: GetSegments :many
 SELECT
-    segments.id, segments.name, segments.activity_type, segments.distance, segments.average_grade, segments.maximum_grade, segments.elevation_high, segments.elevation_low, segments.start_latlng, segments.end_latlng, segments.elevation_profile, segments.climb_category, segments.city, segments.state, segments.country, segments.private, segments.hazardous, segments.created_at, segments.updated_at, segments.total_elevation_gain, segments.map_id, segments.total_effort_count, segments.total_athlete_count, segments.total_star_count, segments.fetched_at, maps.id, maps.polyline, maps.summary_polyline, maps.updated_at
+    segments.id, segments.name, segments.activity_type, segments.distance, segments.average_grade, segments.maximum_grade, segments.elevation_high, segments.elevation_low, segments.start_latlng, segments.end_latlng, segments.elevation_profile, segments.climb_category, segments.city, segments.state, segments.country, segments.private, segments.hazardous, segments.created_at, segments.updated_at, segments.total_elevation_gain, segments.map_id, segments.total_effort_count, segments.total_athlete_count, segments.total_star_count, segments.fetched_at, segments.friendly_name, maps.id, maps.polyline, maps.summary_polyline, maps.updated_at
 FROM
     segments
 LEFT JOIN
@@ -2040,6 +2042,7 @@ func (q *sqlQuerier) GetSegments(ctx context.Context, segmentIds []int64) ([]Get
 			&i.Segment.TotalAthleteCount,
 			&i.Segment.TotalStarCount,
 			&i.Segment.FetchedAt,
+			&i.Segment.FriendlyName,
 			&i.Map.ID,
 			&i.Map.Polyline,
 			&i.Map.SummaryPolyline,
@@ -2167,7 +2170,7 @@ ON CONFLICT
 	total_star_count = CASE WHEN $24 != 0 THEN $24 ELSE segments.total_star_count END,
 	fetched_at = Now()
 
-RETURNING id, name, activity_type, distance, average_grade, maximum_grade, elevation_high, elevation_low, start_latlng, end_latlng, elevation_profile, climb_category, city, state, country, private, hazardous, created_at, updated_at, total_elevation_gain, map_id, total_effort_count, total_athlete_count, total_star_count, fetched_at
+RETURNING id, name, activity_type, distance, average_grade, maximum_grade, elevation_high, elevation_low, start_latlng, end_latlng, elevation_profile, climb_category, city, state, country, private, hazardous, created_at, updated_at, total_elevation_gain, map_id, total_effort_count, total_athlete_count, total_star_count, fetched_at, friendly_name
 `
 
 type UpsertSegmentParams struct {
@@ -2251,6 +2254,7 @@ func (q *sqlQuerier) UpsertSegment(ctx context.Context, arg UpsertSegmentParams)
 		&i.TotalAthleteCount,
 		&i.TotalStarCount,
 		&i.FetchedAt,
+		&i.FriendlyName,
 	)
 	return i, err
 }
@@ -2351,7 +2355,7 @@ func (q *sqlQuerier) UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentE
 
 const test = `-- name: test :many
 SELECT
-	segments.id, segments.name, activity_type, segments.distance, average_grade, maximum_grade, elevation_high, elevation_low, start_latlng, end_latlng, elevation_profile, climb_category, city, state, country, private, hazardous, created_at, segments.updated_at, total_elevation_gain, map_id, total_effort_count, total_athlete_count, total_star_count, fetched_at, maps.id, polyline, summary_polyline, maps.updated_at, segment_effort.id, athlete_id, segment_id, segment_effort.name, elapsed_time, moving_time, start_date, start_date_local, segment_effort.distance, start_index, end_index, device_watts, average_watts, kom_rank, pr_rank, segment_effort.updated_at, activities_id
+	segments.id, segments.name, activity_type, segments.distance, average_grade, maximum_grade, elevation_high, elevation_low, start_latlng, end_latlng, elevation_profile, climb_category, city, state, country, private, hazardous, created_at, segments.updated_at, total_elevation_gain, map_id, total_effort_count, total_athlete_count, total_star_count, fetched_at, friendly_name, maps.id, polyline, summary_polyline, maps.updated_at, segment_effort.id, athlete_id, segment_id, segment_effort.name, elapsed_time, moving_time, start_date, start_date_local, segment_effort.distance, start_index, end_index, device_watts, average_watts, kom_rank, pr_rank, segment_effort.updated_at, activities_id
 FROM
 	segments
 		LEFT JOIN
@@ -2397,6 +2401,7 @@ type testRow struct {
 	TotalAthleteCount  int32          `db:"total_athlete_count" json:"total_athlete_count"`
 	TotalStarCount     int32          `db:"total_star_count" json:"total_star_count"`
 	FetchedAt          time.Time      `db:"fetched_at" json:"fetched_at"`
+	FriendlyName       string         `db:"friendly_name" json:"friendly_name"`
 	ID_2               sql.NullString `db:"id_2" json:"id_2"`
 	Polyline           sql.NullString `db:"polyline" json:"polyline"`
 	SummaryPolyline    sql.NullString `db:"summary_polyline" json:"summary_polyline"`
@@ -2455,6 +2460,7 @@ func (q *sqlQuerier) test(ctx context.Context) ([]testRow, error) {
 			&i.TotalAthleteCount,
 			&i.TotalStarCount,
 			&i.FetchedAt,
+			&i.FriendlyName,
 			&i.ID_2,
 			&i.Polyline,
 			&i.SummaryPolyline,
