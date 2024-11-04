@@ -79,7 +79,7 @@ import { StravaLink } from "../../components/StravaLink/StravaLink";
 import { Loading } from "../../components/Loading/Loading";
 
 const LongRouteColor = "#fc4c02";
-const LiteRouteColor = "#fc02e3";
+const LiteRouteColor = "#FCFB03";
 
 export const ChallengeRoute: FC<{}> = ({}) => {
   const { name } = useParams();
@@ -239,7 +239,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               </Flex>
             </Link>
             <Text>
-              When: Saturday, November 11, 2023 7 a.m. Meetup and 7:15 a.m.
+              When: Saturday, November 9, 2024 7 a.m. Meetup and 7:15 a.m.
               Rollout
             </Text>
             <Text>
@@ -334,7 +334,7 @@ const MapController: FC<{
 
   useEffect(() => {
     const legend = new L.Control({
-      position: "bottomright",
+      position: "topleft",
     });
 
     legend.onAdd = function () {
@@ -349,12 +349,13 @@ const MapController: FC<{
       container.style.padding = "10px";
       container.style.border = "2px solid #ccc";
       container.style.color = "black";
+      container.style.fontSize = "1.5em";
 
       // Define the HTML content for the legend
       container.innerHTML = `
         <h4>Color Legend</h4>
         <div><span style="background-color: ${LongRouteColor}; width: 10px; height: 10px; display: inline-block;"></span> Das Hügel</div>
-        <div><span style="background-color: ${LiteRouteColor}; width: 10px; height: 10px; display: inline-block;"></span> Lite Route</div>
+        <div><span style="background-color: ${LiteRouteColor}; width: 10px; height: 10px; display: inline-block;"></span> Hügel Lite</div>
     `;
       legend.onRemove = function () {};
 

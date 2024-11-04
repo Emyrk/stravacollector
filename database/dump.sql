@@ -328,9 +328,10 @@ CREATE MATERIALIZED VIEW lite_hugel_activities AS
                     segment_efforts.updated_at,
                     segment_efforts.activities_id
                    FROM segment_efforts
-                  WHERE (segment_efforts.segment_id = ANY (ARRAY( SELECT competitive_routes.segments
+                  WHERE ((NOT (segment_efforts.activities_id IN ( SELECT hugel_activities.activity_id
+                           FROM hugel_activities))) AND (segment_efforts.segment_id = ANY (ARRAY( SELECT competitive_routes.segments
                            FROM competitive_routes
-                          WHERE (competitive_routes.name = 'lite-das-hugel'::text))))
+                          WHERE (competitive_routes.name = 'lite-das-hugel'::text)))))
                   ORDER BY segment_efforts.activities_id, segment_efforts.segment_id, segment_efforts.elapsed_time) hugel_efforts
           GROUP BY hugel_efforts.activities_id, hugel_efforts.athlete_id) merged
   WHERE (merged.segment_ids @> ARRAY( SELECT competitive_routes.segments
