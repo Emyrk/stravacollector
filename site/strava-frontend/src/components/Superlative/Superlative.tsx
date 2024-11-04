@@ -164,7 +164,6 @@ const SuperlativeLookup = (
         </Text>,
       ];
     case "most_avg_hr":
-      // TODO
       return [
         "CardiacArrest.png",
         "Cardiac Arrest",
