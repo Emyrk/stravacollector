@@ -67,7 +67,7 @@ func (api *API) getSegments(rw http.ResponseWriter, r *http.Request) {
 }
 
 type segmentRow interface {
-	database.GetPersonalSegmentsRow | database.GetSegmentsRow
+	database.GetSegmentsRow
 }
 
 func convertPersonalEffortRows(row database.SegmentEffort) *modelsdk.PersonalBestSegmentEffort {
@@ -97,22 +97,7 @@ func convertSegmentRow[S segmentRow](row S) modelsdk.PersonalSegment {
 	var starred bool
 	var best *modelsdk.PersonalBestSegmentEffort
 	switch row := any(row).(type) {
-	case database.GetPersonalSegmentsRow:
-		segment = row.Segment
-		dbMap = row.Map
-		starred = row.Starred
-		if row.BestEffortID > 0 {
-			best = &modelsdk.PersonalBestSegmentEffort{
-				BestEffortID:             modelsdk.StringInt(row.BestEffortID),
-				BestEffortElapsedTime:    row.BestEffortElapsedTime,
-				BestEffortMovingTime:     row.BestEffortMovingTime,
-				BestEffortStartDate:      row.BestEffortStartDate,
-				BestEffortStartDateLocal: row.BestEffortStartDateLocal,
-				BestEffortDeviceWatts:    row.BestEffortDeviceWatts,
-				BestEffortAverageWatts:   row.BestEffortAverageWatts,
-				BestEffortActivitiesID:   modelsdk.StringInt(row.BestEffortActivitiesID),
-			}
-		}
+	//nolint
 	case database.GetSegmentsRow:
 		segment = row.Segment
 		dbMap = row.Map

@@ -35,6 +35,7 @@ func serverCmd() *cobra.Command {
 		accessURL         string
 		config            string
 		writeConfig       bool
+		runScript         string
 		stackDriver       bool
 		verifyToken       string
 		skipWebhookSetup  bool
@@ -92,9 +93,6 @@ func serverCmd() *cobra.Command {
 			}
 
 			logger := getLogger(cmd)
-			if secret == "" || clientID == "" {
-				return fmt.Errorf("missing client id or secret")
-			}
 
 			db, err := database.NewPostgresDB(ctx, logger, dbURL)
 			if err != nil {
@@ -103,6 +101,19 @@ func serverCmd() *cobra.Command {
 
 			if accessURL == "" {
 				accessURL = fmt.Sprintf("http://localhost:%d", port)
+			}
+
+			if runScript != "" {
+				switch runScript {
+				case "redownload_hugels":
+					return redownloadHugels(ctx, db, dbURL, logger)
+				default:
+					return fmt.Errorf("unknown script: %s", runScript)
+				}
+			}
+
+			if secret == "" || clientID == "" {
+				return fmt.Errorf("missing client id or secret")
 			}
 
 			u, err := url.Parse(accessURL)
@@ -247,6 +258,7 @@ func serverCmd() *cobra.Command {
 	cmd.Flags().IntVar(&port, "port", 9090, "Port to listen on")
 	cmd.Flags().StringVar(&secret, "oauth-secret", "", "Strava oauth app secret")
 	cmd.Flags().StringVar(&clientID, "oauth-client-id", "", "Strava oauth app client ID")
+	cmd.Flags().StringVar(&runScript, "run-script", "", "Execute a script")
 	cmd.Flags().StringVar(&dbURL, "db-url", "postgres://postgres:postgres@localhost:5432/strava?sslmode=disable", "Database URL")
 	cmd.Flags().BoolVar(&stackDriver, "stack-driver", false, "Export stack driver logs")
 	cmd.Flags().StringVar(&verifyToken, "verify-token", "", "Strava webhook verify token")
