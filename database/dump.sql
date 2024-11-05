@@ -482,6 +482,8 @@ CREATE INDEX segment_efforts_distinct_idx ON segment_efforts USING btree (activi
 
 CREATE INDEX segment_efforts_elapsed_time_idx ON segment_efforts USING btree (elapsed_time);
 
+CREATE INDEX segment_efforts_segment_id_idx ON segment_efforts USING btree (segment_id);
+
 ALTER TABLE ONLY activity_detail
     ADD CONSTRAINT activities_athletes_id_fk FOREIGN KEY (athlete_id) REFERENCES athletes(id);
 
