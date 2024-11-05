@@ -167,8 +167,14 @@ func (api *API) Routes() chi.Router {
 	r.Get("/myhealthz", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("ok"))
 	})
+	r.Get("/static-error", func(w http.ResponseWriter, r *http.Request) {
+		httpapi.Write(r.Context(), w, http.StatusInternalServerError, modelsdk.Response{
+			Message: "This error is ok, and is used for testing",
+			Detail:  "Maybe if you try again really hard it will work!",
+		})
+	})
 	r.Route("/oauth2", func(r chi.Router) {
-		r.Use(httpmw.ExtractOauth2(api.OAuthConfig, nil))
+		r.Use(httpmw.ExtractOauth2(api.Opts.Logger, api.OAuthConfig, nil))
 		r.Get("/callback", api.stravaOAuth2)
 	})
 	r.Route("/api/v1", func(r chi.Router) {

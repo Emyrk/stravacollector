@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Emyrk/strava/api/modelsdk"
+	"github.com/rs/zerolog"
 
 	"golang.org/x/oauth2"
 
@@ -36,7 +37,7 @@ func OAuth2(r *http.Request) OAuth2State {
 	return oauth
 }
 
-func ExtractOauth2(config *oauth2.Config, authURLOpts map[string]string) func(http.Handler) http.Handler {
+func ExtractOauth2(logger zerolog.Logger, config *oauth2.Config, authURLOpts map[string]string) func(http.Handler) http.Handler {
 	opts := make([]oauth2.AuthCodeOption, 0, len(authURLOpts)+1)
 	opts = append(opts, oauth2.AccessTypeOffline)
 	for k, v := range authURLOpts {
@@ -114,14 +115,25 @@ func ExtractOauth2(config *oauth2.Config, authURLOpts map[string]string) func(ht
 
 			stateCookie, err := r.Cookie(OAuth2StateCookie)
 			if err != nil {
+				cookies := make([]string, 0)
+				for _, c := range r.Cookies() {
+					cookies = append(cookies, c.Name)
+				}
+				logger.Error().
+					Err(err).
+					Strs("cookies", cookies).
+					Msg("State cookie not provided.")
+
 				httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
 					Message: fmt.Sprintf("Cookie %q must be provided.", OAuth2StateCookie),
+					Detail:  fmt.Sprintf("Try clearing your cookies and trying again."),
 				})
 				return
 			}
 			if stateCookie.Value != state {
 				httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
 					Message: "State mismatched.",
+					Detail:  fmt.Sprintf("Try clearing your cookies and trying again."),
 				})
 				return
 			}
@@ -148,4 +160,14 @@ func ExtractOauth2(config *oauth2.Config, authURLOpts map[string]string) func(ht
 			next.ServeHTTP(rw, r.WithContext(ctx))
 		})
 	}
+}
+
+func ClearOauth2State(rw http.ResponseWriter) {
+	http.SetCookie(rw, &http.Cookie{
+		Name:     OAuth2StateCookie,
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   -1,
+	})
 }

@@ -33,7 +33,6 @@ import {
 } from "@chakra-ui/icons";
 import { StravaConnectOrUser } from "./StravaConnect";
 import { useAuthenticated } from "../../contexts/Authenticated";
-import { getErrorMessage, getErrorDetail } from "../../api/rest";
 import React, { FC, useEffect } from "react";
 import { AthleteAvatar } from "../AthleteAvatar/AthleteAvatar";
 import { AthleteAvatarDropdown } from "./AthleteAvatarDropdown";
