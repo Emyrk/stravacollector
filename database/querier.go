@@ -29,8 +29,6 @@ type sqlcQuerier interface {
 	GetAthleteNeedsLoad(ctx context.Context) ([]GetAthleteNeedsLoadRow, error)
 	GetBestPersonalSegmentEffort(ctx context.Context, arg GetBestPersonalSegmentEffortParams) ([]SegmentEffort, error)
 	GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error)
-	// For authenticated users
-	GetPersonalSegments(ctx context.Context, arg GetPersonalSegmentsParams) ([]GetPersonalSegmentsRow, error)
 	GetSegments(ctx context.Context, segmentIds []int64) ([]GetSegmentsRow, error)
 	HugelLeaderboard(ctx context.Context, arg HugelLeaderboardParams) ([]HugelLeaderboardRow, error)
 	IncrementActivitySummaryDownload(ctx context.Context, id int64) error
@@ -59,7 +57,6 @@ type sqlcQuerier interface {
 	UpsertMapData(ctx context.Context, arg UpsertMapDataParams) (Map, error)
 	UpsertSegment(ctx context.Context, arg UpsertSegmentParams) (Segment, error)
 	UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentEffortParams) (SegmentEffort, error)
-	test(ctx context.Context) ([]testRow, error)
 }
 
 var _ sqlcQuerier = (*sqlQuerier)(nil)

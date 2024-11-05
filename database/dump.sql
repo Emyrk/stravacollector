@@ -474,6 +474,10 @@ CREATE INDEX activity_summary_start_date_idx ON activity_summary USING btree (st
 
 CREATE INDEX idx_gue_jobs_selector ON gue_jobs USING btree (queue, run_at, priority);
 
+CREATE INDEX segment_efforts_distinct_effort_idx ON segment_efforts USING btree (athlete_id, segment_id, elapsed_time);
+
+COMMENT ON INDEX segment_efforts_distinct_effort_idx IS 'Index to support GetBestPersonalSegmentEffort query';
+
 CREATE INDEX segment_efforts_distinct_idx ON segment_efforts USING btree (activities_id, segment_id);
 
 CREATE INDEX segment_efforts_elapsed_time_idx ON segment_efforts USING btree (elapsed_time);
