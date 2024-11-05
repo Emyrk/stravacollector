@@ -1,6 +1,9 @@
 -- name: RefreshHugelActivities :exec
 REFRESH MATERIALIZED VIEW hugel_activities;
 
+-- name: RefreshHugelLiteActivities :exec
+REFRESH MATERIALIZED VIEW lite_hugel_activities;
+
 -- name: RefreshHugel2023Activities :exec
 REFRESH MATERIALIZED VIEW hugel_activities_2023;
 

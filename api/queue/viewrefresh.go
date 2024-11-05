@@ -25,11 +25,13 @@ func (m *Manager) refreshViews(ctx context.Context) {
 		start := time.Now()
 
 		var hugelDone, hugel2023Done, superDone time.Duration
-		var hugelErr, hugel2023Err, superErr error
+		var hugelErr, hugel2023Err, superErr, hugelLiteErr error
 
 		wg.Add(1)
 		go func() {
 			hugelErr = m.DB.RefreshHugelActivities(ctx)
+
+			hugelLiteErr = m.DB.RefreshHugelLiteActivities(ctx)
 			hugelDone = time.Since(start)
 			wg.Done()
 		}()
@@ -56,6 +58,7 @@ func (m *Manager) refreshViews(ctx context.Context) {
 			AnErr("super_err", superErr).
 			AnErr("hugel_err", hugelErr).
 			AnErr("hugel2023_err", hugel2023Err).
+			AnErr("hugel_lite_err", hugelLiteErr).
 			Str("super_duration", fmt.Sprintf("%.3fs", superDone.Seconds())).
 			Str("hugel_duration", fmt.Sprintf("%.3fs", hugelDone.Seconds())).
 			Str("hugel2023_duration", fmt.Sprintf("%.3fs", hugel2023Done.Seconds())).

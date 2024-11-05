@@ -1605,6 +1605,15 @@ func (q *sqlQuerier) RefreshHugelActivities(ctx context.Context) error {
 	return err
 }
 
+const refreshHugelLiteActivities = `-- name: RefreshHugelLiteActivities :exec
+REFRESH MATERIALIZED VIEW lite_hugel_activities
+`
+
+func (q *sqlQuerier) RefreshHugelLiteActivities(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, refreshHugelLiteActivities)
+	return err
+}
+
 const refreshSuperHugelActivities = `-- name: RefreshSuperHugelActivities :exec
 REFRESH MATERIALIZED VIEW super_hugel_activities
 `
