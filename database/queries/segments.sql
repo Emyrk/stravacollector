@@ -37,6 +37,18 @@ LEFT JOIN
 WHERE segments.id = ANY(@segment_ids::bigint[])
 ;
 
+-- name: GetBestPersonalSegmentEffort :many
+SELECT DISTINCT ON (segment_efforts.athlete_id, segment_efforts.segment_id)
+	*
+FROM
+	segment_efforts
+WHERE
+	athlete_id = @athlete_id AND
+	segment_id = ANY(@segment_ids::bigint[])
+ORDER BY
+	segment_efforts.athlete_id, segment_efforts.segment_id, elapsed_time ASC
+;
+
 -- name: GetPersonalSegments :many
 -- For authenticated users
 SELECT

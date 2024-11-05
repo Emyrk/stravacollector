@@ -26,30 +26,41 @@ func (api *API) getSegments(rw http.ResponseWriter, r *http.Request) {
 		requestedSegmentsInts[i] = int64(seg)
 	}
 
-	var resp []modelsdk.PersonalSegment
+	segments, err := api.Opts.DB.GetSegments(ctx, requestedSegmentsInts)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+			Message: "Failed to load segments",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	resp := convertSegmentRows(segments)
+
+	// If logged in, add their best efforts.
 	if athleteLoggedIn {
-		segments, err := api.Opts.DB.GetPersonalSegments(ctx, database.GetPersonalSegmentsParams{
+		bestEfforts, err := api.Opts.DB.GetBestPersonalSegmentEffort(ctx, database.GetBestPersonalSegmentEffortParams{
 			AthleteID:  id,
 			SegmentIds: requestedSegmentsInts,
 		})
 		if err != nil {
 			httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
-				Message: "Failed to load segments",
+				Message: "Failed to load best efforts",
 				Detail:  err.Error(),
 			})
 			return
 		}
-		resp = convertSegmentRows(segments)
-	} else {
-		segments, err := api.Opts.DB.GetSegments(ctx, requestedSegmentsInts)
-		if err != nil {
-			httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
-				Message: "Failed to load segments",
-				Detail:  err.Error(),
-			})
-			return
+
+		bestEffortsMap := make(map[int64]database.SegmentEffort, len(bestEfforts))
+		for _, effort := range bestEfforts {
+			bestEffortsMap[effort.SegmentID] = effort
 		}
-		resp = convertSegmentRows(segments)
+		for i, row := range resp {
+			if best, ok := bestEffortsMap[int64(row.DetailedSegment.ID)]; ok {
+				row.PersonalBest = convertPersonalEffortRows(best)
+				resp[i] = row
+			}
+		}
 	}
 
 	httpapi.Write(ctx, rw, http.StatusOK, resp)
@@ -57,6 +68,19 @@ func (api *API) getSegments(rw http.ResponseWriter, r *http.Request) {
 
 type segmentRow interface {
 	database.GetPersonalSegmentsRow | database.GetSegmentsRow
+}
+
+func convertPersonalEffortRows(row database.SegmentEffort) *modelsdk.PersonalBestSegmentEffort {
+	return &modelsdk.PersonalBestSegmentEffort{
+		BestEffortID:             modelsdk.StringInt(row.ID),
+		BestEffortElapsedTime:    row.ElapsedTime,
+		BestEffortMovingTime:     row.MovingTime,
+		BestEffortStartDate:      row.StartDate,
+		BestEffortStartDateLocal: row.StartDateLocal,
+		BestEffortDeviceWatts:    row.DeviceWatts,
+		BestEffortAverageWatts:   row.AverageWatts,
+		BestEffortActivitiesID:   modelsdk.StringInt(row.ActivitiesID),
+	}
 }
 
 func convertSegmentRows[S segmentRow](rows []S) []modelsdk.PersonalSegment {

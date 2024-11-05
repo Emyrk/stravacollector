@@ -1889,6 +1889,64 @@ func (q *sqlQuerier) BestRouteEfforts(ctx context.Context, expectedSegments []in
 	return items, nil
 }
 
+const getBestPersonalSegmentEffort = `-- name: GetBestPersonalSegmentEffort :many
+SELECT DISTINCT ON (segment_efforts.athlete_id, segment_efforts.segment_id)
+	id, athlete_id, segment_id, name, elapsed_time, moving_time, start_date, start_date_local, distance, start_index, end_index, device_watts, average_watts, kom_rank, pr_rank, updated_at, activities_id
+FROM
+	segment_efforts
+WHERE
+	athlete_id = $1 AND
+	segment_id = ANY($2::bigint[])
+ORDER BY
+	segment_efforts.athlete_id, segment_efforts.segment_id, elapsed_time ASC
+`
+
+type GetBestPersonalSegmentEffortParams struct {
+	AthleteID  int64   `db:"athlete_id" json:"athlete_id"`
+	SegmentIds []int64 `db:"segment_ids" json:"segment_ids"`
+}
+
+func (q *sqlQuerier) GetBestPersonalSegmentEffort(ctx context.Context, arg GetBestPersonalSegmentEffortParams) ([]SegmentEffort, error) {
+	rows, err := q.db.QueryContext(ctx, getBestPersonalSegmentEffort, arg.AthleteID, pq.Array(arg.SegmentIds))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SegmentEffort
+	for rows.Next() {
+		var i SegmentEffort
+		if err := rows.Scan(
+			&i.ID,
+			&i.AthleteID,
+			&i.SegmentID,
+			&i.Name,
+			&i.ElapsedTime,
+			&i.MovingTime,
+			&i.StartDate,
+			&i.StartDateLocal,
+			&i.Distance,
+			&i.StartIndex,
+			&i.EndIndex,
+			&i.DeviceWatts,
+			&i.AverageWatts,
+			&i.KomRank,
+			&i.PrRank,
+			&i.UpdatedAt,
+			&i.ActivitiesID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPersonalSegments = `-- name: GetPersonalSegments :many
 SELECT
 	segments.id, segments.name, segments.activity_type, segments.distance, segments.average_grade, segments.maximum_grade, segments.elevation_high, segments.elevation_low, segments.start_latlng, segments.end_latlng, segments.elevation_profile, segments.climb_category, segments.city, segments.state, segments.country, segments.private, segments.hazardous, segments.created_at, segments.updated_at, segments.total_elevation_gain, segments.map_id, segments.total_effort_count, segments.total_athlete_count, segments.total_star_count, segments.fetched_at, segments.friendly_name,

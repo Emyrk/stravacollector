@@ -27,6 +27,7 @@ type sqlcQuerier interface {
 	GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error)
 	GetAthleteLoginFull(ctx context.Context, athleteID int64) (GetAthleteLoginFullRow, error)
 	GetAthleteNeedsLoad(ctx context.Context) ([]GetAthleteNeedsLoadRow, error)
+	GetBestPersonalSegmentEffort(ctx context.Context, arg GetBestPersonalSegmentEffortParams) ([]SegmentEffort, error)
 	GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error)
 	// For authenticated users
 	GetPersonalSegments(ctx context.Context, arg GetPersonalSegmentsParams) ([]GetPersonalSegmentsRow, error)
