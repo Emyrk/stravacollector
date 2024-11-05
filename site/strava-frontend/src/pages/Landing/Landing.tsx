@@ -70,6 +70,7 @@ export const Landing: FC = () => {
               }
               hrefText={"Connect"}
               href={StravaConnectHref()}
+              hrefRealLink={true}
             />
             <LandingCard
               heading={"Ride Das Hügel"}
@@ -129,6 +130,7 @@ interface LandingCardProps {
   description: string;
   icon: ReactElement;
   href: string;
+  hrefRealLink?: boolean;
   hrefText: string;
 }
 
@@ -138,8 +140,24 @@ export const LandingCard = ({
   icon,
   href,
   hrefText,
+  hrefRealLink,
 }: LandingCardProps) => {
   const styles = useStyleConfig("Box", { variant: "responsiveCard" });
+  let link = <></>;
+  if (href !== "") {
+    let props = { to: href } as Record<string, any>;
+    if (hrefRealLink) {
+      props = { href: href };
+    }
+    link = (
+      <Link as={hrefRealLink ? Link : RouteLink} {...props}>
+        <Button variant={"link"} color="brand.stravaOrange" size={"sm"}>
+          {hrefText}
+        </Button>
+      </Link>
+    );
+  }
+
   return (
     <Box
       __css={styles}
@@ -168,13 +186,7 @@ export const LandingCard = ({
             {description}
           </Text>
         </Box>
-        {href !== "" && (
-          <Link as={RouteLink} to={href}>
-            <Button variant={"link"} color="brand.stravaOrange" size={"sm"}>
-              {hrefText}
-            </Button>
-          </Link>
-        )}
+        {link}
       </Flex>
     </Box>
   );
