@@ -39,6 +39,24 @@ func entry[T comparable](id int64, v T) Entry[T] {
 	return Entry[T]{Activity: sdktype.StringInt(id), Value: v}
 }
 
+func compare[T int | float64 | int64](entry Entry[T], lowest Entry[T], highest Entry[T]) (Entry[T], Entry[T]) {
+	if entry.Value == 0 {
+		// No change if the value is omitted
+		return lowest, highest
+	}
+
+	if highest.Activity == 0 || entry.Value > highest.Value {
+		highest = entry
+	}
+
+	if lowest.Activity == 0 || entry.Value < lowest.Value {
+		lowest = entry
+	}
+
+	return lowest, highest
+
+}
+
 func Parse(activities []database.HugelLeaderboardRow) List {
 	var list List
 
@@ -53,60 +71,16 @@ func Parse(activities []database.HugelLeaderboardRow) List {
 		}
 
 		stoppage := int64(activity.ElapsedTime - activity.MovingTime)
+		list.LeastStoppage, list.MostStoppage = compare(entry(activity.ActivityID, stoppage), list.LeastStoppage, list.MostStoppage)
+		list.LeastAverageCadence, list.MostAverageCadence = compare(entry(activity.ActivityID, activity.AverageCadence), list.LeastAverageCadence, list.MostAverageCadence)
+		list.LeastAverageSpeed, list.MostAverageSpeed = compare(entry(activity.ActivityID, activity.AverageSpeed), list.LeastAverageSpeed, list.MostAverageSpeed)
+		list.LeastAverageHeartRate, list.MostAverageHeartRate = compare(entry(activity.ActivityID, activity.AverageHeartrate), list.LeastAverageHeartRate, list.MostAverageHeartRate)
+		_, list.MostSuffer = compare(entry(activity.ActivityID, int(activity.SufferScore)), entry(0, 0), list.MostSuffer)
+		_, list.MostAchievements = compare(entry(activity.ActivityID, int(activity.AchievementCount)), entry(0, 0), list.MostAchievements)
+		list.ShortestRide, list.LongestRide = compare(entry(activity.ActivityID, activity.Distance), list.ShortestRide, list.LongestRide)
 
-		if list.MostStoppage.Value == 0 || list.MostStoppage.Value < stoppage {
-			list.MostStoppage = entry(activity.ActivityID, stoppage)
-		}
-
-		if list.LeastStoppage.Value == 0 || list.LeastStoppage.Value > stoppage {
-			list.LeastStoppage = entry(activity.ActivityID, stoppage)
-		}
-
-		if list.MostAverageWatts.Value == 0 || list.MostAverageWatts.Value < activity.AverageWatts {
-			if activity.DeviceWatts {
-				// Only if device watts. Not estimates
-				list.MostAverageWatts = entry(activity.ActivityID, activity.AverageWatts)
-			}
-		}
-
-		if list.MostAverageCadence.Value == 0 || list.MostAverageCadence.Value < activity.AverageCadence {
-			list.MostAverageCadence = entry(activity.ActivityID, activity.AverageCadence)
-		}
-
-		if list.LeastAverageCadence.Value == 0 || list.LeastAverageCadence.Value > activity.AverageCadence {
-			list.LeastAverageCadence = entry(activity.ActivityID, activity.AverageCadence)
-		}
-
-		if list.MostAverageSpeed.Value == 0 || list.MostAverageSpeed.Value < activity.AverageSpeed {
-			list.MostAverageSpeed = entry(activity.ActivityID, activity.AverageSpeed)
-		}
-
-		if list.LeastAverageSpeed.Value == 0 || list.LeastAverageSpeed.Value > activity.AverageSpeed {
-			list.LeastAverageSpeed = entry(activity.ActivityID, activity.AverageSpeed)
-		}
-
-		if list.MostAverageHeartRate.Value == 0 || list.MostAverageHeartRate.Value < activity.AverageHeartrate {
-			list.MostAverageHeartRate = entry(activity.ActivityID, activity.AverageHeartrate)
-		}
-
-		if list.LeastAverageHeartRate.Value == 0 || list.LeastAverageHeartRate.Value > activity.AverageHeartrate {
-			list.LeastAverageHeartRate = entry(activity.ActivityID, activity.AverageHeartrate)
-		}
-
-		if list.MostSuffer.Value == 0 || list.MostSuffer.Value < int(activity.SufferScore) {
-			list.MostSuffer = entry(activity.ActivityID, int(activity.SufferScore))
-		}
-
-		if list.MostAchievements.Value == 0 || list.MostAchievements.Value < int(activity.AchievementCount) {
-			list.MostAchievements = entry(activity.ActivityID, int(activity.AchievementCount))
-		}
-
-		if list.LongestRide.Value == 0 || list.LongestRide.Value < activity.Distance {
-			list.LongestRide = entry(activity.ActivityID, activity.Distance)
-		}
-
-		if list.ShortestRide.Value == 0 || list.ShortestRide.Value > activity.Distance {
-			list.ShortestRide = entry(activity.ActivityID, activity.Distance)
+		if activity.DeviceWatts {
+			_, list.MostAverageWatts = compare(entry(activity.ActivityID, activity.AverageWatts), entry(0, float64(0)), list.MostAverageWatts)
 		}
 	}
 	return list

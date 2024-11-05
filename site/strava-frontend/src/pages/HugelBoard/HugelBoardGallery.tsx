@@ -177,23 +177,32 @@ const GalleryCard: React.FC<{
     activity.athlete;
 
   const isSuper = !("activity_name" in activity);
+  let superlativeList: [string, SuperlativeEntry<any>][] = superlatives
+    ? superlatives &&
+      Object.entries(superlatives).map(([key, value]) => {
+        return [key, value];
+      })
+    : [];
+
+  // Sort so it is deterministic
+  superlativeList = superlativeList.sort((a, b) => {
+    return a[0].localeCompare(b[0]);
+  });
+
+  // Sucks to lose some, but we can't display them all
+  const maxLength = 4;
+  if (superlativeList.length > maxLength) {
+    superlativeList = superlativeList.slice(0, maxLength);
+  }
 
   return (
     <GalleryCardBox>
       {/* Superlatives */}
       <Box position="relative" top="0px" left="0px">
         <Stack dir="column" position={"absolute"} top="70px" left="-20px">
-          {
-            superlatives &&
-              Object.entries(superlatives).map(([key, value]) => {
-                return <Superlative category={key} entry={value} />;
-              })
-
-            // Object.entries(superlatives).map((item) => (
-            //   <Superlative category="earliest_start" />
-            //   // <Avatar key={item} src={""} name={item} />
-            // ))
-          }
+          {superlativeList.map(([key, value]) => (
+            <Superlative category={key} entry={value} />
+          ))}
         </Stack>
       </Box>
       <Flex justifyContent={"space-between"}>
