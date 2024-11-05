@@ -212,7 +212,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
           <Flex flexDirection={"column"} pb="0.5em">
             <Heading fontSize={"4em"}>{mainRoute?.display_name}</Heading>
             <Text maxWidth={"1050px"} pt="1em">
-              The Tour das Hügel is an unsanctioned ride in Austin, Texas that
+              The Tour Das Hügel is an unsanctioned ride in Austin, Texas that
               showcases the challenging terrain around the city. To qualify as a
               Hügel, you must complete all of the following segments.
             </Text>
@@ -322,19 +322,31 @@ export const ChallengeRoute: FC<{}> = ({}) => {
 
         <SegmentCardContainer>
           {/* <Flex w="100%" flexDirection="column" p="2em"> */}
-          {segmentsData.map((segment) => (
-            <Box key={segment.detailed_segment.id}>
-              <SegmentCard
-                segment={segment}
-                setSelectedSegment={setSelectedSegment}
-                liteSegment={Boolean(
-                  liteRoute?.segments.find(
-                    (e) => e.id === segment.detailed_segment.id
-                  )
-                )}
-              />
-            </Box>
-          ))}
+          {segmentsData
+            .sort((a, b) =>
+              computeSegmentName(
+                a.detailed_segment.friendly_name,
+                a.detailed_segment.name
+              ).localeCompare(
+                computeSegmentName(
+                  b.detailed_segment.friendly_name,
+                  b.detailed_segment.name
+                )
+              )
+            )
+            .map((segment) => (
+              <Box key={segment.detailed_segment.id}>
+                <SegmentCard
+                  segment={segment}
+                  setSelectedSegment={setSelectedSegment}
+                  liteSegment={Boolean(
+                    liteRoute?.segments.find(
+                      (e) => e.id === segment.detailed_segment.id
+                    )
+                  )}
+                />
+              </Box>
+            ))}
           {/* </Flex> */}
         </SegmentCardContainer>
       </Flex>
@@ -458,6 +470,10 @@ const SegmentCardContainer: FC<PropsWithChildren<{}>> = ({ children }) => {
   );
 };
 
+const computeSegmentName = (friendlyName: string, name: string): string => {
+  return friendlyName !== "" ? friendlyName : name;
+};
+
 const SegmentCard: FC<{
   segment: PersonalSegment;
   setSelectedSegment: (id: string) => void;
@@ -469,8 +485,10 @@ const SegmentCard: FC<{
     ? `https://www.strava.com/activities/${segment.personal_best.best_effort_activities_id}/segments/${segment.personal_best.best_effort_id}`
     : "";
 
-  const segmentName =
-    segment.detailed_segment.friendly_name || segment.detailed_segment.name;
+  const segmentName = computeSegmentName(
+    segment.detailed_segment.friendly_name,
+    segment.detailed_segment.name
+  );
 
   return (
     <ResponsiveCard height={"170px"} width={"350px"}>
