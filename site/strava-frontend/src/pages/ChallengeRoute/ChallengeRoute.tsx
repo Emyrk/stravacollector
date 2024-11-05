@@ -239,7 +239,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
                   <Text color="brand.stravaOrange">2024 Official Route</Text>
                 </Flex>
               </Link>
-              <Link href="https://www.strava.com/routes/3287834903479380952">
+              <Link href="https://www.strava.com/routes/3288659325860289186">
                 <Flex
                   direction={"row"}
                   alignItems={"center"}
