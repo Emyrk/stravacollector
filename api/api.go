@@ -162,6 +162,7 @@ func (api *API) Routes() chi.Router {
 	r := chi.NewRouter()
 	r.Use(
 		httpmw.PrometheusMW(api.Registry),
+		httpmw.NoWWW(),
 	)
 
 	r.Get("/myhealthz", func(w http.ResponseWriter, r *http.Request) {
