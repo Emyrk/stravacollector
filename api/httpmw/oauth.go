@@ -136,10 +136,11 @@ func ExtractOauth2(logger zerolog.Logger, config *oauth2.Config, authURLOpts map
 				})
 				return
 			}
+
 			if stateCookie.Value != state {
 				httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
 					Message: "State mismatched.",
-					Detail:  fmt.Sprintf("Try clearing your cookies and trying again."),
+					Detail:  "Try clearing your cookies and trying again.",
 				})
 				return
 			}
