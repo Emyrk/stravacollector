@@ -2,8 +2,10 @@ package httpmw
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
 
 	"github.com/Emyrk/strava/api/modelsdk"
 	"github.com/rs/zerolog"
@@ -119,14 +121,18 @@ func ExtractOauth2(logger zerolog.Logger, config *oauth2.Config, authURLOpts map
 				for _, c := range r.Cookies() {
 					cookies = append(cookies, c.Name)
 				}
+
+				data, _ := httputil.DumpRequest(r, true)
+				dump := base64.StdEncoding.EncodeToString(data)
 				logger.Error().
 					Err(err).
 					Strs("cookies", cookies).
+					Str("dump_64", dump).
 					Msg("State cookie not provided.")
 
 				httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
-					Message: fmt.Sprintf("Cookie %q must be provided.", OAuth2StateCookie),
-					Detail:  fmt.Sprintf("Try clearing your cookies and trying again."),
+					Message: fmt.Sprintf("Cookie %q must be provided. Try clearing your cookies and trying again. If this error persists, contact help@dashugel.bike with the information below.", OAuth2StateCookie),
+					Detail:  fmt.Sprintf("Debugging information: %s", dump),
 				})
 				return
 			}

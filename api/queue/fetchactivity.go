@@ -151,7 +151,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 		return err
 	}
 
-	logger.Info().
+	logger.Debug().
 		Int64("activity_id", activity.ID).
 		Int("segment_count", len(activity.SegmentEfforts)).
 		Msg("activity fetched")
