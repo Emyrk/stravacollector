@@ -27,6 +27,7 @@ func RootCmd() *cobra.Command {
 		versionCmd(),
 		generateKey(),
 		offlineServer(),
+		parseDump(),
 	)
 
 	return cmd
