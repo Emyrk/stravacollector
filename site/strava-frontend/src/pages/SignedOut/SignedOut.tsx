@@ -22,7 +22,7 @@ export const SignedOut: FC = () => {
         alignItems: "center",
         flexDirection: "column",
         minHeight: "100vh",
-        backgroundColor: "#1a202c", //theme.colors.brand.primary,
+        backgroundColor: theme.colors.brand.secondary,
       }}
     >
       <Alert
