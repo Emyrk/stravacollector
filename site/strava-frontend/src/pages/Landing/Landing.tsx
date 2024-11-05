@@ -83,7 +83,9 @@ export const Landing: FC = () => {
             <LandingCard
               heading={"Explore Your Stats"}
               icon={<Image src="/img/icons/Home3.png" />}
-              description={"See results for all participating athletes."}
+              description={
+                "Check out the results for all athletes who have participated."
+              }
               hrefText={"Results"}
               href={"/results"}
             />

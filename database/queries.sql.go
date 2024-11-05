@@ -1896,31 +1896,32 @@ SELECT
 	COALESCE(best_effort.average_watts, -1) as best_effort_average_watts,
 	COALESCE(best_effort.activities_id, -1) as best_effort_activities_id
 FROM
-	segments
+	-- Only fetch the requested segments
+	(SELECT id, name, activity_type, distance, average_grade, maximum_grade, elevation_high, elevation_low, start_latlng, end_latlng, elevation_profile, climb_category, city, state, country, private, hazardous, created_at, updated_at, total_elevation_gain, map_id, total_effort_count, total_athlete_count, total_star_count, fetched_at, friendly_name FROM segments WHERE segments.id = ANY($1::bigint[])) segments
 LEFT JOIN
 	maps ON segments.map_id = maps.id
 LEFT JOIN
 	-- Only for the authenticated user
 	starred_segments
-	    ON segments.id = starred_segments.segment_id AND starred_segments.athlete_id = $1
+	    ON segments.id = starred_segments.segment_id AND starred_segments.athlete_id = $2
 LEFT JOIN LATERAL
 	(
-	    SELECT DISTINCT ON (segment_efforts.athlete_id, segment_efforts.segment_id)
+	    SELECT
 			id, athlete_id, segment_id, name, elapsed_time, moving_time, start_date, start_date_local, distance, start_index, end_index, device_watts, average_watts, kom_rank, pr_rank, updated_at, activities_id
 	    FROM
-	        segment_efforts
+			segment_efforts
 	    WHERE
-	        athlete_id = $1 AND
+	        athlete_id = $2 AND
 	        segment_id = segments.id
     	ORDER BY
 			segment_efforts.athlete_id, segment_efforts.segment_id, elapsed_time ASC
+		LIMIT 1
 	) best_effort ON best_effort.segment_id = segments.id
-WHERE segments.id = ANY($2::bigint[])
 `
 
 type GetPersonalSegmentsParams struct {
-	AthleteID  int64   `db:"athlete_id" json:"athlete_id"`
 	SegmentIds []int64 `db:"segment_ids" json:"segment_ids"`
+	AthleteID  int64   `db:"athlete_id" json:"athlete_id"`
 }
 
 type GetPersonalSegmentsRow struct {
@@ -1939,7 +1940,7 @@ type GetPersonalSegmentsRow struct {
 
 // For authenticated users
 func (q *sqlQuerier) GetPersonalSegments(ctx context.Context, arg GetPersonalSegmentsParams) ([]GetPersonalSegmentsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getPersonalSegments, arg.AthleteID, pq.Array(arg.SegmentIds))
+	rows, err := q.db.QueryContext(ctx, getPersonalSegments, pq.Array(arg.SegmentIds), arg.AthleteID)
 	if err != nil {
 		return nil, err
 	}

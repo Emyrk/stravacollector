@@ -83,7 +83,9 @@ export const HugelBoard: FC = () => {
         justifyContent={"center"}
         direction={"column"}
       >
-        <Heading>Tour Das Hügel {year} Results</Heading>
+        <Heading>
+          {year} Das Hügel {lite && "Lite"} Results
+        </Heading>
         <Text color="gray.400" pt="5px">
           If your ride is not showing after 24hrs, please email{" "}
           <a href="mailto: help@dashugel.bike">help@dashugel.bike</a> with the

@@ -212,12 +212,9 @@ export const ChallengeRoute: FC<{}> = ({}) => {
           <Flex flexDirection={"column"} pb="0.5em">
             <Heading fontSize={"4em"}>{mainRoute?.display_name}</Heading>
             <Text maxWidth={"1050px"} pt="1em">
-              The Tour das Hügel is an unsanctioned over 110-mile bike ride that
-              takes place in Austin, Texas. The organizers have incorporated
-              nearly 12,000 feet of climbing throughout the route, showcasing
-              the challenging terrain in and around Austin. Mark your calendars
-              for the 2024 ride, scheduled for Saturday, November 9. To qualify
-              as a Hügel, the route must incorporate all the following segments.
+              The Tour das Hügel is an unsanctioned ride in Austin, Texas that
+              showcases the challenging terrain around the city. To qualify as a
+              Hügel, you must complete all of the following segments.
             </Text>
             <Flex
               direction={"row"}
@@ -269,7 +266,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
                 target="_blank"
                 href="https://www.google.com/maps/place/30%C2%B016'18.3%22N+97%C2%B046'22.3%22W/@30.271743,-97.772862,17z/data=!3m1!4b1!4m4!3m3!8m2!3d30.271743!4d-97.772862?entry=tts"
               >
-                Under Mopac Expressway Off Stratford Next To Zilker Park
+                Under MoPac Expressway Off Stratford Dr. Next To Zilker Park
               </Link>
             </Text>
             <Link target="_blank" href="https://www.facebook.com/tourdashugel">
@@ -374,7 +371,7 @@ const MapController: FC<{
 
       // Define the HTML content for the legend
       container.innerHTML = `
-        <h4>Color Legend</h4>
+        <h4><b>Color Legend</b></h4>
         <div><span style="background-color: ${LongRouteColor}; width: 10px; height: 10px; display: inline-block;"></span> Das Hügel</div>
         <div><span style="background-color: ${LiteRouteColor}; width: 10px; height: 10px; display: inline-block;"></span> Hügel Lite</div>
     `;

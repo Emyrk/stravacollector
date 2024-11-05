@@ -54,7 +54,8 @@ SELECT
 	COALESCE(best_effort.average_watts, -1) as best_effort_average_watts,
 	COALESCE(best_effort.activities_id, -1) as best_effort_activities_id
 FROM
-	segments
+	-- Only fetch the requested segments
+	(SELECT * FROM segments WHERE segments.id = ANY(@segment_ids::bigint[])) segments
 LEFT JOIN
 	maps ON segments.map_id = maps.id
 LEFT JOIN
@@ -63,17 +64,17 @@ LEFT JOIN
 	    ON segments.id = starred_segments.segment_id AND starred_segments.athlete_id = @athlete_id
 LEFT JOIN LATERAL
 	(
-	    SELECT DISTINCT ON (segment_efforts.athlete_id, segment_efforts.segment_id)
+	    SELECT
 			*
 	    FROM
-	        segment_efforts
+			segment_efforts
 	    WHERE
 	        athlete_id = @athlete_id AND
 	        segment_id = segments.id
     	ORDER BY
 			segment_efforts.athlete_id, segment_efforts.segment_id, elapsed_time ASC
+		LIMIT 1
 	) best_effort ON best_effort.segment_id = segments.id
-WHERE segments.id = ANY(@segment_ids::bigint[])
 ;
 
 -- name: test :many
