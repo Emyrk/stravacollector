@@ -90,11 +90,11 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 	// Hugel is Nov 9. Do not sync anything that cannot be a hugel on these
 	// days to prio hugel events.
 	// TODO: Remove this after the event.
-	if now.Month() == time.November && (now.Day() >= 8 && now.Day() <= 12) {
+	if now.Month() == time.November && (now.Day() >= 7 && now.Day() <= 12) {
 		// Hugel is Nov 9. We do not want to sync anything but hugel events
 		// to save our strava api rate limits. Manual syncs can still be synced.
 		if args.Source != database.ActivityDetailSourceManual {
-			if !args.HugelPotential {
+			if !args.HugelPotential && !args.OnHugelDates {
 				return fmt.Errorf("[During Hugel Event] activity %d not a hugel, job skipped", args.ActivityID)
 			}
 		}
