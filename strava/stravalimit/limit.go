@@ -43,8 +43,8 @@ func New() *Limiter {
 	return &Limiter{
 		CurrentInterval: GetInterval(now),
 		CurrentDay:      GetDay(now),
-		IntervalLimit:   600,
-		DailyLimit:      6000,
+		IntervalLimit:   300,
+		DailyLimit:      3000,
 		PromCurrentIntervalUsage: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "strava",
 			Subsystem: "api_limiter",
