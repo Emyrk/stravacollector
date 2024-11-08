@@ -79,6 +79,7 @@ func (m *Manager) BackLoadRouteSegments(ctx context.Context) {
 		if ok, limitLogger := stravalimit.CanLogger(int64(len(neededSegments)), iBuf, dBuf, logger); !ok {
 			// Do not nuke our api rate limits
 			limitLogger.Error().
+				Str("job", "backload_segment_data").
 				Msg("hitting strava rate limit, job will try again later")
 			continue
 		}

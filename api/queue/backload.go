@@ -23,6 +23,7 @@ const backloadWait = time.Second * 30
 
 func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 	logger := m.Logger.With().Str("job", "backload_athlete_data").Logger()
+	lastRateLimitLog := time.Time{}
 	for {
 		select {
 		case <-ctx.Done():
@@ -41,9 +42,14 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 		}
 
 		if ok, limitLogger := stravalimit.CanLogger(1, iBuf, dBuf, logger); !ok {
-			// Do not nuke our api rate limits
-			limitLogger.Error().
-				Msg("hitting strava rate limit, job will try again later")
+			if time.Since(lastRateLimitLog) > time.Minute*60 { // Debounce this
+				// Do not nuke our api rate limits
+				limitLogger.Error().
+					Str("job", "backload_athlete_data").
+					Msg("hitting strava rate limit, job will try again later")
+				lastRateLimitLog = time.Now()
+			}
+
 			time.Sleep(backloadWait)
 			continue
 		}
