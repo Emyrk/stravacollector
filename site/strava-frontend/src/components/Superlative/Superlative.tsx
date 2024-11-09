@@ -66,11 +66,21 @@ const SuperlativeLookup = (
     case "early_bird":
     case "earliest_start":
       const d = new Date(entry.value);
+
+      // Because some people are mental, just make a one-off for them.
+      let yesterday = false;
+      switch (entry.activity_id) {
+        case "12861501288":
+          yesterday = true;
+          break;
+      }
+
       return [
         "EarlyBird.png",
         "Early Bird",
         <Text>
-          Gets the worm with their {FormatDateTime(entry.value)} start time.
+          Gets the worm with their {FormatDateTime(entry.value)}{" "}
+          {yesterday && <b>YESTERDAY</b>} start time.
         </Text>,
       ];
     case "night_owl":
