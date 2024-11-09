@@ -70,7 +70,10 @@ func (m *Manager) updateActivity(ctx context.Context, j *gue.Job) error {
 	err = m.DB.InTx(func(store database.Store) error {
 		_, err := store.GetActivitySummary(ctx, args.ObjectID)
 		if errors.Is(err, sql.ErrNoRows) {
-			logger.Warn().Err(err).Msg("activity not found, update activity job abandoned")
+			logger.Warn().
+				Str("activity_id", fmt.Sprintf("%d", args.ObjectID)).
+				Err(err).
+				Msg("activity not found, update activity job abandoned")
 			return nil
 		}
 		if err != nil {
