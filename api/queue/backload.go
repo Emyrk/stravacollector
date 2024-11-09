@@ -32,23 +32,23 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 		default:
 		}
 		now := time.Now()
-		if now.Month() == time.November && (now.Day() >= 7 && now.Day() <= 12) {
-			if stravalimit.NextDailyReset(now) > time.Hour*4 {
-				// Do not nuke our api rate limits
-				logger.Error().
-					Str("job", "backload_athlete_data").
-					Msg("do not backload during hugel days")
-				time.Sleep(time.Minute * 120)
-				continue
-			}
-		}
 
 		iBuf, dBuf := int64(150), int64(500)
+		if now.Month() == time.November && (now.Day() >= 7 && now.Day() <= 12) {
+			// Basically do not do backloads during the hugel.
+			// The if statements below will turn them back on close to
+			// api call resets.
+			iBuf, dBuf = 250, 1500
+		}
+
 		if stravalimit.NextDailyReset(now) < time.Hour*3 {
 			iBuf, dBuf = 80, 300
 		}
 		if stravalimit.NextDailyReset(now) < time.Hour*1 {
 			iBuf, dBuf = 50, 150
+		}
+		if stravalimit.NextDailyReset(now) < time.Minute*20 {
+			iBuf, dBuf = 50, 100
 		}
 
 		if ok, limitLogger := stravalimit.CanLogger(1, iBuf, dBuf, logger); !ok {
