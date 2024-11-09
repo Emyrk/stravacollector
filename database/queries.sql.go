@@ -780,7 +780,7 @@ func (q *sqlQuerier) GetAthleteFull(ctx context.Context, athleteID int64) (GetAt
 }
 
 const getAthleteLoad = `-- name: GetAthleteLoad :one
-SELECT athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done, earliest_activity_id, next_load_not_before FROM athlete_load WHERE athlete_id = $1
+SELECT athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done, earliest_activity_id, next_load_not_before, created_at FROM athlete_load WHERE athlete_id = $1
 `
 
 func (q *sqlQuerier) GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteLoad, error) {
@@ -797,13 +797,14 @@ func (q *sqlQuerier) GetAthleteLoad(ctx context.Context, athleteID int64) (Athle
 		&i.EarliestActivityDone,
 		&i.EarliestActivityID,
 		&i.NextLoadNotBefore,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getAthleteLoadDetailed = `-- name: GetAthleteLoadDetailed :one
 SELECT
-    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id, athlete_load.next_load_not_before,
+    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id, athlete_load.next_load_not_before, athlete_load.created_at,
     athletes.id, athletes.summit, athletes.username, athletes.firstname, athletes.lastname, athletes.sex, athletes.city, athletes.state, athletes.country, athletes.follow_count, athletes.friend_count, athletes.measurement_preference, athletes.ftp, athletes.weight, athletes.clubs, athletes.created_at, athletes.updated_at, athletes.fetched_at, athletes.profile_pic_link, athletes.profile_pic_link_medium,
 	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = $1 AND LOWER(activity_summary.activity_type) = 'ride') AS summary_count,
     (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = $1 AND activity_detail.id = ANY(
@@ -842,6 +843,7 @@ func (q *sqlQuerier) GetAthleteLoadDetailed(ctx context.Context, athleteID int64
 		&i.AthleteLoad.EarliestActivityDone,
 		&i.AthleteLoad.EarliestActivityID,
 		&i.AthleteLoad.NextLoadNotBefore,
+		&i.AthleteLoad.CreatedAt,
 		&i.Athlete.ID,
 		&i.Athlete.Summit,
 		&i.Athlete.Username,
@@ -953,7 +955,7 @@ func (q *sqlQuerier) GetAthleteLoginFull(ctx context.Context, athleteID int64) (
 
 const getAthleteNeedsLoad = `-- name: GetAthleteNeedsLoad :many
 SELECT
-    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id, athlete_load.next_load_not_before, athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id
+    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id, athlete_load.next_load_not_before, athlete_load.created_at, athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id
 FROM
 	athlete_load
 INNER JOIN
@@ -994,6 +996,7 @@ func (q *sqlQuerier) GetAthleteNeedsLoad(ctx context.Context) ([]GetAthleteNeeds
 			&i.AthleteLoad.EarliestActivityDone,
 			&i.AthleteLoad.EarliestActivityID,
 			&i.AthleteLoad.NextLoadNotBefore,
+			&i.AthleteLoad.CreatedAt,
 			&i.AthleteLogin.AthleteID,
 			&i.AthleteLogin.Summit,
 			&i.AthleteLogin.ProviderID,
@@ -1151,7 +1154,7 @@ DO UPDATE SET
 	earliest_activity_id = $8,
 	earliest_activity_done = $9,
     next_load_not_before = $10
-RETURNING athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done, earliest_activity_id, next_load_not_before
+RETURNING athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done, earliest_activity_id, next_load_not_before, created_at
 `
 
 type UpsertAthleteLoadParams struct {
@@ -1192,6 +1195,7 @@ func (q *sqlQuerier) UpsertAthleteLoad(ctx context.Context, arg UpsertAthleteLoa
 		&i.EarliestActivityDone,
 		&i.EarliestActivityID,
 		&i.NextLoadNotBefore,
+		&i.CreatedAt,
 	)
 	return i, err
 }
@@ -1411,12 +1415,20 @@ SELECT
 	COALESCE(hugel_count.count, 0) AS hugel_count
 FROM
 	(
-		SELECT DISTINCT ON (athlete_id)
-			activity_id, athlete_id, segment_ids, total_time_seconds, efforts
+		SELECT DISTINCT ON (hugel_activities.athlete_id)
+			hugel_activities.activity_id, hugel_activities.athlete_id, hugel_activities.segment_ids, hugel_activities.total_time_seconds, hugel_activities.efforts
 		FROM
 			hugel_activities
+		INNER JOIN
+			activity_summary ON hugel_activities.activity_id = activity_summary.id
+		WHERE
+		CASE WHEN
+			$1 :: timestamp != '0001-01-01 00:00:00Z'
+			AND $2 :: timestamp != '0001-01-01 00:00:00Z' THEN
+			activity_summary.start_date >= $1 :: timestamp AND activity_summary.start_date <= $2 :: timestamp
+		ELSE TRUE END
 		ORDER BY
-			athlete_id, total_time_seconds ASC
+			hugel_activities.athlete_id, hugel_activities.total_time_seconds ASC
 	) AS athlete_bests
 INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id
@@ -1427,21 +1439,21 @@ INNER JOIN
 INNER JOIN
 	activity_detail ON athlete_bests.activity_id = activity_detail.id
 WHERE
-    CASE WHEN $1 > 0 THEN athlete_bests.athlete_id = $1 ELSE TRUE END
+    CASE WHEN $3 > 0 THEN athlete_bests.athlete_id = $3 ELSE TRUE END
     AND
 	CASE WHEN
-    	$2 :: timestamp != '0001-01-01 00:00:00Z'
-    		AND $3 :: timestamp != '0001-01-01 00:00:00Z' THEN
-			activity_summary.start_date >= $2 :: timestamp AND activity_summary.start_date <= $3 :: timestamp
-    	ELSE TRUE END
+    	$1 :: timestamp != '0001-01-01 00:00:00Z'
+    		AND $2 :: timestamp != '0001-01-01 00:00:00Z' THEN
+			activity_summary.start_date >= $1 :: timestamp AND activity_summary.start_date <= $2 :: timestamp
+    ELSE TRUE END
 	ORDER BY
 		athlete_bests.total_time_seconds ASC
 `
 
 type HugelLeaderboardParams struct {
-	AthleteID interface{} `db:"athlete_id" json:"athlete_id"`
 	After     time.Time   `db:"after" json:"after"`
 	Before    time.Time   `db:"before" json:"before"`
+	AthleteID interface{} `db:"athlete_id" json:"athlete_id"`
 }
 
 type HugelLeaderboardRow struct {
@@ -1473,7 +1485,7 @@ type HugelLeaderboardRow struct {
 }
 
 func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardParams) ([]HugelLeaderboardRow, error) {
-	rows, err := q.db.QueryContext(ctx, hugelLeaderboard, arg.AthleteID, arg.After, arg.Before)
+	rows, err := q.db.QueryContext(ctx, hugelLeaderboard, arg.After, arg.Before, arg.AthleteID)
 	if err != nil {
 		return nil, err
 	}

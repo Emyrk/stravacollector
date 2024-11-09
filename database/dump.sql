@@ -244,7 +244,8 @@ CREATE TABLE athlete_load (
     earliest_activity timestamp with time zone DEFAULT (now())::timestamp without time zone NOT NULL,
     earliest_activity_done boolean DEFAULT false NOT NULL,
     earliest_activity_id bigint DEFAULT 0 NOT NULL,
-    next_load_not_before timestamp with time zone DEFAULT now() NOT NULL
+    next_load_not_before timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 COMMENT ON TABLE athlete_load IS 'Tracks loading athlete activities. Must be an authenticated athlete.';

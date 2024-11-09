@@ -55,12 +55,20 @@ SELECT
 	COALESCE(hugel_count.count, 0) AS hugel_count
 FROM
 	(
-		SELECT DISTINCT ON (athlete_id)
-			*
+		SELECT DISTINCT ON (hugel_activities.athlete_id)
+			hugel_activities.*
 		FROM
 			hugel_activities
+		INNER JOIN
+			activity_summary ON hugel_activities.activity_id = activity_summary.id
+		WHERE
+		CASE WHEN
+			@after :: timestamp != '0001-01-01 00:00:00Z'
+			AND @before :: timestamp != '0001-01-01 00:00:00Z' THEN
+			activity_summary.start_date >= @after :: timestamp AND activity_summary.start_date <= @before :: timestamp
+		ELSE TRUE END
 		ORDER BY
-			athlete_id, total_time_seconds ASC
+			hugel_activities.athlete_id, hugel_activities.total_time_seconds ASC
 	) AS athlete_bests
 INNER JOIN
 	athletes ON athlete_bests.athlete_id = athletes.id
@@ -77,7 +85,7 @@ WHERE
     	@after :: timestamp != '0001-01-01 00:00:00Z'
     		AND @before :: timestamp != '0001-01-01 00:00:00Z' THEN
 			activity_summary.start_date >= @after :: timestamp AND activity_summary.start_date <= @before :: timestamp
-    	ELSE TRUE END
+    ELSE TRUE END
 	ORDER BY
 		athlete_bests.total_time_seconds ASC
 ;

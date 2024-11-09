@@ -26,7 +26,7 @@ func (q *sqlQuerier) YearlyHugelLeaderboard(ctx context.Context, arg YearlyHugel
 		query = strings.ReplaceAll(query, "hugel_activities", "lite_hugel_activities")
 	}
 
-	rows, err := q.db.QueryContext(ctx, query, arg.AthleteID, arg.After, arg.Before)
+	rows, err := q.db.QueryContext(ctx, query, arg.After, arg.Before, arg.AthleteID)
 	if err != nil {
 		return nil, err
 	}

@@ -206,6 +206,7 @@ type AthleteLoad struct {
 	EarliestActivityDone bool      `db:"earliest_activity_done" json:"earliest_activity_done"`
 	EarliestActivityID   int64     `db:"earliest_activity_id" json:"earliest_activity_id"`
 	NextLoadNotBefore    time.Time `db:"next_load_not_before" json:"next_load_not_before"`
+	CreatedAt            time.Time `db:"created_at" json:"created_at"`
 }
 
 type AthleteLogin struct {
