@@ -31,9 +31,17 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 			return
 		default:
 		}
+		now := time.Now()
+		if now.Month() == time.November && (now.Day() >= 7 && now.Day() <= 12) {
+			// Do not nuke our api rate limits
+			logger.Error().
+				Str("job", "backload_athlete_data").
+				Msg("do not backload during hugel days")
+			time.Sleep(time.Minute * 120)
+			continue
+		}
 
 		iBuf, dBuf := int64(150), int64(500)
-		now := time.Now()
 		if stravalimit.NextDailyReset(now) < time.Hour*3 {
 			iBuf, dBuf = 80, 300
 		}
