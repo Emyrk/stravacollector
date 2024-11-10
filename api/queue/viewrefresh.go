@@ -19,7 +19,7 @@ func (m *Manager) refreshViews(ctx context.Context) {
 		default:
 		}
 
-		time.Sleep(time.Minute * 5)
+		time.Sleep(time.Minute * 30)
 
 		wg := sync.WaitGroup{}
 		start := time.Now()
