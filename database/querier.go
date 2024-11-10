@@ -30,6 +30,7 @@ type sqlcQuerier interface {
 	GetBestPersonalSegmentEffort(ctx context.Context, arg GetBestPersonalSegmentEffortParams) ([]SegmentEffort, error)
 	GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error)
 	GetSegments(ctx context.Context, segmentIds []int64) ([]GetSegmentsRow, error)
+	// This query needs to be simplified
 	HugelLeaderboard(ctx context.Context, arg HugelLeaderboardParams) ([]HugelLeaderboardRow, error)
 	IncrementActivitySummaryDownload(ctx context.Context, id int64) error
 	InsertFailedJob(ctx context.Context, rawJson string) (FailedJob, error)

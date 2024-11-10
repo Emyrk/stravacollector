@@ -24,8 +24,18 @@ WHERE
 
 
 -- name: HugelLeaderboard :many
+-- This query needs to be simplified
 SELECT
-	(SELECT min(total_time_seconds) FROM hugel_activities) :: BIGINT AS best_time,
+	(SELECT min(total_time_seconds) FROM hugel_activities
+	INNER JOIN
+		activity_summary ON hugel_activities.activity_id = activity_summary.id
+	WHERE
+		CASE WHEN
+			@after :: timestamp != '0001-01-01 00:00:00Z'
+			AND @before :: timestamp != '0001-01-01 00:00:00Z' THEN
+				activity_summary.start_date >= @after :: timestamp AND activity_summary.start_date <= @before :: timestamp
+	ELSE TRUE END
+	) :: BIGINT AS best_time,
 	ROW_NUMBER() over(ORDER BY total_time_seconds ASC) AS rank,
 	athlete_bests.activity_id,
 	athlete_bests.athlete_id,

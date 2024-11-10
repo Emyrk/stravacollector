@@ -1385,7 +1385,16 @@ func (q *sqlQuerier) GetCompetitiveRoute(ctx context.Context, routeName string) 
 
 const hugelLeaderboard = `-- name: HugelLeaderboard :many
 SELECT
-	(SELECT min(total_time_seconds) FROM hugel_activities) :: BIGINT AS best_time,
+	(SELECT min(total_time_seconds) FROM hugel_activities
+	INNER JOIN
+		activity_summary ON hugel_activities.activity_id = activity_summary.id
+	WHERE
+		CASE WHEN
+			$1 :: timestamp != '0001-01-01 00:00:00Z'
+			AND $2 :: timestamp != '0001-01-01 00:00:00Z' THEN
+				activity_summary.start_date >= $1 :: timestamp AND activity_summary.start_date <= $2 :: timestamp
+	ELSE TRUE END
+	) :: BIGINT AS best_time,
 	ROW_NUMBER() over(ORDER BY total_time_seconds ASC) AS rank,
 	athlete_bests.activity_id,
 	athlete_bests.athlete_id,
@@ -1484,6 +1493,7 @@ type HugelLeaderboardRow struct {
 	HugelCount         int64               `db:"hugel_count" json:"hugel_count"`
 }
 
+// This query needs to be simplified
 func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardParams) ([]HugelLeaderboardRow, error) {
 	rows, err := q.db.QueryContext(ctx, hugelLeaderboard, arg.After, arg.Before, arg.AthleteID)
 	if err != nil {

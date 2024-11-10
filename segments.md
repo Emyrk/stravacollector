@@ -6,4 +6,6 @@ This one should be included, but there is a rest stop in the middle. To avoid pe
 
 Replaced with 
 
-https://www.strava.com/segments/862322
+https://www.strava.com/segments/705265
+
+
