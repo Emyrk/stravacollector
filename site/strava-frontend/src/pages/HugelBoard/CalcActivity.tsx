@@ -151,6 +151,8 @@ export const SortSegments = (efforts: SegmentSummary[]): SegmentSummary[] => {
 
 export const SortEfforts = (efforts: SegmentEffort[]): SegmentEffort[] => {
   return efforts.sort((a, b) => {
-    return a.segment_id.toLowerCase() < b.segment_id.toLowerCase() ? -1 : 1;
+    return `${a.segment_id}`.toLowerCase() < `${b.segment_id}`.toLowerCase()
+      ? -1
+      : 1;
   });
 };

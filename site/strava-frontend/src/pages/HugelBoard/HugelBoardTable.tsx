@@ -172,7 +172,10 @@ export const HugelBoardTableRow: FC<
         ? -1
         : 1;
     }
-    return a.segment_id.toLowerCase() < b.segment_id.toLowerCase() ? -1 : 1;
+
+    return `${a.segment_id}`.toLowerCase() < `${b.segment_id}`.toLowerCase()
+      ? -1
+      : 1;
   });
 
   const pairedEfforts: (SegmentEffort | null)[][] = [];
