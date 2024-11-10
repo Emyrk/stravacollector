@@ -178,6 +178,10 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 		Int("activities", len(activities)).
 		Time("last_backload", athleteLoad.LastBackloadActivityStart).
 		Int64("last_backload_unix", athleteLoad.LastBackloadActivityStart.Unix()).
+		Time("param_before", params.Before).
+		Time("param_after", params.After).
+		Int("param_page", params.Page).
+		Int("param_per_page", params.PerPage).
 		Msg("backloading athlete")
 
 	// No activities means we are done.
