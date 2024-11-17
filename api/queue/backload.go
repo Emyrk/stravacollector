@@ -62,7 +62,7 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 		athlete := m.athleteToLoad(ctx)
 		if athlete == nil {
 			// No athletes to load, wait a bit.
-			time.Sleep(backloadWait)
+			time.Sleep(time.Minute * 15)
 			continue
 		}
 
@@ -87,7 +87,8 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 					err = fmt.Errorf("unauthorized: %w", err)
 				}
 			} else {
-				sleepFor = time.Second * 5
+				// Hitting disk IO rate limit on supabase
+				sleepFor = time.Second * 15
 			}
 			// This could be bad
 			_, dbErr := m.DB.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
