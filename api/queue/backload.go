@@ -108,12 +108,12 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 				AnErr("db_error", dbErr).
 				Time("next_load_not_before", next).
 				Err(err).
+				Dur("sleep_for", sleepFor).
 				Msg("backload athlete failed")
 			time.Sleep(sleepFor)
 			continue
 		}
 	}
-
 }
 
 func (m *Manager) athleteToLoad(ctx context.Context) *database.GetAthleteNeedsLoadRow {
