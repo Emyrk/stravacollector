@@ -69,7 +69,7 @@ export const Results: FC<{}> = ({}) => {
                 "Full Hügel not in the cards this year? See how you did on the first 40 miles!"
               }
               hrefText={"Results"}
-              href={"/hugelboard/2024"}
+              href={"/hugelboard/2024?lite=true"}
             />
             {/* <LandingCard
               heading={"Super Hügel"}
