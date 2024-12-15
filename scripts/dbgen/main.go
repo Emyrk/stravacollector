@@ -454,34 +454,6 @@ func localFilePath() (string, error) {
 	return filename, nil
 }
 
-// nameFromSnakeCase converts snake_case to CamelCase.
-func nameFromSnakeCase(s string) string {
-	var ret string
-	for _, ss := range strings.Split(s, "_") {
-		switch ss {
-		case "id":
-			ret += "ID"
-		case "ids":
-			ret += "IDs"
-		case "jwt":
-			ret += "JWT"
-		case "idx":
-			ret += "Index"
-		case "api":
-			ret += "API"
-		case "uuid":
-			ret += "UUID"
-		case "gitsshkeys":
-			ret += "GitSSHKeys"
-		case "fkey":
-			// ignore
-		default:
-			ret += strings.Title(ss)
-		}
-	}
-	return ret
-}
-
 // interfaceMethods returns all embedded methods of an interface.
 func interfaceMethods(i *dst.InterfaceType) []*dst.Field {
 	var allMethods []*dst.Field
