@@ -198,6 +198,7 @@ func (m *Manager) Run(ctx context.Context) error {
 
 	// Run backloading!
 	go func() {
+		return // Disable backloading for now.
 		// TODO: Make this able to scale horizontally
 		m.BackLoadAthleteRoutine(ctx)
 	}()
