@@ -86,10 +86,16 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 				}
 
 				if se.Response.StatusCode == http.StatusUnauthorized || se.Response.StatusCode == http.StatusForbidden {
-					// This person needs to be fixed....
-					// We should delete them?
-					// TODO: Handle these people.
+					// Delete users who are unauthorized
+					delErr := m.DB.DeleteAthleteLogin(ctx, athlete.AthleteLogin.AthleteID)
 					next = time.Now().Add(time.Hour * 48)
+					logger.Info().
+						AnErr("delete_error", delErr).
+						Err(err).
+						Int64("athlete_id", athlete.AthleteLogin.AthleteID).
+						Int("status_code", se.Response.StatusCode).
+						Msg("athlete unauthorized, deleting")
+
 					err = fmt.Errorf("unauthorized: %w", err)
 				}
 			} else {
