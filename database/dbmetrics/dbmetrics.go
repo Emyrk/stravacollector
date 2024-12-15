@@ -30,8 +30,6 @@ func NewDBMetrics(s database.Store, logger zerolog.Logger, reg prometheus.Regist
 		Buckets:   prometheus.DefBuckets,
 	}, []string{
 		"success", // Did the InTx function return an error?
-		// Uniquely naming some transactions can help debug reoccurring errors.
-		"tx_id",
 	})
 	reg.MustRegister(txDuration)
 	return &metricsStore{
