@@ -15,6 +15,9 @@ type StravaAPIError struct {
 }
 
 func (e StravaAPIError) Error() string {
+	if strings.Contains(string(e.Body), "<!DOCTYPE html>") {
+		return fmt.Sprintf("status code: %d\nbody: %s", e.Response.StatusCode, "'HTML response'")
+	}
 	return fmt.Sprintf("status code: %d\nbody: %s", e.Response.StatusCode, string(e.Body))
 }
 

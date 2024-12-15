@@ -5,7 +5,7 @@ GIT_TAG := $(shell git describe --tags --abbrev=0)
 GIT_COMMIT := $(shell git describe --always)
 BUILD_TIME := $(shell TZ='America/Chicago' date +"%m-%d-%y %H:%M")
 
-gen: database/dump.sql database/querier.go site/strava-frontend/src/api/typesGenerated.ts
+gen: database/dump.sql database/querier.go site/strava-frontend/src/api/typesGenerated.ts database/dbmetrics/querymetrics.go
 
 .PHONY: gen
 
@@ -26,6 +26,9 @@ site: site/strava-frontend/src/api/typesGenerated.ts site/strava-frontend/packag
 site/strava-frontend/src/api/typesGenerated.ts: scripts/apitypings/main.go $(shell find ./api/modelsdk $(FIND_EXCLUSIONS) -type f -name '*.go')
 	go run scripts/apitypings/main.go > site/strava-frontend/src/api/typesGenerated.ts
 	cd site
+
+database/dbmetrics/querymetrics.go: $(wildcard database/queries/*.sql)
+	go run scripts/dbmetrics/main.go
 
 build:
 	echo $(GIT_TAG) $(GIT_VERSION)

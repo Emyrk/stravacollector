@@ -79,6 +79,12 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 					sleepFor = time.Minute
 				}
 
+				if se.Response.StatusCode == 597 {
+					next = time.Now().Add(time.Minute * 15)
+					err = fmt.Errorf("strava is temporarily down (maintance?), will retry later")
+					sleepFor = time.Minute * 10
+				}
+
 				if se.Response.StatusCode == http.StatusUnauthorized || se.Response.StatusCode == http.StatusForbidden {
 					// This person needs to be fixed....
 					// We should delete them?

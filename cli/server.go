@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Emyrk/strava/database/dbmetrics"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
@@ -98,6 +99,8 @@ func serverCmd() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("connect to postgres: %w", err)
 			}
+
+			db = dbmetrics.NewQueryMetrics(db, logger, registry)
 
 			if accessURL == "" {
 				accessURL = fmt.Sprintf("http://localhost:%d", port)
