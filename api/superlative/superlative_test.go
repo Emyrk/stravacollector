@@ -124,7 +124,7 @@ func activity(id int64, data stats) database.HugelLeaderboardRow {
 		MovingTime:         movingSeconds,
 		ElapsedTime:        elapsedSeconds,
 		TotalElevationGain: 0,
-		StartDate:          data.Start,
+		StartDate:          database.Timestamptz(data.Start),
 		AchievementCount:   data.Achievements,
 		AverageHeartrate:   data.HeartRate,
 		AverageSpeed:       data.Speed,
