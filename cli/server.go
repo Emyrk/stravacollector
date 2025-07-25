@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Emyrk/strava/api/river"
 	"github.com/Emyrk/strava/database/dbmetrics"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -164,6 +165,19 @@ func serverCmd() *cobra.Command {
 			}
 			defer manager.Close()
 			srv.Manager = manager
+
+			riverManager, err := river.New(ctx, river.Options{
+				DBURL:    dbURL,
+				Logger:   logger.With().Str("component", "river").Logger(),
+				DB:       db,
+				OAuthCfg: srv.OAuthConfig,
+				Registry: registry,
+			})
+			if err != nil {
+				return fmt.Errorf("create river manager: %w", err)
+			}
+			defer riverManager.Close(ctx)
+			srv.RiverManager = riverManager
 
 			hsrv := &http.Server{
 				Addr:    fmt.Sprintf("0.0.0.0:%d", port),

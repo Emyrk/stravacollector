@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Emyrk/strava/api/river"
 	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
@@ -44,10 +45,11 @@ type API struct {
 	Opts    *Options
 	Handler http.Handler
 
-	Auth        *auth.Authentication
-	OAuthConfig *oauth2.Config
-	Events      *webhooks.ActivityEvents
-	Manager     *queue.Manager
+	Auth         *auth.Authentication
+	OAuthConfig  *oauth2.Config
+	Events       *webhooks.ActivityEvents
+	Manager      *queue.Manager
+	RiverManager *river.Manager
 
 	SuperHugelBoardCache    *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]
 	HugelBoard2023Cache     *gencache.LazyCache[[]database.HugelLeaderboardRow]
