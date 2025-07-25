@@ -16,6 +16,7 @@ import (
 	"github.com/Emyrk/strava/strava"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/riverqueue/river"
+	"github.com/riverqueue/river/rivertype"
 )
 
 func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, hugelPotential bool, onHugelDates bool, priority int, opts ...func(j *river.InsertOpts)) (bool, error) {
@@ -67,6 +68,10 @@ func (FetchActivityArgs) InsertOpts() river.InsertOpts {
 type FetchActivityWorker struct {
 	mgr *Manager
 	river.WorkerDefaults[FetchActivityArgs]
+}
+
+func (*FetchActivityWorker) Middleware(job *rivertype.JobRow) []rivertype.WorkerMiddleware {
+	return []rivertype.WorkerMiddleware{}
 }
 
 func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActivityArgs]) error {
@@ -156,6 +161,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			}
 
 			if se.Response.StatusCode == http.StatusBadGateway && strings.Contains(string(se.Body), "Strava is temporarily unavailable") {
+				// TODO: Pause the queue and awake it later.
 				_ = river.RecordOutput(ctx, "strava is temporarily unavailable, retrying later")
 				return river.JobSnooze(time.Hour)
 			}
