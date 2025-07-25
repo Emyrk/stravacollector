@@ -17,6 +17,7 @@ type AthleteLoadWorker struct {
 }
 
 func (w *AthleteLoadWorker) Work(ctx context.Context, job *river.Job[AthleteLoadArgs]) error {
-	return nil
+	var _ = w.mgr
 
+	return nil
 }

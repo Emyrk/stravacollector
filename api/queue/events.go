@@ -19,9 +19,9 @@ func (m *Manager) HandleWebhookEvents(ctx context.Context, c <-chan *webhooks.We
 		case event := <-c:
 			switch event.ObjectType {
 			case "activity":
-				m.newActivity(ctx, *event)
+				m.newActivity(ctx, event)
 			case "athlete":
-				m.newAthlete(ctx, *event)
+				m.newAthlete(ctx, event)
 			default:
 				m.Logger.Warn().
 					Str("object_type", event.ObjectType).
@@ -34,7 +34,7 @@ func (m *Manager) HandleWebhookEvents(ctx context.Context, c <-chan *webhooks.We
 	}
 }
 
-func (m *Manager) newAthlete(ctx context.Context, event webhooks.WebhookEvent) {
+func (m *Manager) newAthlete(ctx context.Context, event *webhooks.WebhookEvent) {
 	var qErr error
 	switch event.AspectType {
 	case "create":
@@ -62,7 +62,7 @@ func (m *Manager) newAthlete(ctx context.Context, event webhooks.WebhookEvent) {
 	}
 }
 
-func (m *Manager) newActivity(ctx context.Context, event webhooks.WebhookEvent) {
+func (m *Manager) newActivity(ctx context.Context, event *webhooks.WebhookEvent) {
 	var qErr error
 	switch event.AspectType {
 	case "create":

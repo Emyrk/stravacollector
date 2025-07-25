@@ -13,7 +13,7 @@ import (
 	"github.com/Emyrk/strava/database"
 )
 
-func (m *Manager) EnqueueUpdateActivity(ctx context.Context, event webhooks.WebhookEvent) error {
+func (m *Manager) EnqueueUpdateActivity(ctx context.Context, event *webhooks.WebhookEvent) error {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return fmt.Errorf("json marshal: %w", err)
@@ -26,7 +26,7 @@ func (m *Manager) EnqueueUpdateActivity(ctx context.Context, event webhooks.Webh
 	})
 }
 
-func (m *Manager) EnqueueDeleteActivity(ctx context.Context, event webhooks.WebhookEvent) error {
+func (m *Manager) EnqueueDeleteActivity(ctx context.Context, event *webhooks.WebhookEvent) error {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return fmt.Errorf("json marshal: %w", err)
