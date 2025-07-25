@@ -245,16 +245,7 @@ func (api *API) missingSegments(rw http.ResponseWriter, r *http.Request) {
 func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 	var (
 		ctx = r.Context()
-		id  = httpmw.AuthenticatedAthleteID(r)
 	)
-
-	// Only steven can do this
-	if id != 2661162 {
-		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
-			Message: "Not authorized",
-		})
-		return
-	}
 
 	athleteID, err := strconv.ParseInt(chi.URLParam(r, "athlete_id"), 10, 64)
 	if err != nil {

@@ -13,8 +13,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Emyrk/strava/api/httpmw"
 	"github.com/Emyrk/strava/api/river"
 	"github.com/Emyrk/strava/database/dbmetrics"
+	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
@@ -178,8 +180,15 @@ func serverCmd() *cobra.Command {
 			}
 			defer riverManager.Close(ctx)
 			srv.RiverManager = riverManager
-			err = riverManager.Attach(ctx, srv.Handler)
-			if err != nil {
+
+			var attachErr error
+			srv.Handler.Group(func(r chi.Router) {
+				r.Use(httpmw.Authenticated(srv.Auth, false))
+				r.Use(httpmw.AuthenticatedAsAdmins())
+				attachErr = riverManager.Attach(ctx, r)
+			})
+
+			if attachErr != nil {
 				return fmt.Errorf("attach river manager ui: %w", err)
 			}
 

@@ -201,6 +201,7 @@ func (api *API) Routes() chi.Router {
 			)
 			r.Get("/whoami", api.whoAmI)
 			r.Route("/fetch-activity", func(r chi.Router) {
+				r.Use(httpmw.AuthenticatedAsAdmins())
 				r.Get("/{athlete_id}-{activity_id}", api.manualFetchActivity)
 			})
 			r.Route("/missing", func(r chi.Router) {

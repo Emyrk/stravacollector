@@ -33,11 +33,12 @@ func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.Acti
 		OnHugelDates:   onHugelDates,
 	}, iopts)
 
-	if err == nil && fi != nil {
-		return !fi.UniqueSkippedAsDuplicate, nil
+	skipped := false
+	if fi != nil {
+		skipped = fi.UniqueSkippedAsDuplicate
 	}
 
-	return false, err
+	return !skipped, err
 }
 
 type FetchActivityArgs struct {
