@@ -28,7 +28,7 @@ site/strava-frontend/src/api/typesGenerated.ts: scripts/apitypings/main.go $(she
 	cd site
 
 database/dbmetrics/querymetrics.go: $(wildcard database/queries/*.sql)
-	go run scripts/dbmetrics/main.go
+	go run scripts/dbgen/main.go
 
 build:
 	echo $(GIT_TAG) $(GIT_VERSION)

@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"github.com/Emyrk/strava/database/migrations"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/lib/pq"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
@@ -21,77 +23,76 @@ type Store interface {
 	manualQuerier
 
 	Ping(ctx context.Context) (time.Duration, error)
-	InTx(func(Store) error, *sql.TxOptions) error
+	InTx(func(Store) error, *pgx.TxOptions) error
+	Close() error
 }
 
 // DBTX represents a database connection or transaction.
 type DBTX interface {
-	ExecContext(context.Context, string, ...interface{}) (sql.Result, error)
-	PrepareContext(context.Context, string) (*sql.Stmt, error)
-	QueryContext(context.Context, string, ...interface{}) (*sql.Rows, error)
-	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
-	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
-	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	Exec(context.Context, string, ...interface{}) (pgconn.CommandTag, error)
+	Query(context.Context, string, ...interface{}) (pgx.Rows, error)
+	QueryRow(context.Context, string, ...interface{}) pgx.Row
 }
 
 type sqlQuerier struct {
-	sdb *sqlx.DB
+	sdb *pgxpool.Pool
 	db  DBTX
 }
 
 func NewPostgresDB(ctx context.Context, logger zerolog.Logger, dbURL string) (Store, error) {
 	logger = logger.With().Str("db_url", dbURL).Logger()
 	logger.Info().Msg("connecting to postgres database")
-	sqlDB, err := sql.Open("postgres", dbURL)
+
+	cfg, err := pgxpool.ParseConfig(dbURL)
 	if err != nil {
-		return nil, fmt.Errorf("dial postgres: %w", err)
+		return nil, fmt.Errorf("parse postgres db url: %w", err)
 	}
-	ok := false
-	defer func() {
-		if !ok {
-			_ = sqlDB.Close()
-		}
-	}()
+
+	pool, err := pgxpool.NewWithConfig(ctx, cfg)
+	if err != nil {
+		return nil, fmt.Errorf("connect to postgres: %w", err)
+	}
 
 	pingCtx, pingCancel := context.WithTimeout(ctx, 15*time.Second)
 	defer pingCancel()
-	err = sqlDB.PingContext(pingCtx)
+	err = pool.Ping(pingCtx)
 	if err != nil {
 		return nil, fmt.Errorf("ping postgres: %w", err)
 	}
 
-	err = migrations.Up(sqlDB)
+	err = migrations.Up(pool)
 	if err != nil {
 		return nil, fmt.Errorf("migrate up: %w", err)
 	}
 
-	sqlDB.SetMaxOpenConns(10)
-	sqlDB.SetMaxIdleConns(3)
-	ok = true
-	return New(sqlDB), nil
+	return New(pool), nil
 }
 
 // New creates a new database store using a SQL database connection.
-func New(sdb *sql.DB) Store {
-	dbx := sqlx.NewDb(sdb, "postgres")
+func New(sdb *pgxpool.Pool) Store {
 	return &sqlQuerier{
-		db:  dbx,
-		sdb: dbx,
+		db:  sdb,
+		sdb: sdb,
 	}
+}
+
+func (q *sqlQuerier) Close() error {
+	q.sdb.Close()
+	return nil
 }
 
 // Ping returns the time it takes to ping the database.
 func (q *sqlQuerier) Ping(ctx context.Context) (time.Duration, error) {
 	start := time.Now()
-	err := q.sdb.PingContext(ctx)
+	err := q.sdb.Ping(ctx)
 	return time.Since(start), err
 }
 
-func (q *sqlQuerier) InTx(function func(Store) error, txOpts *sql.TxOptions) error {
-	_, inTx := q.db.(*sqlx.Tx)
-	isolation := sql.LevelDefault
+func (q *sqlQuerier) InTx(function func(Store) error, txOpts *pgx.TxOptions) error {
+	_, inTx := q.db.(*pgxpool.Tx)
+	isolation := pgx.ReadCommitted
 	if txOpts != nil {
-		isolation = txOpts.Isolation
+		isolation = txOpts.IsoLevel
 	}
 
 	// If we are not already in a transaction, and we are running in serializable
@@ -99,7 +100,7 @@ func (q *sqlQuerier) InTx(function func(Store) error, txOpts *sql.TxOptions) err
 	// prepared to allow retries if using serializable mode.
 	// If we are in a transaction already, the parent InTx call will handle the retry.
 	// We do not want to duplicate those retries.
-	if !inTx && isolation == sql.LevelSerializable {
+	if !inTx && isolation == pgx.Serializable {
 		// This is an arbitrarily chosen number.
 		const retryAmount = 3
 		var err error
@@ -122,8 +123,8 @@ func (q *sqlQuerier) InTx(function func(Store) error, txOpts *sql.TxOptions) err
 }
 
 // InTx performs database operations inside a transaction.
-func (q *sqlQuerier) runTx(function func(Store) error, txOpts *sql.TxOptions) error {
-	if _, ok := q.db.(*sqlx.Tx); ok {
+func (q *sqlQuerier) runTx(function func(Store) error, txOpts *pgx.TxOptions) error {
+	if _, ok := q.db.(*pgxpool.Tx); ok {
 		// If the current inner "db" is already a transaction, we just reuse it.
 		// We do not need to handle commit/rollback as the outer tx will handle
 		// that.
@@ -134,12 +135,19 @@ func (q *sqlQuerier) runTx(function func(Store) error, txOpts *sql.TxOptions) er
 		return nil
 	}
 
-	transaction, err := q.sdb.BeginTxx(context.Background(), txOpts)
+	opts := txOpts
+	if opts == nil {
+		opts = &pgx.TxOptions{
+			IsoLevel: pgx.ReadCommitted,
+		}
+	}
+
+	transaction, err := q.sdb.BeginTx(context.Background(), *opts)
 	if err != nil {
 		return xerrors.Errorf("begin transaction: %w", err)
 	}
 	defer func() {
-		rerr := transaction.Rollback()
+		rerr := transaction.Rollback(context.Background())
 		if rerr == nil || errors.Is(rerr, sql.ErrTxDone) {
 			// no need to do anything, tx committed successfully
 			return
@@ -151,7 +159,7 @@ func (q *sqlQuerier) runTx(function func(Store) error, txOpts *sql.TxOptions) er
 	if err != nil {
 		return xerrors.Errorf("execute transaction: %w", err)
 	}
-	err = transaction.Commit()
+	err = transaction.Commit(context.Background())
 	if err != nil {
 		return xerrors.Errorf("commit transaction: %w", err)
 	}

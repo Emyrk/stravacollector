@@ -61,11 +61,11 @@ func Parse(activities []database.HugelLeaderboardRow) List {
 	var list List
 
 	for _, activity := range activities {
-		if list.EarliestStart.Value.IsZero() || list.EarliestStart.Value.After(activity.StartDate) {
-			list.EarliestStart = entry(activity.ActivityID, activity.StartDate)
+		if list.EarliestStart.Value.IsZero() || list.EarliestStart.Value.After(activity.StartDate.Time) {
+			list.EarliestStart = entry(activity.ActivityID, activity.StartDate.Time)
 		}
 
-		endDate := activity.StartDate.Add(time.Duration(activity.ElapsedTime) * time.Second)
+		endDate := activity.StartDate.Time.Add(time.Duration(activity.ElapsedTime) * time.Second)
 		if list.LatestEnd.Value.IsZero() || list.LatestEnd.Value.Before(endDate) {
 			list.LatestEnd = entry(activity.ActivityID, endDate)
 		}

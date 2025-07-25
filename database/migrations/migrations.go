@@ -1,8 +1,6 @@
 package migrations
 
 import (
-	"context"
-	"database/sql"
 	"embed"
 	"errors"
 	"fmt"
@@ -12,14 +10,15 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/golang-migrate/migrate/v4/source"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"golang.org/x/xerrors"
 )
 
 //go:embed *.sql
 var migrations embed.FS
 
-func setup(db *sql.DB) (source.Driver, *migrate.Migrate, error) {
-	ctx := context.Background()
+func setup(pool *pgxpool.Pool) (source.Driver, *migrate.Migrate, error) {
 	sourceDriver, err := iofs.New(migrations, ".")
 	if err != nil {
 		return nil, nil, fmt.Errorf("create iofs: %w", err)
@@ -29,11 +28,9 @@ func setup(db *sql.DB) (source.Driver, *migrate.Migrate, error) {
 	// but, when you close the resulting Migrate, it closes the DB, which
 	// we don't want.  Instead, create just a connection that will get closed
 	// when migration is done.
-	conn, err := db.Conn(ctx)
-	if err != nil {
-		return nil, nil, fmt.Errorf("postgres connection: %w", err)
-	}
-	dbDriver, err := postgres.WithConnection(ctx, conn, &postgres.Config{})
+
+	db := stdlib.OpenDBFromPool(pool)
+	dbDriver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		return nil, nil, fmt.Errorf("wrap postgres connection: %w", err)
 	}
@@ -47,7 +44,7 @@ func setup(db *sql.DB) (source.Driver, *migrate.Migrate, error) {
 }
 
 // Up runs SQL migrations to ensure the database schema is up-to-date.
-func Up(db *sql.DB) (retErr error) {
+func Up(db *pgxpool.Pool) (retErr error) {
 	_, m, err := setup(db)
 	if err != nil {
 		return fmt.Errorf("migrate setup: %w", err)
@@ -78,11 +75,14 @@ func Up(db *sql.DB) (retErr error) {
 }
 
 // Down runs all down SQL migrations.
-func Down(db *sql.DB) error {
+func Down(db *pgxpool.Pool) error {
 	_, m, err := setup(db)
 	if err != nil {
 		return xerrors.Errorf("migrate setup: %w", err)
 	}
+	defer func() {
+		_, _ = m.Close()
+	}()
 
 	err = m.Down()
 	if err != nil {

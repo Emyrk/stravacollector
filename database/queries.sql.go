@@ -19,7 +19,7 @@ RETURNING id, athlete_id, upload_id, external_id, name, distance, moving_time, e
 `
 
 func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error) {
-	row := q.db.QueryRowContext(ctx, deleteActivity, id)
+	row := q.db.QueryRow(ctx, deleteActivity, id)
 	var i ActivitySummary
 	err := row.Scan(
 		&i.ID,
@@ -74,7 +74,7 @@ WHERE
 `
 
 func (q *sqlQuerier) GetActivityDetail(ctx context.Context, id int64) (ActivityDetail, error) {
-	row := q.db.QueryRowContext(ctx, getActivityDetail, id)
+	row := q.db.QueryRow(ctx, getActivityDetail, id)
 	var i ActivityDetail
 	err := row.Scan(
 		&i.ID,
@@ -114,7 +114,7 @@ WHERE
 `
 
 func (q *sqlQuerier) GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error) {
-	row := q.db.QueryRowContext(ctx, getActivitySummary, id)
+	row := q.db.QueryRow(ctx, getActivitySummary, id)
 	var i ActivitySummary
 	err := row.Scan(
 		&i.ID,
@@ -168,7 +168,7 @@ WHERE
 `
 
 func (q *sqlQuerier) IncrementActivitySummaryDownload(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, incrementActivitySummaryDownload, id)
+	_, err := q.db.Exec(ctx, incrementActivitySummaryDownload, id)
 	return err
 }
 
@@ -185,7 +185,7 @@ from diff_data
 `
 
 func (q *sqlQuerier) MissingSegments(ctx context.Context, activitiesID int64) ([]string, error) {
-	row := q.db.QueryRowContext(ctx, missingSegments, activitiesID)
+	row := q.db.QueryRow(ctx, missingSegments, activitiesID)
 	var diff []string
 	err := row.Scan(&diff)
 	return diff, err
@@ -211,7 +211,7 @@ type NeedsARefreshRow struct {
 }
 
 func (q *sqlQuerier) NeedsARefresh(ctx context.Context) ([]NeedsARefreshRow, error) {
-	rows, err := q.db.QueryContext(ctx, needsARefresh)
+	rows, err := q.db.Query(ctx, needsARefresh)
 	if err != nil {
 		return nil, err
 	}
@@ -235,7 +235,7 @@ SELECT count(*) FROM activity_detail
 `
 
 func (q *sqlQuerier) TotalActivityDetailsCount(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, totalActivityDetailsCount)
+	row := q.db.QueryRow(ctx, totalActivityDetailsCount)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -246,7 +246,7 @@ SELECT count(*) FROM activity_summary WHERE activity_type = 'Ride'
 `
 
 func (q *sqlQuerier) TotalRideActivitySummariesCount(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, totalRideActivitySummariesCount)
+	row := q.db.QueryRow(ctx, totalRideActivitySummariesCount)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -266,7 +266,7 @@ type UpdateActivityNameParams struct {
 }
 
 func (q *sqlQuerier) UpdateActivityName(ctx context.Context, arg UpdateActivityNameParams) error {
-	_, err := q.db.ExecContext(ctx, updateActivityName, arg.ID, arg.Name)
+	_, err := q.db.Exec(ctx, updateActivityName, arg.ID, arg.Name)
 	return err
 }
 
@@ -285,7 +285,7 @@ type UpdateActivityTypeParams struct {
 }
 
 func (q *sqlQuerier) UpdateActivityType(ctx context.Context, arg UpdateActivityTypeParams) error {
-	_, err := q.db.ExecContext(ctx, updateActivityType, arg.ID, arg.Type)
+	_, err := q.db.Exec(ctx, updateActivityType, arg.ID, arg.Type)
 	return err
 }
 
@@ -356,7 +356,7 @@ type UpsertActivityDetailParams struct {
 }
 
 func (q *sqlQuerier) UpsertActivityDetail(ctx context.Context, arg UpsertActivityDetailParams) (ActivityDetail, error) {
-	row := q.db.QueryRowContext(ctx, upsertActivityDetail,
+	row := q.db.QueryRow(ctx, upsertActivityDetail,
 		arg.ID,
 		arg.AthleteID,
 		arg.StartLatlng,
@@ -506,7 +506,7 @@ type UpsertActivitySummaryParams struct {
 }
 
 func (q *sqlQuerier) UpsertActivitySummary(ctx context.Context, arg UpsertActivitySummaryParams) (ActivitySummary, error) {
-	row := q.db.QueryRowContext(ctx, upsertActivitySummary,
+	row := q.db.QueryRow(ctx, upsertActivitySummary,
 		arg.ID,
 		arg.AthleteID,
 		arg.UploadID,
@@ -622,7 +622,7 @@ type AthleteSyncedActivitiesRow struct {
 }
 
 func (q *sqlQuerier) AthleteSyncedActivities(ctx context.Context, arg AthleteSyncedActivitiesParams) ([]AthleteSyncedActivitiesRow, error) {
-	rows, err := q.db.QueryContext(ctx, athleteSyncedActivities, arg.AthleteID, arg.Offset, arg.Limit)
+	rows, err := q.db.Query(ctx, athleteSyncedActivities, arg.AthleteID, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -688,7 +688,7 @@ DELETE FROM athlete_logins WHERE athlete_id = $1
 `
 
 func (q *sqlQuerier) DeleteAthleteLogin(ctx context.Context, athleteID int64) error {
-	_, err := q.db.ExecContext(ctx, deleteAthleteLogin, athleteID)
+	_, err := q.db.Exec(ctx, deleteAthleteLogin, athleteID)
 	return err
 }
 
@@ -697,7 +697,7 @@ SELECT id, summit, username, firstname, lastname, sex, city, state, country, fol
 `
 
 func (q *sqlQuerier) GetAthlete(ctx context.Context, athleteID int64) (Athlete, error) {
-	row := q.db.QueryRowContext(ctx, getAthlete, athleteID)
+	row := q.db.QueryRow(ctx, getAthlete, athleteID)
 	var i Athlete
 	err := row.Scan(
 		&i.ID,
@@ -742,7 +742,7 @@ type GetAthleteFullRow struct {
 }
 
 func (q *sqlQuerier) GetAthleteFull(ctx context.Context, athleteID int64) (GetAthleteFullRow, error) {
-	row := q.db.QueryRowContext(ctx, getAthleteFull, athleteID)
+	row := q.db.QueryRow(ctx, getAthleteFull, athleteID)
 	var i GetAthleteFullRow
 	err := row.Scan(
 		&i.Athlete.ID,
@@ -775,7 +775,7 @@ SELECT athlete_id, last_backload_activity_start, last_load_attempt, last_load_in
 `
 
 func (q *sqlQuerier) GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteLoad, error) {
-	row := q.db.QueryRowContext(ctx, getAthleteLoad, athleteID)
+	row := q.db.QueryRow(ctx, getAthleteLoad, athleteID)
 	var i AthleteLoad
 	err := row.Scan(
 		&i.AthleteID,
@@ -821,7 +821,7 @@ type GetAthleteLoadDetailedRow struct {
 }
 
 func (q *sqlQuerier) GetAthleteLoadDetailed(ctx context.Context, athleteID int64) (GetAthleteLoadDetailedRow, error) {
-	row := q.db.QueryRowContext(ctx, getAthleteLoadDetailed, athleteID)
+	row := q.db.QueryRow(ctx, getAthleteLoadDetailed, athleteID)
 	var i GetAthleteLoadDetailedRow
 	err := row.Scan(
 		&i.AthleteLoad.AthleteID,
@@ -867,7 +867,7 @@ SELECT athlete_id, summit, provider_id, created_at, updated_at, oauth_access_tok
 `
 
 func (q *sqlQuerier) GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error) {
-	row := q.db.QueryRowContext(ctx, getAthleteLogin, athleteID)
+	row := q.db.QueryRow(ctx, getAthleteLogin, athleteID)
 	var i AthleteLogin
 	err := row.Scan(
 		&i.AthleteID,
@@ -906,7 +906,7 @@ type GetAthleteLoginFullRow struct {
 }
 
 func (q *sqlQuerier) GetAthleteLoginFull(ctx context.Context, athleteID int64) (GetAthleteLoginFullRow, error) {
-	row := q.db.QueryRowContext(ctx, getAthleteLoginFull, athleteID)
+	row := q.db.QueryRow(ctx, getAthleteLoginFull, athleteID)
 	var i GetAthleteLoginFullRow
 	err := row.Scan(
 		&i.AthleteLogin.AthleteID,
@@ -968,7 +968,7 @@ type GetAthleteNeedsLoadRow struct {
 }
 
 func (q *sqlQuerier) GetAthleteNeedsLoad(ctx context.Context) ([]GetAthleteNeedsLoadRow, error) {
-	rows, err := q.db.QueryContext(ctx, getAthleteNeedsLoad)
+	rows, err := q.db.Query(ctx, getAthleteNeedsLoad)
 	if err != nil {
 		return nil, err
 	}
@@ -1067,7 +1067,7 @@ type UpsertAthleteParams struct {
 }
 
 func (q *sqlQuerier) UpsertAthlete(ctx context.Context, arg UpsertAthleteParams) (Athlete, error) {
-	row := q.db.QueryRowContext(ctx, upsertAthlete,
+	row := q.db.QueryRow(ctx, upsertAthlete,
 		arg.ID,
 		arg.CreatedAt,
 		arg.UpdatedAt,
@@ -1159,7 +1159,7 @@ type UpsertAthleteLoadParams struct {
 }
 
 func (q *sqlQuerier) UpsertAthleteLoad(ctx context.Context, arg UpsertAthleteLoadParams) (AthleteLoad, error) {
-	row := q.db.QueryRowContext(ctx, upsertAthleteLoad,
+	row := q.db.QueryRow(ctx, upsertAthleteLoad,
 		arg.AthleteID,
 		arg.LastBackloadActivityStart,
 		arg.LastLoadAttempt,
@@ -1221,7 +1221,7 @@ type UpsertAthleteLoginParams struct {
 }
 
 func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLoginParams) (AthleteLogin, error) {
-	row := q.db.QueryRowContext(ctx, upsertAthleteLogin,
+	row := q.db.QueryRow(ctx, upsertAthleteLogin,
 		arg.AthleteID,
 		arg.Summit,
 		arg.ProviderID,
@@ -1264,7 +1264,7 @@ type AthleteHugelActivitesRow struct {
 }
 
 func (q *sqlQuerier) AthleteHugelActivites(ctx context.Context, athleteID int64) ([]AthleteHugelActivitesRow, error) {
-	rows, err := q.db.QueryContext(ctx, athleteHugelActivites, athleteID)
+	rows, err := q.db.Query(ctx, athleteHugelActivites, athleteID)
 	if err != nil {
 		return nil, err
 	}
@@ -1357,7 +1357,7 @@ type GetCompetitiveRouteRow struct {
 }
 
 func (q *sqlQuerier) GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error) {
-	row := q.db.QueryRowContext(ctx, getCompetitiveRoute, routeName)
+	row := q.db.QueryRow(ctx, getCompetitiveRoute, routeName)
 	var i GetCompetitiveRouteRow
 	err := row.Scan(
 		&i.Name,
@@ -1480,7 +1480,7 @@ type HugelLeaderboardRow struct {
 
 // This query needs to be simplified
 func (q *sqlQuerier) HugelLeaderboard(ctx context.Context, arg HugelLeaderboardParams) ([]HugelLeaderboardRow, error) {
-	rows, err := q.db.QueryContext(ctx, hugelLeaderboard, arg.After, arg.Before, arg.AthleteID)
+	rows, err := q.db.Query(ctx, hugelLeaderboard, arg.After, arg.Before, arg.AthleteID)
 	if err != nil {
 		return nil, err
 	}
@@ -1542,7 +1542,7 @@ WHERE
 `
 
 func (q *sqlQuerier) MissingHugelSegments(ctx context.Context, activityID int64) ([]Segment, error) {
-	rows, err := q.db.QueryContext(ctx, missingHugelSegments, activityID)
+	rows, err := q.db.Query(ctx, missingHugelSegments, activityID)
 	if err != nil {
 		return nil, err
 	}
@@ -1593,7 +1593,7 @@ REFRESH MATERIALIZED VIEW hugel_activities_2023
 `
 
 func (q *sqlQuerier) RefreshHugel2023Activities(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, refreshHugel2023Activities)
+	_, err := q.db.Exec(ctx, refreshHugel2023Activities)
 	return err
 }
 
@@ -1602,7 +1602,7 @@ REFRESH MATERIALIZED VIEW hugel_activities
 `
 
 func (q *sqlQuerier) RefreshHugelActivities(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, refreshHugelActivities)
+	_, err := q.db.Exec(ctx, refreshHugelActivities)
 	return err
 }
 
@@ -1611,7 +1611,7 @@ REFRESH MATERIALIZED VIEW lite_hugel_activities
 `
 
 func (q *sqlQuerier) RefreshHugelLiteActivities(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, refreshHugelLiteActivities)
+	_, err := q.db.Exec(ctx, refreshHugelLiteActivities)
 	return err
 }
 
@@ -1620,7 +1620,7 @@ REFRESH MATERIALIZED VIEW super_hugel_activities
 `
 
 func (q *sqlQuerier) RefreshSuperHugelActivities(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, refreshSuperHugelActivities)
+	_, err := q.db.Exec(ctx, refreshSuperHugelActivities)
 	return err
 }
 
@@ -1673,7 +1673,7 @@ type SuperHugelLeaderboardRow struct {
 }
 
 func (q *sqlQuerier) SuperHugelLeaderboard(ctx context.Context, athleteID interface{}) ([]SuperHugelLeaderboardRow, error) {
-	rows, err := q.db.QueryContext(ctx, superHugelLeaderboard, athleteID)
+	rows, err := q.db.Query(ctx, superHugelLeaderboard, athleteID)
 	if err != nil {
 		return nil, err
 	}
@@ -1715,7 +1715,7 @@ RETURNING id, recorded_at, raw
 `
 
 func (q *sqlQuerier) InsertFailedJob(ctx context.Context, rawJson string) (FailedJob, error) {
-	row := q.db.QueryRowContext(ctx, insertFailedJob, rawJson)
+	row := q.db.QueryRow(ctx, insertFailedJob, rawJson)
 	var i FailedJob
 	err := row.Scan(&i.ID, &i.RecordedAt, &i.Raw)
 	return i, err
@@ -1726,7 +1726,7 @@ SELECT count(*) FROM gue_jobs
 `
 
 func (q *sqlQuerier) TotalJobCount(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, totalJobCount)
+	row := q.db.QueryRow(ctx, totalJobCount)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -1763,7 +1763,7 @@ type UpsertMapDataParams struct {
 }
 
 func (q *sqlQuerier) UpsertMapData(ctx context.Context, arg UpsertMapDataParams) (Map, error) {
-	row := q.db.QueryRowContext(ctx, upsertMapData, arg.ID, arg.Polyline, arg.SummaryPolyline)
+	row := q.db.QueryRow(ctx, upsertMapData, arg.ID, arg.Polyline, arg.SummaryPolyline)
 	var i Map
 	err := row.Scan(
 		&i.ID,
@@ -1779,7 +1779,7 @@ SELECT name, display_name, description, segments FROM competitive_routes
 `
 
 func (q *sqlQuerier) AllCompetitiveRoutes(ctx context.Context) ([]CompetitiveRoute, error) {
-	rows, err := q.db.QueryContext(ctx, allCompetitiveRoutes)
+	rows, err := q.db.Query(ctx, allCompetitiveRoutes)
 	if err != nil {
 		return nil, err
 	}
@@ -1857,7 +1857,7 @@ type BestRouteEffortsRow struct {
 // The returned activities include the best effort for each segment.
 // This isn't used in the app, but is the foundation for the hugel view.
 func (q *sqlQuerier) BestRouteEfforts(ctx context.Context, expectedSegments []int64) ([]BestRouteEffortsRow, error) {
-	rows, err := q.db.QueryContext(ctx, bestRouteEfforts, expectedSegments)
+	rows, err := q.db.Query(ctx, bestRouteEfforts, expectedSegments)
 	if err != nil {
 		return nil, err
 	}
@@ -1899,7 +1899,7 @@ type GetBestPersonalSegmentEffortParams struct {
 }
 
 func (q *sqlQuerier) GetBestPersonalSegmentEffort(ctx context.Context, arg GetBestPersonalSegmentEffortParams) ([]SegmentEffort, error) {
-	rows, err := q.db.QueryContext(ctx, getBestPersonalSegmentEffort, arg.AthleteID, arg.SegmentIds)
+	rows, err := q.db.Query(ctx, getBestPersonalSegmentEffort, arg.AthleteID, arg.SegmentIds)
 	if err != nil {
 		return nil, err
 	}
@@ -1952,7 +1952,7 @@ type GetSegmentsRow struct {
 }
 
 func (q *sqlQuerier) GetSegments(ctx context.Context, segmentIds []int64) ([]GetSegmentsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getSegments, segmentIds)
+	rows, err := q.db.Query(ctx, getSegments, segmentIds)
 	if err != nil {
 		return nil, err
 	}
@@ -2012,7 +2012,7 @@ type LoadedSegmentsRow struct {
 }
 
 func (q *sqlQuerier) LoadedSegments(ctx context.Context) ([]LoadedSegmentsRow, error) {
-	rows, err := q.db.QueryContext(ctx, loadedSegments)
+	rows, err := q.db.Query(ctx, loadedSegments)
 	if err != nil {
 		return nil, err
 	}
@@ -2064,7 +2064,7 @@ type StarSegmentsParams struct {
 }
 
 func (q *sqlQuerier) StarSegments(ctx context.Context, arg StarSegmentsParams) error {
-	_, err := q.db.ExecContext(ctx, starSegments, arg.AthleteID, arg.SegmentID, arg.Starred)
+	_, err := q.db.Exec(ctx, starSegments, arg.AthleteID, arg.SegmentID, arg.Starred)
 	return err
 }
 
@@ -2139,7 +2139,7 @@ type UpsertSegmentParams struct {
 }
 
 func (q *sqlQuerier) UpsertSegment(ctx context.Context, arg UpsertSegmentParams) (Segment, error) {
-	row := q.db.QueryRowContext(ctx, upsertSegment,
+	row := q.db.QueryRow(ctx, upsertSegment,
 		arg.ID,
 		arg.Name,
 		arg.ActivityType,
@@ -2250,7 +2250,7 @@ type UpsertSegmentEffortParams struct {
 }
 
 func (q *sqlQuerier) UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentEffortParams) (SegmentEffort, error) {
-	row := q.db.QueryRowContext(ctx, upsertSegmentEffort,
+	row := q.db.QueryRow(ctx, upsertSegmentEffort,
 		arg.ID,
 		arg.AthleteID,
 		arg.SegmentID,
@@ -2302,7 +2302,7 @@ RETURNING id, recorded_at, raw
 `
 
 func (q *sqlQuerier) InsertWebhookDump(ctx context.Context, rawJson string) (WebhookDump, error) {
-	row := q.db.QueryRowContext(ctx, insertWebhookDump, rawJson)
+	row := q.db.QueryRow(ctx, insertWebhookDump, rawJson)
 	var i WebhookDump
 	err := row.Scan(&i.ID, &i.RecordedAt, &i.Raw)
 	return i, err
