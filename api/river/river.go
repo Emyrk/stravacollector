@@ -3,8 +3,10 @@ package river
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Emyrk/strava/database"
+	"github.com/Emyrk/strava/internal/debounce"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/prometheus/client_golang/prometheus"
@@ -12,6 +14,10 @@ import (
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
 	"github.com/rs/zerolog"
 	"golang.org/x/oauth2"
+)
+
+const (
+	riverStravaQueue = "strava_queue"
 )
 
 type Options struct {
@@ -23,10 +29,13 @@ type Options struct {
 }
 
 type Manager struct {
-	logger zerolog.Logger
-	db     database.Store
-	pool   *pgxpool.Pool
-	cli    *river.Client[pgx.Tx]
+	logger   zerolog.Logger
+	db       database.Store
+	pool     *pgxpool.Pool
+	cli      *river.Client[pgx.Tx]
+	oauthCfg *oauth2.Config
+
+	rateLimitLogger *debounce.Debouncer
 }
 
 func New(ctx context.Context, opts Options) (*Manager, error) {
@@ -47,6 +56,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	riverClient, err := river.NewClient(riverpgxv5.New(pool), &river.Config{
 		Queues: map[string]river.QueueConfig{
 			river.QueueDefault: {MaxWorkers: 1},
+			riverStravaQueue:   {MaxWorkers: 1},
 		},
 		Workers: workers,
 	})
@@ -59,10 +69,12 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	}
 
 	m := &Manager{
-		logger: opts.Logger,
-		db:     opts.DB,
-		pool:   pool,
-		cli:    riverClient,
+		logger:          opts.Logger,
+		db:              opts.DB,
+		pool:            pool,
+		cli:             riverClient,
+		rateLimitLogger: debounce.New(time.Minute * 7),
+		oauthCfg:        opts.OAuthCfg,
 	}
 
 	m.initWorkers(workers)
@@ -71,5 +83,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 }
 
 func (m *Manager) initWorkers(workers *river.Workers) {
-
+	river.AddWorker[FetchActivityArgs](workers, &FetchActivityWorker{
+		mgr: m,
+	})
 }
