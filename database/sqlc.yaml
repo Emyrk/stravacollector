@@ -5,6 +5,7 @@ sql:
     schema: "dump.sql"
     gen:
       go:
+        sql_package: "pgx/v5"
         package: "database"
         out: "./queries"
         emit_interface: true
