@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Emyrk/strava/api/hugelhelp"
@@ -151,6 +152,11 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			if se.Response.StatusCode == http.StatusNotFound {
 				// No activity? Just drop the job, nothing to do.
 				return river.RecordOutput(ctx, fmt.Sprintf("activity not found: https://www.strava.com/activities/%d", args.ActivityID))
+			}
+
+			if se.Response.StatusCode == http.StatusBadGateway && strings.Contains(string(se.Body), "Strava is temporarily unavailable") {
+				_ = river.RecordOutput(ctx, "strava is temporarily unavailable, retrying later")
+				return river.JobSnooze(time.Hour)
 			}
 
 			_, _ = w.mgr.db.InsertFailedJob(ctx, string(jobData))
