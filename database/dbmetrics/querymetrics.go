@@ -2,7 +2,6 @@ package dbmetrics
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/Emyrk/strava/database"
@@ -40,17 +39,6 @@ type queryMetricsStore struct {
 	s              database.Store
 	queryLatencies *prometheus.HistogramVec
 	dbMetrics      *metricsStore
-}
-
-func (m queryMetricsStore) Ping(ctx context.Context) (time.Duration, error) {
-	start := time.Now()
-	duration, err := m.s.Ping(ctx)
-	m.queryLatencies.WithLabelValues("Ping").Observe(time.Since(start).Seconds())
-	return duration, err
-}
-
-func (m queryMetricsStore) InTx(f func(database.Store) error, options *sql.TxOptions) error {
-	return m.dbMetrics.InTx(f, options)
 }
 
 func (m queryMetricsStore) AllCompetitiveRoutes(ctx context.Context) ([]database.CompetitiveRoute, error) {
