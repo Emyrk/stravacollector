@@ -274,16 +274,6 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Highest priority for manual activities.
-	//err = api.Manager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, athleteID, actID, true, true, gue.JobPriorityHighest)
-	//if err != nil {
-	//	httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
-	//		Message: "Enqueue fetch",
-	//		Detail:  err.Error(),
-	//	})
-	//	return
-	//}
-
 	unique, err := api.RiverManager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, athleteID, actID, true, true, river.PriorityDefault)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
