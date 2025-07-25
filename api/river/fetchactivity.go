@@ -103,6 +103,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			// Only sync hugel potential activities during the event.
 			if !args.HugelPotential && !args.OnHugelDates {
 				// Wait a day before trying again.
+				_ = river.RecordOutput(ctx, "hugel event is ongoing, and this activity is not relevant, snoozing job")
 				return river.JobSnooze(time.Hour * 24)
 			}
 		}
