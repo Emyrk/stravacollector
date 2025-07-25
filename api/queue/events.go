@@ -27,6 +27,9 @@ func (m *Manager) HandleWebhookEvents(ctx context.Context, c <-chan *webhooks.We
 					Str("object_type", event.ObjectType).
 					Msg("Webhook event not supported")
 			}
+
+			// Tell strava that we have processed the event.
+			event.MarkDone()
 		}
 	}
 }

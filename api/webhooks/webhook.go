@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sync"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -113,6 +114,19 @@ type WebhookEvent struct {
 	OwnerID        int64             `json:"owner_id"`
 	SubscriptionID int               `json:"subscription_id"`
 	Updates        map[string]string `json:"updates"`
+
+	once sync.Once
+	done chan struct{}
+}
+
+func (e *WebhookEvent) MarkDone() {
+	e.once.Do(func() {
+		close(e.done)
+	})
+}
+
+func (e *WebhookEvent) WaitDone() {
+	<-e.done
 }
 
 func (a *ActivityEvents) handleWebhook(rw http.ResponseWriter, r *http.Request) {
@@ -134,8 +148,12 @@ func (a *ActivityEvents) handleWebhook(rw http.ResponseWriter, r *http.Request) 
 			Err(err).Msg("error unmarshalling webhook event")
 		return
 	}
+
+	event.done = make(chan struct{})
 	a.eventQueue <- &event
 	a.webhookCount.WithLabelValues(event.AspectType).Inc()
+
+	event.WaitDone()
 	_, _ = rw.Write([]byte("Thanks!"))
 }
 
