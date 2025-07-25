@@ -73,7 +73,7 @@ type Manager struct {
 }
 
 func New(ctx context.Context, opts Options) (*Manager, error) {
-	cfg, err := pgxpool.ParseConfig(opts.DBURL)
+	cfg, err := database.PoolConfig(opts.DBURL)
 	if err != nil {
 		return nil, fmt.Errorf("parse postgres db url: %w", err)
 	}

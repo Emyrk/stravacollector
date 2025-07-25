@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Emyrk/strava/database"
 	"github.com/cenkalti/backoff"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/moby/moby/pkg/namesgenerator"
@@ -131,7 +132,7 @@ func Open() (string, func(), error) {
 	// of any useful context.
 	var retryErr error
 	err = pool.Retry(func() error {
-		cfg, err := pgxpool.ParseConfig(dbURL)
+		cfg, err := database.PoolConfig(dbURL)
 		if err != nil {
 			return fmt.Errorf("parse postgres db url: %w", err)
 		}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/Emyrk/strava/database"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 )
@@ -39,6 +40,21 @@ type queryMetricsStore struct {
 	s              database.Store
 	queryLatencies *prometheus.HistogramVec
 	dbMetrics      *metricsStore
+}
+
+func (m queryMetricsStore) Ping(ctx context.Context) (time.Duration, error) {
+	start := time.Now()
+	duration, err := m.s.Ping(ctx)
+	m.queryLatencies.WithLabelValues("Ping").Observe(time.Since(start).Seconds())
+	return duration, err
+}
+
+func (m queryMetricsStore) InTx(f func(database.Store) error, options *pgx.TxOptions) error {
+	return m.dbMetrics.InTx(f, options)
+}
+
+func (m queryMetricsStore) Close() error {
+	return m.dbMetrics.Close()
 }
 
 func (m queryMetricsStore) AllCompetitiveRoutes(ctx context.Context) ([]database.CompetitiveRoute, error) {

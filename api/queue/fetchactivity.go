@@ -12,6 +12,7 @@ import (
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/internal/hugeldate"
 	"github.com/Emyrk/strava/strava"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/vgarvardt/gue/v5"
 )
 
@@ -120,7 +121,7 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 	if err == nil {
 		// We already fetched this today. Only re-fetch if it's a manual fetch
 		// or a re-download.
-		if !(args.Source == database.ActivityDetailSourceManual || args.Source == database.ActivityDetailSourceZeroSegmentRefetch) && time.Since(act.UpdatedAt) < time.Hour*24 {
+		if !(args.Source == database.ActivityDetailSourceManual || args.Source == database.ActivityDetailSourceZeroSegmentRefetch) && time.Since(act.UpdatedAt.Time) < time.Hour*24 {
 			return nil
 		}
 	}
@@ -180,8 +181,8 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 			ActivityType:       activity.Type,
 			SportType:          activity.SportType,
 			WorkoutType:        activity.WorkoutType,
-			StartDate:          activity.StartDate,
-			StartDateLocal:     activity.StartDateLocal,
+			StartDate:          database.Timestamptz(activity.StartDate),
+			StartDateLocal:     database.Timestamptz(activity.StartDateLocal),
 			Timezone:           activity.Timezone,
 			UtcOffset:          activity.UtcOffset,
 			AchievementCount:   activity.AchievementCount,
@@ -262,18 +263,18 @@ func (m *Manager) fetchActivity(ctx context.Context, j *gue.Job) error {
 				Name:           effort.Name,
 				ElapsedTime:    effort.ElapsedTime,
 				MovingTime:     effort.MovingTime,
-				StartDate:      effort.StartDate,
-				StartDateLocal: effort.StartDateLocal,
+				StartDate:      database.Timestamptz(effort.StartDate),
+				StartDateLocal: database.Timestamptz(effort.StartDateLocal),
 				Distance:       effort.Distance,
 				StartIndex:     effort.StartIndex,
 				EndIndex:       effort.EndIndex,
 				DeviceWatts:    effort.DeviceWatts,
 				AverageWatts:   effort.AverageWatts,
-				KomRank: sql.NullInt32{
+				KomRank: pgtype.Int4{
 					Int32: effort.KomRank,
 					Valid: effort.KomRank != 0,
 				},
-				PrRank: sql.NullInt32{
+				PrRank: pgtype.Int4{
 					Int32: effort.PrRank,
 					Valid: effort.PrRank != 0,
 				},

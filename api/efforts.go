@@ -208,8 +208,8 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 		afterTime = time.Unix(after, 0)
 		activities, err = api.Opts.DB.HugelLeaderboard(ctx, database.HugelLeaderboardParams{
 			AthleteID: -1,
-			Before:    beforeTime,
-			After:     afterTime,
+			Before:    database.Timestamp(beforeTime),
+			After:     database.Timestamp(afterTime),
 		})
 	} else {
 		switch year {
@@ -347,7 +347,7 @@ func convertHugelActivity(activity database.HugelLeaderboardRow) modelsdk.HugelL
 		ActivityDistance:           activity.Distance,
 		ActivityMovingTime:         int64(activity.MovingTime),
 		ActivityElapsedTime:        int64(activity.ElapsedTime),
-		ActivityStartDate:          activity.StartDate,
+		ActivityStartDate:          activity.StartDate.Time,
 		ActivityTotalElevationGain: activity.TotalElevationGain,
 		ActivitySufferScore:        int(activity.SufferScore),
 		ActivityAchievementCount:   int(activity.AchievementCount),

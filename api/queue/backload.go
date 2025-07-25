@@ -106,14 +106,14 @@ func (m *Manager) BackLoadAthleteRoutine(ctx context.Context) {
 			_, dbErr := m.DB.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
 				AthleteID:                  athlete.AthleteLoad.AthleteID,
 				LastBackloadActivityStart:  athlete.AthleteLoad.LastBackloadActivityStart,
-				LastLoadAttempt:            time.Now(),
+				LastLoadAttempt:            database.Timestamptz(time.Now()),
 				LastLoadIncomplete:         false,
 				LastLoadError:              err.Error(),
 				ActivitesLoadedLastAttempt: 0,
 				EarliestActivityID:         athlete.AthleteLoad.EarliestActivityID,
 				EarliestActivity:           athlete.AthleteLoad.EarliestActivity,
 				EarliestActivityDone:       athlete.AthleteLoad.EarliestActivityDone,
-				NextLoadNotBefore:          next.UTC(),
+				NextLoadNotBefore:          database.Timestamptz(next.UTC()),
 			})
 			logger.Error().
 				Int64("athlete_id", athlete.AthleteLogin.AthleteID).
@@ -152,7 +152,7 @@ func (m *Manager) athleteToLoad(ctx context.Context) *database.GetAthleteNeedsLo
 		}
 
 		// If it has been over 24 hours, return it
-		if time.Since(athlete.AthleteLoad.LastLoadAttempt) > time.Hour*24 {
+		if time.Since(athlete.AthleteLoad.LastLoadAttempt.Time) > time.Hour*24 {
 			return &athlete
 		}
 	}
@@ -176,10 +176,10 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 	backloadingHistory := false
 	athleteLoad := athlete.AthleteLoad
 	if !athleteLoad.EarliestActivityDone {
-		params.Before = athleteLoad.EarliestActivity.Add(time.Second * -1)
+		params.Before = athleteLoad.EarliestActivity.Time.Add(time.Second * -1)
 		backloadingHistory = true
 	} else {
-		params.After = athleteLoad.LastBackloadActivityStart
+		params.After = athleteLoad.LastBackloadActivityStart.Time
 	}
 
 	activities, err := cli.GetActivities(ctx, params)
@@ -189,8 +189,8 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 
 	logger.Debug().
 		Int("activities", len(activities)).
-		Time("last_backload", athleteLoad.LastBackloadActivityStart).
-		Int64("last_backload_unix", athleteLoad.LastBackloadActivityStart.Unix()).
+		Time("last_backload", athleteLoad.LastBackloadActivityStart.Time).
+		Int64("last_backload_unix", athleteLoad.LastBackloadActivityStart.Time.Unix()).
 		Time("param_before", params.Before).
 		Time("param_after", params.After).
 		Int("param_page", params.Page).
@@ -203,14 +203,14 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 			AthleteID: athleteLoad.AthleteID,
 			// This did not change
 			LastBackloadActivityStart:  athleteLoad.LastBackloadActivityStart,
-			LastLoadAttempt:            time.Now(),
+			LastLoadAttempt:            database.Timestamptz(time.Now()),
 			LastLoadIncomplete:         false,
 			LastLoadError:              "",
 			ActivitesLoadedLastAttempt: 0,
 			EarliestActivity:           athleteLoad.EarliestActivity,
 			EarliestActivityID:         athleteLoad.EarliestActivityID,
 			EarliestActivityDone:       true,
-			NextLoadNotBefore:          time.Now().Add(time.Minute * 15),
+			NextLoadNotBefore:          database.Timestamptz(time.Now().Add(time.Minute * 15)),
 		})
 		if err != nil {
 			return fmt.Errorf("update athlete load: %w", err)
@@ -241,8 +241,8 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 				ActivityType:       act.Type,
 				SportType:          act.SportType,
 				WorkoutType:        act.WorkoutType,
-				StartDate:          act.StartDate,
-				StartDateLocal:     act.StartDateLocal,
+				StartDate:          database.Timestamptz(act.StartDate),
+				StartDateLocal:     database.Timestamptz(act.StartDateLocal),
 				Timezone:           act.Timezone,
 				UtcOffset:          act.UtcOffset,
 				AchievementCount:   act.AchievementCount,
@@ -285,14 +285,14 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 		}
 		first := activities[len(activities)-1]
 		lastActStart := activities[0].StartDate
-		if athleteLoad.LastBackloadActivityStart.After(lastActStart) {
-			lastActStart = athleteLoad.LastBackloadActivityStart
+		if athleteLoad.LastBackloadActivityStart.Time.After(lastActStart) {
+			lastActStart = athleteLoad.LastBackloadActivityStart.Time
 		}
 
 		params := database.UpsertAthleteLoadParams{
 			AthleteID:                  athleteLoad.AthleteID,
-			LastBackloadActivityStart:  lastActStart,
-			LastLoadAttempt:            time.Now(),
+			LastBackloadActivityStart:  database.Timestamptz(lastActStart),
+			LastLoadAttempt:            database.Timestamptz(time.Now()),
 			LastLoadIncomplete:         true,
 			LastLoadError:              "",
 			ActivitesLoadedLastAttempt: int32(len(activities)),
@@ -300,10 +300,10 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 			EarliestActivity:           athleteLoad.EarliestActivity,
 			EarliestActivityDone:       athleteLoad.EarliestActivityDone,
 			// When we are not done, do not prevent loading more.
-			NextLoadNotBefore: time.Now(),
+			NextLoadNotBefore: database.Timestamptz(time.Now()),
 		}
 		if backloadingHistory {
-			params.EarliestActivity = first.StartDate
+			params.EarliestActivity = database.Timestamptz(first.StartDate)
 			params.EarliestActivityID = first.ID
 			params.EarliestActivityDone = false
 		}

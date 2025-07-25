@@ -178,6 +178,10 @@ func serverCmd() *cobra.Command {
 			}
 			defer riverManager.Close(ctx)
 			srv.RiverManager = riverManager
+			err = riverManager.Attach(ctx, srv.Handler)
+			if err != nil {
+				return fmt.Errorf("attach river manager ui: %w", err)
+			}
 
 			hsrv := &http.Server{
 				Addr:    fmt.Sprintf("0.0.0.0:%d", port),

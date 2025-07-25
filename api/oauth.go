@@ -58,7 +58,7 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			ProviderID:        api.OAuthConfig.ClientID,
 			OauthAccessToken:  state.Token.AccessToken,
 			OauthRefreshToken: state.Token.RefreshToken,
-			OauthExpiry:       state.Token.Expiry,
+			OauthExpiry:       database.Timestamptz(state.Token.Expiry),
 			OauthTokenType:    state.Token.TokenType,
 		})
 		if err != nil {
@@ -75,8 +75,8 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 
 		_, err = store.UpsertAthlete(ctx, database.UpsertAthleteParams{
 			ID:                    athlete.ID,
-			CreatedAt:             athlete.CreatedAt,
-			UpdatedAt:             athlete.UpdatedAt,
+			CreatedAt:             database.Timestamptz(athlete.CreatedAt),
+			UpdatedAt:             database.Timestamptz(athlete.UpdatedAt),
 			Summit:                athlete.Summit || athlete.Premium,
 			Username:              athlete.Username,
 			Firstname:             athlete.Firstname,
@@ -105,14 +105,14 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			// No load means we need to insert one
 			_, err = store.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
 				AthleteID:                  athlete.ID,
-				LastBackloadActivityStart:  time.Time{},
-				LastLoadAttempt:            time.Time{},
+				LastBackloadActivityStart:  database.Timestamptz(time.Time{}),
+				LastLoadAttempt:            database.Timestamptz(time.Time{}),
 				LastLoadIncomplete:         false,
 				LastLoadError:              "",
 				ActivitesLoadedLastAttempt: 0,
-				NextLoadNotBefore:          time.Now().Add(time.Hour * -1),
+				NextLoadNotBefore:          database.Timestamptz(time.Now().Add(time.Hour * -1)),
 				// Start from the future
-				EarliestActivity:     time.Now().Add(time.Hour * 360),
+				EarliestActivity:     database.Timestamptz(time.Now().Add(time.Hour * 360)),
 				EarliestActivityDone: false,
 			})
 			if err != nil {

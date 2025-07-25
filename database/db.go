@@ -39,11 +39,20 @@ type sqlQuerier struct {
 	db  DBTX
 }
 
+func PoolConfig(dbURL string) (*pgxpool.Config, error) {
+	cfg, err := pgxpool.ParseConfig(dbURL)
+	if err != nil {
+		return nil, fmt.Errorf("parse postgres db url: %w", err)
+	}
+
+	return cfg, nil
+}
+
 func NewPostgresDB(ctx context.Context, logger zerolog.Logger, dbURL string) (Store, error) {
 	logger = logger.With().Str("db_url", dbURL).Logger()
 	logger.Info().Msg("connecting to postgres database")
 
-	cfg, err := pgxpool.ParseConfig(dbURL)
+	cfg, err := PoolConfig(dbURL)
 	if err != nil {
 		return nil, fmt.Errorf("parse postgres db url: %w", err)
 	}

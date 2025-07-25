@@ -13,6 +13,7 @@ import (
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/internal/hugeldate"
 	"github.com/Emyrk/strava/strava"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/riverqueue/river"
 )
 
@@ -64,6 +65,8 @@ type FetchActivityWorker struct {
 func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActivityArgs]) error {
 	now := time.Now().In(hugeldate.CentralTimeZone)
 	logger := jobLogFields(w.mgr.logger, job)
+	logger = logger.With().Str("river", "true").Logger()
+	logger.Info().Msg("WORKING!")
 
 	args := job.Args
 	if args.Source == "" {
@@ -121,7 +124,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 		if !(args.Source == database.ActivityDetailSourceManual || args.Source == database.ActivityDetailSourceZeroSegmentRefetch) {
 			// Manual and zero segment refetches are always allowed to refetch.
 			// Others are aborted if the activity was updated in the last 24 hours.
-			if time.Since(act.UpdatedAt) < time.Hour*24 {
+			if time.Since(act.UpdatedAt.Time) < time.Hour*24 {
 				return nil
 			}
 		}
@@ -215,8 +218,8 @@ func (w *FetchActivityWorker) insert(ctx context.Context, activity strava.Detail
 			ActivityType:       activity.Type,
 			SportType:          activity.SportType,
 			WorkoutType:        activity.WorkoutType,
-			StartDate:          activity.StartDate,
-			StartDateLocal:     activity.StartDateLocal,
+			StartDate:          database.Timestamptz(activity.StartDate),
+			StartDateLocal:     database.Timestamptz(activity.StartDateLocal),
 			Timezone:           activity.Timezone,
 			UtcOffset:          activity.UtcOffset,
 			AchievementCount:   activity.AchievementCount,
@@ -297,18 +300,18 @@ func (w *FetchActivityWorker) insert(ctx context.Context, activity strava.Detail
 				Name:           effort.Name,
 				ElapsedTime:    effort.ElapsedTime,
 				MovingTime:     effort.MovingTime,
-				StartDate:      effort.StartDate,
-				StartDateLocal: effort.StartDateLocal,
+				StartDate:      database.Timestamptz(effort.StartDate),
+				StartDateLocal: database.Timestamptz(effort.StartDateLocal),
 				Distance:       effort.Distance,
 				StartIndex:     effort.StartIndex,
 				EndIndex:       effort.EndIndex,
 				DeviceWatts:    effort.DeviceWatts,
 				AverageWatts:   effort.AverageWatts,
-				KomRank: sql.NullInt32{
+				KomRank: pgtype.Int4{
 					Int32: effort.KomRank,
 					Valid: effort.KomRank != 0,
 				},
-				PrRank: sql.NullInt32{
+				PrRank: pgtype.Int4{
 					Int32: effort.PrRank,
 					Valid: effort.PrRank != 0,
 				},

@@ -44,7 +44,7 @@ type Manager struct {
 }
 
 func New(ctx context.Context, opts Options) (*Manager, error) {
-	cfg, err := pgxpool.ParseConfig(opts.DBURL)
+	cfg, err := database.PoolConfig(opts.DBURL)
 	if err != nil {
 		return nil, fmt.Errorf("parse postgres db url: %w", err)
 	}
@@ -69,7 +69,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		CancelledJobRetentionPeriod: time.Hour * 24 * 7,
 		CompletedJobRetentionPeriod: time.Hour * 24,
 		DiscardedJobRetentionPeriod: time.Hour * 24 * 30,
-		Logger:                      slog.New(slogzerolog.Option{Level: slog.LevelDebug, Logger: &opts.Logger}.NewZerologHandler()),
+		Logger:                      slog.New(slogzerolog.Option{Level: slog.LevelInfo, Logger: &opts.Logger}.NewZerologHandler()),
 	}).WithDefaults())
 	if err != nil {
 		return nil, fmt.Errorf("new river: %w", err)
@@ -112,6 +112,7 @@ func (m *Manager) Attach(ctx context.Context, r chi.Router) error {
 		JobListHideArgsByDefault: false,
 		LiveFS:                   false,
 		Logger:                   slog.New(slogzerolog.Option{Level: slog.LevelInfo, Logger: &m.logger}.NewZerologHandler()),
+		Prefix:                   "/river",
 	}
 
 	srv, err := riverui.NewServer(opts)
