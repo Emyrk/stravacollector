@@ -17,7 +17,7 @@ import (
 	"github.com/riverqueue/river"
 )
 
-func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, hugelPotential bool, onHugelDates bool, priority int, opts ...func(j *river.InsertOpts)) error {
+func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, hugelPotential bool, onHugelDates bool, priority int, opts ...func(j *river.InsertOpts)) (bool, error) {
 	iopts := &river.InsertOpts{
 		Priority: priority,
 	}
@@ -25,7 +25,7 @@ func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.Acti
 		opt(iopts)
 	}
 
-	_, err := m.cli.Insert(ctx, FetchActivityArgs{
+	fi, err := m.cli.Insert(ctx, FetchActivityArgs{
 		ActivityID:     activityID,
 		AthleteID:      athleteID,
 		Source:         source,
@@ -33,7 +33,11 @@ func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.Acti
 		OnHugelDates:   onHugelDates,
 	}, iopts)
 
-	return err
+	if err == nil && fi != nil {
+		return !fi.UniqueSkippedAsDuplicate, nil
+	}
+
+	return false, err
 }
 
 type FetchActivityArgs struct {
@@ -50,9 +54,10 @@ type FetchActivityArgs struct {
 func (FetchActivityArgs) Kind() string { return "fetch_activity" }
 func (FetchActivityArgs) InsertOpts() river.InsertOpts {
 	return river.InsertOpts{
-		Queue: "riverStravaQueue",
+		Queue: riverStravaQueue,
 		UniqueOpts: river.UniqueOpts{
-			ByArgs: true,
+			ByArgs:   true,
+			ByPeriod: time.Minute * 5,
 		},
 	}
 }
@@ -66,7 +71,6 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 	now := time.Now().In(hugeldate.CentralTimeZone)
 	logger := jobLogFields(w.mgr.logger, job)
 	logger = logger.With().Str("river", "true").Logger()
-	logger.Info().Msg("WORKING!")
 
 	args := job.Args
 	if args.Source == "" {
@@ -111,7 +115,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 	athlete, err := w.mgr.db.GetAthleteLogin(ctx, args.AthleteID)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Error().Msg("athlete not found, job abandoned")
-		return nil
+		return river.RecordOutput(ctx, "athlete not found, job abandoned")
 	}
 	if err != nil {
 		return err
@@ -125,7 +129,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			// Manual and zero segment refetches are always allowed to refetch.
 			// Others are aborted if the activity was updated in the last 24 hours.
 			if time.Since(act.UpdatedAt.Time) < time.Hour*24 {
-				return nil
+				return river.RecordOutput(ctx, "activity already fetched, skipping")
 			}
 		}
 	}
@@ -154,7 +158,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			}
 
 			_, _ = w.mgr.db.InsertFailedJob(ctx, string(jobData))
-			return nil
+			return river.RecordOutput(ctx, fmt.Sprintf("failed to fetch: %+v", se))
 		}
 		return err
 	}
@@ -177,7 +181,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			if summary.DownloadCount == 0 {
 				// If 0 segment efforts, and has never been redownloaded. Retry in 1hr.
 				// This might be correct, but we should check again.
-				err := w.mgr.EnqueueFetchActivity(ctx, database.ActivityDetailSourceZeroSegmentRefetch, args.AthleteID, args.ActivityID, args.HugelPotential, args.OnHugelDates, job.Priority, func(opt *river.InsertOpts) {
+				_, err := w.mgr.EnqueueFetchActivity(ctx, database.ActivityDetailSourceZeroSegmentRefetch, args.AthleteID, args.ActivityID, args.HugelPotential, args.OnHugelDates, job.Priority, func(opt *river.InsertOpts) {
 					opt.ScheduledAt = time.Now().Add(time.Hour * 2)
 				})
 				if err != nil {
@@ -190,7 +194,11 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			}
 		}
 	}
-	return nil
+
+	return river.RecordOutput(ctx, map[string]any{
+		"segments": len(activity.SegmentEfforts),
+		"link":     fmt.Sprintf("https://www.strava.com/activities/%d", activity.ID),
+	})
 }
 
 func (w *FetchActivityWorker) insert(ctx context.Context, activity strava.DetailedActivity, athlete database.AthleteLogin, args FetchActivityArgs) error {

@@ -284,7 +284,7 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 	//	return
 	//}
 
-	err = api.RiverManager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, athleteID, actID, true, true, river.PriorityDefault)
+	unique, err := api.RiverManager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, athleteID, actID, true, true, river.PriorityDefault)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
 			Message: "Enqueue fetch",
@@ -295,6 +295,7 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 
 	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.Response{
 		Message: fmt.Sprintf("Enqueued %d", actID),
+		Detail:  fmt.Sprintf("unique: %t", unique),
 	})
 }
 
