@@ -141,11 +141,6 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 		if se := strava.IsAPIError(err); se != nil && se.Response.StatusCode != http.StatusTooManyRequests {
 			// Kill the job, since we can't fetch this activity due to some other error.
 			// Insert the error to review later.
-		}
-
-		if se := strava.IsAPIError(err); se != nil && se.Response.StatusCode != http.StatusTooManyRequests {
-			// Kill the job, since we can't fetch this activity due to some other error.
-			// Insert the error to review later.
 			jobData, _ := json.Marshal(failedJob[FetchActivityArgs]{
 				Job:   job,
 				Args:  args,
@@ -155,7 +150,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			// Insert a failed job for debugging if not expected.
 			if se.Response.StatusCode == http.StatusNotFound {
 				// No activity? Just drop the job, nothing to do.
-				return nil
+				return river.RecordOutput(ctx, fmt.Sprintf("activity not found: https://www.strava.com/activities/%d", args.ActivityID))
 			}
 
 			_, _ = w.mgr.db.InsertFailedJob(ctx, string(jobData))
