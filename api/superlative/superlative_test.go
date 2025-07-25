@@ -34,7 +34,7 @@ func TestList(t *testing.T) {
 		}
 
 		list := superlative.Parse(activities)
-		require.Equal(t, list.EarliestStart, entry(1, activities[0].StartDate))
+		require.Equal(t, list.EarliestStart, entry(1, activities[0].StartDate.Time))
 		require.Equal(t, list.MostStoppage, entry(1, int64(1200)))
 		require.Equal(t, list.LeastStoppage, entry(1, int64(1200)))
 		require.Equal(t, list.MostAverageWatts, entry(1, activities[0].AverageWatts))
@@ -80,7 +80,7 @@ func TestList(t *testing.T) {
 		}
 
 		list := superlative.Parse(activities)
-		require.Equal(t, list.EarliestStart, entry(2, activities[1].StartDate))
+		require.Equal(t, list.EarliestStart, entry(2, activities[1].StartDate.Time))
 		require.Equal(t, list.MostStoppage, entry(1, int64(1200)))
 		require.Equal(t, list.LeastStoppage, entry(2, int64(1000)))
 		require.Equal(t, list.MostAverageWatts, entry(2, activities[1].AverageWatts))
