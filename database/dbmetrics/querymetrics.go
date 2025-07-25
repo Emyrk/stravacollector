@@ -2,11 +2,11 @@ package dbmetrics
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/Emyrk/strava/database"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 )
@@ -49,8 +49,12 @@ func (m queryMetricsStore) Ping(ctx context.Context) (time.Duration, error) {
 	return duration, err
 }
 
-func (m queryMetricsStore) InTx(f func(database.Store) error, options *sql.TxOptions) error {
+func (m queryMetricsStore) InTx(f func(database.Store) error, options *pgx.TxOptions) error {
 	return m.dbMetrics.InTx(f, options)
+}
+
+func (m queryMetricsStore) Close() error {
+	return m.dbMetrics.Close()
 }
 
 func (m queryMetricsStore) AllCompetitiveRoutes(ctx context.Context) ([]database.CompetitiveRoute, error) {

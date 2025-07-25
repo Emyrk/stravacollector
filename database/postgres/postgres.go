@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"math/rand"
@@ -11,7 +12,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Emyrk/strava/database"
 	"github.com/cenkalti/backoff"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/moby/moby/pkg/namesgenerator"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
@@ -129,20 +132,25 @@ func Open() (string, func(), error) {
 	// of any useful context.
 	var retryErr error
 	err = pool.Retry(func() error {
-		db, err := sql.Open("postgres", dbURL)
+		cfg, err := database.PoolConfig(dbURL)
+		if err != nil {
+			return fmt.Errorf("parse postgres db url: %w", err)
+		}
+
+		sqlpool, err := pgxpool.NewWithConfig(context.Background(), cfg)
 		if err != nil {
 			retryErr = xerrors.Errorf("open postgres: %w", err)
 			return retryErr
 		}
-		defer db.Close()
+		defer sqlpool.Close()
 
-		err = db.Ping()
+		err = sqlpool.Ping(context.Background())
 		if err != nil {
 			retryErr = xerrors.Errorf("ping postgres: %w", err)
 			return retryErr
 		}
 
-		err = migrations.Up(db)
+		err = migrations.Up(sqlpool)
 		if err != nil {
 			retryErr = xerrors.Errorf("migrate db: %w", err)
 			// Only try to migrate once.

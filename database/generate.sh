@@ -21,7 +21,7 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 	sqlc generate
 
 	first=true
-	for fi in queries/*.sql.go; do
+	for fi in genqueries/*.sql.go; do
 		# Find the last line from the imports section and add 1. We have to
 		# disable pipefail temporarily to avoid ERRPIPE errors when piping into
 		# `head -n1`.
@@ -42,11 +42,12 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 	done
 
 	# Move the files we want.
-	mv queries/querier.go .
-	mv queries/models.go .
+	mv genqueries/querier.go .
+	mv genqueries/models.go .
 
 	# Remove temporary go files.
-	rm -f queries/*.go
+	rm -f genqueries/*.go
+	rm -r genqueries
 
 	# Fix struct/interface names.
 	gofmt -w -r 'Querier -> sqlcQuerier' -- *.go

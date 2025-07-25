@@ -7,7 +7,7 @@ func (a *AthleteLogin) OAuthToken() *oauth2.Token {
 		AccessToken:  a.OauthAccessToken,
 		TokenType:    a.OauthTokenType,
 		RefreshToken: a.OauthRefreshToken,
-		Expiry:       a.OauthExpiry,
+		Expiry:       a.OauthExpiry.Time,
 	}
 }
 

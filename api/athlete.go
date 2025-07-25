@@ -7,10 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/vgarvardt/gue/v5"
-
 	"github.com/Emyrk/strava/database"
 	"github.com/go-chi/chi/v5"
+	"github.com/riverqueue/river"
 
 	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/httpmw"
@@ -50,7 +49,7 @@ func (api *API) athlete(rw http.ResponseWriter, r *http.Request) {
 		Sex:                  athlete.Sex,
 		ProfilePicLink:       athlete.ProfilePicLink,
 		ProfilePicLinkMedium: athlete.ProfilePicLinkMedium,
-		UpdatedAt:            athlete.UpdatedAt,
+		UpdatedAt:            athlete.UpdatedAt.Time,
 		HugelCount:           int(row.HugelCount),
 	})
 }
@@ -154,17 +153,17 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 			Sex:                  athlete.Sex,
 			ProfilePicLink:       athlete.ProfilePicLink,
 			ProfilePicLinkMedium: athlete.ProfilePicLinkMedium,
-			UpdatedAt:            athlete.UpdatedAt,
+			UpdatedAt:            athlete.UpdatedAt.Time,
 			HugelCount:           int(detailedLoad.HugelCount),
 		},
 		Load: modelsdk.AthleteLoad{
 			AthleteID:                  load.AthleteID,
-			LastBackloadActivityStart:  load.LastBackloadActivityStart,
-			LastLoadAttempt:            load.LastLoadAttempt,
+			LastBackloadActivityStart:  load.LastBackloadActivityStart.Time,
+			LastLoadAttempt:            load.LastLoadAttempt.Time,
 			LastLoadIncomplete:         load.LastLoadIncomplete,
 			LastLoadError:              load.LastLoadError,
 			ActivitesLoadedLastAttempt: load.ActivitesLoadedLastAttempt,
-			EarliestActivity:           load.EarliestActivity,
+			EarliestActivity:           load.EarliestActivity.Time,
 			EarliestActivityID:         load.EarliestActivityID,
 			EarliestActivityDone:       load.EarliestActivityDone,
 		},
@@ -203,7 +202,7 @@ func (api *API) whoAmI(rw http.ResponseWriter, r *http.Request) {
 		Sex:                  athlete.Sex,
 		ProfilePicLink:       athlete.ProfilePicLink,
 		ProfilePicLinkMedium: athlete.ProfilePicLinkMedium,
-		UpdatedAt:            athlete.UpdatedAt,
+		UpdatedAt:            athlete.UpdatedAt.Time,
 		HugelCount:           int(full.HugelCount),
 	})
 }
@@ -246,16 +245,7 @@ func (api *API) missingSegments(rw http.ResponseWriter, r *http.Request) {
 func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 	var (
 		ctx = r.Context()
-		id  = httpmw.AuthenticatedAthleteID(r)
 	)
-
-	// Only steven can do this
-	if id != 2661162 {
-		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
-			Message: "Not authorized",
-		})
-		return
-	}
 
 	athleteID, err := strconv.ParseInt(chi.URLParam(r, "athlete_id"), 10, 64)
 	if err != nil {
@@ -275,8 +265,7 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Highest priority for manual activities.
-	err = api.Manager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, athleteID, actID, true, true, gue.JobPriorityHighest)
+	unique, err := api.RiverManager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, athleteID, actID, true, true, river.PriorityDefault)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
 			Message: "Enqueue fetch",
@@ -287,6 +276,7 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 
 	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.Response{
 		Message: fmt.Sprintf("Enqueued %d", actID),
+		Detail:  fmt.Sprintf("unique: %t", unique),
 	})
 }
 
@@ -303,8 +293,8 @@ func convertActivitySummary(activity database.ActivitySummary) modelsdk.Activity
 		TotalEleGain:   activity.TotalElevationGain,
 		ActivityType:   activity.ActivityType,
 		SportType:      activity.SportType,
-		StartDate:      activity.StartDate,
-		StartDateLocal: activity.StartDateLocal,
+		StartDate:      activity.StartDate.Time,
+		StartDateLocal: activity.StartDateLocal.Time,
 		Timezone:       activity.Timezone,
 	}
 }

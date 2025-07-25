@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"database/sql"
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -13,6 +13,7 @@ import (
 
 	"github.com/Emyrk/strava/database/migrations"
 	"github.com/Emyrk/strava/database/postgres"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const minimumPostgreSQLVersion = 13
@@ -24,12 +25,20 @@ func main() {
 	}
 	defer closeFn()
 
-	db, err := sql.Open("postgres", connection)
+	ctx := context.Background()
+
+	cfg, err := pgxpool.ParseConfig(connection)
 	if err != nil {
-		panic(err)
+
+		panic(fmt.Errorf("parse postgres db url: %w", err))
 	}
 
-	err = migrations.Up(db)
+	pool, err := pgxpool.NewWithConfig(ctx, cfg)
+	if err != nil {
+		panic(fmt.Errorf("connect to postgres: %w", err))
+	}
+
+	err = migrations.Up(pool)
 	if err != nil {
 		panic(err)
 	}

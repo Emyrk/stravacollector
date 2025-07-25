@@ -1,11 +1,11 @@
 package dbmetrics
 
 import (
-	"database/sql"
 	"strconv"
 	"time"
 
 	"github.com/Emyrk/strava/database"
+	"github.com/jackc/pgx/v5"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 )
@@ -39,7 +39,7 @@ func NewDBMetrics(s database.Store, logger zerolog.Logger, reg prometheus.Regist
 	}
 }
 
-func (m metricsStore) InTx(f func(database.Store) error, options *sql.TxOptions) error {
+func (m metricsStore) InTx(f func(database.Store) error, options *pgx.TxOptions) error {
 	start := time.Now()
 	err := m.Store.InTx(f, options)
 	dur := time.Since(start)
