@@ -3,6 +3,7 @@ package river
 import (
 	"context"
 	"fmt"
+	"io"
 	"log/slog"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/riverqueue/river"
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
+	"github.com/riverqueue/river/riverlog"
 	"github.com/riverqueue/river/rivertype"
 	"github.com/riverqueue/rivercontrib/otelriver"
 	"github.com/robfig/cron/v3"
@@ -110,6 +112,9 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			otelriver.NewMiddleware(&otelriver.MiddlewareConfig{
 				MeterProvider: otelMeterProvider,
 			}),
+			riverlog.NewMiddleware(func(w io.Writer) slog.Handler {
+				return slog.NewJSONHandler(w, nil)
+			}, nil),
 		},
 
 		CancelledJobRetentionPeriod: time.Hour * 24 * 7,

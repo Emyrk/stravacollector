@@ -16,6 +16,7 @@ import (
 	"github.com/Emyrk/strava/strava"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/riverqueue/river"
+	"github.com/riverqueue/river/riverlog"
 	"github.com/riverqueue/river/rivertype"
 )
 
@@ -205,6 +206,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 						Int("athlete_id", int(args.AthleteID)).
 						Msg("error re-enqueuing activity with 0 segments")
 				}
+				riverlog.Logger(ctx).Info("Activity had 0 segments, re-enqueued for later fetch")
 			}
 		}
 	}
