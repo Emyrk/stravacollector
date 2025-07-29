@@ -3,6 +3,7 @@ package river
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/riverqueue/river"
@@ -31,7 +32,8 @@ func (m *Manager) EnqueueResume(until time.Time, queue string, opts ...func(j *r
 	}
 
 	fi, err := m.cli.Insert(m.appCtx, ResumeArgs{
-		Queue: queue,
+		Queue:    queue,
+		RandomID: rand.Int(),
 	}, iopts)
 
 	skipped := false
@@ -44,13 +46,19 @@ func (m *Manager) EnqueueResume(until time.Time, queue string, opts ...func(j *r
 
 type ResumeArgs struct {
 	Queue string `json:"queue"`
+	// RandomID is used to prevent dupe hits on scheduled jobs.
+	// The cron jobs will want to be ignored when a dupe is hit.
+	RandomID int `json:"random_id"`
 }
 
 func (ResumeArgs) Kind() string { return "resume" }
 func (ResumeArgs) InsertOpts() river.InsertOpts {
 	return river.InsertOpts{
-		Queue:      riverControlQueue,
-		UniqueOpts: river.UniqueOpts{},
+		Queue: riverControlQueue,
+		UniqueOpts: river.UniqueOpts{
+			ByArgs:   true,
+			ByPeriod: time.Minute * 30,
+		},
 	}
 }
 
