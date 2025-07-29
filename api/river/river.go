@@ -23,8 +23,16 @@ import (
 )
 
 const (
-	riverStravaQueue  = "strava_queue"
-	riverControlQueue = "control_queue"
+	PriorityHighest = 1
+	PriorityHigh    = 2
+	PriorityDefault = 3
+	PriorityLow     = 4
+)
+
+const (
+	riverStravaQueue   = "strava_queue"
+	riverControlQueue  = "control_queue"
+	riverDatabaseQueue = "database_operations_queue"
 )
 
 type Options struct {
@@ -85,6 +93,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			river.QueueDefault: {MaxWorkers: 1},
 			riverStravaQueue:   {MaxWorkers: 1},
 			riverControlQueue:  {MaxWorkers: 1},
+			riverDatabaseQueue: {MaxWorkers: 1},
 		},
 		Workers: workers,
 
@@ -162,6 +171,9 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 		mgr: m,
 	})
 	river.AddWorker[ResumeArgs](workers, &ResumeWorker{
+		mgr: m,
+	})
+	river.AddWorker[UpdateActivityArgs](workers, &UpdateActivityWorker{
 		mgr: m,
 	})
 }
