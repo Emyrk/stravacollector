@@ -22,6 +22,7 @@ import (
 func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, hugelPotential bool, onHugelDates bool, priority int, opts ...func(j *river.InsertOpts)) (bool, error) {
 	iopts := &river.InsertOpts{
 		Priority: priority,
+		Tags:     []string{fmt.Sprintf("%d", athleteID), fmt.Sprintf("%d", activityID)},
 	}
 	for _, opt := range opts {
 		opt(iopts)

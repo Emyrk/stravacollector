@@ -14,9 +14,13 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/riverqueue/river"
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
+	"github.com/riverqueue/river/rivertype"
+	"github.com/riverqueue/rivercontrib/otelriver"
 	"github.com/robfig/cron/v3"
 	"github.com/rs/zerolog"
 	slogzerolog "github.com/samber/slog-zerolog"
+	promotel "go.opentelemetry.io/otel/exporters/prometheus"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"golang.org/x/oauth2"
 	"golang.org/x/sync/errgroup"
 	"riverqueue.com/riverui"
@@ -88,6 +92,12 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		),
 	}
 
+	exporter, err := promotel.New(promotel.WithRegisterer(opts.Registry))
+	if err != nil {
+		return nil, fmt.Errorf("new prometheus exporter: %w", err)
+	}
+	otelMeterProvider := metric.NewMeterProvider(metric.WithReader(exporter))
+
 	riverClient, err := river.NewClient(riverpgxv5.New(pool), (&river.Config{
 		Queues: map[string]river.QueueConfig{
 			river.QueueDefault: {MaxWorkers: 1},
@@ -96,6 +106,11 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			riverDatabaseQueue: {MaxWorkers: 1},
 		},
 		Workers: workers,
+		Middleware: []rivertype.Middleware{
+			otelriver.NewMiddleware(&otelriver.MiddlewareConfig{
+				MeterProvider: otelMeterProvider,
+			}),
+		},
 
 		CancelledJobRetentionPeriod: time.Hour * 24 * 7,
 		CompletedJobRetentionPeriod: time.Hour * 24,
