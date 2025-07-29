@@ -92,6 +92,7 @@ require (
 	github.com/riverqueue/river/riverdriver v0.23.1 // indirect
 	github.com/riverqueue/river/rivershared v0.23.1 // indirect
 	github.com/riverqueue/river/rivertype v0.23.1 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/samber/lo v1.47.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/afero v1.9.3 // indirect

@@ -116,7 +116,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 
 	err := w.mgr.jobStravaCheck(logger, 1, adjustInt, adjustDaily)
 	if err != nil {
-		return river.JobSnooze(time.Minute * 15)
+		return w.mgr.StravaSnooze(ctx)
 	}
 
 	// Only track athletes we have in our database
@@ -145,7 +145,8 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 	cli := strava.NewOAuthClient(w.mgr.oauthCfg.Client(ctx, athlete.OAuthToken()))
 	activity, err := cli.GetActivity(ctx, args.ActivityID, true)
 	if err != nil {
-		if se := strava.IsAPIError(err); se != nil && se.Response.StatusCode != http.StatusTooManyRequests {
+		se := strava.IsAPIError(err)
+		if se != nil && se.Response.StatusCode != http.StatusTooManyRequests {
 			// Kill the job, since we can't fetch this activity due to some other error.
 			// Insert the error to review later.
 			jobData, _ := json.Marshal(failedJob[FetchActivityArgs]{
@@ -163,11 +164,14 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			if se.Response.StatusCode == http.StatusBadGateway && strings.Contains(string(se.Body), "Strava is temporarily unavailable") {
 				// TODO: Pause the queue and awake it later.
 				_ = river.RecordOutput(ctx, "strava is temporarily unavailable, retrying later")
-				return river.JobSnooze(time.Hour)
+				return w.mgr.StravaSnooze(ctx)
 			}
 
 			_, _ = w.mgr.db.InsertFailedJob(ctx, string(jobData))
 			return river.RecordOutput(ctx, fmt.Sprintf("failed to fetch: %+v", se))
+		}
+		if se != nil && se.Response.StatusCode == http.StatusTooManyRequests {
+			return w.mgr.StravaSnooze(ctx)
 		}
 		return err
 	}
