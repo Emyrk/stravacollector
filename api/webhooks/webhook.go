@@ -32,7 +32,7 @@ type ActivityEvents struct {
 	Logger      zerolog.Logger
 	DB          database.Store
 
-	eventQueue chan *WebhookEvent
+	eventQueue chan *Handled[WebhookEvent]
 
 	webhookCount *prometheus.GaugeVec
 
@@ -59,7 +59,7 @@ func NewActivityEvents(logger zerolog.Logger, cfg *oauth2.Config, db database.St
 		Callback:    &callback,
 		Logger:      logger,
 		DB:          db,
-		eventQueue:  make(chan *WebhookEvent, 100),
+		eventQueue:  make(chan *Handled[WebhookEvent], 100),
 		webhookCount: factory.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace:   "strava",
 			Subsystem:   "api_webhooks",
@@ -70,7 +70,7 @@ func NewActivityEvents(logger zerolog.Logger, cfg *oauth2.Config, db database.St
 	}
 }
 
-func (a *ActivityEvents) EventQueue() <-chan *WebhookEvent {
+func (a *ActivityEvents) EventQueue() <-chan *Handled[WebhookEvent] {
 	return a.eventQueue
 }
 
@@ -100,6 +100,23 @@ func (a *ActivityEvents) Setup(ctx context.Context) error {
 func (a *ActivityEvents) Close() {
 }
 
+type Handled[T any] struct {
+	Data T
+
+	once sync.Once
+	done chan struct{}
+}
+
+func (e *Handled[T]) MarkDone() {
+	e.once.Do(func() {
+		close(e.done)
+	})
+}
+
+func (e *Handled[T]) WaitDone() {
+	<-e.done
+}
+
 // WebhookEvent is documented https://developers.strava.com/docs/webhooks/
 type WebhookEvent struct {
 	// AspectType always "create," "update," or "delete."
@@ -114,19 +131,6 @@ type WebhookEvent struct {
 	OwnerID        int64             `json:"owner_id"`
 	SubscriptionID int               `json:"subscription_id"`
 	Updates        map[string]string `json:"updates"`
-
-	once sync.Once
-	done chan struct{}
-}
-
-func (e *WebhookEvent) MarkDone() {
-	e.once.Do(func() {
-		close(e.done)
-	})
-}
-
-func (e *WebhookEvent) WaitDone() {
-	<-e.done
 }
 
 func (a *ActivityEvents) handleWebhook(rw http.ResponseWriter, r *http.Request) {
@@ -149,11 +153,15 @@ func (a *ActivityEvents) handleWebhook(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	event.done = make(chan struct{})
-	a.eventQueue <- &event
+	evt := &Handled[WebhookEvent]{
+		Data: event,
+		done: make(chan struct{}),
+		once: sync.Once{},
+	}
+	a.eventQueue <- evt
 	a.webhookCount.WithLabelValues(event.AspectType).Inc()
 
-	event.WaitDone()
+	evt.WaitDone()
 	_, _ = rw.Write([]byte("Thanks!"))
 }
 

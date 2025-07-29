@@ -244,7 +244,7 @@ func serverCmd() *cobra.Command {
 					Bool("skipped_webhook", skipWebhookSetup).
 					Msgf("Webhook listening to %s", srv.Events.Callback.String())
 				go func() {
-					manager.HandleWebhookEvents(ctx, eq)
+					riverManager.HandleWebhookEvents(ctx, eq)
 				}()
 			}
 			if err != nil {

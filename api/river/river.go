@@ -14,6 +14,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/riverqueue/river"
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
+	"github.com/robfig/cron/v3"
 	"github.com/rs/zerolog"
 	slogzerolog "github.com/samber/slog-zerolog"
 	"golang.org/x/oauth2"
@@ -22,7 +23,16 @@ import (
 )
 
 const (
-	riverStravaQueue = "strava_queue"
+	PriorityHighest = 1
+	PriorityHigh    = 2
+	PriorityDefault = 3
+	PriorityLow     = 4
+)
+
+const (
+	riverStravaQueue   = "strava_queue"
+	riverControlQueue  = "control_queue"
+	riverDatabaseQueue = "database_operations_queue"
 )
 
 type Options struct {
@@ -41,6 +51,7 @@ type Manager struct {
 	oauthCfg *oauth2.Config
 
 	rateLimitLogger *debounce.Debouncer
+	appCtx          context.Context
 }
 
 func New(ctx context.Context, opts Options) (*Manager, error) {
@@ -58,11 +69,31 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	}
 
 	workers := river.NewWorkers()
+	hourly, err := cron.ParseStandard("0 * * * *")
+	if err != nil {
+		return nil, fmt.Errorf("parse cron schedule: %w", err)
+	}
+
+	periodicJobs := []*river.PeriodicJob{
+		river.NewPeriodicJob(
+			// Always resume after some amount of time to prevent the queue from sleeping
+			// forever.
+			hourly,
+			func() (river.JobArgs, *river.InsertOpts) {
+				return ResumeArgs{
+					Queue: riverStravaQueue,
+				}, nil
+			},
+			&river.PeriodicJobOpts{RunOnStart: true, ID: "strava_resume"},
+		),
+	}
 
 	riverClient, err := river.NewClient(riverpgxv5.New(pool), (&river.Config{
 		Queues: map[string]river.QueueConfig{
 			river.QueueDefault: {MaxWorkers: 1},
 			riverStravaQueue:   {MaxWorkers: 1},
+			riverControlQueue:  {MaxWorkers: 1},
+			riverDatabaseQueue: {MaxWorkers: 1},
 		},
 		Workers: workers,
 
@@ -70,6 +101,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		CompletedJobRetentionPeriod: time.Hour * 24,
 		DiscardedJobRetentionPeriod: time.Hour * 24 * 30,
 		Logger:                      slog.New(slogzerolog.Option{Level: slog.LevelInfo, Logger: &opts.Logger}.NewZerologHandler()),
+		PeriodicJobs:                periodicJobs,
 	}).WithDefaults())
 	if err != nil {
 		return nil, fmt.Errorf("new river: %w", err)
@@ -82,6 +114,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		cli:             riverClient,
 		rateLimitLogger: debounce.New(time.Minute * 7),
 		oauthCfg:        opts.OAuthCfg,
+		appCtx:          ctx,
 	}
 
 	m.initWorkers(workers)
@@ -101,6 +134,7 @@ func (m *Manager) Close(ctx context.Context) error {
 
 	grpErr := grp.Wait()
 	m.pool.Close()
+	m.logger.Info().Msgf("River client stopped")
 	return grpErr
 }
 
@@ -136,4 +170,17 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 	river.AddWorker[FetchActivityArgs](workers, &FetchActivityWorker{
 		mgr: m,
 	})
+	river.AddWorker[ResumeArgs](workers, &ResumeWorker{
+		mgr: m,
+	})
+	river.AddWorker[UpdateActivityArgs](workers, &UpdateActivityWorker{
+		mgr: m,
+	})
+}
+
+func (m *Manager) StravaSnooze(ctx context.Context) error {
+	// TODO: Pause the queue until the next interval, not just 15minutes
+	_ = river.RecordOutput(ctx, "hitting strava rate limit, job going to pause for 15 minutes")
+	_ = m.Pause(time.Now().Add(time.Minute*15), riverStravaQueue)
+	return river.JobSnooze(time.Minute * 15)
 }
