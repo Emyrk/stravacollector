@@ -219,6 +219,9 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 	river.AddWorker[RefreshViewsArgs](workers, &RefreshViewsWorker{
 		mgr: m,
 	})
+	river.AddWorker[ReloadSegmentsArgs](workers, &ReloadSegmentsWorker{
+		mgr: m,
+	})
 }
 
 func (m *Manager) StravaSnooze(ctx context.Context) error {
