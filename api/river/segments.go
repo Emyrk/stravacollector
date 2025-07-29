@@ -40,7 +40,7 @@ func (ReloadSegmentsArgs) InsertOpts() river.InsertOpts {
 		Priority: PriorityHighest,
 		UniqueOpts: river.UniqueOpts{
 			ByArgs:   true,
-			ByPeriod: time.Minute * 5,
+			ByPeriod: time.Minute * 45,
 		},
 	}
 }

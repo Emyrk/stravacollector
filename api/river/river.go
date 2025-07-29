@@ -110,7 +110,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			func() (river.JobArgs, *river.InsertOpts) {
 				return ReloadSegmentsArgs{}, nil
 			},
-			&river.PeriodicJobOpts{RunOnStart: false, ID: "reload_segments"},
+			&river.PeriodicJobOpts{RunOnStart: true, ID: "reload_segments"},
 		),
 	}
 
