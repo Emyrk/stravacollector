@@ -19,13 +19,3 @@ sql:
               import: ""
               package: ""
               type: "HugelSegmentEfforts"
-          - column: "segments.start_latlng"
-            go_type:
-              import: ""
-              package: ""
-              type: "Floats"
-          - column: "segments.end_latlng"
-            go_type:
-              import: ""
-              package: ""
-              type: "Floats"

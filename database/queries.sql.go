@@ -2120,8 +2120,8 @@ type UpsertSegmentParams struct {
 	MaximumGrade       float64          `db:"maximum_grade" json:"maximum_grade"`
 	ElevationHigh      float64          `db:"elevation_high" json:"elevation_high"`
 	ElevationLow       float64          `db:"elevation_low" json:"elevation_low"`
-	StartLatlng        Floats           `db:"start_latlng" json:"start_latlng"`
-	EndLatlng          Floats           `db:"end_latlng" json:"end_latlng"`
+	StartLatlng        []float64        `db:"start_latlng" json:"start_latlng"`
+	EndLatlng          []float64        `db:"end_latlng" json:"end_latlng"`
 	ElevationProfile   string           `db:"elevation_profile" json:"elevation_profile"`
 	ClimbCategory      int32            `db:"climb_category" json:"climb_category"`
 	City               string           `db:"city" json:"city"`

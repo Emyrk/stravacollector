@@ -281,16 +281,16 @@ type Map struct {
 }
 
 type Segment struct {
-	ID            int64   `db:"id" json:"id"`
-	Name          string  `db:"name" json:"name"`
-	ActivityType  string  `db:"activity_type" json:"activity_type"`
-	Distance      float64 `db:"distance" json:"distance"`
-	AverageGrade  float64 `db:"average_grade" json:"average_grade"`
-	MaximumGrade  float64 `db:"maximum_grade" json:"maximum_grade"`
-	ElevationHigh float64 `db:"elevation_high" json:"elevation_high"`
-	ElevationLow  float64 `db:"elevation_low" json:"elevation_low"`
-	StartLatlng   Floats  `db:"start_latlng" json:"start_latlng"`
-	EndLatlng     Floats  `db:"end_latlng" json:"end_latlng"`
+	ID            int64     `db:"id" json:"id"`
+	Name          string    `db:"name" json:"name"`
+	ActivityType  string    `db:"activity_type" json:"activity_type"`
+	Distance      float64   `db:"distance" json:"distance"`
+	AverageGrade  float64   `db:"average_grade" json:"average_grade"`
+	MaximumGrade  float64   `db:"maximum_grade" json:"maximum_grade"`
+	ElevationHigh float64   `db:"elevation_high" json:"elevation_high"`
+	ElevationLow  float64   `db:"elevation_low" json:"elevation_low"`
+	StartLatlng   []float64 `db:"start_latlng" json:"start_latlng"`
+	EndLatlng     []float64 `db:"end_latlng" json:"end_latlng"`
 	// A small image of the elevation profile of this segment.
 	ElevationProfile   string           `db:"elevation_profile" json:"elevation_profile"`
 	ClimbCategory      int32            `db:"climb_category" json:"climb_category"`
