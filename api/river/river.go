@@ -80,6 +80,11 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		return nil, fmt.Errorf("parse cron schedule: %w", err)
 	}
 
+	sixly, err := cron.ParseStandard("0 0/6 * * *")
+	if err != nil {
+		return nil, fmt.Errorf("parse cron schedule: %w", err)
+	}
+
 	periodicJobs := []*river.PeriodicJob{
 		river.NewPeriodicJob(
 			// Always resume after some amount of time to prevent the queue from sleeping
@@ -91,6 +96,21 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 				}, nil
 			},
 			&river.PeriodicJobOpts{RunOnStart: true, ID: "strava_resume"},
+		),
+		// TODO: When hugel goes live, this needs to be updated more frequently
+		river.NewPeriodicJob(
+			sixly,
+			func() (river.JobArgs, *river.InsertOpts) {
+				return RefreshViewsArgs{}, nil
+			},
+			&river.PeriodicJobOpts{RunOnStart: false, ID: "refresh_views"},
+		),
+		river.NewPeriodicJob(
+			hourly,
+			func() (river.JobArgs, *river.InsertOpts) {
+				return ReloadSegmentsArgs{}, nil
+			},
+			&river.PeriodicJobOpts{RunOnStart: false, ID: "reload_segments"},
 		),
 	}
 
@@ -194,6 +214,9 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 		mgr: m,
 	})
 	river.AddWorker[UpdateActivityArgs](workers, &UpdateActivityWorker{
+		mgr: m,
+	})
+	river.AddWorker[RefreshViewsArgs](workers, &RefreshViewsWorker{
 		mgr: m,
 	})
 }

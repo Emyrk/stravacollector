@@ -79,7 +79,6 @@ func (*FetchActivityWorker) Middleware(job *rivertype.JobRow) []rivertype.Worker
 func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActivityArgs]) error {
 	now := time.Now().In(hugeldate.CentralTimeZone)
 	logger := jobLogFields(w.mgr.logger, job)
-	logger = logger.With().Str("river", "true").Logger()
 
 	args := job.Args
 	if args.Source == "" {

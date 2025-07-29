@@ -202,14 +202,14 @@ func (m *Manager) Run(ctx context.Context) error {
 	//	m.BackLoadAthleteRoutine(ctx)
 	//}()
 
-	go func() {
-		// TODO: Make this able to scale horizontally
-		m.BackLoadRouteSegments(ctx)
-	}()
+	//go func() {
+	//	// TODO: Make this able to scale horizontally
+	//	m.BackLoadRouteSegments(ctx)
+	//}()
 
-	go func() {
-		m.refreshViews(ctx)
-	}()
+	//go func() {
+	//	m.refreshViews(ctx)
+	//}()
 
 	go func() {
 		select {

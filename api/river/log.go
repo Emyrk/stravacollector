@@ -11,6 +11,7 @@ func jobLogFields[T river.JobArgs](logger zerolog.Logger, j *river.Job[T]) zerol
 		lastAttempt = j.AttemptedAt.String()
 	}
 	return logger.With().
+		Str("job_kind", j.Kind).
 		Int64("job_id", j.ID).
 		Str("queue", j.Queue).
 		Strs("tags", j.Tags).
