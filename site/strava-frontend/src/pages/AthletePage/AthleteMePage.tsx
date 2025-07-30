@@ -78,6 +78,7 @@ import {
   ChevronLeftIcon,
 } from "@chakra-ui/icons";
 import { Maybe } from "../../components/Maybe/Maybe";
+import { ErrorBox } from "../../components/ErrorBox/ErrorBox";
 
 const initialTableState = {
   limit: 10,
@@ -141,6 +142,12 @@ export const AthleteMePage: FC<{}> = ({}) => {
     !lastSyncSummary
   ) {
     return <NotFound />;
+  }
+
+  if (
+    athleteError
+  ) {
+    return <ErrorBox error="Error fetching athlete data." detail={athleteError} />;
   }
 
   return (

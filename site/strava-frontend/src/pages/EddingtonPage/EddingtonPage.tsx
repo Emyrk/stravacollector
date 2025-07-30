@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import { Flex, Text } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
@@ -5,11 +6,11 @@ import { getAthlete, getRoute } from "../../api/rest";
 import { useQuery } from "@tanstack/react-query";
 import { NotFound } from "../404/404";
 import { Loading } from "../../components/Loading/Loading";
-import { AthleteOtherPage } from "./AthleteOtherPage";
 import { useAuthenticated } from "../../contexts/Authenticated";
-import { AthleteMePage } from "./AthleteMePage";
+import { ErrorBox } from "../../components/ErrorBox/ErrorBox";
+import { Eddington } from "./Eddington";
 
-export const AthletePage: FC<{}> = ({}) => {
+export const EddingtonPage: FC<{}> = ({}) => {
   const { athlete_id } = useParams();
   const { authenticatedUser, isLoading } = useAuthenticated();
 
@@ -22,7 +23,9 @@ export const AthletePage: FC<{}> = ({}) => {
     // Or Steven
     authenticatedUser?.athlete_id?.toString() === "2661162"
   ) {
-    return <AthleteMePage />;
+    return <Eddington />;
   }
-  return <AthleteOtherPage />;
+  return <>
+    <ErrorBox error="You are not allowed to view this page." />
+  </>;
 };

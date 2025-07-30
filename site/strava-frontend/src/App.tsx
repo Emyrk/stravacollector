@@ -37,6 +37,7 @@ import { Activity } from "./components/Activity/Activity";
 import { ChallengeRoute } from "./pages/ChallengeRoute/ChallengeRoute";
 import { Footer } from "./components/Footer/Footer";
 import { AthletePage } from "./pages/AthletePage/AthletePage";
+import { EddingtonPage } from "./pages/EddingtonPage/EddingtonPage";
 import { Results } from "./pages/Results/Results";
 
 const queryClient = new QueryClient({
@@ -60,6 +61,7 @@ export const App = () => {
               <Route element={<IncludeNavbar />}>
                 {/* Navbar and statics */}
                 <Route path="/" element={<Landing />} />
+                <Route path="/athlete/:athlete_id/eddington" element={<EddingtonPage />} />
                 <Route path="/athlete/:athlete_id" element={<AthletePage />} />
                 <Route path="/hugelboard/:year" element={<HugelBoard />} />
                 <Route path="/superhugelboard" element={<SuperHugelBoard />} />

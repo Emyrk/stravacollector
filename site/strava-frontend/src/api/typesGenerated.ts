@@ -115,6 +115,15 @@ export interface DetailedSegment {
 }
 
 // From modelsdk/athlete.go
+export interface Eddington {
+    athlete_id: number;
+    miles_histogram: number[];
+    current_eddington: number;
+    last_calculated: string;
+    total_activities: number;
+}
+
+// From modelsdk/athlete.go
 export interface HugelLeaderBoard {
     personal_best?: HugelLeaderBoardActivity;
     superlatives: SuperlativeList;

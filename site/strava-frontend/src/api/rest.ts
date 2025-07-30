@@ -104,6 +104,20 @@ export const getAthlete = async (
   }
 };
 
+export const getAthleteEddington = async (
+  athlete_id: string
+): Promise<TypesGen.Eddington | undefined> => {
+  try {
+    const response = await axios.get<TypesGen.Eddington>(
+      `/api/v1/athlete/${athlete_id}/eddington`,
+      {}
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getHugelSegments = async (): Promise<
   TypesGen.CompetitiveRoutesResponse | undefined
 > => {
