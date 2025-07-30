@@ -26,22 +26,7 @@ type sqlcQuerier interface {
 	GetAthleteLoadDetailed(ctx context.Context, athleteID int64) (GetAthleteLoadDetailedRow, error)
 	GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error)
 	GetAthleteLoginFull(ctx context.Context, athleteID int64) (GetAthleteLoginFullRow, error)
-	// -- name: GetAthleteNeedsLoad :many
-	// SELECT
-	// 	sqlc.embed(athlete_forward_load), sqlc.embed(athlete_logins)
-	// FROM
-	// 	athlete_forward_load
-	// INNER JOIN
-	// 	athlete_logins
-	// 	ON
-	// 		athlete_load.athlete_id = athlete_logins.athlete_id
-	// WHERE
-	// 	athlete_load.next_load_not_before < Now()
-	// ORDER BY
-	// 	-- Athletes with oldest load attempt first.
-	// 	-- Order is [false, true].
-	// 	not last_load_incomplete, earliest_activity_done, last_touched
-	// LIMIT 5;
+	GetAthleteNeedsForwardLoad(ctx context.Context) ([]GetAthleteNeedsForwardLoadRow, error)
 	GetAthleteNeedsLoad(ctx context.Context) ([]GetAthleteNeedsLoadRow, error)
 	GetBestPersonalSegmentEffort(ctx context.Context, arg GetBestPersonalSegmentEffortParams) ([]SegmentEffort, error)
 	GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error)

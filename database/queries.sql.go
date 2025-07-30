@@ -938,8 +938,67 @@ func (q *sqlQuerier) GetAthleteLoginFull(ctx context.Context, athleteID int64) (
 	return i, err
 }
 
-const getAthleteNeedsLoad = `-- name: GetAthleteNeedsLoad :many
+const getAthleteNeedsForwardLoad = `-- name: GetAthleteNeedsForwardLoad :many
+SELECT
+	athlete_forward_load.athlete_id, athlete_forward_load.activity_time_after, athlete_forward_load.last_load_complete, athlete_forward_load.last_touched, athlete_forward_load.next_load_not_before, athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id
+FROM
+	athlete_forward_load
+INNER JOIN
+	athlete_logins
+	ON
+		-- Ignore non-authed athletes
+		athlete_load.athlete_id = athlete_logins.athlete_id
+WHERE
+	Now() > athlete_load.next_load_not_before
+ORDER BY
+	-- Athletes with oldest load attempt first.
+	-- Order is [false, true].
+	last_load_complete, activity_time_after, last_touched
+LIMIT 5
+`
 
+type GetAthleteNeedsForwardLoadRow struct {
+	AthleteForwardLoad AthleteForwardLoad `db:"athlete_forward_load" json:"athlete_forward_load"`
+	AthleteLogin       AthleteLogin       `db:"athlete_login" json:"athlete_login"`
+}
+
+func (q *sqlQuerier) GetAthleteNeedsForwardLoad(ctx context.Context) ([]GetAthleteNeedsForwardLoadRow, error) {
+	rows, err := q.db.Query(ctx, getAthleteNeedsForwardLoad)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAthleteNeedsForwardLoadRow
+	for rows.Next() {
+		var i GetAthleteNeedsForwardLoadRow
+		if err := rows.Scan(
+			&i.AthleteForwardLoad.AthleteID,
+			&i.AthleteForwardLoad.ActivityTimeAfter,
+			&i.AthleteForwardLoad.LastLoadComplete,
+			&i.AthleteForwardLoad.LastTouched,
+			&i.AthleteForwardLoad.NextLoadNotBefore,
+			&i.AthleteLogin.AthleteID,
+			&i.AthleteLogin.Summit,
+			&i.AthleteLogin.ProviderID,
+			&i.AthleteLogin.CreatedAt,
+			&i.AthleteLogin.UpdatedAt,
+			&i.AthleteLogin.OauthAccessToken,
+			&i.AthleteLogin.OauthRefreshToken,
+			&i.AthleteLogin.OauthExpiry,
+			&i.AthleteLogin.OauthTokenType,
+			&i.AthleteLogin.ID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAthleteNeedsLoad = `-- name: GetAthleteNeedsLoad :many
 SELECT
     athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id, athlete_load.next_load_not_before, athlete_load.created_at, athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id
 FROM
@@ -962,32 +1021,6 @@ type GetAthleteNeedsLoadRow struct {
 	AthleteLogin AthleteLogin `db:"athlete_login" json:"athlete_login"`
 }
 
-// -- name: GetAthleteNeedsLoad :many
-// SELECT
-//
-//	sqlc.embed(athlete_forward_load), sqlc.embed(athlete_logins)
-//
-// FROM
-//
-//	athlete_forward_load
-//
-// INNER JOIN
-//
-//	athlete_logins
-//	ON
-//		athlete_load.athlete_id = athlete_logins.athlete_id
-//
-// WHERE
-//
-//	athlete_load.next_load_not_before < Now()
-//
-// ORDER BY
-//
-//	-- Athletes with oldest load attempt first.
-//	-- Order is [false, true].
-//	not last_load_incomplete, earliest_activity_done, last_touched
-//
-// LIMIT 5;
 func (q *sqlQuerier) GetAthleteNeedsLoad(ctx context.Context) ([]GetAthleteNeedsLoadRow, error) {
 	rows, err := q.db.Query(ctx, getAthleteNeedsLoad)
 	if err != nil {

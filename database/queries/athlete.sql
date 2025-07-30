@@ -92,22 +92,23 @@ DO UPDATE SET
 RETURNING *;
 ;
 
--- -- name: GetAthleteNeedsLoad :many
--- SELECT
--- 	sqlc.embed(athlete_forward_load), sqlc.embed(athlete_logins)
--- FROM
--- 	athlete_forward_load
--- INNER JOIN
--- 	athlete_logins
--- 	ON
--- 		athlete_load.athlete_id = athlete_logins.athlete_id
--- WHERE
--- 	athlete_load.next_load_not_before < Now()
--- ORDER BY
--- 	-- Athletes with oldest load attempt first.
--- 	-- Order is [false, true].
--- 	not last_load_incomplete, earliest_activity_done, last_touched
--- LIMIT 5;
+-- name: GetAthleteNeedsForwardLoad :many
+SELECT
+	sqlc.embed(athlete_forward_load), sqlc.embed(athlete_logins)
+FROM
+	athlete_forward_load
+INNER JOIN
+	athlete_logins
+	ON
+		-- Ignore non-authed athletes
+		athlete_load.athlete_id = athlete_logins.athlete_id
+WHERE
+	Now() > athlete_load.next_load_not_before
+ORDER BY
+	-- Athletes with oldest load attempt first.
+	-- Order is [false, true].
+	last_load_complete, activity_time_after, last_touched
+LIMIT 5;
 
 -- name: GetAthleteNeedsLoad :many
 SELECT

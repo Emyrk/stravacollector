@@ -155,6 +155,13 @@ func (m queryMetricsStore) GetAthleteLoginFull(ctx context.Context, athleteID in
 	return r0, r1
 }
 
+func (m queryMetricsStore) GetAthleteNeedsForwardLoad(ctx context.Context) ([]database.GetAthleteNeedsForwardLoadRow, error) {
+	start := time.Now()
+	r0, r1 := m.s.GetAthleteNeedsForwardLoad(ctx)
+	m.queryLatencies.WithLabelValues("GetAthleteNeedsForwardLoad").Observe(time.Since(start).Seconds())
+	return r0, r1
+}
+
 func (m queryMetricsStore) GetAthleteNeedsLoad(ctx context.Context) ([]database.GetAthleteNeedsLoadRow, error) {
 	start := time.Now()
 	r0, r1 := m.s.GetAthleteNeedsLoad(ctx)
