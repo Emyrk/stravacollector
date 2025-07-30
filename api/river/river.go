@@ -129,6 +129,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			riverStravaQueue:   {MaxWorkers: 1},
 			riverControlQueue:  {MaxWorkers: 1},
 			riverDatabaseQueue: {MaxWorkers: 1},
+			riverBackloadQueue: {MaxWorkers: 1},
 		},
 		Workers: workers,
 		Middleware: []rivertype.Middleware{
@@ -174,7 +175,15 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 func (m *Manager) Close(ctx context.Context) error {
 	grp := &errgroup.Group{}
 	grp.Go(func() error {
-		return m.cli.Stop(ctx)
+		err := m.cli.Stop(ctx)
+		if err != nil {
+			return fmt.Errorf("stop river client: %w", err)
+		}
+		select {
+		case <-ctx.Done():
+		case <-m.cli.Stopped():
+		}
+		return nil
 	})
 
 	grpErr := grp.Wait()

@@ -235,7 +235,8 @@ func (w *ForwardLoadWorker) Work(ctx context.Context, job *river.Job[ForwardLoad
 
 	if len(activities) > 0 {
 		// Keep going until we have no more activities to load.
-		return river.JobSnooze(time.Second * 5)
+		_ = river.RecordOutput(ctx, fmt.Sprintf("athlete not finished, will continue!"))
+		return river.JobSnooze(time.Second * 1)
 	}
 
 	return nil

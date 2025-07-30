@@ -18,7 +18,6 @@ import (
 	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/httpmw"
 	"github.com/Emyrk/strava/api/modelsdk"
-	"github.com/Emyrk/strava/api/queue"
 	"github.com/Emyrk/strava/api/webhooks"
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/database/gencache"
@@ -48,7 +47,6 @@ type API struct {
 	Auth         *auth.Authentication
 	OAuthConfig  *oauth2.Config
 	Events       *webhooks.ActivityEvents
-	Manager      *queue.Manager
 	RiverManager *river.Manager
 
 	SuperHugelBoardCache    *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]

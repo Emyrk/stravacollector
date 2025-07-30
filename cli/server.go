@@ -25,7 +25,6 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/Emyrk/strava/api"
-	"github.com/Emyrk/strava/api/queue"
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/strava/stravalimit"
 )
@@ -150,24 +149,6 @@ func serverCmd() *cobra.Command {
 				return fmt.Errorf("create server: %w", err)
 			}
 
-			manager, err := queue.New(ctx, queue.Options{
-				DBURL:    dbURL,
-				Logger:   logger.With().Str("component", "queue").Logger(),
-				DB:       db,
-				OAuthCfg: srv.OAuthConfig,
-				Registry: registry,
-			})
-			if err != nil {
-				return fmt.Errorf("create queue manager: %w", err)
-			}
-
-			err = manager.Run(ctx)
-			if err != nil {
-				return fmt.Errorf("run queue: %w", err)
-			}
-			defer manager.Close()
-			srv.Manager = manager
-
 			riverManager, err := river.New(ctx, river.Options{
 				DBURL:    dbURL,
 				Logger:   logger.With().Str("component", "river").Logger(),
@@ -270,13 +251,13 @@ func serverCmd() *cobra.Command {
 			logger.Info().Msg("Gracefully shutting down...")
 			cancel()
 
-			tmp, cancel := context.WithTimeout(context.Background(), time.Second*3)
+			tmp, cancel := context.WithTimeout(context.Background(), time.Second*10)
 			defer cancel()
 			err = hsrv.Shutdown(tmp)
 			if err != nil {
 				logger.Error().Err(err).Msg("http server shutdown error")
 			}
-			manager.Close()
+			_ = riverManager.Close(tmp)
 
 			return nil
 		},
