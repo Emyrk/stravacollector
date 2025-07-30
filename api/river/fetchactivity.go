@@ -138,9 +138,14 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 		if !(args.Source == database.ActivityDetailSourceManual || args.Source == database.ActivityDetailSourceZeroSegmentRefetch) {
 			// Manual and zero segment refetches are always allowed to refetch.
 			// Others are aborted if the activity was updated in the last 24 hours.
-			if time.Since(act.UpdatedAt.Time) < time.Hour*24 {
-				return river.RecordOutput(ctx, "activity already fetched, skipping")
-			}
+			return river.RecordOutput(ctx, "activity already fetched, skipping")
+
+			// TODO: Add this back to refetch some activities. Since we have to redownload a lot,
+			// this is good to skip for now.
+			var _ = act
+			//if time.Since(act.UpdatedAt.Time) < time.Hour*24 {
+			//	return river.RecordOutput(ctx, "activity already fetched, skipping")
+			//}
 		}
 	}
 
