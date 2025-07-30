@@ -2,18 +2,19 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Emyrk/strava/api/queue"
 	"github.com/Emyrk/strava/database"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
-	"github.com/vgarvardt/gue/v5"
 )
 
 func redownloadHugels(ctx context.Context, db database.Store, dbURL string, logger zerolog.Logger) error {
 	var allHugels []database.HugelLeaderboardRow
 
+	// TODO: Change to river
 	m, err := queue.New(ctx, queue.Options{
 		DBURL:    dbURL,
 		Logger:   logger,
@@ -53,13 +54,14 @@ func redownloadHugels(ctx context.Context, db database.Store, dbURL string, logg
 	}
 
 	fmt.Println(len(allHugels))
+	var _ = m
 
-	for _, h := range allHugels {
-		err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, h.AthleteID, h.ActivityID, true, true, gue.JobPriorityHighest)
-		if err != nil {
-			return fmt.Errorf("failed to enqueue fetch activity job: %w", err)
-		}
-	}
+	//for _, h := range allHugels {
+	//	err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, h.AthleteID, h.ActivityID, true, true, gue.JobPriorityHighest)
+	//	if err != nil {
+	//		return fmt.Errorf("failed to enqueue fetch activity job: %w", err)
+	//	}
+	//}
 
-	return nil
+	return errors.New("NOT IMPLEMENTED YET")
 }

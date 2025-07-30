@@ -20,22 +20,23 @@ import (
 	"github.com/riverqueue/river/rivertype"
 )
 
-func (m *Manager) EnqueueFetchActivity(ctx context.Context, source database.ActivityDetailSource, athleteID int64, activityID int64, hugelPotential bool, onHugelDates bool, priority int, opts ...func(j *river.InsertOpts)) (bool, error) {
+func (m *Manager) EnqueueFetchActivity(ctx context.Context, args FetchActivityArgs, priority int, opts ...func(j *river.InsertOpts)) (bool, error) {
 	iopts := &river.InsertOpts{
 		Priority: priority,
-		Tags:     []string{fmt.Sprintf("%d", athleteID), fmt.Sprintf("%d", activityID)},
+		Tags:     []string{fmt.Sprintf("%d", args.AthleteID), fmt.Sprintf("%d", args.ActivityID)},
 	}
 	for _, opt := range opts {
 		opt(iopts)
 	}
 
-	fi, err := m.cli.Insert(ctx, FetchActivityArgs{
-		ActivityID:     activityID,
-		AthleteID:      athleteID,
-		Source:         source,
-		HugelPotential: hugelPotential,
-		OnHugelDates:   onHugelDates,
-	}, iopts)
+	if args.Source == "" {
+		return false, fmt.Errorf("source must be set for FetchActivityArgs")
+	}
+	if args.ActivityID == 0 || args.AthleteID == 0 {
+		return false, fmt.Errorf("activity_id and athlete_id must be set for FetchActivityArgs")
+	}
+
+	fi, err := m.cli.Insert(ctx, args, iopts)
 
 	skipped := false
 	if fi != nil {
@@ -165,7 +166,11 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			if se.Response.StatusCode == http.StatusBadGateway && strings.Contains(string(se.Body), "Strava is temporarily unavailable") {
 				// TODO: Pause the queue and awake it later.
 				_ = river.RecordOutput(ctx, "strava is temporarily unavailable, retrying later")
-				return w.mgr.StravaSnooze(ctx)
+				return w.mgr.StravaMaintaince(ctx, "strava is temporarily unavailable")
+			}
+
+			if se.Response.StatusCode == 597 {
+				return w.mgr.StravaMaintaince(ctx, fmt.Sprintf("code=597"))
 			}
 
 			_, _ = w.mgr.db.InsertFailedJob(ctx, string(jobData))
@@ -195,7 +200,13 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			if summary.DownloadCount == 0 {
 				// If 0 segment efforts, and has never been redownloaded. Retry in 1hr.
 				// This might be correct, but we should check again.
-				_, err := w.mgr.EnqueueFetchActivity(ctx, database.ActivityDetailSourceZeroSegmentRefetch, args.AthleteID, args.ActivityID, args.HugelPotential, args.OnHugelDates, job.Priority, func(opt *river.InsertOpts) {
+				_, err := w.mgr.EnqueueFetchActivity(ctx, FetchActivityArgs{
+					Source:         database.ActivityDetailSourceZeroSegmentRefetch,
+					ActivityID:     args.ActivityID,
+					AthleteID:      args.AthleteID,
+					HugelPotential: args.HugelPotential,
+					OnHugelDates:   args.OnHugelDates,
+				}, job.Priority, func(opt *river.InsertOpts) {
 					opt.ScheduledAt = time.Now().Add(time.Hour * 2)
 				})
 				if err != nil {

@@ -771,24 +771,18 @@ func (q *sqlQuerier) GetAthleteFull(ctx context.Context, athleteID int64) (GetAt
 }
 
 const getAthleteLoad = `-- name: GetAthleteLoad :one
-SELECT athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done, earliest_activity_id, next_load_not_before, created_at FROM athlete_load WHERE athlete_id = $1
+SELECT athlete_id, activity_time_after, last_load_complete, last_touched, next_load_not_before FROM athlete_forward_load WHERE athlete_id = $1
 `
 
-func (q *sqlQuerier) GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteLoad, error) {
+func (q *sqlQuerier) GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteForwardLoad, error) {
 	row := q.db.QueryRow(ctx, getAthleteLoad, athleteID)
-	var i AthleteLoad
+	var i AthleteForwardLoad
 	err := row.Scan(
 		&i.AthleteID,
-		&i.LastBackloadActivityStart,
-		&i.LastLoadAttempt,
-		&i.LastLoadIncomplete,
-		&i.LastLoadError,
-		&i.ActivitesLoadedLastAttempt,
-		&i.EarliestActivity,
-		&i.EarliestActivityDone,
-		&i.EarliestActivityID,
+		&i.ActivityTimeAfter,
+		&i.LastLoadComplete,
+		&i.LastTouched,
 		&i.NextLoadNotBefore,
-		&i.CreatedAt,
 	)
 	return i, err
 }
@@ -945,6 +939,7 @@ func (q *sqlQuerier) GetAthleteLoginFull(ctx context.Context, athleteID int64) (
 }
 
 const getAthleteNeedsLoad = `-- name: GetAthleteNeedsLoad :many
+
 SELECT
     athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id, athlete_load.next_load_not_before, athlete_load.created_at, athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id
 FROM
@@ -967,6 +962,32 @@ type GetAthleteNeedsLoadRow struct {
 	AthleteLogin AthleteLogin `db:"athlete_login" json:"athlete_login"`
 }
 
+// -- name: GetAthleteNeedsLoad :many
+// SELECT
+//
+//	sqlc.embed(athlete_forward_load), sqlc.embed(athlete_logins)
+//
+// FROM
+//
+//	athlete_forward_load
+//
+// INNER JOIN
+//
+//	athlete_logins
+//	ON
+//		athlete_load.athlete_id = athlete_logins.athlete_id
+//
+// WHERE
+//
+//	athlete_load.next_load_not_before < Now()
+//
+// ORDER BY
+//
+//	-- Athletes with oldest load attempt first.
+//	-- Order is [false, true].
+//	not last_load_incomplete, earliest_activity_done, last_touched
+//
+// LIMIT 5;
 func (q *sqlQuerier) GetAthleteNeedsLoad(ctx context.Context) ([]GetAthleteNeedsLoadRow, error) {
 	rows, err := q.db.Query(ctx, getAthleteNeedsLoad)
 	if err != nil {
@@ -1110,6 +1131,55 @@ func (q *sqlQuerier) UpsertAthlete(ctx context.Context, arg UpsertAthleteParams)
 		&i.FetchedAt,
 		&i.ProfilePicLink,
 		&i.ProfilePicLinkMedium,
+	)
+	return i, err
+}
+
+const upsertAthleteForwardLoad = `-- name: UpsertAthleteForwardLoad :one
+INSERT INTO
+	athlete_forward_load(
+		athlete_id,
+		activity_time_after,
+		last_load_complete,
+		last_touched,
+		next_load_not_before
+)
+VALUES
+	($1, $2, $3, $4, $5)
+ON CONFLICT
+	(athlete_id)
+	DO UPDATE SET
+		athlete_id = $1,
+		activity_time_after = $2,
+		last_load_complete = $3,
+		last_touched = $4,
+		next_load_not_before = $5
+RETURNING athlete_id, activity_time_after, last_load_complete, last_touched, next_load_not_before
+`
+
+type UpsertAthleteForwardLoadParams struct {
+	AthleteID         int64              `db:"athlete_id" json:"athlete_id"`
+	ActivityTimeAfter pgtype.Timestamptz `db:"activity_time_after" json:"activity_time_after"`
+	LastLoadComplete  bool               `db:"last_load_complete" json:"last_load_complete"`
+	LastTouched       pgtype.Timestamptz `db:"last_touched" json:"last_touched"`
+	NextLoadNotBefore pgtype.Timestamptz `db:"next_load_not_before" json:"next_load_not_before"`
+}
+
+func (q *sqlQuerier) UpsertAthleteForwardLoad(ctx context.Context, arg UpsertAthleteForwardLoadParams) (AthleteForwardLoad, error) {
+	row := q.db.QueryRow(ctx, upsertAthleteForwardLoad,
+		arg.AthleteID,
+		arg.ActivityTimeAfter,
+		arg.LastLoadComplete,
+		arg.LastTouched,
+		arg.NextLoadNotBefore,
+	)
+	var i AthleteForwardLoad
+	err := row.Scan(
+		&i.AthleteID,
+		&i.ActivityTimeAfter,
+		&i.LastLoadComplete,
+		&i.LastTouched,
+		&i.NextLoadNotBefore,
 	)
 	return i, err
 }

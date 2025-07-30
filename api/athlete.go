@@ -7,13 +7,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Emyrk/strava/database"
-	"github.com/go-chi/chi/v5"
-	"github.com/riverqueue/river"
-
 	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/httpmw"
 	"github.com/Emyrk/strava/api/modelsdk"
+	river2 "github.com/Emyrk/strava/api/river"
+	"github.com/Emyrk/strava/database"
+	"github.com/go-chi/chi/v5"
 )
 
 func (api *API) athleteHugels(rw http.ResponseWriter, r *http.Request) {
@@ -265,7 +264,13 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	unique, err := api.RiverManager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, athleteID, actID, true, true, river.PriorityDefault)
+	unique, err := api.RiverManager.EnqueueFetchActivity(ctx, river2.FetchActivityArgs{
+		Source:         database.ActivityDetailSourceManual,
+		ActivityID:     actID,
+		AthleteID:      athleteID,
+		HugelPotential: true,
+		OnHugelDates:   true,
+	}, river2.PriorityHighest)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
 			Message: "Enqueue fetch",

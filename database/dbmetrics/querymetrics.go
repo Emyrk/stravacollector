@@ -127,7 +127,7 @@ func (m queryMetricsStore) GetAthleteFull(ctx context.Context, athleteID int64) 
 	return r0, r1
 }
 
-func (m queryMetricsStore) GetAthleteLoad(ctx context.Context, athleteID int64) (database.AthleteLoad, error) {
+func (m queryMetricsStore) GetAthleteLoad(ctx context.Context, athleteID int64) (database.AthleteForwardLoad, error) {
 	start := time.Now()
 	r0, r1 := m.s.GetAthleteLoad(ctx, athleteID)
 	m.queryLatencies.WithLabelValues("GetAthleteLoad").Observe(time.Since(start).Seconds())
@@ -334,6 +334,13 @@ func (m queryMetricsStore) UpsertAthlete(ctx context.Context, arg database.Upser
 	start := time.Now()
 	r0, r1 := m.s.UpsertAthlete(ctx, arg)
 	m.queryLatencies.WithLabelValues("UpsertAthlete").Observe(time.Since(start).Seconds())
+	return r0, r1
+}
+
+func (m queryMetricsStore) UpsertAthleteForwardLoad(ctx context.Context, arg database.UpsertAthleteForwardLoadParams) (database.AthleteForwardLoad, error) {
+	start := time.Now()
+	r0, r1 := m.s.UpsertAthleteForwardLoad(ctx, arg)
+	m.queryLatencies.WithLabelValues("UpsertAthleteForwardLoad").Observe(time.Since(start).Seconds())
 	return r0, r1
 }
 

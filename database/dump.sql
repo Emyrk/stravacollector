@@ -84,6 +84,20 @@ CREATE TABLE activity_summary (
 
 COMMENT ON TABLE activity_summary IS 'Activity is missing many detailed fields';
 
+CREATE TABLE athlete_forward_load (
+    athlete_id bigint NOT NULL,
+    activity_time_after timestamp with time zone NOT NULL,
+    last_load_complete boolean DEFAULT false NOT NULL,
+    last_touched timestamp with time zone DEFAULT now() NOT NULL,
+    next_load_not_before timestamp with time zone DEFAULT now() NOT NULL
+);
+
+COMMENT ON TABLE athlete_forward_load IS 'Tracks loading athlete activities. Must be an authenticated athlete.';
+
+COMMENT ON COLUMN athlete_forward_load.last_touched IS 'Timestamp this row was last updated.';
+
+COMMENT ON COLUMN athlete_forward_load.next_load_not_before IS 'Timestamp when the next load can be attempted.';
+
 CREATE TABLE athletes (
     id bigint NOT NULL,
     summit boolean NOT NULL,
@@ -438,6 +452,9 @@ ALTER TABLE ONLY activity_detail
 ALTER TABLE ONLY activity_summary
     ADD CONSTRAINT activity_summary_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY athlete_forward_load
+    ADD CONSTRAINT athlete_forward_load_pkey PRIMARY KEY (athlete_id);
+
 ALTER TABLE ONLY athlete_load
     ADD CONSTRAINT athlete_load_pkey PRIMARY KEY (athlete_id);
 
@@ -496,6 +513,9 @@ ALTER TABLE ONLY activity_detail
 
 ALTER TABLE ONLY activity_summary
     ADD CONSTRAINT activity_summary_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY athlete_forward_load
+    ADD CONSTRAINT athlete_forward_load_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY athlete_load
     ADD CONSTRAINT athlete_load_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id) ON DELETE CASCADE;

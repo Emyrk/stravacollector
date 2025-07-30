@@ -36,6 +36,7 @@ const (
 )
 
 const (
+	riverBackloadQueue = "backload_queue"
 	riverStravaQueue   = "strava_queue"
 	riverControlQueue  = "control_queue"
 	riverDatabaseQueue = "database_operations_queue"
@@ -94,7 +95,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			hourly,
 			func() (river.JobArgs, *river.InsertOpts) {
 				return ResumeArgs{
-					Queue: riverStravaQueue,
+					Queues: []string{riverStravaQueue, riverBackloadQueue},
 				}, nil
 			},
 			&river.PeriodicJobOpts{RunOnStart: true, ID: "strava_resume"},
@@ -226,11 +227,23 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 	river.AddWorker[ReloadSegmentsArgs](workers, &ReloadSegmentsWorker{
 		mgr: m,
 	})
+	river.AddWorker[ForwardLoadArgs](workers, &ForwardLoadWorker{
+		mgr: m,
+	})
 }
 
 func (m *Manager) StravaSnooze(ctx context.Context) error {
 	// TODO: Pause the queue until the next interval, not just 15minutes
 	_ = river.RecordOutput(ctx, "hitting strava rate limit, job going to pause for 15 minutes")
 	_ = m.Pause(time.Now().Add(time.Minute*15), riverStravaQueue)
+	_ = m.Pause(time.Now().Add(time.Minute*15), riverBackloadQueue)
+	return river.JobSnooze(time.Minute * 15)
+}
+
+func (m *Manager) StravaMaintaince(ctx context.Context, reason string) error {
+	// TODO: Pause the queue until the next interval, not just 15minutes
+	_ = river.RecordOutput(ctx, fmt.Sprintf("strava is offline, or in maintaince: %s", reason))
+	_ = m.Pause(time.Now().Add(time.Minute*15), riverStravaQueue)
+	_ = m.Pause(time.Now().Add(time.Minute*15), riverBackloadQueue)
 	return river.JobSnooze(time.Minute * 15)
 }

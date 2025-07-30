@@ -22,10 +22,26 @@ type sqlcQuerier interface {
 	GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error)
 	GetAthlete(ctx context.Context, athleteID int64) (Athlete, error)
 	GetAthleteFull(ctx context.Context, athleteID int64) (GetAthleteFullRow, error)
-	GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteLoad, error)
+	GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteForwardLoad, error)
 	GetAthleteLoadDetailed(ctx context.Context, athleteID int64) (GetAthleteLoadDetailedRow, error)
 	GetAthleteLogin(ctx context.Context, athleteID int64) (AthleteLogin, error)
 	GetAthleteLoginFull(ctx context.Context, athleteID int64) (GetAthleteLoginFullRow, error)
+	// -- name: GetAthleteNeedsLoad :many
+	// SELECT
+	// 	sqlc.embed(athlete_forward_load), sqlc.embed(athlete_logins)
+	// FROM
+	// 	athlete_forward_load
+	// INNER JOIN
+	// 	athlete_logins
+	// 	ON
+	// 		athlete_load.athlete_id = athlete_logins.athlete_id
+	// WHERE
+	// 	athlete_load.next_load_not_before < Now()
+	// ORDER BY
+	// 	-- Athletes with oldest load attempt first.
+	// 	-- Order is [false, true].
+	// 	not last_load_incomplete, earliest_activity_done, last_touched
+	// LIMIT 5;
 	GetAthleteNeedsLoad(ctx context.Context) ([]GetAthleteNeedsLoadRow, error)
 	GetBestPersonalSegmentEffort(ctx context.Context, arg GetBestPersonalSegmentEffortParams) ([]SegmentEffort, error)
 	GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error)
@@ -53,6 +69,7 @@ type sqlcQuerier interface {
 	UpsertActivityDetail(ctx context.Context, arg UpsertActivityDetailParams) (ActivityDetail, error)
 	UpsertActivitySummary(ctx context.Context, arg UpsertActivitySummaryParams) (ActivitySummary, error)
 	UpsertAthlete(ctx context.Context, arg UpsertAthleteParams) (Athlete, error)
+	UpsertAthleteForwardLoad(ctx context.Context, arg UpsertAthleteForwardLoadParams) (AthleteForwardLoad, error)
 	UpsertAthleteLoad(ctx context.Context, arg UpsertAthleteLoadParams) (AthleteLoad, error)
 	UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLoginParams) (AthleteLogin, error)
 	UpsertMapData(ctx context.Context, arg UpsertMapDataParams) (Map, error)
