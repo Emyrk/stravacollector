@@ -7,6 +7,7 @@ import (
 	"github.com/Emyrk/strava/database"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 )
@@ -99,6 +100,13 @@ func (m queryMetricsStore) DeleteAthleteLogin(ctx context.Context, athleteID int
 	return r0
 }
 
+func (m queryMetricsStore) DeleteWebhookDump(ctx context.Context, id pgtype.UUID) error {
+	start := time.Now()
+	r0 := m.s.DeleteWebhookDump(ctx, id)
+	m.queryLatencies.WithLabelValues("DeleteWebhookDump").Observe(time.Since(start).Seconds())
+	return r0
+}
+
 func (m queryMetricsStore) EddingtonActivities(ctx context.Context, athleteID int64) ([]database.EddingtonActivitiesRow, error) {
 	start := time.Now()
 	r0, r1 := m.s.EddingtonActivities(ctx, athleteID)
@@ -187,6 +195,13 @@ func (m queryMetricsStore) GetCompetitiveRoute(ctx context.Context, routeName st
 	start := time.Now()
 	r0, r1 := m.s.GetCompetitiveRoute(ctx, routeName)
 	m.queryLatencies.WithLabelValues("GetCompetitiveRoute").Observe(time.Since(start).Seconds())
+	return r0, r1
+}
+
+func (m queryMetricsStore) GetDeleteActivityWebhooks(ctx context.Context) ([]database.WebhookDump, error) {
+	start := time.Now()
+	r0, r1 := m.s.GetDeleteActivityWebhooks(ctx)
+	m.queryLatencies.WithLabelValues("GetDeleteActivityWebhooks").Observe(time.Since(start).Seconds())
 	return r0, r1
 }
 

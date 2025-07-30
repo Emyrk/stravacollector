@@ -43,11 +43,12 @@ const (
 )
 
 type Options struct {
-	DBURL    string
-	Logger   zerolog.Logger
-	DB       database.Store
-	OAuthCfg *oauth2.Config
-	Registry *prometheus.Registry
+	DBURL      string
+	Logger     zerolog.Logger
+	DB         database.Store
+	OAuthCfg   *oauth2.Config
+	Registry   *prometheus.Registry
+	InsertOnly bool
 }
 
 type Manager struct {
@@ -173,8 +174,10 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	m.initMetrics(opts.Registry)
 	m.background(ctx)
 
-	if err := riverClient.Start(ctx); err != nil {
-		return nil, fmt.Errorf("start river client: %w", err)
+	if !opts.InsertOnly {
+		if err := riverClient.Start(ctx); err != nil {
+			return nil, fmt.Errorf("start river client: %w", err)
+		}
 	}
 
 	return m, nil

@@ -6,6 +6,8 @@ package database
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type sqlcQuerier interface {
@@ -18,6 +20,7 @@ type sqlcQuerier interface {
 	BestRouteEfforts(ctx context.Context, expectedSegments []int64) ([]BestRouteEffortsRow, error)
 	DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error)
 	DeleteAthleteLogin(ctx context.Context, athleteID int64) error
+	DeleteWebhookDump(ctx context.Context, id pgtype.UUID) error
 	EddingtonActivities(ctx context.Context, athleteID int64) ([]EddingtonActivitiesRow, error)
 	GetActivityDetail(ctx context.Context, id int64) (ActivityDetail, error)
 	GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error)
@@ -31,6 +34,7 @@ type sqlcQuerier interface {
 	GetAthleteNeedsForwardLoad(ctx context.Context) ([]GetAthleteNeedsForwardLoadRow, error)
 	GetBestPersonalSegmentEffort(ctx context.Context, arg GetBestPersonalSegmentEffortParams) ([]SegmentEffort, error)
 	GetCompetitiveRoute(ctx context.Context, routeName string) (GetCompetitiveRouteRow, error)
+	GetDeleteActivityWebhooks(ctx context.Context) ([]WebhookDump, error)
 	GetSegments(ctx context.Context, segmentIds []int64) ([]GetSegmentsRow, error)
 	// This query needs to be simplified
 	HugelLeaderboard(ctx context.Context, arg HugelLeaderboardParams) ([]HugelLeaderboardRow, error)

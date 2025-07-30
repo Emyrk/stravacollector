@@ -19,20 +19,24 @@ func (m *Manager) HandleWebhookEvents(ctx context.Context, c <-chan *webhooks.Ha
 				continue
 			}
 			event := h.Data
-			switch event.ObjectType {
-			case "activity":
-				m.newActivity(ctx, event)
-			case "athlete":
-				m.newAthlete(ctx, event)
-			default:
-				m.logger.Warn().
-					Str("object_type", event.ObjectType).
-					Msg("Webhook event not supported")
-			}
+			m.HandleWebhookEvent(ctx, event)
 
 			// Tell strava that we have processed the event.
 			h.MarkDone()
 		}
+	}
+}
+
+func (m *Manager) HandleWebhookEvent(ctx context.Context, event webhooks.WebhookEvent) {
+	switch event.ObjectType {
+	case "activity":
+		m.newActivity(ctx, event)
+	case "athlete":
+		m.newAthlete(ctx, event)
+	default:
+		m.logger.Warn().
+			Str("object_type", event.ObjectType).
+			Msg("Webhook event not supported")
 	}
 }
 

@@ -2354,6 +2354,48 @@ func (q *sqlQuerier) UpsertSegmentEffort(ctx context.Context, arg UpsertSegmentE
 	return i, err
 }
 
+const deleteWebhookDump = `-- name: DeleteWebhookDump :exec
+DELETE FROM webhook_dump
+WHERE
+	id = $1
+`
+
+func (q *sqlQuerier) DeleteWebhookDump(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteWebhookDump, id)
+	return err
+}
+
+const getDeleteActivityWebhooks = `-- name: GetDeleteActivityWebhooks :many
+SELECT id, recorded_at, raw FROM webhook_dump
+WHERE
+	raw::json ->> 'aspect_type' = 'delete'
+  	AND raw::json ->> 'object_type' = 'activity'
+  	AND raw::json ->> 'object_id' IN(
+  	    SELECT id::text FROM activity_summary
+	)
+LIMIT 200
+`
+
+func (q *sqlQuerier) GetDeleteActivityWebhooks(ctx context.Context) ([]WebhookDump, error) {
+	rows, err := q.db.Query(ctx, getDeleteActivityWebhooks)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []WebhookDump
+	for rows.Next() {
+		var i WebhookDump
+		if err := rows.Scan(&i.ID, &i.RecordedAt, &i.Raw); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertWebhookDump = `-- name: InsertWebhookDump :one
 INSERT INTO
 	webhook_dump(
