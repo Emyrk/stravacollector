@@ -70,6 +70,10 @@ func (w *EddingtonWorker) Work(ctx context.Context, job *river.Job[EddingtonArgs
 		return fmt.Errorf("upserting athlete eddington: %w", err)
 	}
 
+	_ = river.RecordOutput(ctx, map[string]interface{}{
+		"number": edds.Current(),
+		"total":  len(acts),
+	})
 	return nil
 }
 
