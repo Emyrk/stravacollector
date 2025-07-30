@@ -249,15 +249,23 @@ func serverCmd() *cobra.Command {
 			// CLOSE
 			<-c
 			logger.Info().Msg("Gracefully shutting down...")
-			cancel()
 
 			tmp, cancel := context.WithTimeout(context.Background(), time.Second*10)
 			defer cancel()
+			go func() {
+				select {
+				case <-tmp.Done():
+				case <-time.After(time.Second * 10):
+				}
+				cancel()
+			}()
+
 			err = hsrv.Shutdown(tmp)
 			if err != nil {
 				logger.Error().Err(err).Msg("http server shutdown error")
 			}
 			_ = riverManager.Close(tmp)
+			cancel()
 
 			return nil
 		},
