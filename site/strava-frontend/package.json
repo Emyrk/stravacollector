@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@chakra-ui/anatomy": "^2.3.4",
-    "@chakra-ui/charts": "^3.23.0",
     "@chakra-ui/icons": "^2.0.19",
     "@chakra-ui/react": "^2.6.0",
     "@chakra-ui/theme-tools": "^2.2.6",
