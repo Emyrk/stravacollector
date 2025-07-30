@@ -1,4 +1,4 @@
-FROM node:16.19.1-alpine
+FROM node:20.19.1-alpine
 
 RUN apk --no-cache add make
 
