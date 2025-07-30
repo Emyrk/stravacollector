@@ -101,9 +101,9 @@ INNER JOIN
 	athlete_logins
 	ON
 		-- Ignore non-authed athletes
-		athlete_load.athlete_id = athlete_logins.athlete_id
+		athlete_forward_load.athlete_id = athlete_logins.athlete_id
 WHERE
-	Now() > athlete_load.next_load_not_before
+	Now() > athlete_forward_load.next_load_not_before
 ORDER BY
 	-- Athletes with oldest load attempt first.
 	-- Order is [false, true].
