@@ -59,5 +59,8 @@ func (w *LoadFinderWorker) Work(ctx context.Context, job *river.Job[LoadFinderAr
 			out[fmt.Sprintf("https://www.strava.com/athletes/%d", athlete.AthleteLogin.AthleteID)] = err.Error()
 		}
 	}
+
+	out["quantity"] = fmt.Sprintf("%d athletes included", len(need))
+	_ = river.RecordOutput(ctx, out)
 	return nil
 }
