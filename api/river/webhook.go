@@ -86,6 +86,7 @@ func (m *Manager) newActivity(ctx context.Context, event webhooks.WebhookEvent) 
 	case "update":
 		_, qErr = m.EnqueueUpdateActivity(ctx, event)
 	case "delete":
+		_, qErr = m.EnqueueDeleteActivity(ctx, event)
 		m.logger.Info().
 			Interface("deleted", event.Updates).
 			Msg("'Delete' webhook event to an activity")

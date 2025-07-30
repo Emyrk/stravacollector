@@ -17,7 +17,6 @@ export const Eddington: FC<{}> = ({}) => {
   const { athlete_id } = useParams();
   const { authenticatedUser } = useAuthenticated();
   const [ athlete, setAthlete] = useState<AthleteSummary>();
-  console.log(athlete_id)
 
   const queryKey = ["athlete", athlete_id];
     const {
