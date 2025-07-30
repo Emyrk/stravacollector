@@ -74,6 +74,8 @@ export const SuperlativeCard: FC<{ title: string; value: any }> = ({
     <StaticCard
       opacity={"93%"}
       color={"white"}
+      textAlign={"left"}
+      p={3}
     >
       <Stack>
         <Text fontSize={"1.2em"} fontWeight={800}>
