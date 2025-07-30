@@ -54,7 +54,11 @@ export const SuperlativePopover: FC<SuperlativeProps> = ({
       // closeDelay={200}
   >
     <PopoverTrigger   >
-      <Avatar key={category} src={`/img/superlatives/${src}`} name={category} {...props}/>
+      <Avatar key={category} src={`/img/superlatives/${src}`} name={category} {...props} 
+      // Have some fun with the hover effect
+      transition="transform 0.2s ease"
+      _hover={{ transform: "rotate(5deg) scale(1.15)"}}
+      />
     </PopoverTrigger>
     <PopoverContent background="none" p="0px" m="0px" border="none" boxShadow="none">
       <PopoverArrow />
