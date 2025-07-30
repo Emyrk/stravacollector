@@ -58,6 +58,8 @@ type Manager struct {
 
 	rateLimitLogger *debounce.Debouncer
 	appCtx          context.Context
+
+	managerMetrics
 }
 
 func New(ctx context.Context, opts Options) (*Manager, error) {
@@ -158,6 +160,8 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	}
 
 	m.initWorkers(workers)
+	m.initMetrics(opts.Registry)
+	m.background(ctx)
 
 	if err := riverClient.Start(ctx); err != nil {
 		return nil, fmt.Errorf("start river client: %w", err)

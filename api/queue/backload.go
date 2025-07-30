@@ -272,12 +272,12 @@ func (m *Manager) backloadAthlete(ctx context.Context, athlete database.GetAthle
 
 			// Backload bike rides for more deets
 			if isBikeRide(act.Type) || isBikeRide(act.SportType) {
-				err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID, canBeHugel(act) || canBeHugelLite(act), onHugelDate(act), activityGuePriority(act), func(j *gue.Job) {
-					// Delay by 5minutes.
-					// We do this because sometimes strava loads 0 segments for a ride, and it takes some time
-					// for segments to be populated.
-					j.RunAt = time.Now().Add(time.Minute * 5)
-				})
+				//err = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceBackload, athleteLoad.AthleteID, act.ID, canBeHugel(act) || canBeHugelLite(act), onHugelDate(act), activityGuePriority(act), func(j *gue.Job) {
+				//	// Delay by 5minutes.
+				//	// We do this because sometimes strava loads 0 segments for a ride, and it takes some time
+				//	// for segments to be populated.
+				//	j.RunAt = time.Now().Add(time.Minute * 5)
+				//})
 				if err != nil {
 					return fmt.Errorf("enqueue fetch activity: %w", err)
 				}

@@ -274,10 +274,6 @@ func (m *Manager) workMap() gue.WorkMap {
 			m.Logger.Info().Msg("worker online")
 			return nil
 		},
-		fetchActivityJob:    m.instrumentJob(m.fetchActivity),
-		updateActivityField: m.instrumentJob(m.updateActivity),
-		deleteActivityJob:   m.instrumentJob(m.deleteActivity),
-		updateAthleteJob:    m.instrumentJob(m.updateAthlete),
 	}
 }
 
