@@ -49,9 +49,10 @@ type ForwardLoadArgs struct {
 func (ForwardLoadArgs) Kind() string { return "forward_load" }
 func (a ForwardLoadArgs) InsertOpts() river.InsertOpts {
 	return river.InsertOpts{
-		Tags:     []string{fmt.Sprintf("%d", a.AthleteID)},
-		Queue:    riverBackloadQueue,
-		Priority: PriorityDefault,
+		Tags:        []string{fmt.Sprintf("%d", a.AthleteID)},
+		Queue:       riverBackloadQueue,
+		Priority:    PriorityDefault,
+		MaxAttempts: 5,
 		UniqueOpts: river.UniqueOpts{
 			ByArgs: true,
 		},
@@ -65,6 +66,11 @@ type ForwardLoadWorker struct {
 
 func (*ForwardLoadWorker) Middleware(job *rivertype.JobRow) []rivertype.WorkerMiddleware {
 	return []rivertype.WorkerMiddleware{}
+}
+
+func (w *ForwardLoadWorker) NextRetry(job *river.Job[ForwardLoadArgs]) time.Time {
+	next := (&river.DefaultClientRetryPolicy{}).NextRetry(job.JobRow)
+	return next.Add(time.Second * 60) // Make it a little slower to retry.
 }
 
 func (w *ForwardLoadWorker) Work(ctx context.Context, job *river.Job[ForwardLoadArgs]) error {
@@ -85,6 +91,7 @@ func (w *ForwardLoadWorker) Work(ctx context.Context, job *river.Job[ForwardLoad
 			return nil
 		}
 
+		w.bumpLoad(ctx, job, now.Add(time.Hour*24))
 		return fmt.Errorf("get athlete login: %w", err)
 	}
 
@@ -120,8 +127,11 @@ func (w *ForwardLoadWorker) Work(ctx context.Context, job *river.Job[ForwardLoad
 	activities, err := w.getActivities(ctx, cli, athlogin.AthleteID, initParams)
 	if err != nil {
 		if errors.Is(err, getActivitiesUnauthenticated) {
+			w.bumpLoad(ctx, job, now.Add(time.Hour*24))
 			return nil // User logged out, and stopped.
 		}
+
+		w.bumpLoad(ctx, job, now.Add(time.Hour*7))
 		return err
 	}
 
@@ -132,8 +142,9 @@ func (w *ForwardLoadWorker) Work(ctx context.Context, job *river.Job[ForwardLoad
 			ActivityTimeAfter: database.Timestamptz(initParams.After),
 			LastLoadComplete:  len(activities) == 0,
 			LastTouched:       database.Timestamptz(now),
-			// Just a little bump to let another user go next.
-			NextLoadNotBefore: database.Timestamptz(now.Add(time.Millisecond * 200)),
+			// Just a little bump to let another user go next. This job snoozes to continue
+			// doing work, so we don't need the NextLoadBefore to trigger the job again.
+			NextLoadNotBefore: database.Timestamptz(now.Add(time.Minute * 30)),
 		}
 
 		if len(activities) == 0 {
@@ -230,6 +241,7 @@ func (w *ForwardLoadWorker) Work(ctx context.Context, job *river.Job[ForwardLoad
 		return nil
 	}, nil)
 	if err != nil {
+		w.bumpLoad(ctx, job, now.Add(time.Hour*24))
 		return fmt.Errorf("in tx: %w", err)
 	}
 
@@ -239,7 +251,27 @@ func (w *ForwardLoadWorker) Work(ctx context.Context, job *river.Job[ForwardLoad
 		return river.JobSnooze(time.Second * 1)
 	}
 
+	_ = river.RecordOutput(ctx, "athlete complete")
 	return nil
+}
+
+func (w *ForwardLoadWorker) bumpLoad(ctx context.Context, job *river.Job[ForwardLoadArgs], bump time.Time) {
+	athleteLoad, err := w.mgr.db.GetAthleteLoad(ctx, job.Args.AthleteID)
+	if err != nil {
+		return
+	}
+
+	if athleteLoad.NextLoadNotBefore.Time.After(bump) {
+		return
+	}
+
+	_, _ = w.mgr.db.UpsertAthleteForwardLoad(ctx, database.UpsertAthleteForwardLoadParams{
+		AthleteID:         athleteLoad.AthleteID,
+		ActivityTimeAfter: athleteLoad.ActivityTimeAfter,
+		LastLoadComplete:  athleteLoad.LastLoadComplete,
+		LastTouched:       athleteLoad.LastTouched,
+		NextLoadNotBefore: database.Timestamptz(bump),
+	})
 }
 
 func (w *ForwardLoadWorker) stravaCheck(ctx context.Context, logger zerolog.Logger, now time.Time) error {

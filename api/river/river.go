@@ -115,6 +115,13 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			},
 			&river.PeriodicJobOpts{RunOnStart: true, ID: "reload_segments"},
 		),
+		river.NewPeriodicJob(
+			hourly,
+			func() (river.JobArgs, *river.InsertOpts) {
+				return LoadFinderArgs{}, nil
+			},
+			&river.PeriodicJobOpts{RunOnStart: true},
+		),
 	}
 
 	exporter, err := promotel.New(promotel.WithRegisterer(opts.Registry))
@@ -237,6 +244,9 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 		mgr: m,
 	})
 	river.AddWorker[ForwardLoadArgs](workers, &ForwardLoadWorker{
+		mgr: m,
+	})
+	river.AddWorker[LoadFinderArgs](workers, &LoadFinderWorker{
 		mgr: m,
 	})
 }
