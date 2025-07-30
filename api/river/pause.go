@@ -48,7 +48,7 @@ type ResumeArgs struct {
 	Queues []string `json:"queue"`
 	// RandomID is used to prevent dupe hits on scheduled jobs.
 	// The cron jobs will want to be ignored when a dupe is hit.
-	RandomID int `json:"random_id"`
+	RandomID int `json:"random_id,omitzero"`
 }
 
 func (ResumeArgs) Kind() string { return "resume" }

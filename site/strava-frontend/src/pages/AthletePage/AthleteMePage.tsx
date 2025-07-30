@@ -191,16 +191,16 @@ const AthleteMeTotals: FC<{
   );
   return (
     <Stack spacing={0.5}>
-      <Alert status={load.earliest_activity_done ? "success" : "warning"}>
+      <Alert status={load.last_load_complete ? "success" : "warning"}>
         <AlertIcon />
-        {load.earliest_activity_done
+        {load.last_load_complete
           ? "All historical activities have been loaded!"
           : "Historical activity syncing is paused. Only new activities will be synced."}
         {/* "Not all historical activities have been loaded. Loading starts with the oldest activity, and walks forward in time." */}
-        <br />- Earliest activity synced:
-        {FormatDate(load.earliest_activity)}
-        <br />- Latest activity loaded:
-        {FormatDate(load.last_backload_activity_start)}
+        <br />- Latest activity synced:
+        {FormatDate(load.activity_time_after)}
+        {/* <br />- Latest activity loaded:
+        {FormatDate(load.last_backload_activity_start)} */}
       </Alert>
       <Alert
         status={
@@ -230,7 +230,7 @@ const AthleteMeTotals: FC<{
           </Text>
         </Flex>
       </Alert>
-      {load.last_load_error && (
+      {/* {load.last_load_error && (
         <Alert flexDirection={"column"} status="error">
           <Flex>
             <AlertIcon />
@@ -245,7 +245,7 @@ const AthleteMeTotals: FC<{
             </AlertDescription>
           </Box>
         </Alert>
-      )}
+      )} */}
       {/* <Alert status="success">
         <AlertIcon />
         Data uploaded to the server. Fire on!

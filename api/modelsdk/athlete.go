@@ -32,18 +32,12 @@ type AthleteSyncSummary struct {
 type AthleteLoad struct {
 	AthleteID int64 `json:"athlete_id"`
 	// Timestamp start of the last activity loaded. Future ones are not loaded.
-	LastBackloadActivityStart time.Time `json:"last_backload_activity_start"`
+	ActivityTimeAfter time.Time `json:"activity_time_after"`
 	// Timestamp of the last time the athlete was attempted to be loaded.
 	LastLoadAttempt time.Time `json:"last_load_attempt"`
-	// True if the last load was incomplete and needs more work to catch up.
-	LastLoadIncomplete         bool   `json:"last_load_incomplete"`
-	LastLoadError              string `json:"last_load_error"`
-	ActivitesLoadedLastAttempt int32  `json:"activites_loaded_last_attempt"`
-	// The earliest activity found for the athlete
-	EarliestActivity   time.Time `json:"earliest_activity"`
-	EarliestActivityID int64     `json:"earliest_activity_id"`
-	// Loading backwards is done
-	EarliestActivityDone bool `json:"earliest_activity_done"`
+	// True if the last load was completed no more work is needed to catch up.
+	LastLoadComplete  bool      `json:"last_load_complete"`
+	NextLoadNotBefore time.Time `json:"next_load_not_before"`
 }
 
 type AthleteLogin struct {

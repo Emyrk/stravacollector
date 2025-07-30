@@ -162,13 +162,6 @@ func (m queryMetricsStore) GetAthleteNeedsForwardLoad(ctx context.Context) ([]da
 	return r0, r1
 }
 
-func (m queryMetricsStore) GetAthleteNeedsLoad(ctx context.Context) ([]database.GetAthleteNeedsLoadRow, error) {
-	start := time.Now()
-	r0, r1 := m.s.GetAthleteNeedsLoad(ctx)
-	m.queryLatencies.WithLabelValues("GetAthleteNeedsLoad").Observe(time.Since(start).Seconds())
-	return r0, r1
-}
-
 func (m queryMetricsStore) GetBestPersonalSegmentEffort(ctx context.Context, arg database.GetBestPersonalSegmentEffortParams) ([]database.SegmentEffort, error) {
 	start := time.Now()
 	r0, r1 := m.s.GetBestPersonalSegmentEffort(ctx, arg)
@@ -348,13 +341,6 @@ func (m queryMetricsStore) UpsertAthleteForwardLoad(ctx context.Context, arg dat
 	start := time.Now()
 	r0, r1 := m.s.UpsertAthleteForwardLoad(ctx, arg)
 	m.queryLatencies.WithLabelValues("UpsertAthleteForwardLoad").Observe(time.Since(start).Seconds())
-	return r0, r1
-}
-
-func (m queryMetricsStore) UpsertAthleteLoad(ctx context.Context, arg database.UpsertAthleteLoadParams) (database.AthleteLoad, error) {
-	start := time.Now()
-	r0, r1 := m.s.UpsertAthleteLoad(ctx, arg)
-	m.queryLatencies.WithLabelValues("UpsertAthleteLoad").Observe(time.Since(start).Seconds())
 	return r0, r1
 }
 

@@ -789,7 +789,7 @@ func (q *sqlQuerier) GetAthleteLoad(ctx context.Context, athleteID int64) (Athle
 
 const getAthleteLoadDetailed = `-- name: GetAthleteLoadDetailed :one
 SELECT
-    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id, athlete_load.next_load_not_before, athlete_load.created_at,
+    athlete_forward_load.athlete_id, athlete_forward_load.activity_time_after, athlete_forward_load.last_load_complete, athlete_forward_load.last_touched, athlete_forward_load.next_load_not_before,
     athletes.id, athletes.summit, athletes.username, athletes.firstname, athletes.lastname, athletes.sex, athletes.city, athletes.state, athletes.country, athletes.follow_count, athletes.friend_count, athletes.measurement_preference, athletes.ftp, athletes.weight, athletes.clubs, athletes.created_at, athletes.updated_at, athletes.fetched_at, athletes.profile_pic_link, athletes.profile_pic_link_medium,
 	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = $1 AND LOWER(activity_summary.activity_type) = 'ride') AS summary_count,
     (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = $1 AND activity_detail.id = ANY(
@@ -797,38 +797,32 @@ SELECT
 	) AS detail_count,
 	COALESCE(athlete_hugel_count.count, 0) AS hugel_count
 FROM
-    athlete_load
+	athlete_forward_load
 INNER JOIN
-    athletes ON athletes.id = athlete_load.athlete_id
+    athletes ON athletes.id = athlete_forward_load.athlete_id
 LEFT JOIN
 	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
 WHERE
-		athlete_load.athlete_id = $1
+	athlete_forward_load.athlete_id = $1
 `
 
 type GetAthleteLoadDetailedRow struct {
-	AthleteLoad  AthleteLoad `db:"athlete_load" json:"athlete_load"`
-	Athlete      Athlete     `db:"athlete" json:"athlete"`
-	SummaryCount int64       `db:"summary_count" json:"summary_count"`
-	DetailCount  int64       `db:"detail_count" json:"detail_count"`
-	HugelCount   int64       `db:"hugel_count" json:"hugel_count"`
+	AthleteForwardLoad AthleteForwardLoad `db:"athlete_forward_load" json:"athlete_forward_load"`
+	Athlete            Athlete            `db:"athlete" json:"athlete"`
+	SummaryCount       int64              `db:"summary_count" json:"summary_count"`
+	DetailCount        int64              `db:"detail_count" json:"detail_count"`
+	HugelCount         int64              `db:"hugel_count" json:"hugel_count"`
 }
 
 func (q *sqlQuerier) GetAthleteLoadDetailed(ctx context.Context, athleteID int64) (GetAthleteLoadDetailedRow, error) {
 	row := q.db.QueryRow(ctx, getAthleteLoadDetailed, athleteID)
 	var i GetAthleteLoadDetailedRow
 	err := row.Scan(
-		&i.AthleteLoad.AthleteID,
-		&i.AthleteLoad.LastBackloadActivityStart,
-		&i.AthleteLoad.LastLoadAttempt,
-		&i.AthleteLoad.LastLoadIncomplete,
-		&i.AthleteLoad.LastLoadError,
-		&i.AthleteLoad.ActivitesLoadedLastAttempt,
-		&i.AthleteLoad.EarliestActivity,
-		&i.AthleteLoad.EarliestActivityDone,
-		&i.AthleteLoad.EarliestActivityID,
-		&i.AthleteLoad.NextLoadNotBefore,
-		&i.AthleteLoad.CreatedAt,
+		&i.AthleteForwardLoad.AthleteID,
+		&i.AthleteForwardLoad.ActivityTimeAfter,
+		&i.AthleteForwardLoad.LastLoadComplete,
+		&i.AthleteForwardLoad.LastTouched,
+		&i.AthleteForwardLoad.NextLoadNotBefore,
 		&i.Athlete.ID,
 		&i.Athlete.Summit,
 		&i.Athlete.Username,
@@ -977,71 +971,6 @@ func (q *sqlQuerier) GetAthleteNeedsForwardLoad(ctx context.Context) ([]GetAthle
 			&i.AthleteForwardLoad.LastLoadComplete,
 			&i.AthleteForwardLoad.LastTouched,
 			&i.AthleteForwardLoad.NextLoadNotBefore,
-			&i.AthleteLogin.AthleteID,
-			&i.AthleteLogin.Summit,
-			&i.AthleteLogin.ProviderID,
-			&i.AthleteLogin.CreatedAt,
-			&i.AthleteLogin.UpdatedAt,
-			&i.AthleteLogin.OauthAccessToken,
-			&i.AthleteLogin.OauthRefreshToken,
-			&i.AthleteLogin.OauthExpiry,
-			&i.AthleteLogin.OauthTokenType,
-			&i.AthleteLogin.ID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getAthleteNeedsLoad = `-- name: GetAthleteNeedsLoad :many
-SELECT
-    athlete_load.athlete_id, athlete_load.last_backload_activity_start, athlete_load.last_load_attempt, athlete_load.last_load_incomplete, athlete_load.last_load_error, athlete_load.activites_loaded_last_attempt, athlete_load.earliest_activity, athlete_load.earliest_activity_done, athlete_load.earliest_activity_id, athlete_load.next_load_not_before, athlete_load.created_at, athlete_logins.athlete_id, athlete_logins.summit, athlete_logins.provider_id, athlete_logins.created_at, athlete_logins.updated_at, athlete_logins.oauth_access_token, athlete_logins.oauth_refresh_token, athlete_logins.oauth_expiry, athlete_logins.oauth_token_type, athlete_logins.id
-FROM
-	athlete_load
-INNER JOIN
-	athlete_logins
-ON
-    athlete_load.athlete_id = athlete_logins.athlete_id
-WHERE
-    athlete_load.next_load_not_before < Now()
-ORDER BY
-	-- Athletes with oldest load attempt first.
-	-- Order is [false, true]. 
-	not last_load_incomplete, earliest_activity_done, last_load_attempt
-LIMIT 5
-`
-
-type GetAthleteNeedsLoadRow struct {
-	AthleteLoad  AthleteLoad  `db:"athlete_load" json:"athlete_load"`
-	AthleteLogin AthleteLogin `db:"athlete_login" json:"athlete_login"`
-}
-
-func (q *sqlQuerier) GetAthleteNeedsLoad(ctx context.Context) ([]GetAthleteNeedsLoadRow, error) {
-	rows, err := q.db.Query(ctx, getAthleteNeedsLoad)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetAthleteNeedsLoadRow
-	for rows.Next() {
-		var i GetAthleteNeedsLoadRow
-		if err := rows.Scan(
-			&i.AthleteLoad.AthleteID,
-			&i.AthleteLoad.LastBackloadActivityStart,
-			&i.AthleteLoad.LastLoadAttempt,
-			&i.AthleteLoad.LastLoadIncomplete,
-			&i.AthleteLoad.LastLoadError,
-			&i.AthleteLoad.ActivitesLoadedLastAttempt,
-			&i.AthleteLoad.EarliestActivity,
-			&i.AthleteLoad.EarliestActivityDone,
-			&i.AthleteLoad.EarliestActivityID,
-			&i.AthleteLoad.NextLoadNotBefore,
-			&i.AthleteLoad.CreatedAt,
 			&i.AthleteLogin.AthleteID,
 			&i.AthleteLogin.Summit,
 			&i.AthleteLogin.ProviderID,
@@ -1213,80 +1142,6 @@ func (q *sqlQuerier) UpsertAthleteForwardLoad(ctx context.Context, arg UpsertAth
 		&i.LastLoadComplete,
 		&i.LastTouched,
 		&i.NextLoadNotBefore,
-	)
-	return i, err
-}
-
-const upsertAthleteLoad = `-- name: UpsertAthleteLoad :one
-INSERT INTO
-	athlete_load(
-		athlete_id,
-		last_backload_activity_start,
-	    last_load_attempt,
-		last_load_incomplete,
-		last_load_error,
-		activites_loaded_last_attempt,
-		earliest_activity,
-	    earliest_activity_id,
-		earliest_activity_done,
-		next_load_not_before
-	)
-VALUES
-	($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-ON CONFLICT
-	(athlete_id)
-DO UPDATE SET
-	last_backload_activity_start = $2,
-	last_load_attempt = $3,
-	last_load_incomplete = $4,
-	last_load_error = $5,
-	activites_loaded_last_attempt = $6,
-	earliest_activity = $7,
-	earliest_activity_id = $8,
-	earliest_activity_done = $9,
-    next_load_not_before = $10
-RETURNING athlete_id, last_backload_activity_start, last_load_attempt, last_load_incomplete, last_load_error, activites_loaded_last_attempt, earliest_activity, earliest_activity_done, earliest_activity_id, next_load_not_before, created_at
-`
-
-type UpsertAthleteLoadParams struct {
-	AthleteID                  int64              `db:"athlete_id" json:"athlete_id"`
-	LastBackloadActivityStart  pgtype.Timestamptz `db:"last_backload_activity_start" json:"last_backload_activity_start"`
-	LastLoadAttempt            pgtype.Timestamptz `db:"last_load_attempt" json:"last_load_attempt"`
-	LastLoadIncomplete         bool               `db:"last_load_incomplete" json:"last_load_incomplete"`
-	LastLoadError              string             `db:"last_load_error" json:"last_load_error"`
-	ActivitesLoadedLastAttempt int32              `db:"activites_loaded_last_attempt" json:"activites_loaded_last_attempt"`
-	EarliestActivity           pgtype.Timestamptz `db:"earliest_activity" json:"earliest_activity"`
-	EarliestActivityID         int64              `db:"earliest_activity_id" json:"earliest_activity_id"`
-	EarliestActivityDone       bool               `db:"earliest_activity_done" json:"earliest_activity_done"`
-	NextLoadNotBefore          pgtype.Timestamptz `db:"next_load_not_before" json:"next_load_not_before"`
-}
-
-func (q *sqlQuerier) UpsertAthleteLoad(ctx context.Context, arg UpsertAthleteLoadParams) (AthleteLoad, error) {
-	row := q.db.QueryRow(ctx, upsertAthleteLoad,
-		arg.AthleteID,
-		arg.LastBackloadActivityStart,
-		arg.LastLoadAttempt,
-		arg.LastLoadIncomplete,
-		arg.LastLoadError,
-		arg.ActivitesLoadedLastAttempt,
-		arg.EarliestActivity,
-		arg.EarliestActivityID,
-		arg.EarliestActivityDone,
-		arg.NextLoadNotBefore,
-	)
-	var i AthleteLoad
-	err := row.Scan(
-		&i.AthleteID,
-		&i.LastBackloadActivityStart,
-		&i.LastLoadAttempt,
-		&i.LastLoadIncomplete,
-		&i.LastLoadError,
-		&i.ActivitesLoadedLastAttempt,
-		&i.EarliestActivity,
-		&i.EarliestActivityDone,
-		&i.EarliestActivityID,
-		&i.NextLoadNotBefore,
-		&i.CreatedAt,
 	)
 	return i, err
 }

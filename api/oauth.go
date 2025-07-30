@@ -103,17 +103,14 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 		if err != nil && errors.Is(err, sql.ErrNoRows) {
 			doLoad = true
 			// No load means we need to insert one
-			_, err = store.UpsertAthleteLoad(ctx, database.UpsertAthleteLoadParams{
-				AthleteID:                  athlete.ID,
-				LastBackloadActivityStart:  database.Timestamptz(time.Time{}),
-				LastLoadAttempt:            database.Timestamptz(time.Time{}),
-				LastLoadIncomplete:         false,
-				LastLoadError:              "",
-				ActivitesLoadedLastAttempt: 0,
-				NextLoadNotBefore:          database.Timestamptz(time.Now().Add(time.Hour * -1)),
-				// Start from the future
-				EarliestActivity:     database.Timestamptz(time.Now().Add(time.Hour * 360)),
-				EarliestActivityDone: false,
+			now := time.Now()
+			_, err = store.UpsertAthleteForwardLoad(ctx, database.UpsertAthleteForwardLoadParams{
+				AthleteID: athlete.ID,
+				// Choose some data in the far past
+				ActivityTimeAfter: database.Timestamptz(time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)),
+				LastLoadComplete:  false,
+				LastTouched:       database.Timestamptz(now),
+				NextLoadNotBefore: database.Timestamptz(now),
 			})
 			if err != nil {
 				return fmt.Errorf("upsert load: %w", err)

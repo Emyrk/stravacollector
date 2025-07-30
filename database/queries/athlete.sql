@@ -25,7 +25,7 @@ RETURNING *;
 
 -- name: GetAthleteLoadDetailed :one
 SELECT
-    sqlc.embed(athlete_load),
+    sqlc.embed(athlete_forward_load),
     sqlc.embed(athletes),
 	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = @athlete_id AND LOWER(activity_summary.activity_type) = 'ride') AS summary_count,
     (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = @athlete_id AND activity_detail.id = ANY(
@@ -33,13 +33,13 @@ SELECT
 	) AS detail_count,
 	COALESCE(athlete_hugel_count.count, 0) AS hugel_count
 FROM
-    athlete_load
+	athlete_forward_load
 INNER JOIN
-    athletes ON athletes.id = athlete_load.athlete_id
+    athletes ON athletes.id = athlete_forward_load.athlete_id
 LEFT JOIN
 	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
 WHERE
-		athlete_load.athlete_id = @athlete_id;
+	athlete_forward_load.athlete_id = @athlete_id;
 
 -- name: AthleteSyncedActivities :many
 SELECT
@@ -61,37 +61,6 @@ LIMIT @_limit
 OFFSET @_offset
 ;
 
--- name: UpsertAthleteLoad :one
-INSERT INTO
-	athlete_load(
-		athlete_id,
-		last_backload_activity_start,
-	    last_load_attempt,
-		last_load_incomplete,
-		last_load_error,
-		activites_loaded_last_attempt,
-		earliest_activity,
-	    earliest_activity_id,
-		earliest_activity_done,
-		next_load_not_before
-	)
-VALUES
-	($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-ON CONFLICT
-	(athlete_id)
-DO UPDATE SET
-	last_backload_activity_start = $2,
-	last_load_attempt = $3,
-	last_load_incomplete = $4,
-	last_load_error = $5,
-	activites_loaded_last_attempt = $6,
-	earliest_activity = $7,
-	earliest_activity_id = $8,
-	earliest_activity_done = $9,
-    next_load_not_before = $10
-RETURNING *;
-;
-
 -- name: GetAthleteNeedsForwardLoad :many
 SELECT
 	sqlc.embed(athlete_forward_load), sqlc.embed(athlete_logins)
@@ -108,23 +77,6 @@ ORDER BY
 	-- Athletes with oldest load attempt first.
 	-- Order is [false, true].
 	last_load_complete, activity_time_after, last_touched
-LIMIT 5;
-
--- name: GetAthleteNeedsLoad :many
-SELECT
-    sqlc.embed(athlete_load), sqlc.embed(athlete_logins)
-FROM
-	athlete_load
-INNER JOIN
-	athlete_logins
-ON
-    athlete_load.athlete_id = athlete_logins.athlete_id
-WHERE
-    athlete_load.next_load_not_before < Now()
-ORDER BY
-	-- Athletes with oldest load attempt first.
-	-- Order is [false, true]. 
-	not last_load_incomplete, earliest_activity_done, last_load_attempt
 LIMIT 5;
 
 -- name: GetAthleteLogin :one
