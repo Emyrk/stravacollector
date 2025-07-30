@@ -189,6 +189,7 @@ func (api *API) Routes() chi.Router {
 					r.Get("/", api.athlete)
 					r.Get("/hugels", api.athleteHugels)
 					r.Get("/sync-summary", api.syncSummary)
+					r.Get("/eddington", api.eddingtonNumber)
 				})
 			})
 		})

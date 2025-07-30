@@ -129,12 +129,6 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		),
 	}
 
-	exporter, err := promotel.New(promotel.WithRegisterer(opts.Registry))
-	if err != nil {
-		return nil, fmt.Errorf("new prometheus exporter: %w", err)
-	}
-	otelMeterProvider := metric.NewMeterProvider(metric.WithReader(exporter))
-
 	riverClient, err := river.NewClient(riverpgxv5.New(pool), (&river.Config{
 		Queues: map[string]river.QueueConfig{
 			river.QueueDefault: {MaxWorkers: 1},
@@ -145,9 +139,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		},
 		Workers: workers,
 		Middleware: []rivertype.Middleware{
-			otelriver.NewMiddleware(&otelriver.MiddlewareConfig{
-				MeterProvider: otelMeterProvider,
-			}),
+			// otel(opts), Consuming too much memory
 			riverlog.NewMiddleware(func(w io.Writer) slog.Handler {
 				return slog.NewJSONHandler(w, nil)
 			}, nil),
@@ -186,6 +178,17 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	}
 
 	return m, nil
+}
+
+func otel(opts Options) (*otelriver.Middleware, error) {
+	exporter, err := promotel.New(promotel.WithRegisterer(opts.Registry))
+	if err != nil {
+		return nil, fmt.Errorf("new prometheus exporter: %w", err)
+	}
+	otelMeterProvider := metric.NewMeterProvider(metric.WithReader(exporter))
+	return otelriver.NewMiddleware(&otelriver.MiddlewareConfig{
+		MeterProvider: otelMeterProvider,
+	}), nil
 }
 
 func (m *Manager) Close(ctx context.Context) error {

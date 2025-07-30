@@ -339,6 +339,45 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (api *API) eddingtonNumber(rw http.ResponseWriter, r *http.Request) {
+	var (
+		ctx         = r.Context()
+		authAth, ok = httpmw.AuthenticatedAthleteIDOptional(r)
+		ath         = httpmw.Athlete(r)
+	)
+	if !ok {
+		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
+			Message: "Synced data requires authentication. No authentication provided",
+		})
+		return
+	}
+
+	// 2661162 is Steven
+	if authAth != 2661162 && authAth != ath.Athlete.ID {
+		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
+			Message: "You can only fetch your own eddington data, not another athlete's.",
+		})
+		return
+	}
+
+	eddington, err := api.Opts.DB.GetAthleteEddington(ctx, ath.Athlete.ID)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+			Message: "Failed to fetch authenticated athlete eddington information",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.Eddington{
+		AthleteID:        eddington.AthleteID,
+		MilesHistogram:   eddington.MilesHistogram,
+		CurrentEddington: eddington.CurrentEddington,
+		LastCalculated:   eddington.LastCalculated.Time,
+		TotalActivities:  eddington.TotalActivities,
+	})
+}
+
 func convertActivitySummary(activity database.ActivitySummary) modelsdk.ActivitySummary {
 	return modelsdk.ActivitySummary{
 		ActivityID:     modelsdk.StringInt(activity.ID),

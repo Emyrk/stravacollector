@@ -127,6 +127,13 @@ func (m queryMetricsStore) GetAthlete(ctx context.Context, athleteID int64) (dat
 	return r0, r1
 }
 
+func (m queryMetricsStore) GetAthleteEddington(ctx context.Context, athleteID int64) (database.AthleteEddington, error) {
+	start := time.Now()
+	r0, r1 := m.s.GetAthleteEddington(ctx, athleteID)
+	m.queryLatencies.WithLabelValues("GetAthleteEddington").Observe(time.Since(start).Seconds())
+	return r0, r1
+}
+
 func (m queryMetricsStore) GetAthleteFull(ctx context.Context, athleteID int64) (database.GetAthleteFullRow, error) {
 	start := time.Now()
 	r0, r1 := m.s.GetAthleteFull(ctx, athleteID)

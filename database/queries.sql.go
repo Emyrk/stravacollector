@@ -64,41 +64,6 @@ func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySumm
 	return i, err
 }
 
-const eddingtonActivities = `-- name: EddingtonActivities :many
-SELECT
-	distance, total_elevation_gain
-FROM
-	activity_summary
-WHERE
-	athlete_id = $1
-  	AND lower(activity_type) = 'ride'
-`
-
-type EddingtonActivitiesRow struct {
-	Distance           float64 `db:"distance" json:"distance"`
-	TotalElevationGain float64 `db:"total_elevation_gain" json:"total_elevation_gain"`
-}
-
-func (q *sqlQuerier) EddingtonActivities(ctx context.Context, athleteID int64) ([]EddingtonActivitiesRow, error) {
-	rows, err := q.db.Query(ctx, eddingtonActivities, athleteID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []EddingtonActivitiesRow
-	for rows.Next() {
-		var i EddingtonActivitiesRow
-		if err := rows.Scan(&i.Distance, &i.TotalElevationGain); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getActivityDetail = `-- name: GetActivityDetail :one
 SELECT
 	id, athlete_id, start_latlng, end_latlng, from_accepted_tag, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, max_watts, elev_high, elev_low, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at, map_id, source
@@ -1235,6 +1200,63 @@ func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLo
 		&i.OauthExpiry,
 		&i.OauthTokenType,
 		&i.ID,
+	)
+	return i, err
+}
+
+const eddingtonActivities = `-- name: EddingtonActivities :many
+SELECT
+	distance, total_elevation_gain
+FROM
+	activity_summary
+WHERE
+	athlete_id = $1
+  AND lower(activity_type) = 'ride'
+`
+
+type EddingtonActivitiesRow struct {
+	Distance           float64 `db:"distance" json:"distance"`
+	TotalElevationGain float64 `db:"total_elevation_gain" json:"total_elevation_gain"`
+}
+
+func (q *sqlQuerier) EddingtonActivities(ctx context.Context, athleteID int64) ([]EddingtonActivitiesRow, error) {
+	rows, err := q.db.Query(ctx, eddingtonActivities, athleteID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EddingtonActivitiesRow
+	for rows.Next() {
+		var i EddingtonActivitiesRow
+		if err := rows.Scan(&i.Distance, &i.TotalElevationGain); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAthleteEddington = `-- name: GetAthleteEddington :one
+SELECT
+	athlete_id, miles_histogram, current_eddington, last_calculated, total_activities
+FROM
+	athlete_eddingtons
+WHERE
+	athlete_id = $1
+`
+
+func (q *sqlQuerier) GetAthleteEddington(ctx context.Context, athleteID int64) (AthleteEddington, error) {
+	row := q.db.QueryRow(ctx, getAthleteEddington, athleteID)
+	var i AthleteEddington
+	err := row.Scan(
+		&i.AthleteID,
+		&i.MilesHistogram,
+		&i.CurrentEddington,
+		&i.LastCalculated,
+		&i.TotalActivities,
 	)
 	return i, err
 }

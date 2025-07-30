@@ -141,3 +141,11 @@ type MinAthlete struct {
 	ProfilePicLink string    `json:"profile_pic_link"`
 	HugelCount     int       `json:"hugel_count"`
 }
+
+type Eddington struct {
+	AthleteID        int64     `json:"athlete_id"`
+	MilesHistogram   []int32   `json:"miles_histogram"`
+	CurrentEddington int32     `json:"current_eddington"`
+	LastCalculated   time.Time `json:"last_calculated"`
+	TotalActivities  int32     `json:"total_activities"`
+}

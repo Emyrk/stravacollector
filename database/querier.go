@@ -22,6 +22,7 @@ type sqlcQuerier interface {
 	GetActivityDetail(ctx context.Context, id int64) (ActivityDetail, error)
 	GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error)
 	GetAthlete(ctx context.Context, athleteID int64) (Athlete, error)
+	GetAthleteEddington(ctx context.Context, athleteID int64) (AthleteEddington, error)
 	GetAthleteFull(ctx context.Context, athleteID int64) (GetAthleteFullRow, error)
 	GetAthleteLoad(ctx context.Context, athleteID int64) (AthleteForwardLoad, error)
 	GetAthleteLoadDetailed(ctx context.Context, athleteID int64) (GetAthleteLoadDetailedRow, error)
