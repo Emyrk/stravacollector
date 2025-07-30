@@ -64,6 +64,41 @@ func (q *sqlQuerier) DeleteActivity(ctx context.Context, id int64) (ActivitySumm
 	return i, err
 }
 
+const eddingtonActivities = `-- name: EddingtonActivities :many
+SELECT
+	distance, total_elevation_gain
+FROM
+	activity_summary
+WHERE
+	athlete_id = $1
+  	AND lower(activity_type) = 'ride'
+`
+
+type EddingtonActivitiesRow struct {
+	Distance           float64 `db:"distance" json:"distance"`
+	TotalElevationGain float64 `db:"total_elevation_gain" json:"total_elevation_gain"`
+}
+
+func (q *sqlQuerier) EddingtonActivities(ctx context.Context, athleteID int64) ([]EddingtonActivitiesRow, error) {
+	rows, err := q.db.Query(ctx, eddingtonActivities, athleteID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EddingtonActivitiesRow
+	for rows.Next() {
+		var i EddingtonActivitiesRow
+		if err := rows.Scan(&i.Distance, &i.TotalElevationGain); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getActivityDetail = `-- name: GetActivityDetail :one
 SELECT
 	id, athlete_id, start_latlng, end_latlng, from_accepted_tag, average_cadence, average_temp, average_watts, weighted_average_watts, kilojoules, max_watts, elev_high, elev_low, suffer_score, calories, embed_token, segment_leaderboard_opt_out, leaderboard_opt_out, num_segment_efforts, premium_fetch, updated_at, map_id, source
@@ -242,7 +277,7 @@ func (q *sqlQuerier) TotalActivityDetailsCount(ctx context.Context) (int64, erro
 }
 
 const totalRideActivitySummariesCount = `-- name: TotalRideActivitySummariesCount :one
-SELECT count(*) FROM activity_summary WHERE activity_type = 'Ride'
+SELECT count(*) FROM activity_summary WHERE lower(activity_type) = 'ride'
 `
 
 func (q *sqlQuerier) TotalRideActivitySummariesCount(ctx context.Context) (int64, error) {
@@ -1200,6 +1235,54 @@ func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLo
 		&i.OauthExpiry,
 		&i.OauthTokenType,
 		&i.ID,
+	)
+	return i, err
+}
+
+const upsertAthleteEddington = `-- name: UpsertAthleteEddington :one
+INSERT INTO
+	athlete_eddingtons(
+		athlete_id,
+		miles_histogram,
+		current_eddington,
+		last_calculated,
+		total_activities
+)
+VALUES
+	($1, $2, $3, $4, $5)
+ON CONFLICT
+	(athlete_id)
+	DO UPDATE SET
+		miles_histogram = $2,
+		current_eddington = $3,
+		last_calculated = $4,
+		total_activities = $5
+RETURNING athlete_id, miles_histogram, current_eddington, last_calculated, total_activities
+`
+
+type UpsertAthleteEddingtonParams struct {
+	AthleteID        int64              `db:"athlete_id" json:"athlete_id"`
+	MilesHistogram   []int32            `db:"miles_histogram" json:"miles_histogram"`
+	CurrentEddington int32              `db:"current_eddington" json:"current_eddington"`
+	LastCalculated   pgtype.Timestamptz `db:"last_calculated" json:"last_calculated"`
+	TotalActivities  int32              `db:"total_activities" json:"total_activities"`
+}
+
+func (q *sqlQuerier) UpsertAthleteEddington(ctx context.Context, arg UpsertAthleteEddingtonParams) (AthleteEddington, error) {
+	row := q.db.QueryRow(ctx, upsertAthleteEddington,
+		arg.AthleteID,
+		arg.MilesHistogram,
+		arg.CurrentEddington,
+		arg.LastCalculated,
+		arg.TotalActivities,
+	)
+	var i AthleteEddington
+	err := row.Scan(
+		&i.AthleteID,
+		&i.MilesHistogram,
+		&i.CurrentEddington,
+		&i.LastCalculated,
+		&i.TotalActivities,
 	)
 	return i, err
 }

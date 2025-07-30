@@ -29,6 +29,19 @@ processes = []
   port = 9091       # default for most prometheus clients
   path = "/metrics" # default for most prometheus clients
 
+[profile]
+  port = 6060       # default for most prometheus clients
+  path = "/pprof" # default for most prometheus clients
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 6060
+  processes = ["app"]       # or your process-group if you use them
+
+  [[services.ports]]
+    port = 6060
+    handlers = ["http"]
+
 [[services]]
   internal_port = 9090
   processes = ["app"]

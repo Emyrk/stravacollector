@@ -6,7 +6,6 @@ import (
 
 	"github.com/Emyrk/strava/database"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 )
@@ -97,6 +96,13 @@ func (m queryMetricsStore) DeleteAthleteLogin(ctx context.Context, athleteID int
 	r0 := m.s.DeleteAthleteLogin(ctx, athleteID)
 	m.queryLatencies.WithLabelValues("DeleteAthleteLogin").Observe(time.Since(start).Seconds())
 	return r0
+}
+
+func (m queryMetricsStore) EddingtonActivities(ctx context.Context, athleteID int64) ([]database.EddingtonActivitiesRow, error) {
+	start := time.Now()
+	r0, r1 := m.s.EddingtonActivities(ctx, athleteID)
+	m.queryLatencies.WithLabelValues("EddingtonActivities").Observe(time.Since(start).Seconds())
+	return r0, r1
 }
 
 func (m queryMetricsStore) GetActivityDetail(ctx context.Context, id int64) (database.ActivityDetail, error) {

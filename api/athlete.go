@@ -266,6 +266,35 @@ func (api *API) forwardLoadAthlete(rw http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (api *API) eddington(rw http.ResponseWriter, r *http.Request) {
+	var (
+		ctx = r.Context()
+	)
+
+	athleteID, err := strconv.ParseInt(chi.URLParam(r, "athlete_id"), 10, 64)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+			Message: "Invalid athlete ID",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	unique, err := api.RiverManager.EnqueueEddington(athleteID)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+			Message: "Enqueue fetch",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.Response{
+		Message: fmt.Sprintf("Enqueued %d", athleteID),
+		Detail:  fmt.Sprintf("unique: %t", unique),
+	})
+}
+
 func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 	var (
 		ctx = r.Context()
