@@ -15,6 +15,7 @@ var (
 	// Force these imports, for some reason the autogen does not include them.
 	_ uuid.UUID
 	_ context.Context
+	_ pgx.Conn
 )
 
 // NewQueryMetrics returns a database.Store that registers metrics for all queries to reg.

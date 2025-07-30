@@ -208,7 +208,7 @@ func (api *API) Routes() chi.Router {
 			})
 			r.Route("/eddington", func(r chi.Router) {
 				r.Use(httpmw.AuthenticatedAsAdmins())
-				r.Get("/{athlete_id}", api.forwardLoadAthlete)
+				r.Get("/{athlete_id}", api.eddington)
 			})
 			r.Route("/missing", func(r chi.Router) {
 				r.Get("/{activity_id}", api.missingSegments)
