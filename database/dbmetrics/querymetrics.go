@@ -6,6 +6,7 @@ import (
 
 	"github.com/Emyrk/strava/database"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 )
