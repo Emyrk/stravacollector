@@ -43,6 +43,16 @@ const customComponents: Record<string, StyleConfig> = {
           transform: "translateY(-3px)",
         },
       }),
+      staticCard: ({ colorMode }) => ({
+        // bgColor={"#272c35"}
+        // bgColor={"#3b3f48"}
+        // https://www.sessions.edu/color-calculator/
+        bgGradient:
+          "linear(135deg, brand.primaryCard 0%, brand.secondaryCard 200%)",
+        borderRadius: "10px",
+        boxShadow: "rgb(20, 20, 20) 0px 3px 6px",
+        transition: "all .25s ease",
+      }),
     },
   },
   Link: {

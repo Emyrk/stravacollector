@@ -1,8 +1,8 @@
-import { Avatar, AvatarProps, Box, Stack, Text } from "@chakra-ui/react";
+import { Avatar, AvatarProps, Box, Popover, PopoverArrow, PopoverBody, PopoverContent, PopoverTrigger, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { FC, ReactElement } from "react";
 import { SuperlativeEntry } from "../../api/typesGenerated";
 import { Tooltip, TooltipProps } from "@chakra-ui/react";
-import { ResponsiveCard } from "../ResponsiveCard/ResponsiveCard";
+import { ResponsiveCard, StaticCard } from "../ResponsiveCard/ResponsiveCard";
 import {
   ElapsedDurationText,
   FormatDate,
@@ -20,6 +20,11 @@ export const Superlative: FC<SuperlativeProps> = ({
   entry,
   ...props
 }) => {
+  return SuperlativePopover({
+    category,
+    entry,
+    ...props,
+  });
   const [src, title, value] = SuperlativeLookup(category, entry);
 
   return (
@@ -35,18 +40,40 @@ export const Superlative: FC<SuperlativeProps> = ({
   );
 };
 
+export const SuperlativePopover: FC<SuperlativeProps> = ({
+  category,
+  entry,
+  ...props
+}) => {
+  const [src, title, value] = SuperlativeLookup(category, entry);
+
+  return (
+  <Popover placement="right-end"
+      trigger="hover"
+      // openDelay={100}
+      // closeDelay={200}
+  >
+    <PopoverTrigger   >
+      <Avatar key={category} src={`/img/superlatives/${src}`} name={category} {...props}/>
+    </PopoverTrigger>
+    <PopoverContent background="none" p="0px" m="0px" border="none" boxShadow="none">
+      <PopoverArrow />
+      <PopoverBody p="0px" m="0px" width={"270px"}>
+        <SuperlativeCard title={title} value={value} />
+      </PopoverBody>
+    </PopoverContent>
+  </Popover>
+  );
+};
+
 export const SuperlativeCard: FC<{ title: string; value: any }> = ({
   title,
   value,
 }) => {
   return (
-    <ResponsiveCard
-      width={"270px"}
-      // height={"100px"}
+    <StaticCard
       opacity={"93%"}
       color={"white"}
-      p={"10px"}
-      // boxShadow={"#fc4c02 0px 3px 6px"}
     >
       <Stack>
         <Text fontSize={"1.2em"} fontWeight={800}>
@@ -54,7 +81,7 @@ export const SuperlativeCard: FC<{ title: string; value: any }> = ({
         </Text>
         {value}
       </Stack>
-    </ResponsiveCard>
+    </StaticCard>
   );
 };
 

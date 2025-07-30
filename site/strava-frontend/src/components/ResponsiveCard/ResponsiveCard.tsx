@@ -15,3 +15,19 @@ export const ResponsiveCard: FC<PropsWithChildren<ResponsiveCardProps>> = ({
     </Box>
   );
 };
+
+
+export type StaticCardProps = ResponsiveCardProps
+
+export const StaticCard: FC<PropsWithChildren<StaticCardProps>> = ({
+  children,
+  ...props
+}) => {
+  const styles = useStyleConfig("Box", { variant: "staticCard" });
+
+  return (
+    <Box __css={styles} {...props}>
+      {children}
+    </Box>
+  );
+};

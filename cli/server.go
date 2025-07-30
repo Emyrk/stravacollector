@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/http/pprof"
 	"net/url"
 	"os"
 	"os/signal"
@@ -45,6 +46,8 @@ func serverCmd() *cobra.Command {
 		signingSecret     string
 		prometheusEnabled bool
 		promtheusAddress  string
+		pprofEnabled      bool
+		pprofAddress      string
 	)
 
 	v := viper.New()
@@ -196,6 +199,10 @@ func serverCmd() *cobra.Command {
 				launchPrometheus(ctx, logger, promtheusAddress, registry)
 			}
 
+			if pprofEnabled {
+				launchPprof(ctx, logger, pprofAddress)
+			}
+
 			lastPrint := time.Time{}
 			for {
 				health := fmt.Sprintf("%s/myhealthz", strings.TrimSuffix(accessURL, "/"))
@@ -285,6 +292,8 @@ func serverCmd() *cobra.Command {
 	cmd.Flags().StringVar(&signingSecret, "signing-secret", "", "RSA signing key base64 encoded")
 	cmd.Flags().BoolVar(&prometheusEnabled, "enable-prometheus", false, "Enable prometheus metrics")
 	cmd.Flags().StringVar(&promtheusAddress, "prometheus-address", "0.0.0.0:9091", "Prometheus address to listen on")
+	cmd.Flags().BoolVar(&pprofEnabled, "enable-pprof", false, "Enable pprof endpoint")
+	cmd.Flags().StringVar(&pprofAddress, "pprof-address", "0.0.0.0:6060", "Pprof address to listen on")
 
 	return cmd
 }
@@ -323,6 +332,30 @@ func launchPrometheus(ctx context.Context, logger zerolog.Logger, address string
 		err := srv.ListenAndServe()
 		if err != nil {
 			logger.Error().Str("service", "prometheus").Err(err).Msg("prometheus server error")
+		}
+	}()
+}
+
+func launchPprof(ctx context.Context, logger zerolog.Logger, address string) {
+	mux := http.NewServeMux()
+	mux.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
+	mux.Handle("/debug/pprof/cmdline", http.HandlerFunc(pprof.Cmdline))
+	mux.Handle("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
+	mux.Handle("/debug/pprof/symbol", http.HandlerFunc(pprof.Symbol))
+	mux.Handle("/debug/pprof/trace", http.HandlerFunc(pprof.Trace))
+
+	srv := http.Server{
+		Addr:    address,
+		Handler: mux,
+		BaseContext: func(listener net.Listener) context.Context {
+			return ctx
+		},
+	}
+	go func() {
+		logger.Info().Str("address", address).Msg("Starting pprof server")
+		err := srv.ListenAndServe()
+		if err != nil {
+			logger.Error().Str("service", "pprof").Err(err).Msg("pprof server error")
 		}
 	}()
 }
