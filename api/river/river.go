@@ -156,8 +156,12 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		CancelledJobRetentionPeriod: time.Hour * 24 * 7,
 		CompletedJobRetentionPeriod: time.Hour * 24,
 		DiscardedJobRetentionPeriod: time.Hour * 24 * 30,
-		Logger:                      slog.New(slogzerolog.Option{Level: slog.LevelInfo, Logger: &opts.Logger}.NewZerologHandler()),
-		PeriodicJobs:                periodicJobs,
+
+		// Slow some things down a bit
+		FetchPollInterval: time.Second * 5,
+
+		Logger:       slog.New(slogzerolog.Option{Level: slog.LevelInfo, Logger: &opts.Logger}.NewZerologHandler()),
+		PeriodicJobs: periodicJobs,
 	}).WithDefaults())
 	if err != nil {
 		return nil, fmt.Errorf("new river: %w", err)

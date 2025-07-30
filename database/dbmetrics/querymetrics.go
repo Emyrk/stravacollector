@@ -344,6 +344,13 @@ func (m queryMetricsStore) UpsertAthlete(ctx context.Context, arg database.Upser
 	return r0, r1
 }
 
+func (m queryMetricsStore) UpsertAthleteEddington(ctx context.Context, arg database.UpsertAthleteEddingtonParams) (database.AthleteEddington, error) {
+	start := time.Now()
+	r0, r1 := m.s.UpsertAthleteEddington(ctx, arg)
+	m.queryLatencies.WithLabelValues("UpsertAthleteEddington").Observe(time.Since(start).Seconds())
+	return r0, r1
+}
+
 func (m queryMetricsStore) UpsertAthleteForwardLoad(ctx context.Context, arg database.UpsertAthleteForwardLoadParams) (database.AthleteForwardLoad, error) {
 	start := time.Now()
 	r0, r1 := m.s.UpsertAthleteForwardLoad(ctx, arg)
