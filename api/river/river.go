@@ -88,6 +88,11 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 		return nil, fmt.Errorf("parse cron schedule: %w", err)
 	}
 
+	halfHourly, err := cron.ParseStandard("0,30 * * * *")
+	if err != nil {
+		return nil, fmt.Errorf("parse cron schedule: %w", err)
+	}
+
 	periodicJobs := []*river.PeriodicJob{
 		river.NewPeriodicJob(
 			// Always resume after some amount of time to prevent the queue from sleeping
@@ -116,7 +121,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			&river.PeriodicJobOpts{RunOnStart: true, ID: "reload_segments"},
 		),
 		river.NewPeriodicJob(
-			hourly,
+			halfHourly,
 			func() (river.JobArgs, *river.InsertOpts) {
 				return LoadFinderArgs{}, nil
 			},

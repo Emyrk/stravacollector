@@ -36,7 +36,7 @@ func (LoadFinderArgs) InsertOpts() river.InsertOpts {
 		Queue:       riverDatabaseQueue,
 		UniqueOpts: river.UniqueOpts{
 			ByArgs:   true,
-			ByPeriod: time.Minute * 30,
+			ByPeriod: time.Minute * 25,
 		},
 	}
 }
