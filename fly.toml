@@ -18,6 +18,7 @@ processes = []
   STRAVA_JSON_LOGS = "true"
   STRAVA_ENABLE_PROMETHEUS=true
   STRAVA_SKIP_WEBHOOK_SETUP=true
+  STRAVA_ENABLE_PPROF = "true"
 
 # Should set this up!
 #[[statics]]
