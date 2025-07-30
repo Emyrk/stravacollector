@@ -33,14 +33,10 @@ export interface AthleteHugelActivity {
 // From modelsdk/athlete.go
 export interface AthleteLoad {
     athlete_id: number;
-    last_backload_activity_start: string;
+    activity_time_after: string;
     last_load_attempt: string;
-    last_load_incomplete: boolean;
-    last_load_error: string;
-    activites_loaded_last_attempt: number;
-    earliest_activity: string;
-    earliest_activity_id: number;
-    earliest_activity_done: boolean;
+    last_load_complete: boolean;
+    next_load_not_before: string;
 }
 
 // From modelsdk/athlete.go

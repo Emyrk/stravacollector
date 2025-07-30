@@ -25,7 +25,7 @@ RETURNING *;
 
 -- name: GetAthleteLoadDetailed :one
 SELECT
-    sqlc.embed(athlete_load),
+    sqlc.embed(athlete_forward_load),
     sqlc.embed(athletes),
 	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = @athlete_id AND LOWER(activity_summary.activity_type) = 'ride') AS summary_count,
     (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = @athlete_id AND activity_detail.id = ANY(
@@ -33,13 +33,13 @@ SELECT
 	) AS detail_count,
 	COALESCE(athlete_hugel_count.count, 0) AS hugel_count
 FROM
-    athlete_load
+	athlete_forward_load
 INNER JOIN
-    athletes ON athletes.id = athlete_load.athlete_id
+    athletes ON athletes.id = athlete_forward_load.athlete_id
 LEFT JOIN
 	athlete_hugel_count ON athlete_hugel_count.athlete_id = athletes.id
 WHERE
-		athlete_load.athlete_id = @athlete_id;
+	athlete_forward_load.athlete_id = @athlete_id;
 
 -- name: AthleteSyncedActivities :many
 SELECT

@@ -109,7 +109,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	load := detailedLoad.AthleteLoad
+	load := detailedLoad.AthleteForwardLoad
 
 	if pageNum <= 0 {
 		pageNum = 1
@@ -156,15 +156,11 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 			HugelCount:           int(detailedLoad.HugelCount),
 		},
 		Load: modelsdk.AthleteLoad{
-			AthleteID:                  load.AthleteID,
-			LastBackloadActivityStart:  load.LastBackloadActivityStart.Time,
-			LastLoadAttempt:            load.LastLoadAttempt.Time,
-			LastLoadIncomplete:         load.LastLoadIncomplete,
-			LastLoadError:              load.LastLoadError,
-			ActivitesLoadedLastAttempt: load.ActivitesLoadedLastAttempt,
-			EarliestActivity:           load.EarliestActivity.Time,
-			EarliestActivityID:         load.EarliestActivityID,
-			EarliestActivityDone:       load.EarliestActivityDone,
+			AthleteID:         load.AthleteID,
+			ActivityTimeAfter: load.ActivityTimeAfter.Time,
+			LastLoadAttempt:   load.LastTouched.Time,
+			LastLoadComplete:  load.LastLoadComplete,
+			NextLoadNotBefore: load.NextLoadNotBefore.Time,
 		},
 		TotalActivities:  total,
 		SyncedActivities: sdk,
