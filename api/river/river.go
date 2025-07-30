@@ -138,7 +138,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	riverClient, err := river.NewClient(riverpgxv5.New(pool), (&river.Config{
 		Queues: map[string]river.QueueConfig{
 			river.QueueDefault: {MaxWorkers: 1},
-			riverStravaQueue:   {MaxWorkers: 1},
+			riverStravaQueue:   {MaxWorkers: 5},
 			riverControlQueue:  {MaxWorkers: 1},
 			riverDatabaseQueue: {MaxWorkers: 1},
 			riverBackloadQueue: {MaxWorkers: 1},
