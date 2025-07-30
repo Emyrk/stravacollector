@@ -180,6 +180,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	return m, nil
 }
 
+//nolint:unused
 func otel(opts Options) (*otelriver.Middleware, error) {
 	exporter, err := promotel.New(promotel.WithRegisterer(opts.Registry))
 	if err != nil {
