@@ -134,6 +134,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 	// First check if we just fetched this from another source.
 	act, err := w.mgr.db.GetActivityDetail(ctx, args.ActivityID)
 	if err == nil {
+		var _ = act
 		// Already fetched this activity.
 		if !(args.Source == database.ActivityDetailSourceManual || args.Source == database.ActivityDetailSourceZeroSegmentRefetch) {
 			// Manual and zero segment refetches are always allowed to refetch.
@@ -142,7 +143,6 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 
 			// TODO: Add this back to refetch some activities. Since we have to redownload a lot,
 			// this is good to skip for now.
-			var _ = act
 			//if time.Since(act.UpdatedAt.Time) < time.Hour*24 {
 			//	return river.RecordOutput(ctx, "activity already fetched, skipping")
 			//}
@@ -175,7 +175,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 			}
 
 			if se.Response.StatusCode == 597 {
-				return w.mgr.StravaMaintaince(ctx, fmt.Sprintf("code=597"))
+				return w.mgr.StravaMaintaince(ctx, "code=597")
 			}
 
 			_, _ = w.mgr.db.InsertFailedJob(ctx, string(jobData))

@@ -235,7 +235,7 @@ func (w *ForwardLoadWorker) Work(ctx context.Context, job *river.Job[ForwardLoad
 
 	if len(activities) > 0 {
 		// Keep going until we have no more activities to load.
-		_ = river.RecordOutput(ctx, fmt.Sprintf("athlete not finished, will continue!"))
+		_ = river.RecordOutput(ctx, "athlete not finished, will continue!")
 		return river.JobSnooze(time.Second * 1)
 	}
 
@@ -276,7 +276,7 @@ func (w *ForwardLoadWorker) getActivities(ctx context.Context, cli *strava.Clien
 			}
 
 			if se.Response.StatusCode == 597 {
-				return nil, w.mgr.StravaMaintaince(ctx, fmt.Sprintf("code=597"))
+				return nil, w.mgr.StravaMaintaince(ctx, "code=597")
 			}
 
 			if se.Response.StatusCode == http.StatusUnauthorized || se.Response.StatusCode == http.StatusForbidden {
