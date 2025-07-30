@@ -176,6 +176,17 @@ type Athlete struct {
 	ProfilePicLinkMedium  string             `db:"profile_pic_link_medium" json:"profile_pic_link_medium"`
 }
 
+// Tracks loading athlete activities. Must be an authenticated athlete.
+type AthleteForwardLoad struct {
+	AthleteID         int64              `db:"athlete_id" json:"athlete_id"`
+	ActivityTimeAfter pgtype.Timestamptz `db:"activity_time_after" json:"activity_time_after"`
+	LastLoadComplete  bool               `db:"last_load_complete" json:"last_load_complete"`
+	// Timestamp this row was last updated.
+	LastTouched pgtype.Timestamptz `db:"last_touched" json:"last_touched"`
+	// Timestamp when the next load can be attempted.
+	NextLoadNotBefore pgtype.Timestamptz `db:"next_load_not_before" json:"next_load_not_before"`
+}
+
 type AthleteHugelCount struct {
 	AthleteID int64 `db:"athlete_id" json:"athlete_id"`
 	Count     int64 `db:"count" json:"count"`

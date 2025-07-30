@@ -32,7 +32,7 @@ func (m *Manager) EnqueueResume(until time.Time, queue string, opts ...func(j *r
 	}
 
 	fi, err := m.cli.Insert(m.appCtx, ResumeArgs{
-		Queue:    queue,
+		Queues:   []string{queue},
 		RandomID: rand.Int(),
 	}, iopts)
 
@@ -45,7 +45,7 @@ func (m *Manager) EnqueueResume(until time.Time, queue string, opts ...func(j *r
 }
 
 type ResumeArgs struct {
-	Queue string `json:"queue"`
+	Queues []string `json:"queue"`
 	// RandomID is used to prevent dupe hits on scheduled jobs.
 	// The cron jobs will want to be ignored when a dupe is hit.
 	RandomID int `json:"random_id"`
@@ -68,13 +68,17 @@ type ResumeWorker struct {
 }
 
 func (w *ResumeWorker) Work(ctx context.Context, job *river.Job[ResumeArgs]) error {
-	q := job.Args.Queue
-	queue, err := w.mgr.cli.QueueGet(ctx, q)
-	if err != nil {
-		_ = river.RecordOutput(ctx, fmt.Sprintf("could not get queue %q: %s", q, err.Error()))
-		return nil
+	out := make(map[string]string)
+	for _, q := range job.Args.Queues {
+		queue, err := w.mgr.cli.QueueGet(ctx, q)
+		if err != nil {
+			_ = river.RecordOutput(ctx, fmt.Sprintf("could not get queue %q: %s", q, err.Error()))
+			return nil
+		}
+		out[q] = fmt.Sprintf("Queue paused = %t", queue.PausedAt != nil)
+		_ = w.mgr.cli.QueueResume(ctx, q, &river.QueuePauseOpts{})
 	}
 
-	_ = river.RecordOutput(ctx, fmt.Sprintf("Queue paused = %t", queue.PausedAt != nil))
-	return w.mgr.cli.QueueResume(ctx, q, &river.QueuePauseOpts{})
+	_ = river.RecordOutput(ctx, out)
+	return nil
 }

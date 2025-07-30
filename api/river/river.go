@@ -36,6 +36,7 @@ const (
 )
 
 const (
+	riverBackloadQueue = "backload_queue"
 	riverStravaQueue   = "strava_queue"
 	riverControlQueue  = "control_queue"
 	riverDatabaseQueue = "database_operations_queue"
@@ -58,6 +59,8 @@ type Manager struct {
 
 	rateLimitLogger *debounce.Debouncer
 	appCtx          context.Context
+
+	managerMetrics
 }
 
 func New(ctx context.Context, opts Options) (*Manager, error) {
@@ -92,7 +95,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			hourly,
 			func() (river.JobArgs, *river.InsertOpts) {
 				return ResumeArgs{
-					Queue: riverStravaQueue,
+					Queues: []string{riverStravaQueue, riverBackloadQueue},
 				}, nil
 			},
 			&river.PeriodicJobOpts{RunOnStart: true, ID: "strava_resume"},
@@ -126,6 +129,7 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			riverStravaQueue:   {MaxWorkers: 1},
 			riverControlQueue:  {MaxWorkers: 1},
 			riverDatabaseQueue: {MaxWorkers: 1},
+			riverBackloadQueue: {MaxWorkers: 1},
 		},
 		Workers: workers,
 		Middleware: []rivertype.Middleware{
@@ -158,6 +162,8 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 	}
 
 	m.initWorkers(workers)
+	m.initMetrics(opts.Registry)
+	m.background(ctx)
 
 	if err := riverClient.Start(ctx); err != nil {
 		return nil, fmt.Errorf("start river client: %w", err)
@@ -169,7 +175,15 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 func (m *Manager) Close(ctx context.Context) error {
 	grp := &errgroup.Group{}
 	grp.Go(func() error {
-		return m.cli.Stop(ctx)
+		err := m.cli.Stop(ctx)
+		if err != nil {
+			return fmt.Errorf("stop river client: %w", err)
+		}
+		select {
+		case <-ctx.Done():
+		case <-m.cli.Stopped():
+		}
+		return nil
 	})
 
 	grpErr := grp.Wait()
@@ -222,11 +236,23 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 	river.AddWorker[ReloadSegmentsArgs](workers, &ReloadSegmentsWorker{
 		mgr: m,
 	})
+	river.AddWorker[ForwardLoadArgs](workers, &ForwardLoadWorker{
+		mgr: m,
+	})
 }
 
 func (m *Manager) StravaSnooze(ctx context.Context) error {
 	// TODO: Pause the queue until the next interval, not just 15minutes
 	_ = river.RecordOutput(ctx, "hitting strava rate limit, job going to pause for 15 minutes")
 	_ = m.Pause(time.Now().Add(time.Minute*15), riverStravaQueue)
+	_ = m.Pause(time.Now().Add(time.Minute*15), riverBackloadQueue)
+	return river.JobSnooze(time.Minute * 15)
+}
+
+func (m *Manager) StravaMaintaince(ctx context.Context, reason string) error {
+	// TODO: Pause the queue until the next interval, not just 15minutes
+	_ = river.RecordOutput(ctx, fmt.Sprintf("strava is offline, or in maintaince: %s", reason))
+	_ = m.Pause(time.Now().Add(time.Minute*15), riverStravaQueue)
+	_ = m.Pause(time.Now().Add(time.Minute*15), riverBackloadQueue)
 	return river.JobSnooze(time.Minute * 15)
 }

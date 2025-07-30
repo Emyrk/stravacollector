@@ -7,13 +7,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Emyrk/strava/database"
-	"github.com/go-chi/chi/v5"
-	"github.com/riverqueue/river"
-
 	"github.com/Emyrk/strava/api/httpapi"
 	"github.com/Emyrk/strava/api/httpmw"
 	"github.com/Emyrk/strava/api/modelsdk"
+	river2 "github.com/Emyrk/strava/api/river"
+	"github.com/Emyrk/strava/database"
+	"github.com/go-chi/chi/v5"
 )
 
 func (api *API) athleteHugels(rw http.ResponseWriter, r *http.Request) {
@@ -242,6 +241,35 @@ func (api *API) missingSegments(rw http.ResponseWriter, r *http.Request) {
 	httpapi.Write(ctx, rw, http.StatusOK, missing)
 }
 
+func (api *API) forwardLoadAthlete(rw http.ResponseWriter, r *http.Request) {
+	var (
+		ctx = r.Context()
+	)
+
+	athleteID, err := strconv.ParseInt(chi.URLParam(r, "athlete_id"), 10, 64)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+			Message: "Invalid athlete ID",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	unique, err := api.RiverManager.EnqueueForwardLoad(ctx, athleteID)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
+			Message: "Enqueue fetch",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.Response{
+		Message: fmt.Sprintf("Enqueued %d", athleteID),
+		Detail:  fmt.Sprintf("unique: %t", unique),
+	})
+}
+
 func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 	var (
 		ctx = r.Context()
@@ -265,7 +293,13 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	unique, err := api.RiverManager.EnqueueFetchActivity(ctx, database.ActivityDetailSourceManual, athleteID, actID, true, true, river.PriorityDefault)
+	unique, err := api.RiverManager.EnqueueFetchActivity(ctx, river2.FetchActivityArgs{
+		Source:         database.ActivityDetailSourceManual,
+		ActivityID:     actID,
+		AthleteID:      athleteID,
+		HugelPotential: true,
+		OnHugelDates:   true,
+	}, river2.PriorityHighest)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
 			Message: "Enqueue fetch",

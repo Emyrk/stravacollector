@@ -68,11 +68,17 @@ func (m *Manager) newActivity(ctx context.Context, event webhooks.WebhookEvent) 
 	var qErr error
 	switch event.AspectType {
 	case "create":
-		// Set a low priority for webhooked events.
-		priority := PriorityLow
+		// Set a high priority for webhooked events.
+		priority := PriorityHigh
 		// Hugel potential is always there for new events. This is kinda unfortunate, but
 		// the webhook gives us no intel into the event.
-		_, qErr = m.EnqueueFetchActivity(ctx, database.ActivityDetailSourceWebhook, event.OwnerID, event.ObjectID, true, true, priority, func(j *river.InsertOpts) {
+		_, qErr = m.EnqueueFetchActivity(ctx, FetchActivityArgs{
+			Source:         database.ActivityDetailSourceWebhook,
+			ActivityID:     event.ObjectID,
+			AthleteID:      event.OwnerID,
+			HugelPotential: true,
+			OnHugelDates:   true,
+		}, priority, func(j *river.InsertOpts) {
 			// When syncing a new activity, let strava first load all the segments. Strava populates segments async,
 			// and if we query them too soon, we get an empty list.
 			j.ScheduledAt = time.Now().Add(time.Minute * 30)

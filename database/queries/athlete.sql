@@ -1,5 +1,27 @@
 -- name: GetAthleteLoad :one
-SELECT * FROM athlete_load WHERE athlete_id = @athlete_id;
+SELECT * FROM athlete_forward_load WHERE athlete_id = @athlete_id;
+
+-- name: UpsertAthleteForwardLoad :one
+INSERT INTO
+	athlete_forward_load(
+		athlete_id,
+		activity_time_after,
+		last_load_complete,
+		last_touched,
+		next_load_not_before
+)
+VALUES
+	($1, $2, $3, $4, $5)
+ON CONFLICT
+	(athlete_id)
+	DO UPDATE SET
+		athlete_id = $1,
+		activity_time_after = $2,
+		last_load_complete = $3,
+		last_touched = $4,
+		next_load_not_before = $5
+RETURNING *;
+;
 
 -- name: GetAthleteLoadDetailed :one
 SELECT
@@ -69,6 +91,24 @@ DO UPDATE SET
     next_load_not_before = $10
 RETURNING *;
 ;
+
+-- name: GetAthleteNeedsForwardLoad :many
+SELECT
+	sqlc.embed(athlete_forward_load), sqlc.embed(athlete_logins)
+FROM
+	athlete_forward_load
+INNER JOIN
+	athlete_logins
+	ON
+		-- Ignore non-authed athletes
+		athlete_forward_load.athlete_id = athlete_logins.athlete_id
+WHERE
+	Now() > athlete_forward_load.next_load_not_before
+ORDER BY
+	-- Athletes with oldest load attempt first.
+	-- Order is [false, true].
+	last_load_complete, activity_time_after, last_touched
+LIMIT 5;
 
 -- name: GetAthleteNeedsLoad :many
 SELECT
