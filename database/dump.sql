@@ -84,6 +84,14 @@ CREATE TABLE activity_summary (
 
 COMMENT ON TABLE activity_summary IS 'Activity is missing many detailed fields';
 
+CREATE TABLE athlete_eddingtons (
+    athlete_id bigint NOT NULL,
+    miles_histogram integer[] DEFAULT '{}'::integer[] NOT NULL,
+    current_eddington integer DEFAULT 0 NOT NULL,
+    last_calculated timestamp with time zone DEFAULT now() NOT NULL,
+    total_activities integer DEFAULT 0 NOT NULL
+);
+
 CREATE TABLE athlete_forward_load (
     athlete_id bigint NOT NULL,
     activity_time_after timestamp with time zone NOT NULL,
@@ -452,6 +460,9 @@ ALTER TABLE ONLY activity_detail
 ALTER TABLE ONLY activity_summary
     ADD CONSTRAINT activity_summary_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY athlete_eddingtons
+    ADD CONSTRAINT athlete_eddingtons_pkey PRIMARY KEY (athlete_id);
+
 ALTER TABLE ONLY athlete_forward_load
     ADD CONSTRAINT athlete_forward_load_pkey PRIMARY KEY (athlete_id);
 
@@ -513,6 +524,9 @@ ALTER TABLE ONLY activity_detail
 
 ALTER TABLE ONLY activity_summary
     ADD CONSTRAINT activity_summary_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY athlete_eddingtons
+    ADD CONSTRAINT athlete_eddingtons_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY athlete_forward_load
     ADD CONSTRAINT athlete_forward_load_athlete_id_fkey FOREIGN KEY (athlete_id) REFERENCES athletes(id) ON DELETE CASCADE;

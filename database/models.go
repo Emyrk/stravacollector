@@ -176,6 +176,14 @@ type Athlete struct {
 	ProfilePicLinkMedium  string             `db:"profile_pic_link_medium" json:"profile_pic_link_medium"`
 }
 
+type AthleteEddington struct {
+	AthleteID        int64              `db:"athlete_id" json:"athlete_id"`
+	MilesHistogram   []int32            `db:"miles_histogram" json:"miles_histogram"`
+	CurrentEddington int32              `db:"current_eddington" json:"current_eddington"`
+	LastCalculated   pgtype.Timestamptz `db:"last_calculated" json:"last_calculated"`
+	TotalActivities  int32              `db:"total_activities" json:"total_activities"`
+}
+
 // Tracks loading athlete activities. Must be an authenticated athlete.
 type AthleteForwardLoad struct {
 	AthleteID         int64              `db:"athlete_id" json:"athlete_id"`

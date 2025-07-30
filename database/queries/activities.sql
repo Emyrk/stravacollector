@@ -1,5 +1,15 @@
+-- name: EddingtonActivities :many
+SELECT
+	distance, total_elevation_gain
+FROM
+	activity_summary
+WHERE
+	athlete_id = @athlete_id
+  	AND lower(activity_type) = 'ride'
+;
+
 -- name: TotalRideActivitySummariesCount :one
-SELECT count(*) FROM activity_summary WHERE activity_type = 'Ride';
+SELECT count(*) FROM activity_summary WHERE lower(activity_type) = 'ride';
 
 -- name: TotalActivityDetailsCount :one
 SELECT count(*) FROM activity_detail;

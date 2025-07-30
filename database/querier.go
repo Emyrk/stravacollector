@@ -18,6 +18,7 @@ type sqlcQuerier interface {
 	BestRouteEfforts(ctx context.Context, expectedSegments []int64) ([]BestRouteEffortsRow, error)
 	DeleteActivity(ctx context.Context, id int64) (ActivitySummary, error)
 	DeleteAthleteLogin(ctx context.Context, athleteID int64) error
+	EddingtonActivities(ctx context.Context, athleteID int64) ([]EddingtonActivitiesRow, error)
 	GetActivityDetail(ctx context.Context, id int64) (ActivityDetail, error)
 	GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error)
 	GetAthlete(ctx context.Context, athleteID int64) (Athlete, error)
@@ -53,6 +54,7 @@ type sqlcQuerier interface {
 	UpsertActivityDetail(ctx context.Context, arg UpsertActivityDetailParams) (ActivityDetail, error)
 	UpsertActivitySummary(ctx context.Context, arg UpsertActivitySummaryParams) (ActivitySummary, error)
 	UpsertAthlete(ctx context.Context, arg UpsertAthleteParams) (Athlete, error)
+	UpsertAthleteEddington(ctx context.Context, arg UpsertAthleteEddingtonParams) (AthleteEddington, error)
 	UpsertAthleteForwardLoad(ctx context.Context, arg UpsertAthleteForwardLoadParams) (AthleteForwardLoad, error)
 	UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLoginParams) (AthleteLogin, error)
 	UpsertMapData(ctx context.Context, arg UpsertMapDataParams) (Map, error)

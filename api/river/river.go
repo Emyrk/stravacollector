@@ -254,6 +254,9 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 	river.AddWorker[LoadFinderArgs](workers, &LoadFinderWorker{
 		mgr: m,
 	})
+	river.AddWorker[EddingtonArgs](workers, &EddingtonWorker{
+		mgr: m,
+	})
 }
 
 func (m *Manager) StravaSnooze(ctx context.Context) error {
