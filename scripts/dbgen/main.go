@@ -16,6 +16,7 @@ import (
 	"github.com/dave/dst/decorator"
 	"github.com/dave/dst/decorator/resolver/goast"
 	"github.com/dave/dst/decorator/resolver/guess"
+	"github.com/dave/dst/dstutil"
 	"golang.org/x/tools/imports"
 	"golang.org/x/xerrors"
 )
@@ -279,10 +280,13 @@ func orderAndStubDatabaseFunctions(filePath, receiver, structName string, stub f
 
 	// Required to preserve imports!
 	restorer := decorator.NewRestorerWithImports(packageName, guess.New())
+
+	patchPGTypePaths(f)
 	restored, err := restorer.RestoreFile(f)
 	if err != nil {
 		return xerrors.Errorf("restore package: %w", err)
 	}
+
 	var buf bytes.Buffer
 	err = format.Node(&buf, restorer.Fset, restored)
 	if err != nil {
@@ -479,4 +483,17 @@ func interfaceMethods(i *dst.InterfaceType) []*dst.Field {
 		}
 	}
 	return allMethods
+}
+
+// patchPGTypePaths makes sure the right pgtype package is used.
+func patchPGTypePaths(f *dst.File) {
+	dstutil.Apply(f, nil, func(c *dstutil.Cursor) bool {
+		if ident, ok := c.Node().(*dst.Ident); ok && ident.Name == "pgtype" {
+			// Only set path if it's used as a package qualifier (in SelectorExpr)
+			if parent, ok := c.Parent().(*dst.SelectorExpr); ok && parent.X == ident {
+				ident.Name = "pgxpgtype"
+			}
+		}
+		return true
+	})
 }

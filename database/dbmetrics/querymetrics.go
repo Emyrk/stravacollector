@@ -7,7 +7,7 @@ import (
 	"github.com/Emyrk/strava/database"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
+	pgxpgtype "github.com/jackc/pgx/v5/pgtype"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 )
@@ -16,6 +16,7 @@ var (
 	// Force these imports, for some reason the autogen does not include them.
 	_ uuid.UUID
 	_ context.Context
+	_ pgxpgtype.Time
 )
 
 // NewQueryMetrics returns a database.Store that registers metrics for all queries to reg.
@@ -100,7 +101,7 @@ func (m queryMetricsStore) DeleteAthleteLogin(ctx context.Context, athleteID int
 	return r0
 }
 
-func (m queryMetricsStore) DeleteWebhookDump(ctx context.Context, id pgtype.UUID) error {
+func (m queryMetricsStore) DeleteWebhookDump(ctx context.Context, id pgxpgtype.UUID) error {
 	start := time.Now()
 	r0 := m.s.DeleteWebhookDump(ctx, id)
 	m.queryLatencies.WithLabelValues("DeleteWebhookDump").Observe(time.Since(start).Seconds())
