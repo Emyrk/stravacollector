@@ -19,8 +19,8 @@ export const AthletePage: FC<{}> = ({}) => {
 
   if (
     authenticatedUser?.athlete_id?.toString() === athlete_id?.toString() ||
-    // Or Steven
-    authenticatedUser?.athlete_id?.toString() === "2661162"
+    // Or Steven or Bia
+    authenticatedUser?.athlete_id?.toString() === "2661162" || authenticatedUser?.athlete_id?.toString() === "20563755"
   ) {
     return <AthleteMePage />;
   }
