@@ -202,6 +202,10 @@ func otel(opts Options) (*otelriver.Middleware, error) {
 	}), nil
 }
 
+func (m *Manager) Cli() *river.Client[pgx.Tx] {
+	return m.cli
+}
+
 func (m *Manager) Close(ctx context.Context) error {
 	grp := &errgroup.Group{}
 	grp.Go(func() error {

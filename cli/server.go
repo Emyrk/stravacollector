@@ -119,6 +119,8 @@ func serverCmd() *cobra.Command {
 					return rehook(ctx, db, dbURL, logger)
 				case "eddington":
 					return eddington(ctx, db, logger)
+				case "queue_clean":
+					return queueClean(ctx, db, dbURL, logger)
 				default:
 					return fmt.Errorf("unknown script: %s", runScript)
 				}

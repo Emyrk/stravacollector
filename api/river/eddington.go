@@ -11,6 +11,9 @@ import (
 )
 
 func (m *Manager) EnqueueEddingtons(athletes []int64, opts ...func(j *river.InsertOpts)) error {
+	if len(athletes) == 0 {
+		return nil
+	}
 	iopts := &river.InsertOpts{}
 	for _, opt := range opts {
 		opt(iopts)
