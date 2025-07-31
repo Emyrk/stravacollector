@@ -5,7 +5,7 @@ import { Eddington } from "../../api/typesGenerated";
 import { useQuery } from "@tanstack/react-query";
 import { Loading } from "../Loading/Loading";
 import { ErrorBox } from "../ErrorBox/ErrorBox";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Line, ResponsiveContainer, Label, ReferenceDot, Brush } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Line, ResponsiveContainer, Label, ReferenceDot, Brush, ReferenceLine } from 'recharts';
 import { ContentType } from "recharts/types/component/Tooltip";
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { useTheme } from "@chakra-ui/react";
@@ -57,6 +57,10 @@ export const EddingtonChart: FC<{}> = ({}) => {
     value: x // y = x
   }));
 
+  const barData = chartData.miles_histogram.map((value, index) => ({
+    index:index+1, value,
+  }))
+
   // const zoomedDomain =
   // zoomRange !== undefined
   //   ? [zoomRange[0], zoomRange[1]]
@@ -77,12 +81,11 @@ export const EddingtonChart: FC<{}> = ({}) => {
       }}>
         Eddington Number = <span style={{color: theme.colors.brand.stravaOrange}}>{chartData.current_eddington}</span>
       </div>
-    
+
+
     <ResponsiveContainer width="100%" height={300}>
         <BarChart
-          data={chartData.miles_histogram.map((value, index) => ({
-            index:index+1, value,
-          }))}
+          data={barData}
           // margin={{
           //   top: 5,
           //   right: 30,
@@ -100,24 +103,40 @@ export const EddingtonChart: FC<{}> = ({}) => {
           />
           <Tooltip content={CustomTooltip}/>
           {/* <Legend /> */}
+          {/* Before "#8884d8" */}
           <Bar dataKey="value" fill="#8884d8" />
-          {/* <Line
-            data={lineData}
+          <Line
             type="linear"
             dataKey="index"
-            stroke="red"
+            stroke="rgba(255, 0, 0, 0.6)"
             dot={false}
             isAnimationActive={false}
-          /> */}
+          />
           {/*  Other option */}
           {/* <ReferenceDot x={200} y={200} r={0} fill="none">
             <Label value="Eddington Number" position="top" offset={10} />
           </ReferenceDot> */}
-          <Brush dataKey="index" height={30} stroke="#8884d8" onChange={(range) => {
-            // props.startIndex
-            // setZoomRange([range.startIndex, range.endIndex])
-            // console.log("Brush changed:", range);
-          }}/>
+          <ReferenceLine
+            x={chartData.current_eddington}
+            stroke={theme.colors.brand.stravaOrange}
+            strokeDasharray="6 6"
+            label={{
+              position: 'insideTopLeft',
+              value: `${chartData.current_eddington}`,
+              fill: theme.colors.brand.stravaOrange,
+              fontSize: 12
+            }}
+          />
+          <Brush 
+            dataKey="index" 
+            height={30} 
+            stroke={theme.colors.brand.stravaOrange} 
+            onChange={(range) => {
+              // props.startIndex
+              // setZoomRange([range.startIndex, range.endIndex])
+              // console.log("Brush changed:", range);
+            }}
+          />
         </BarChart>
       </ResponsiveContainer>
       </div>
