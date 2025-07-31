@@ -12,7 +12,7 @@ import (
 
 func TestDistance(t *testing.T) {
 	mi := database.DistanceToMiles(144840)
-	fmt.Println(int(mi))
+	fmt.Println(int(mi), time.Now().Unix()/10)
 }
 
 func TestEddingtonNumber(t *testing.T) {

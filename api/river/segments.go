@@ -15,7 +15,9 @@ import (
 )
 
 func (m *Manager) EnqueueReloadSegments(ctx context.Context, opts ...func(j *river.InsertOpts)) (bool, error) {
-	iopts := &river.InsertOpts{}
+	iopts := &river.InsertOpts{
+		Priority: PriorityHigh,
+	}
 	for _, opt := range opts {
 		opt(iopts)
 	}
@@ -36,7 +38,7 @@ type ReloadSegmentsArgs struct {
 func (ReloadSegmentsArgs) Kind() string { return "reload_segments" }
 func (ReloadSegmentsArgs) InsertOpts() river.InsertOpts {
 	return river.InsertOpts{
-		Queue:    riverDatabaseQueue,
+		Queue:    riverStravaQueue,
 		Priority: PriorityHighest,
 		UniqueOpts: river.UniqueOpts{
 			ByArgs:   true,
