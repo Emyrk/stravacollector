@@ -43,6 +43,26 @@ func AuthenticatedAsAdmins() func(next http.Handler) http.Handler {
 	)
 }
 
+func RequestAuthenticatedAsAdminsOrMe(rw http.ResponseWriter, r *http.Request, cmp int64) bool {
+	var (
+		id = AuthenticatedAthleteID(r)
+	)
+
+	if id == cmp {
+		return true
+	}
+
+	if slice.Contains([]int64{2661162, 20563755}, id) {
+		return true
+	}
+
+	httpapi.Write(r.Context(), rw, http.StatusUnauthorized, modelsdk.Response{
+		Message: "Not authorized",
+		Detail:  fmt.Sprintf("id %d is not allowed to access this resource", id),
+	})
+	return false
+}
+
 func AuthenticatedAs(allowedIDs ...int64) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {

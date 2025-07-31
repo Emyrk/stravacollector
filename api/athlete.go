@@ -69,11 +69,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2661162 is Steven
-	if authAth != 2661162 && authAth != ath.Athlete.ID {
-		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
-			Message: "You can only fetch your own sync summary, not another athlete's.",
-		})
+	if !httpmw.RequestAuthenticatedAsAdminsOrMe(rw, r, ath.Athlete.ID) {
 		return
 	}
 
@@ -353,10 +349,7 @@ func (api *API) eddingtonNumber(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2661162 is Steven
-	if authAth != 2661162 && authAth != ath.Athlete.ID {
-		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
-			Message: "You can only fetch your own eddington data, not another athlete's.",
-		})
+	if !httpmw.RequestAuthenticatedAsAdminsOrMe(rw, r, ath.Athlete.ID) {
 		return
 	}
 
