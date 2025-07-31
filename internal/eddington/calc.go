@@ -23,6 +23,11 @@ func (e Sums) Current() int32 {
 			return int32(need) - 1
 		}
 	}
+
+	if len(e) == 0 {
+		return 0
+	}
+
 	return e[len(e)-1]
 }
 
