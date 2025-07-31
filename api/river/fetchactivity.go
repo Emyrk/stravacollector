@@ -190,6 +190,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 	logger.Debug().
 		Int64("activity_id", activity.ID).
 		Int("segment_count", len(activity.SegmentEfforts)).
+		Bool("private", activity.Private).
 		Msg("activity fetched")
 
 	err = w.insert(ctx, activity, athlete, args)

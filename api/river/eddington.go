@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Emyrk/strava/database"
+	"github.com/Emyrk/strava/internal/eddington"
 	"github.com/riverqueue/river"
 )
 
@@ -54,10 +55,7 @@ func (w *EddingtonWorker) Work(ctx context.Context, job *river.Job[EddingtonArgs
 		return fmt.Errorf("fetching activities: %w", err)
 	}
 
-	edds := EddingtonNumbers{}
-	for _, act := range acts {
-		edds.Add(int(database.DistanceToMiles(act.Distance)))
-	}
+	edds := eddington.FromActivities(acts)
 
 	_, err = w.mgr.db.UpsertAthleteEddington(ctx, database.UpsertAthleteEddingtonParams{
 		AthleteID:        job.Args.AthleteID,
@@ -75,33 +73,4 @@ func (w *EddingtonWorker) Work(ctx context.Context, job *river.Job[EddingtonArgs
 		"total":  len(acts),
 	})
 	return nil
-}
-
-// EddingtonNumbers is a slice of integers representing the number of rides over the
-// index in miles in distance.
-type EddingtonNumbers []int32
-
-func (e EddingtonNumbers) Current() int32 {
-	for need, have := range e {
-		need = need + 1 // 1-indexed
-		if int32(need) > have {
-			return int32(need) - 1
-		}
-	}
-	return e[len(e)-1]
-}
-
-func (e *EddingtonNumbers) Add(value int) {
-	if value < 0 {
-		return
-	}
-	if *e == nil {
-		*e = make(EddingtonNumbers, 0, value)
-	}
-	if value > len(*e) {
-		*e = append(*e, make(EddingtonNumbers, value-len(*e))...)
-	}
-	for i := 0; i < value; i++ {
-		(*e)[i]++
-	}
 }

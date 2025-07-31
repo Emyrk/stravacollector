@@ -1206,7 +1206,7 @@ func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLo
 
 const eddingtonActivities = `-- name: EddingtonActivities :many
 SELECT
-	distance, total_elevation_gain
+	id, distance, total_elevation_gain
 FROM
 	activity_summary
 WHERE
@@ -1215,6 +1215,7 @@ WHERE
 `
 
 type EddingtonActivitiesRow struct {
+	ID                 int64   `db:"id" json:"id"`
 	Distance           float64 `db:"distance" json:"distance"`
 	TotalElevationGain float64 `db:"total_elevation_gain" json:"total_elevation_gain"`
 }
@@ -1228,7 +1229,7 @@ func (q *sqlQuerier) EddingtonActivities(ctx context.Context, athleteID int64) (
 	var items []EddingtonActivitiesRow
 	for rows.Next() {
 		var i EddingtonActivitiesRow
-		if err := rows.Scan(&i.Distance, &i.TotalElevationGain); err != nil {
+		if err := rows.Scan(&i.ID, &i.Distance, &i.TotalElevationGain); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

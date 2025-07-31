@@ -20,7 +20,7 @@ RETURNING *;
 
 -- name: EddingtonActivities :many
 SELECT
-	distance, total_elevation_gain
+	id, distance, total_elevation_gain
 FROM
 	activity_summary
 WHERE
