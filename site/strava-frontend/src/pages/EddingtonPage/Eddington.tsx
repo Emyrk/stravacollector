@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Text } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, Text, Link } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
 import { StravaLink } from "../../components/StravaLink/StravaLink";
@@ -82,6 +82,20 @@ export const Eddington: FC<{}> = ({ }) => {
       </Container>
 
       <Box padding="10" textAlign="center"> </Box>
+
+      <Flex
+        w="100%"
+        justifyContent={"center"}
+        alignItems={"center"}
+        textAlign="center"
+      >
+        <Flex flexDirection={"column"} pb="0.5em">
+          <Text maxWidth={"1050px"} pt="1em">
+              The chart below visualizes your Eddington Number — a metric representing the largest number <strong>n</strong> such that you’ve completed <strong>n</strong> rides of at least <strong>n</strong> miles. Each bar shows how many rides you’ve completed at a given mileage, while the diagonal red line indicates the <em>y = x</em> threshold. The point where your ride count drops below the line defines your current Eddington Number.
+          </Text>
+          <Link color={"#36c"}  href="https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling"> Wikipedia</Link>
+        </Flex>
+      </Flex>
 
       <Container maxW="7xl">
         <EddingtonChart />
