@@ -10,7 +10,13 @@ import (
 )
 
 func (mgr *Manager) Pause(until time.Time, queue string) error {
-	err := mgr.cli.QueuePause(mgr.appCtx, queue, &river.QueuePauseOpts{})
+	q, err := mgr.cli.QueueGet(mgr.appCtx, queue)
+	if err == nil && q.PausedAt != nil {
+		// Already paused, no need to pause it again.
+		return nil
+	}
+
+	err = mgr.cli.QueuePause(mgr.appCtx, queue, &river.QueuePauseOpts{})
 	if err != nil {
 		return fmt.Errorf("could not pause queue: %w", err)
 	}

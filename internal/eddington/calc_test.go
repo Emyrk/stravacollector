@@ -10,7 +10,7 @@ import (
 )
 
 func TestDistance(t *testing.T) {
-	mi := database.DistanceToMiles(143224)
+	mi := database.DistanceToMiles(144840)
 	fmt.Println(int(mi))
 }
 
