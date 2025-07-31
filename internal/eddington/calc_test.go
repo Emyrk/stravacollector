@@ -18,6 +18,11 @@ func TestDistance(t *testing.T) {
 func TestEddingtonNumber(t *testing.T) {
 	t.Parallel()
 
+	t.Run("empty", func(t *testing.T) {
+		e := eddington.Sums{}
+		require.Equal(t, int32(0), e.Current())
+	})
+
 	t.Run("Simple", func(t *testing.T) {
 		e := eddington.Sums{}
 
