@@ -14,6 +14,7 @@ type sqlcQuerier interface {
 	AllCompetitiveRoutes(ctx context.Context) ([]CompetitiveRoute, error)
 	AthleteHugelActivites(ctx context.Context, athleteID int64) ([]AthleteHugelActivitesRow, error)
 	AthleteSyncedActivities(ctx context.Context, arg AthleteSyncedActivitiesParams) ([]AthleteSyncedActivitiesRow, error)
+	AthletesNeedingEddington(ctx context.Context) ([]AthletesNeedingEddingtonRow, error)
 	// BestRouteEfforts returns all activities that have efforts on all the provided segments.
 	// The returned activities include the best effort for each segment.
 	// This isn't used in the app, but is the foundation for the hugel view.

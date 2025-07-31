@@ -1204,6 +1204,44 @@ func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLo
 	return i, err
 }
 
+const athletesNeedingEddington = `-- name: AthletesNeedingEddington :many
+SELECT
+	athlete_logins.athlete_id, athlete_eddingtons.last_calculated
+FROM
+	athlete_logins
+	LEFT JOIN
+		athlete_eddingtons
+		ON athlete_eddingtons.athlete_id = athlete_logins.athlete_id
+WHERE
+	athlete_eddingtons.last_calculated IS NULL -- null is never loaded
+	OR athlete_eddingtons.last_calculated < (now() - interval '24hr')
+`
+
+type AthletesNeedingEddingtonRow struct {
+	AthleteID      int64              `db:"athlete_id" json:"athlete_id"`
+	LastCalculated pgtype.Timestamptz `db:"last_calculated" json:"last_calculated"`
+}
+
+func (q *sqlQuerier) AthletesNeedingEddington(ctx context.Context) ([]AthletesNeedingEddingtonRow, error) {
+	rows, err := q.db.Query(ctx, athletesNeedingEddington)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AthletesNeedingEddingtonRow
+	for rows.Next() {
+		var i AthletesNeedingEddingtonRow
+		if err := rows.Scan(&i.AthleteID, &i.LastCalculated); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const eddingtonActivities = `-- name: EddingtonActivities :many
 SELECT
 	id, distance, total_elevation_gain

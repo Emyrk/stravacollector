@@ -80,6 +80,13 @@ func (m queryMetricsStore) AthleteSyncedActivities(ctx context.Context, arg data
 	return r0, r1
 }
 
+func (m queryMetricsStore) AthletesNeedingEddington(ctx context.Context) ([]database.AthletesNeedingEddingtonRow, error) {
+	start := time.Now()
+	r0, r1 := m.s.AthletesNeedingEddington(ctx)
+	m.queryLatencies.WithLabelValues("AthletesNeedingEddington").Observe(time.Since(start).Seconds())
+	return r0, r1
+}
+
 func (m queryMetricsStore) BestRouteEfforts(ctx context.Context, expectedSegments []int64) ([]database.BestRouteEffortsRow, error) {
 	start := time.Now()
 	r0, r1 := m.s.BestRouteEfforts(ctx, expectedSegments)

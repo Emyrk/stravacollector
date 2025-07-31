@@ -37,3 +37,17 @@ FROM
 WHERE
 	athlete_id = @athlete_id
 ;
+
+-- name: AthletesNeedingEddington :many
+SELECT
+	athlete_logins.athlete_id, athlete_eddingtons.last_calculated
+FROM
+	athlete_logins
+	LEFT JOIN
+		athlete_eddingtons
+		ON athlete_eddingtons.athlete_id = athlete_logins.athlete_id
+WHERE
+	athlete_eddingtons.last_calculated IS NULL -- null is never loaded
+	OR athlete_eddingtons.last_calculated < (now() - interval '24hr')
+LIMIT 20 -- Remove this eventually.
+;

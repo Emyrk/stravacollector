@@ -117,6 +117,8 @@ func serverCmd() *cobra.Command {
 					return redownloadHugels(ctx, db, dbURL, logger)
 				case "rehook":
 					return rehook(ctx, db, dbURL, logger)
+				case "eddington":
+					return eddington(ctx, db, logger)
 				default:
 					return fmt.Errorf("unknown script: %s", runScript)
 				}
