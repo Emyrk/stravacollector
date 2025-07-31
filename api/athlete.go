@@ -55,12 +55,12 @@ func (api *API) athlete(rw http.ResponseWriter, r *http.Request) {
 
 func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 	var (
-		ctx         = r.Context()
-		authAth, ok = httpmw.AuthenticatedAthleteIDOptional(r)
-		ath         = httpmw.Athlete(r)
-		page        = r.URL.Query().Get("page")
-		limitStr    = r.URL.Query().Get("limit")
-		err         error
+		ctx      = r.Context()
+		_, ok    = httpmw.AuthenticatedAthleteIDOptional(r)
+		ath      = httpmw.Athlete(r)
+		page     = r.URL.Query().Get("page")
+		limitStr = r.URL.Query().Get("limit")
+		err      error
 	)
 	if !ok {
 		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
@@ -337,9 +337,9 @@ func (api *API) manualFetchActivity(rw http.ResponseWriter, r *http.Request) {
 
 func (api *API) eddingtonNumber(rw http.ResponseWriter, r *http.Request) {
 	var (
-		ctx         = r.Context()
-		authAth, ok = httpmw.AuthenticatedAthleteIDOptional(r)
-		ath         = httpmw.Athlete(r)
+		ctx   = r.Context()
+		_, ok = httpmw.AuthenticatedAthleteIDOptional(r)
+		ath   = httpmw.Athlete(r)
 	)
 	if !ok {
 		httpapi.Write(ctx, rw, http.StatusUnauthorized, modelsdk.Response{
