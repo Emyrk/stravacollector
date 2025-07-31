@@ -3,6 +3,7 @@ package eddington_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/internal/eddington"
