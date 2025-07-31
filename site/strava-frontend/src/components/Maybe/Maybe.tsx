@@ -1,3 +1,4 @@
+import React from "react";
 import { PropsWithChildren } from "react";
 
 export interface MaybeProps {
@@ -12,6 +13,6 @@ export interface MaybeProps {
 export const Maybe = ({
   children,
   condition,
-}: PropsWithChildren<MaybeProps>): JSX.Element | null => {
+}: PropsWithChildren<MaybeProps>): React.JSX.Element | null => {
   return condition ? <>{children}</> : null;
 };
