@@ -25,7 +25,7 @@ FROM
 	activity_summary
 WHERE
 	athlete_id = @athlete_id
-  AND lower(activity_type) = 'ride'
+  AND lower(activity_type) = ANY(ARRAY['ride', 'virtualride'])
 ;
 
 

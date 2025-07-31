@@ -107,7 +107,7 @@ export const EddingtonChart: FC<{}> = ({}) => {
           width={1000}
           height={300}
           data={chartData.miles_histogram.map((value, index) => ({
-            index, value
+            index:index+1, value,
           }))}
           margin={{
             top: 5,

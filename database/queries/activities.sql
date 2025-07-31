@@ -1,5 +1,5 @@
 -- name: TotalRideActivitySummariesCount :one
-SELECT count(*) FROM activity_summary WHERE lower(activity_type) = 'ride';
+SELECT count(*) FROM activity_summary WHERE lower(activity_type) = ANY(ARRAY['ride', 'virtualride']);
 
 -- name: TotalActivityDetailsCount :one
 SELECT count(*) FROM activity_detail;
@@ -166,7 +166,7 @@ FROM
 	activity_summary ON activity_detail.id = activity_summary.id
 WHERE
 	activity_detail.updated_at > Now() - '60 hours' ::interval
-  AND activity_summary.sport_type = 'Ride'
+  AND lower(activity_summary.activity_type) = ANY(ARRAY['ride', 'virtualride'])
   AND
 	(SELECT count(*) FROM segment_efforts WHERE activities_id = activity_detail.id) = 0
 ;

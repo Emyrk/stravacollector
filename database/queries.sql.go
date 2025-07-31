@@ -200,7 +200,7 @@ FROM
 	activity_summary ON activity_detail.id = activity_summary.id
 WHERE
 	activity_detail.updated_at > Now() - '60 hours' ::interval
-  AND activity_summary.sport_type = 'Ride'
+  AND lower(activity_summary.activity_type) = ANY(ARRAY['ride', 'virtualride'])
   AND
 	(SELECT count(*) FROM segment_efforts WHERE activities_id = activity_detail.id) = 0
 `
@@ -242,7 +242,7 @@ func (q *sqlQuerier) TotalActivityDetailsCount(ctx context.Context) (int64, erro
 }
 
 const totalRideActivitySummariesCount = `-- name: TotalRideActivitySummariesCount :one
-SELECT count(*) FROM activity_summary WHERE lower(activity_type) = 'ride'
+SELECT count(*) FROM activity_summary WHERE lower(activity_type) = ANY(ARRAY['ride', 'virtualride'])
 `
 
 func (q *sqlQuerier) TotalRideActivitySummariesCount(ctx context.Context) (int64, error) {
@@ -601,7 +601,7 @@ LEFT JOIN
 		activity_summary.id = activity_detail.id
 WHERE
 	activity_summary.athlete_id = $1 AND
-	LOWER(activity_summary.activity_type) = 'ride'
+	LOWER(activity_summary.activity_type) = ANY(ARRAY['ride', 'virtualride'])
 ORDER BY
     activity_summary.start_date DESC
 LIMIT $3
@@ -791,9 +791,9 @@ const getAthleteLoadDetailed = `-- name: GetAthleteLoadDetailed :one
 SELECT
     athlete_forward_load.athlete_id, athlete_forward_load.activity_time_after, athlete_forward_load.last_load_complete, athlete_forward_load.last_touched, athlete_forward_load.next_load_not_before,
     athletes.id, athletes.summit, athletes.username, athletes.firstname, athletes.lastname, athletes.sex, athletes.city, athletes.state, athletes.country, athletes.follow_count, athletes.friend_count, athletes.measurement_preference, athletes.ftp, athletes.weight, athletes.clubs, athletes.created_at, athletes.updated_at, athletes.fetched_at, athletes.profile_pic_link, athletes.profile_pic_link_medium,
-	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = $1 AND LOWER(activity_summary.activity_type) = 'ride') AS summary_count,
+	(SELECT count(*) FROM activity_summary WHERE activity_summary.athlete_id = $1 AND LOWER(activity_summary.activity_type) = ANY(ARRAY['ride', 'virtualride'])) AS summary_count,
     (SELECT count(*) FROM activity_detail WHERE activity_detail.athlete_id = $1 AND activity_detail.id = ANY(
-		SELECT id FROM activity_summary WHERE activity_summary.athlete_id = $1 AND LOWER(activity_summary.activity_type) = 'ride')
+		SELECT id FROM activity_summary WHERE activity_summary.athlete_id = $1 AND LOWER(activity_summary.activity_type) = ANY(ARRAY['ride', 'virtualride']))
 	) AS detail_count,
 	COALESCE(athlete_hugel_count.count, 0) AS hugel_count
 FROM
@@ -1211,7 +1211,7 @@ FROM
 	activity_summary
 WHERE
 	athlete_id = $1
-  AND lower(activity_type) = 'ride'
+  AND lower(activity_type) = ANY(ARRAY['ride', 'virtualride'])
 `
 
 type EddingtonActivitiesRow struct {
