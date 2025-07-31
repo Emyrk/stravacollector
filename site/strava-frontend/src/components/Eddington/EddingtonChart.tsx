@@ -131,6 +131,8 @@ export const EddingtonChart: FC<{}> = ({}) => {
             dataKey="index" 
             height={30} 
             stroke={theme.colors.brand.stravaOrange} 
+            startIndex={0}
+            endIndex={Math.min(chartData.current_eddington*2, chartData.miles_histogram.length)}
             onChange={(range) => {
               // props.startIndex
               // setZoomRange([range.startIndex, range.endIndex])
