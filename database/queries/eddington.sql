@@ -49,5 +49,4 @@ FROM
 WHERE
 	athlete_eddingtons.last_calculated IS NULL -- null is never loaded
 	OR athlete_eddingtons.last_calculated < (now() - interval '24hr')
-LIMIT 20 -- Remove this eventually.
 ;
