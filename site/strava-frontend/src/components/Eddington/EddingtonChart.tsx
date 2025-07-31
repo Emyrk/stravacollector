@@ -1,64 +1,21 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getAthleteEddington } from "../../api/rest";
 import { Eddington } from "../../api/typesGenerated";
 import { useQuery } from "@tanstack/react-query";
-import { Loading } from "../../components/Loading/Loading";
-import { ErrorBox } from "../../components/ErrorBox/ErrorBox";
-import React, { PureComponent } from 'react';
-import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Line } from 'recharts';
+import { Loading } from "../Loading/Loading";
+import { ErrorBox } from "../ErrorBox/ErrorBox";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Line, ResponsiveContainer, Label, ReferenceDot, Brush } from 'recharts';
 import { ContentType } from "recharts/types/component/Tooltip";
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
+import { useTheme } from "@chakra-ui/react";
+import { BrushStartEndIndex } from "recharts/types/context/brushUpdateContext";
 
-
-const data = [
-  {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: 'Page C',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: 'Page E',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: 'Page F',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: 'Page G',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
 
 export const EddingtonChart: FC<{}> = ({}) => {
   const { athlete_id } = useParams();
-  const [ eddington, setEddington] = useState<Eddington>();
+  const [ zoomRange, setZoomRange ] = useState<[number, number] | undefined>(undefined);
+  const theme = useTheme();
 
 
   const queryKey = ["athlete", athlete_id, "eddington"];
@@ -73,7 +30,7 @@ export const EddingtonChart: FC<{}> = ({}) => {
       queryFn: () =>
         getAthleteEddington(athlete_id || "me"),
       onSuccess: (data) => {
-        setEddington(data)
+      
       },
       onError: (error) => {
         console.error("Error fetching athlete data:", error);
@@ -94,47 +51,76 @@ export const EddingtonChart: FC<{}> = ({}) => {
     
 
   const maxX = chartData.miles_histogram.length + 5;
+  
   const lineData = Array.from({ length: maxX }, (_, x) => ({
     index: x,
     value: x // y = x
   }));
 
-
+  // const zoomedDomain =
+  // zoomRange !== undefined
+  //   ? [zoomRange[0], zoomRange[1]]
+  //   : [1, chartData.miles_histogram.length];
 
   return (
     <>
+    <div style={{ width: '100%', height: 300, position: 'relative' }}>
+      <div style={{
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        fontWeight: 'bold',
+        fontSize: '20px',
+        zIndex: 10,
+        background: 'rgba(0,0 , 0, 0.6)',
+        padding: '5px',
+      }}>
+        Eddington Number = <span style={{color: theme.colors.brand.stravaOrange}}>{chartData.current_eddington}</span>
+      </div>
+    
+    <ResponsiveContainer width="100%" height={300}>
         <BarChart
-          width={1000}
-          height={300}
           data={chartData.miles_histogram.map((value, index) => ({
             index:index+1, value,
           }))}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
+          // margin={{
+          //   top: 5,
+          //   right: 30,
+          //   left: 20,
+          //   bottom: 5,
+          // }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="index" 
-            domain={[0, maxX]}
-            type = "number"
+            // type = "number"
+            ticks={Array.from({ length: Math.floor(maxX / 25) + 1 }, (_, i) => i * 25)}
           />
-          <YAxis />
+          <YAxis 
+          />
           <Tooltip content={CustomTooltip}/>
           {/* <Legend /> */}
           <Bar dataKey="value" fill="#8884d8" />
-          <Line
+          {/* <Line
             data={lineData}
             type="linear"
-            dataKey="value"
+            dataKey="index"
             stroke="red"
             dot={false}
             isAnimationActive={false}
-          />
+          /> */}
+          {/*  Other option */}
+          {/* <ReferenceDot x={200} y={200} r={0} fill="none">
+            <Label value="Eddington Number" position="top" offset={10} />
+          </ReferenceDot> */}
+          <Brush dataKey="index" height={30} stroke="#8884d8" onChange={(range) => {
+            // props.startIndex
+            // setZoomRange([range.startIndex, range.endIndex])
+            // console.log("Brush changed:", range);
+          }}/>
         </BarChart>
+      </ResponsiveContainer>
+      </div>
     </>
   );
 };
@@ -151,4 +137,5 @@ const CustomTooltip: ContentType<ValueType, NameType> = ({ active, payload, labe
 
   return null;
 };
+
 

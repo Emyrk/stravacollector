@@ -8,49 +8,54 @@ import { getAthlete, getAthleteSyncSummary } from "../../api/rest";
 import { AthleteSummary } from "../../api/typesGenerated";
 import { useQuery } from "@tanstack/react-query";
 import { Loading } from "../../components/Loading/Loading";
-import { EddingtonChart } from "./EddingtonChart";
+import { EddingtonChart } from "../../components/Eddington/EddingtonChart";
+import { ErrorBox } from "../../components/ErrorBox/ErrorBox";
 
 
 
 
-export const Eddington: FC<{}> = ({}) => {
+export const Eddington: FC<{}> = ({ }) => {
   const { athlete_id } = useParams();
   const { authenticatedUser } = useAuthenticated();
-  const [ athlete, setAthlete] = useState<AthleteSummary>();
+  const [athlete, setAthlete] = useState<AthleteSummary>();
 
   const queryKey = ["athlete", athlete_id];
-    const {
-      data: athleteData,
-      error: athleteError,
-      isLoading: athleteLoading,
-      isFetched: athleteFetched,
-      // refetch: athleteRefetch,
-    } = useQuery({
-      queryKey,
-      enabled: !!athlete_id,
-      queryFn: () =>
-        getAthlete(athlete_id || "me"),
-      onSuccess: (data) => {
-        if(data) {
-          setAthlete(data);
-        }
-      },
-      onError: (error) => {
-        console.error("Error fetching athlete data:", error);
+  const {
+    data: athleteData,
+    error: athleteError,
+    isLoading: athleteLoading,
+    isFetched: athleteFetched,
+    // refetch: athleteRefetch,
+  } = useQuery({
+    queryKey,
+    enabled: !!athlete_id,
+    queryFn: () =>
+      getAthlete(athlete_id || "me"),
+    onSuccess: (data) => {
+      if (data) {
+        setAthlete(data);
       }
-    });
+    },
+    onError: (error) => {
+      console.error("Error fetching athlete data:", error);
+    }
+  });
 
   if (
     (!athlete || athleteLoading)
   ) {
     return <Loading />;
   }
-    
+
+  if (athleteError) {
+    return <ErrorBox error="Error fetching athlete data." detail={athleteError} />;
+  }
+
 
   return (
     <>
-     <Container maxW="3xl">
-      <Flex flexDirection={"column"} gap="60px">
+      <Container maxW="3xl">
+        <Flex flexDirection={"column"} gap="60px">
           <Box textAlign={"center"}>
             <AthleteAvatar
               styleProps={{ marginBottom: "20px" }}
@@ -74,8 +79,13 @@ export const Eddington: FC<{}> = ({}) => {
             </Flex>
           </Box>
         </Flex>
-     </Container>
-     <EddingtonChart />
+      </Container>
+
+      <Box padding="10" textAlign="center"> </Box>
+
+      <Container maxW="7xl">
+        <EddingtonChart />
+      </Container>
     </>
   );
 };

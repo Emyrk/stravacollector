@@ -79,6 +79,7 @@ import {
 } from "@chakra-ui/icons";
 import { Maybe } from "../../components/Maybe/Maybe";
 import { ErrorBox } from "../../components/ErrorBox/ErrorBox";
+import { EddingtonChart } from "../../components/Eddington/EddingtonChart";
 
 const initialTableState = {
   limit: 10,
@@ -156,6 +157,7 @@ export const AthleteMePage: FC<{}> = ({}) => {
         athlete={athleteSummary}
         hugel_efforts={athleteHugelsData}
       />
+
       <Box position="relative" padding="10">
         <Divider />
         <AbsoluteCenter bg="chakra-body-bg" px="4">
