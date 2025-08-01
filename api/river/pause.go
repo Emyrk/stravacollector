@@ -8,7 +8,7 @@ import (
 	"github.com/riverqueue/river"
 )
 
-func (mgr *Manager) Pause(until time.Time, queue string) error {
+func (mgr *Manager) Pause(until time.Time, reason, queue string) error {
 	q, err := mgr.cli.QueueGet(mgr.appCtx, queue)
 	if err == nil && q.PausedAt != nil {
 		// Already paused, no need to pause it again.
@@ -20,7 +20,7 @@ func (mgr *Manager) Pause(until time.Time, queue string) error {
 		return fmt.Errorf("could not pause queue: %w", err)
 	}
 
-	_, err = mgr.EnqueueResume(until, queue)
+	_, err = mgr.EnqueueResume(until, reason, queue)
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func (mgr *Manager) Pause(until time.Time, queue string) error {
 	return nil
 }
 
-func (m *Manager) EnqueueResume(until time.Time, queue string, opts ...func(j *river.InsertOpts)) (bool, error) {
+func (m *Manager) EnqueueResume(until time.Time, reason, queue string, opts ...func(j *river.InsertOpts)) (bool, error) {
 	iopts := &river.InsertOpts{
 		ScheduledAt: until,
 	}
@@ -40,6 +40,7 @@ func (m *Manager) EnqueueResume(until time.Time, queue string, opts ...func(j *r
 		Queues: []string{queue},
 		// 10s debounce to prevent dupe hits on scheduled jobs.
 		RandomID: until.Unix() / 10,
+		Reason:   reason,
 	}, iopts)
 
 	skipped := false
@@ -54,7 +55,8 @@ type ResumeArgs struct {
 	Queues []string `json:"queue"`
 	// RandomID is used to prevent dupe hits on scheduled jobs.
 	// The cron jobs will want to be ignored when a dupe is hit.
-	RandomID int64 `json:"random_id,omitzero"`
+	RandomID int64  `json:"random_id,omitzero"`
+	Reason   string `json:"reason,omitempty"`
 }
 
 func (ResumeArgs) Kind() string { return "resume" }

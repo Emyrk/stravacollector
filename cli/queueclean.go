@@ -49,7 +49,7 @@ func queueClean(ctx context.Context, db database.Store, dbURL string, logger zer
 			fmt.Print(".")
 			_, err := riverManager.Cli().JobDelete(ctx, job.ID)
 			if err != nil {
-				return fmt.Errorf("delete job %s: %w", job.ID, err)
+				return fmt.Errorf("delete job %d: %w", job.ID, err)
 			}
 			total++
 		}

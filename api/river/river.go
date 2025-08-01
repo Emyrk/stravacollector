@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"runtime"
 	"time"
 
 	"github.com/Emyrk/strava/database"
@@ -285,17 +286,31 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 }
 
 func (m *Manager) StravaSnooze(ctx context.Context) error {
+	from := caller(1)
+
 	// TODO: Pause the queue until the next interval, not just 15minutes
 	_ = river.RecordOutput(ctx, "hitting strava rate limit, job going to pause for 15 minutes")
-	_ = m.Pause(time.Now().Add(time.Minute*15), riverStravaQueue)
-	_ = m.Pause(time.Now().Add(time.Minute*15), riverBackloadQueue)
+	_ = m.Pause(time.Now().Add(time.Minute*15), from, riverStravaQueue)
+	_ = m.Pause(time.Now().Add(time.Minute*15), from, riverBackloadQueue)
 	return river.JobSnooze(time.Minute * 15)
 }
 
 func (m *Manager) StravaMaintaince(ctx context.Context, reason string) error {
+	from := caller(1)
+
 	// TODO: Pause the queue until the next interval, not just 15minutes
 	_ = river.RecordOutput(ctx, fmt.Sprintf("strava is offline, or in maintaince: %s", reason))
-	_ = m.Pause(time.Now().Add(time.Minute*15), riverStravaQueue)
-	_ = m.Pause(time.Now().Add(time.Minute*15), riverBackloadQueue)
+	_ = m.Pause(time.Now().Add(time.Minute*15), from, riverStravaQueue)
+	_ = m.Pause(time.Now().Add(time.Minute*15), from, riverBackloadQueue)
 	return river.JobSnooze(time.Minute * 15)
+}
+
+func caller(skip int) string {
+	pc, _, _, ok := runtime.Caller(skip + 1)
+	if !ok {
+		return "unknown"
+	}
+
+	details := runtime.FuncForPC(pc)
+	return details.Name()
 }
