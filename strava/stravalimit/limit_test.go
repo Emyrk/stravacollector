@@ -11,6 +11,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestNextInterval(t *testing.T) {
+	t.Parallel()
+
+	next := NextIntervalReset(time.Now())
+	fmt.Println(next)
+}
+
 func TestInterval(t *testing.T) {
 	t.Parallel()
 

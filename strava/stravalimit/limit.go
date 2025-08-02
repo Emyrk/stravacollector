@@ -218,3 +218,13 @@ func NextDailyReset(now time.Time) time.Duration {
 	midnight = midnight.AddDate(0, 0, 1)
 	return midnight.Sub(now)
 }
+
+func NextIntervalReset(now time.Time) time.Time {
+	// Strip to the nearest past 15-minute boundary
+	rounded := now.Truncate(15 * time.Minute)
+	if now.Equal(rounded) {
+		return now.Add(15 * time.Minute)
+	}
+
+	return rounded.Add(15 * time.Minute)
+}

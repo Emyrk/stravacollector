@@ -10,6 +10,7 @@ import (
 
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/internal/debounce"
+	"github.com/Emyrk/strava/strava/stravalimit"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -288,10 +289,10 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 func (m *Manager) StravaSnooze(ctx context.Context) error {
 	from := caller(1)
 
-	// TODO: Pause the queue until the next interval, not just 15minutes
+	nextInterval := stravalimit.NextIntervalReset(time.Now()).Add(time.Second * 5)
 	_ = river.RecordOutput(ctx, "hitting strava rate limit, job going to pause for 15 minutes")
-	_ = m.Pause(time.Now().Add(time.Minute*15), from, riverStravaQueue)
-	_ = m.Pause(time.Now().Add(time.Minute*15), from, riverBackloadQueue)
+	_ = m.Pause(nextInterval, from, riverStravaQueue)
+	_ = m.Pause(nextInterval, from, riverBackloadQueue)
 	return river.JobSnooze(time.Minute * 15)
 }
 
