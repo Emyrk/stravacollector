@@ -12,6 +12,7 @@ import (
 
 type sqlcQuerier interface {
 	AllCompetitiveRoutes(ctx context.Context) ([]CompetitiveRoute, error)
+	AllEddingtons(ctx context.Context) ([]AllEddingtonsRow, error)
 	AthleteHugelActivites(ctx context.Context, athleteID int64) ([]AthleteHugelActivitesRow, error)
 	AthleteSyncedActivities(ctx context.Context, arg AthleteSyncedActivitiesParams) ([]AthleteSyncedActivitiesRow, error)
 	AthletesNeedingEddington(ctx context.Context) ([]AthletesNeedingEddingtonRow, error)

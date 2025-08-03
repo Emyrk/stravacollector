@@ -1204,6 +1204,41 @@ func (q *sqlQuerier) UpsertAthleteLogin(ctx context.Context, arg UpsertAthleteLo
 	return i, err
 }
 
+const allEddingtons = `-- name: AllEddingtons :many
+SELECT
+	athlete_eddingtons.athlete_id,
+	athlete_eddingtons.current_eddington,
+	athlete_eddingtons.total_activities
+FROM
+	athlete_eddingtons
+`
+
+type AllEddingtonsRow struct {
+	AthleteID        int64 `db:"athlete_id" json:"athlete_id"`
+	CurrentEddington int32 `db:"current_eddington" json:"current_eddington"`
+	TotalActivities  int32 `db:"total_activities" json:"total_activities"`
+}
+
+func (q *sqlQuerier) AllEddingtons(ctx context.Context) ([]AllEddingtonsRow, error) {
+	rows, err := q.db.Query(ctx, allEddingtons)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AllEddingtonsRow
+	for rows.Next() {
+		var i AllEddingtonsRow
+		if err := rows.Scan(&i.AthleteID, &i.CurrentEddington, &i.TotalActivities); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const athletesNeedingEddington = `-- name: AthletesNeedingEddington :many
 SELECT
 	athlete_logins.athlete_id, athlete_eddingtons.last_calculated

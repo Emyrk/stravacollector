@@ -66,6 +66,13 @@ func (m queryMetricsStore) AllCompetitiveRoutes(ctx context.Context) ([]database
 	return r0, r1
 }
 
+func (m queryMetricsStore) AllEddingtons(ctx context.Context) ([]database.AllEddingtonsRow, error) {
+	start := time.Now()
+	r0, r1 := m.s.AllEddingtons(ctx)
+	m.queryLatencies.WithLabelValues("AllEddingtons").Observe(time.Since(start).Seconds())
+	return r0, r1
+}
+
 func (m queryMetricsStore) AthleteHugelActivites(ctx context.Context, athleteID int64) ([]database.AthleteHugelActivitesRow, error) {
 	start := time.Now()
 	r0, r1 := m.s.AthleteHugelActivites(ctx, athleteID)

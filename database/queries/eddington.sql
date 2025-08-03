@@ -50,3 +50,13 @@ WHERE
 	athlete_eddingtons.last_calculated IS NULL -- null is never loaded
 	OR athlete_eddingtons.last_calculated < (now() - interval '24hr')
 ;
+
+
+-- name: AllEddingtons :many
+SELECT
+	athlete_eddingtons.athlete_id,
+	athlete_eddingtons.current_eddington,
+	athlete_eddingtons.total_activities
+FROM
+	athlete_eddingtons
+;

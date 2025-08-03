@@ -192,6 +192,9 @@ func (api *API) Routes() chi.Router {
 					r.Get("/eddington", api.eddingtonNumber)
 				})
 			})
+			r.Route("/athletes", func(r chi.Router) {
+				r.Get("/eddington", api.allEddingtons)
+			})
 		})
 		r.Group(func(r chi.Router) {
 			// Authenticated routes

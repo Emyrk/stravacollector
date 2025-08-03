@@ -371,6 +371,32 @@ func (api *API) eddingtonNumber(rw http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (api *API) allEddingtons(rw http.ResponseWriter, r *http.Request) {
+	var (
+		ctx = r.Context()
+	)
+
+	all, err := api.Opts.DB.AllEddingtons(ctx)
+	if err != nil {
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, modelsdk.Response{
+			Message: "Failed to fetch authenticated athlete eddington information",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
+	sdkAll := make([]modelsdk.EddingtonShort, 0, len(all))
+	for _, ath := range all {
+		sdkAll = append(sdkAll, modelsdk.EddingtonShort{
+			AthleteID:        ath.AthleteID,
+			CurrentEddington: ath.CurrentEddington,
+			TotalActivities:  ath.TotalActivities,
+		})
+	}
+
+	httpapi.Write(ctx, rw, http.StatusOK, all)
+}
+
 func convertActivitySummary(activity database.ActivitySummary) modelsdk.ActivitySummary {
 	return modelsdk.ActivitySummary{
 		ActivityID:     modelsdk.StringInt(activity.ID),
