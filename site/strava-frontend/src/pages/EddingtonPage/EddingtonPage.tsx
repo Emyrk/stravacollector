@@ -25,9 +25,7 @@ export const EddingtonPage: FC<{}> = ({}) => {
     authenticatedUser?.athlete_id?.toString() === "2661162"
   ) {
     return <>
-    <Eddington />
-
-    { authenticatedUser?.athlete_id?.toString() === "2661162" ? <EddingtonAllChart /> : <></>}
+      <Eddington />
     </>;
   }
   return <>

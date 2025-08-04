@@ -51,13 +51,16 @@ export const EddingtonAllChart: FC<{}> = ({}) => {
   const highest = Math.max.apply(Math, chartData.map((value) => value.current_eddington))
 
 
-  const barData = chartData.reduce<number[]>((prev, value) => {
+  const initialData = chartData.reduce<number[]>((prev, value) => {
     prev[value.current_eddington-1]++
     return prev
-  }, new Array<number>(highest)).
-  map((value, index) => ({
-    index:index+1, value,
+  }, new Array<number>(highest).fill(0))
+
+  const barData = initialData.map((value, index) => ({
+    index:index+1, value:value,
   }))
+
+  console.log(barData)
 
   // const zoomedDomain =
   // zoomRange !== undefined
@@ -103,13 +106,6 @@ export const EddingtonAllChart: FC<{}> = ({}) => {
           {/* <Legend /> */}
           {/* Before "#8884d8" */}
           <Bar dataKey="value" fill="#8884d8" />
-          <Line
-            type="linear"
-            dataKey="index"
-            stroke="rgba(255, 0, 0, 0.6)"
-            dot={false}
-            isAnimationActive={false}
-          />
           {/*  Other option */}
           {/* <ReferenceDot x={200} y={200} r={0} fill="none">
             <Label value="Eddington Number" position="top" offset={10} />

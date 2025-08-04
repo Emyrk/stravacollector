@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Loading } from "../../components/Loading/Loading";
 import { EddingtonChart } from "../../components/Eddington/EddingtonChart";
 import { ErrorBox } from "../../components/ErrorBox/ErrorBox";
+import { EddingtonAllChart } from "../../components/Eddington/EddingtonAllChart";
 
 
 
@@ -99,6 +100,9 @@ export const Eddington: FC<{}> = ({ }) => {
 
       <Container maxW="7xl">
         <EddingtonChart />
+
+        { authenticatedUser?.athlete_id?.toString() === "2661162" ? <EddingtonAllChart /> : <></>}
+
       </Container>
     </>
   );
