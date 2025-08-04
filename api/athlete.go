@@ -388,13 +388,12 @@ func (api *API) allEddingtons(rw http.ResponseWriter, r *http.Request) {
 	sdkAll := make([]modelsdk.EddingtonShort, 0, len(all))
 	for _, ath := range all {
 		sdkAll = append(sdkAll, modelsdk.EddingtonShort{
-			AthleteID:        ath.AthleteID,
 			CurrentEddington: ath.CurrentEddington,
 			TotalActivities:  ath.TotalActivities,
 		})
 	}
 
-	httpapi.Write(ctx, rw, http.StatusOK, all)
+	httpapi.Write(ctx, rw, http.StatusOK, sdkAll)
 }
 
 func convertActivitySummary(activity database.ActivitySummary) modelsdk.ActivitySummary {

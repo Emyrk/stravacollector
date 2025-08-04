@@ -9,6 +9,7 @@ import { Loading } from "../../components/Loading/Loading";
 import { useAuthenticated } from "../../contexts/Authenticated";
 import { ErrorBox } from "../../components/ErrorBox/ErrorBox";
 import { Eddington } from "./Eddington";
+import { EddingtonAllChart } from "../../components/Eddington/EddingtonAllChart";
 
 export const EddingtonPage: FC<{}> = ({}) => {
   const { athlete_id } = useParams();
@@ -23,7 +24,11 @@ export const EddingtonPage: FC<{}> = ({}) => {
     // Or Steven
     authenticatedUser?.athlete_id?.toString() === "2661162"
   ) {
-    return <Eddington />;
+    return <>
+    <Eddington />
+
+    { authenticatedUser?.athlete_id?.toString() === "2661162" ? <EddingtonAllChart /> : <></>}
+    </>;
   }
   return <>
     <ErrorBox error="You are not allowed to view this page." />

@@ -124,6 +124,12 @@ export interface Eddington {
 }
 
 // From modelsdk/athlete.go
+export interface EddingtonShort {
+    current_eddington: number;
+    total_activities: number;
+}
+
+// From modelsdk/athlete.go
 export interface HugelLeaderBoard {
     personal_best?: HugelLeaderBoardActivity;
     superlatives: SuperlativeList;

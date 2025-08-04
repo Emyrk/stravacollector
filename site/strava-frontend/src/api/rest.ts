@@ -118,6 +118,19 @@ export const getAthleteEddington = async (
   }
 };
 
+export const getAllAthleteEddingtons = async (
+): Promise<TypesGen.EddingtonShort[] | undefined> => {
+  try {
+    const response = await axios.get<TypesGen.EddingtonShort[]>(
+      `/api/v1/athletes/eddington`,
+      {}
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getHugelSegments = async (): Promise<
   TypesGen.CompetitiveRoutesResponse | undefined
 > => {

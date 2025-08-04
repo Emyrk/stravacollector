@@ -151,7 +151,6 @@ type Eddington struct {
 }
 
 type EddingtonShort struct {
-	AthleteID        int64 `json:"athlete_id"`
 	CurrentEddington int32 `json:"current_eddington"`
 	TotalActivities  int32 `json:"total_activities"`
 }
