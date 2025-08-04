@@ -52,7 +52,10 @@ export const EddingtonAllChart: FC<{}> = ({}) => {
 
 
   const initialData = chartData.reduce<number[]>((prev, value) => {
-    prev[value.current_eddington-1]++
+    for (let i = 0; i < value.current_eddington; i++) {
+      prev[i -1] ++;
+    }
+    // prev[value.current_eddington-1]++
     return prev
   }, new Array<number>(highest).fill(0))
 
@@ -145,7 +148,7 @@ const CustomTooltip: ContentType<ValueType, NameType> = ({ active, payload, labe
     return (
       <div className="bg-white p-2 border border-gray-300 rounded shadow">
         <p><strong>Miles:</strong> {label}</p>
-        <p><strong># Rides:</strong> {payload[0].value}</p>
+        <p><strong># Athletes:</strong> {payload[0].value}</p>
       </div>
     );
   }
