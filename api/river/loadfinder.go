@@ -53,14 +53,23 @@ func (w *LoadFinderWorker) Work(ctx context.Context, job *river.Job[LoadFinderAr
 	}
 
 	out := make(map[string]string)
+	skipped := 0
+	failed := 0
 	for _, athlete := range need {
-		_, err := w.mgr.EnqueueForwardLoad(ctx, athlete.AthleteForwardLoad.AthleteID)
+		skip, err := w.mgr.EnqueueForwardLoad(ctx, athlete.AthleteForwardLoad.AthleteID)
 		if err != nil {
 			out[fmt.Sprintf("https://www.strava.com/athletes/%d", athlete.AthleteLogin.AthleteID)] = err.Error()
+			failed++
+		}
+		if err == nil && skip {
+			skipped++
 		}
 	}
 
 	out["quantity"] = fmt.Sprintf("%d athletes included", len(need))
+	out["actual"] = fmt.Sprintf("%d load jobs started", len(need)-failed-skipped)
+	out["skipped"] = fmt.Sprintf("%d athletes skipped", skipped)
+	out["failed"] = fmt.Sprintf("%d athletes failed", failed)
 	_ = river.RecordOutput(ctx, out)
 	return nil
 }
