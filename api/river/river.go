@@ -137,6 +137,13 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			},
 			&river.PeriodicJobOpts{RunOnStart: true},
 		),
+		river.NewPeriodicJob(
+			sixly,
+			func() (river.JobArgs, *river.InsertOpts) {
+				return GarbageCollectArgs{}, nil
+			},
+			&river.PeriodicJobOpts{RunOnStart: true},
+		),
 	}
 
 	riverClient, err := river.NewClient(riverpgxv5.New(pool), (&river.Config{
@@ -282,6 +289,9 @@ func (m *Manager) initWorkers(workers *river.Workers) {
 		mgr: m,
 	})
 	river.AddWorker[QueueEddingtonArgs](workers, &QueueEddingtonWorker{
+		mgr: m,
+	})
+	river.AddWorker[GarbageCollectArgs](workers, &GarbageCollectWorker{
 		mgr: m,
 	})
 }
