@@ -76,7 +76,7 @@ GarbageCollectLoop:
 				ResumeArgs{}.Kind(),
 				ReloadSegmentsArgs{}.Kind(),
 			).
-			States(rivertype.JobStateCompleted).
+			//States(rivertype.JobStateCompleted).
 			OrderBy(river.JobListOrderByFinalizedAt, river.SortOrderAsc)
 		if cursor != nil {
 			params = params.After(cursor)
