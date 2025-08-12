@@ -317,6 +317,15 @@ func (w *ForwardLoadWorker) getActivities(ctx context.Context, cli *strava.Clien
 				_ = river.RecordOutput(ctx, getActivitiesUnauthenticated.Error())
 				return nil, getActivitiesUnauthenticated
 			}
+
+			if se.Response.StatusCode == http.StatusBadRequest &&
+				(strings.Contains(string(se.Body), `"field":"refresh_token"`) && strings.Contains(string(se.Body), `"code":"invalid"}`)) {
+				// TODO: JSON decode and proper handle
+				// {"message":"Bad Request","errors":[{"resource":"RefreshToken","field":"refresh_token","code":"invalid"}]}
+				_ = w.mgr.db.DeleteAthleteLogin(ctx, athlete)
+				_ = river.RecordOutput(ctx, fmt.Sprintf("refresh_token invalid: %s", getActivitiesUnauthenticated.Error()))
+				return nil, getActivitiesUnauthenticated
+			}
 		}
 
 		_ = river.RecordOutput(ctx, fmt.Sprintf("failed to fetch activities: %s", err.Error()))
