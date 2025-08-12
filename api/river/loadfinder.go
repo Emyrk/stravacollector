@@ -52,7 +52,7 @@ func (w *LoadFinderWorker) Work(ctx context.Context, job *river.Job[LoadFinderAr
 		return err
 	}
 
-	out := make(map[string]string)
+	out := make(map[string]any)
 	skipped := 0
 	failed := 0
 	for _, athlete := range need {
@@ -70,6 +70,14 @@ func (w *LoadFinderWorker) Work(ctx context.Context, job *river.Job[LoadFinderAr
 	out["actual"] = fmt.Sprintf("%d load jobs started", len(need)-failed-skipped)
 	out["skipped"] = fmt.Sprintf("%d athletes skipped", skipped)
 	out["failed"] = fmt.Sprintf("%d athletes failed", failed)
+
+	if len(need) < 10 {
+		ids := make([]string, 0, len(need))
+		for _, athlete := range need {
+			ids = append(ids, fmt.Sprintf("%d", athlete.AthleteForwardLoad.AthleteID))
+		}
+		out["athletes"] = ids
+	}
 	_ = river.RecordOutput(ctx, out)
 	return nil
 }
