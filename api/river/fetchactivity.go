@@ -63,7 +63,7 @@ func (FetchActivityArgs) InsertOpts() river.InsertOpts {
 		Queue: riverStravaQueue,
 		UniqueOpts: river.UniqueOpts{
 			ByArgs:   true,
-			ByPeriod: time.Minute * 5,
+			ByPeriod: time.Hour * 72,
 		},
 	}
 }
