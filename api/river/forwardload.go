@@ -148,9 +148,9 @@ func (w *ForwardLoadWorker) Work(ctx context.Context, job *river.Job[ForwardLoad
 		}
 
 		if len(activities) == 0 {
-			offset := rand.Intn(24 * 3)
-			// Wait 7-10 days before trying again. Webhooks should capture all new activities.
-			params.NextLoadNotBefore = database.Timestamptz(now.Add((time.Hour * 24 * 7) + (time.Hour * time.Duration(offset))))
+			offset := rand.Intn(24 * 5)
+			// Wait 15-20 days before trying again. Webhooks should capture all new activities.
+			params.NextLoadNotBefore = database.Timestamptz(now.Add((time.Hour * 24 * 15) + (time.Hour * time.Duration(offset))))
 		}
 
 		for _, act := range activities {
