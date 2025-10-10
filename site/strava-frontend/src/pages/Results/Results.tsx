@@ -54,22 +54,22 @@ export const Results: FC<{}> = ({}) => {
           </Text>
           <Stack spacing={6} direction={{ base: "column", md: "row" }}>
             <LandingCard
-              heading={"2024 Das Hügel"}
+              heading={"2025 Das Hügel"}
               icon={<Image src="/img/icons/Results2.png" />}
               description={
                 "See how you did on the Hügel this year and find out who won our superlatives."
               }
               hrefText={"Results"}
-              href={"/hugelboard/2024"}
+              href={"/hugelboard/2025"}
             />
             <LandingCard
-              heading={"2024 Hügel Lite"}
+              heading={"2025 Hügel Lite"}
               icon={<Image src="/img/icons/Results1.png" />}
               description={
                 "Full Hügel not in the cards this year? See how you did on the first 40 miles!"
               }
               hrefText={"Results"}
-              href={"/hugelboard/2024?lite=true"}
+              href={"/hugelboard/2025?lite=true"}
             />
             {/* <LandingCard
               heading={"Super Hügel"}
@@ -94,7 +94,27 @@ export const Results: FC<{}> = ({}) => {
             >
               Tour Das Hügel Hall of Fame
             </Heading>
+            {/* 2024 */}
+            <Heading
+              fontWeight={400}
+              fontSize={{ base: "xl" }}
+              lineHeight={"110%"}
+            >
+              <Link as={RouteLink} to={"/hugelboard/2024"}>
+                <Button variant={"link"} color="brand.stravaOrange" size={"xl"}>
+                  2024 Das Hügel
+                </Button>
+              </Link>
 
+              &nbsp;/&nbsp;
+
+              <Link as={RouteLink} to={"/hugelboard/2024"}>
+                <Button variant={"link"} color="brand.stravaOrange" size={"xl"}>
+                  2024 Das Hügel Lite
+                </Button>
+              </Link>
+            </Heading>
+            {/* 2023 */}
             <Heading
               fontWeight={400}
               fontSize={{ base: "xl" }}
