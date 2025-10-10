@@ -108,7 +108,7 @@ export const Results: FC<{}> = ({}) => {
 
               &nbsp;/&nbsp;
 
-              <Link as={RouteLink} to={"/hugelboard/2024"}>
+              <Link as={RouteLink} to={"/hugelboard/2024?lite=true"}>
                 <Button variant={"link"} color="brand.stravaOrange" size={"xl"}>
                   2024 Das Hügel Lite
                 </Button>
