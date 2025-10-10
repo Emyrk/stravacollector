@@ -24,18 +24,25 @@ func New[T any](ctx context.Context, stale time.Duration, fetch func(ctx context
 		Fetch: fetch,
 		once:  sync.Once{},
 	}
-	c.RunEagerLoader(ctx)
+	// Less then this, just let it be
+	if stale > time.Minute*30 {
+		c.RunEagerLoader(ctx)
+	}
 	return c
 }
 
+// RunEagerLoader is a cheap way to try to keep the cache fresh. This solution
+// is pretty weak. Ideally this loader would only call `Touch` right before the
+// cache stale period. This solution just trys frequently enough that it should
+// work out okay.
 func (c *LazyCache[T]) RunEagerLoader(ctx context.Context) {
 	c.once.Do(func() {
-		ticker := time.NewTicker(c.Stale / 2)
+		ticker := time.NewTicker(time.Minute * 15)
 		go func() {
 			for {
 				select {
 				case <-ticker.C:
-					c.Touch(ctx)
+					c.Touch(ctx, time.Minute*30)
 				case <-ctx.Done():
 					ticker.Stop()
 					return
@@ -45,20 +52,20 @@ func (c *LazyCache[T]) RunEagerLoader(ctx context.Context) {
 	})
 }
 
-func (c *LazyCache[T]) Touch(ctx context.Context) {
+func (c *LazyCache[T]) Touch(ctx context.Context, window time.Duration) {
 	stale := c.Stale
 	// Errors should not persist for very long
 	if c.lastError != nil {
 		stale = time.Second * 5
 	}
 
-	if time.Since(c.fetched) > stale {
+	if time.Since(c.fetched) > stale-window {
 		c.updateCache(ctx)
 	}
 }
 
 func (c *LazyCache[T]) Load(ctx context.Context) (T, error) {
-	c.Touch(ctx)
+	c.Touch(ctx, 0)
 
 	c.RLock()
 	defer c.RUnlock()
