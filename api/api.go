@@ -61,7 +61,7 @@ type API struct {
 	Registry *prometheus.Registry
 }
 
-func New(opts Options) (*API, error) {
+func New(ctx context.Context, opts Options) (*API, error) {
 	if opts.Registry == nil {
 		opts.Registry = prometheus.NewRegistry()
 	}
@@ -97,11 +97,11 @@ func New(opts Options) (*API, error) {
 	r = api.Events.Attach(r)
 	api.Handler = r
 
-	api.SuperHugelBoardCache = gencache.New(time.Hour*24, func(ctx context.Context) ([]database.SuperHugelLeaderboardRow, error) {
+	api.SuperHugelBoardCache = gencache.New(ctx, time.Hour*24, func(ctx context.Context) ([]database.SuperHugelLeaderboardRow, error) {
 		return api.Opts.DB.SuperHugelLeaderboard(ctx, 0)
 	})
 
-	api.HugelBoard2023Cache = gencache.New(time.Hour*12, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+	api.HugelBoard2023Cache = gencache.New(ctx, time.Hour*48, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
 		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
 			RouteYear: 2023,
 			HugelLeaderboardParams: database.HugelLeaderboardParams{
@@ -111,7 +111,7 @@ func New(opts Options) (*API, error) {
 			},
 		})
 	})
-	api.HugelBoard2024Cache = gencache.New(time.Hour*4, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+	api.HugelBoard2024Cache = gencache.New(ctx, time.Hour*48, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
 		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
 			HugelLeaderboardParams: database.HugelLeaderboardParams{
 				AthleteID: -1,
@@ -120,7 +120,7 @@ func New(opts Options) (*API, error) {
 			},
 		})
 	})
-	api.HugelBoard2024LiteCache = gencache.New(time.Hour*4, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+	api.HugelBoard2024LiteCache = gencache.New(ctx, time.Hour*48, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
 		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
 			Lite: true,
 			HugelLeaderboardParams: database.HugelLeaderboardParams{
@@ -130,10 +130,10 @@ func New(opts Options) (*API, error) {
 			},
 		})
 	})
-	api.HugelRouteCache = gencache.New(time.Hour*4, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {
+	api.HugelRouteCache = gencache.New(ctx, time.Hour*4, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {
 		return api.Opts.DB.GetCompetitiveRoute(ctx, "das-hugel")
 	})
-	api.HugelLiteRouteCache = gencache.New(time.Hour*4, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {
+	api.HugelLiteRouteCache = gencache.New(ctx, time.Hour*4, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {
 		return api.Opts.DB.GetCompetitiveRoute(ctx, "lite-das-hugel")
 	})
 

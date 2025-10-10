@@ -144,7 +144,7 @@ func serverCmd() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("decode signing key: %w", err)
 			}
-			srv, err := api.New(api.Options{
+			srv, err := api.New(ctx, api.Options{
 				OAuth: api.OAuthOptions{
 					ClientID: clientID,
 					Secret:   secret,
