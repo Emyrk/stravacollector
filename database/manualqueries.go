@@ -22,6 +22,10 @@ func (q *sqlQuerier) YearlyHugelLeaderboard(ctx context.Context, arg YearlyHugel
 		query = strings.ReplaceAll(query, "hugel_activities", "hugel_activities_2023")
 	}
 
+	if arg.RouteYear == 2024 {
+		query = strings.ReplaceAll(query, "hugel_activities", "hugel_activities_2024")
+	}
+
 	if arg.Lite {
 		query = strings.ReplaceAll(query, "hugel_activities", "lite_hugel_activities")
 	}
