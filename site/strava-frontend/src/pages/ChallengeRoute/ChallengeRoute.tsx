@@ -561,7 +561,7 @@ const SegmentCard: FC<{
             <CardStat
               title={"Distance"}
               value={
-                DistanceToLocal(segment.detailed_segment.distance).toFixed(0) +
+                DistanceToLocal(segment.detailed_segment.distance).toFixed(2) +
                 " mi"
               }
             />
