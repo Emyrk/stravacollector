@@ -1,8 +1,8 @@
 -- name: RefreshHugelActivities :exec
-REFRESH MATERIALIZED VIEW hugel_activities;
+REFRESH MATERIALIZED VIEW hugel_activities_2024;
 
 -- name: RefreshHugelLiteActivities :exec
-REFRESH MATERIALIZED VIEW lite_hugel_activities;
+REFRESH MATERIALIZED VIEW lite_hugel_activities_2024;
 
 -- name: RefreshHugel2023Activities :exec
 REFRESH MATERIALIZED VIEW hugel_activities_2023;
@@ -13,14 +13,14 @@ REFRESH MATERIALIZED VIEW super_hugel_activities;
 
 -- name: AthleteHugelActivites :many
 SELECT
-    sqlc.embed(hugel_activities),
+    sqlc.embed(hugel_activities_2024),
     sqlc.embed(activity_summary)
 FROM
-    hugel_activities
+	hugel_activities_2024
 INNER JOIN
-	activity_summary ON hugel_activities.activity_id = activity_summary.id
+	activity_summary ON hugel_activities_2024.activity_id = activity_summary.id
 WHERE
-	hugel_activities.athlete_id = @athlete_id;
+	hugel_activities_2024.athlete_id = @athlete_id;
 
 
 -- name: HugelLeaderboard :many
