@@ -426,8 +426,8 @@ func convertHugelAthleteActivities(activities []database.AthleteHugelActivitesRo
 func convertHugelAthleteActivity(activity database.AthleteHugelActivitesRow) modelsdk.AthleteHugelActivity {
 	return modelsdk.AthleteHugelActivity{
 		Summary:          convertActivitySummary(activity.ActivitySummary),
-		Efforts:          convertHugelSegmentEfforts(activity.HugelActivity.Efforts),
-		TotalTimeSeconds: activity.HugelActivity.TotalTimeSeconds,
+		Efforts:          convertHugelSegmentEfforts(activity.HugelActivities2024.Efforts),
+		TotalTimeSeconds: activity.HugelActivities2024.TotalTimeSeconds,
 	}
 }
 
