@@ -39,6 +39,7 @@ import { Footer } from "./components/Footer/Footer";
 import { AthletePage } from "./pages/AthletePage/AthletePage";
 import { EddingtonPage } from "./pages/EddingtonPage/EddingtonPage";
 import { Results } from "./pages/Results/Results";
+import { AnnouncementBanner } from "./components/AnnouncementBanner/AnnouncementBanner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -102,6 +103,7 @@ export const IncludeNavbar: FC = () => {
     <>
       <Box>
         <Box minH={"90vh"}>
+          <AnnouncementBanner />
           <Navbar />
           <Outlet />
         </Box>
