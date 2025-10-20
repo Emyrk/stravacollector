@@ -37,6 +37,9 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Skeleton,
+  Card,
+  CardBody,
+  Heading,
 } from "@chakra-ui/react";
 import { Dict } from "@chakra-ui/utils";
 import { Link, useParams } from "react-router-dom";
@@ -60,6 +63,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleXmark,
   faCircleCheck,
+  faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 import { FormatDate } from "../HugelBoard/CalcActivity";
 import { StravaLink } from "../../components/StravaLink/StravaLink";
@@ -157,6 +161,59 @@ export const AthleteMePage: FC<{}> = ({}) => {
         athlete={athleteSummary}
         hugel_efforts={athleteHugelsData}
       />
+
+
+      <Box position="relative" padding="10">
+        <Divider />
+        <AbsoluteCenter bg="chakra-body-bg" px="4">
+          <Text fontSize={"1.3em"}>Additional Metrics</Text>
+        </AbsoluteCenter>
+      </Box>
+
+
+      <Container maxW="3xl">
+        <Link to={`/athlete/${athlete_id}/eddington`} style={{ textDecoration: "none" }}>
+          <Card
+            variant="elevated"
+            bg="blue.900"
+            borderWidth="2px"
+            borderColor="blue.600"
+            _hover={{
+              transform: "translateY(-2px)",
+              shadow: "xl",
+              borderColor: "blue.400",
+            }}
+            transition="all 0.2s"
+            cursor="pointer"
+          >
+            <CardBody>
+              <Flex alignItems="center" justifyContent="space-between">
+                <Flex alignItems="center" gap={4}>
+                  <Box
+                    bg="blue.700"
+                    borderRadius="lg"
+                    p={3}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <FontAwesomeIcon icon={faChartLine} size="2x" />
+                  </Box>
+                  <Box>
+                    <Heading size="md" mb={1}>
+                      Your Eddington Number
+                    </Heading>
+                    <Text color="gray.300" fontSize="sm">
+                      Track your cycling distance achievements with the Eddington metric
+                    </Text>
+                  </Box>
+                </Flex>
+                <ChevronRightIcon boxSize={8} />
+              </Flex>
+            </CardBody>
+          </Card>
+        </Link>
+      </Container>
 
       <Box position="relative" padding="10">
         <Divider />

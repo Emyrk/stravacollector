@@ -92,7 +92,7 @@ export const Eddington: FC<{}> = ({ }) => {
       >
         <Flex flexDirection={"column"} pb="0.5em">
           <Text maxWidth={"1050px"} pt="1em">
-              The chart below visualizes your Eddington Number — a metric representing the largest number <strong>n</strong> such that you’ve completed <strong>n</strong> rides of at least <strong>n</strong> miles. Each bar shows how many rides you’ve completed at a given mileage, while the diagonal red line indicates the <em>y = x</em> threshold. The point where your ride count drops below the line defines your current Eddington Number.
+              The chart shows your Eddington Number — the largest number n for which you’ve completed n rides of at least n miles each. Each bar represents how many rides meet or exceed a certain distance, and the red diagonal line marks the y = x threshold. Your Eddington Number is where your ride count first drops below this line.
           </Text>
           <Link color={"#36c"}  href="https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling"> Wikipedia</Link>
         </Flex>
