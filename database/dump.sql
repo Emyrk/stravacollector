@@ -11,6 +11,93 @@ CREATE TYPE activity_detail_source AS ENUM (
 
 COMMENT ON TYPE activity_detail_source IS 'The source of the activity fetching.';
 
+CREATE FUNCTION build_route_view_name(route_name text, route_year integer, route_course text) RETURNS text
+    LANGUAGE plpgsql IMMUTABLE
+    AS $$
+BEGIN
+	RETURN format(
+			'%s_%s_%s-activities',
+			replace(lower(route_name), '-', '_'),
+			route_year,
+			replace(lower(route_course), '-', '_')
+		   );
+END;
+$$;
+
+CREATE PROCEDURE create_route_activities_view(route_name text, route_year integer, route_course text)
+    LANGUAGE plpgsql
+    AS $_$
+DECLARE
+	view_name TEXT := build_route_view_name(route_name, route_year, route_course);
+    sql TEXT;
+BEGIN
+	sql := format($fmt$
+        CREATE MATERIALIZED VIEW IF NOT EXISTS %I AS
+        SELECT *
+        FROM (
+            SELECT
+				activities_id AS activity_id,
+				athlete_id,
+				-- segment_ids is all the segments this activity has efforts on.
+				-- Only segments in the provided list are considered.
+				array_agg(segment_id) :: BIGINT[] AS segment_ids,
+				-- Sum is the total time of all the efforts.
+				sum(elapsed_time) AS total_time_seconds,
+				-- A json struct containing each effort details.
+				json_agg(
+						json_build_object(
+								'activity_id', activities_id,
+								'effort_id', id,
+								'start_date', start_date,
+								'segment_id', segment_id,
+								'elapsed_time', elapsed_time,
+								'moving_time', moving_time,
+								'device_watts', device_watts,
+								'average_watts', average_watts
+						)
+				) AS efforts
+            FROM (
+            	-- This query returns only the best effort per (segment_id, activity_id)
+				SELECT DISTINCT ON (activities_id, segment_id)
+					*
+				FROM
+					segment_efforts
+				WHERE
+				segment_id = ANY (
+					SELECT
+						segments
+					FROM
+						competitive_routes
+					WHERE
+						name = %L
+						AND year = %L
+						AND course = %L
+				)
+                ORDER BY
+                	activities_id, segment_id, elapsed_time ASC
+			) as route_efforts
+			-- Each activity will now be represented by a single aggregated row
+			GROUP BY
+				(activities_id, athlete_id)
+        ) AS merged
+        WHERE segment_ids @> ARRAY(
+            SELECT
+            	segments
+            FROM
+            	competitive_routes
+            WHERE
+            	name = %L
+				AND year = %L
+				AND course = %L
+        )
+    $fmt$, view_name,
+		route_name, route_year, route_course,
+		route_name, route_year, route_course);
+
+	EXECUTE sql;
+END;
+$_$;
+
 CREATE TABLE activity_detail (
     id bigint NOT NULL,
     athlete_id bigint NOT NULL,
@@ -135,8 +222,12 @@ CREATE TABLE competitive_routes (
     name text NOT NULL,
     display_name text NOT NULL,
     description text NOT NULL,
-    segments bigint[] NOT NULL
+    segments bigint[] NOT NULL,
+    year integer DEFAULT 2023 NOT NULL,
+    course text DEFAULT 'full'::text NOT NULL
 );
+
+COMMENT ON COLUMN competitive_routes.course IS 'The course name for the competitive route is used to differentiate between different versions of the same route, such as "lite" or "full".';
 
 CREATE TABLE segment_efforts (
     id bigint NOT NULL,
@@ -554,7 +645,7 @@ ALTER TABLE ONLY athletes
     ADD CONSTRAINT athletes_pkey1 PRIMARY KEY (id);
 
 ALTER TABLE ONLY competitive_routes
-    ADD CONSTRAINT competitive_routes_pkey PRIMARY KEY (name);
+    ADD CONSTRAINT competitive_routes_pkey PRIMARY KEY (name, course, year);
 
 ALTER TABLE ONLY failed_jobs
     ADD CONSTRAINT failed_jobs_pkey PRIMARY KEY (id);
