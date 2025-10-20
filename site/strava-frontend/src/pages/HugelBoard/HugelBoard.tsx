@@ -96,9 +96,8 @@ export const HugelBoard: FC = () => {
         </Text>
       </Flex>
       { yearNumber === 2025 ? (
-        <Container maxW="7xl">
-          <Alert status="info" borderRadius={"md"}>
-            <AlertIcon />
+        <Container maxW="7xl" pt={5}>
+          <Alert borderRadius={"md"} backgroundColor={"#c05621"}>
             <Box>
               <AlertTitle>2025 Das Hügel is not live yet!</AlertTitle>
               <AlertDescription>
