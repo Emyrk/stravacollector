@@ -81,10 +81,8 @@ import {
   ChevronRightIcon,
   ChevronLeftIcon,
 } from "@chakra-ui/icons";
-import { Maybe } from "../../components/Maybe/Maybe";
-import { ErrorBox } from "../../components/ErrorBox/ErrorBox";
-import { EddingtonChart } from "../../components/Eddington/EddingtonChart";
 
+import { ErrorBox } from "../../components/ErrorBox/ErrorBox";
 const initialTableState = {
   limit: 10,
   page: 0,

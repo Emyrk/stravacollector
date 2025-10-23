@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Flex,
   Grid,
@@ -33,6 +33,8 @@ import {
   useTheme,
   Heading,
   Container,
+  ButtonGroup,
+  Button,
 } from "@chakra-ui/react";
 import {
   getErrorDetail,
@@ -44,7 +46,8 @@ import { AthleteAvatar } from "../../components/AthleteAvatar/AthleteAvatar";
 import * as TypesGen from "./../../api/typesGenerated";
 import { HugelBoardGallery } from "./HugelBoardGallery";
 import { HugelBoardTable } from "./HugelBoardTable";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { SexFilterButtons } from "../../components/SexFilter/SexFilter";
 
 export interface HugelBoardProps {
   disableSuperlatives?: boolean;
@@ -54,15 +57,25 @@ export interface HugelBoardProps {
   isFetched: boolean;
 }
 
+export type SexFilter = "all" | "M" | "F";
+
 export const HugelBoard: FC = () => {
-  const params = new URLSearchParams(window.location.search);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const theme = useTheme();
+
+  
+  // const [sexFilter, setSexFilter] = useState<SexFilter>("all");
 
   const { year } = useParams();
   // Default to this year
   const yearNumber = parseInt(year || "2024");
   // TODO: Remove this disable when 2024 ride is complete.
   const disableSuperlatives = year !== "2024";
-  const lite = params.get("lite") === "true";
+  const lite = searchParams.get("lite") === "true";
+  const sexFilter =  searchParams.get("sex") as SexFilter || "all";
+  const allowSexFilter = searchParams.get("sexBoards") === "true" || yearNumber > 2024;
+
 
   const queryKey = ["hugel-leaderboard", year, lite];
   const {
@@ -72,11 +85,35 @@ export const HugelBoard: FC = () => {
     isFetched: hugelFetched,
   } = useQuery({
     queryKey,
-    enabled: yearNumber != 2025,
+    enabled: yearNumber !== 2025,
     queryFn: () => {
       return getHugelLeaderBoard(yearNumber, lite);
     },
   });
+
+  // Filter activities by gender
+const filteredData = hugelLeaderboard
+  ? {
+      ...hugelLeaderboard,
+      activities: hugelLeaderboard.activities?.filter((activity) => {
+        if (sexFilter === "all") return true;
+        return activity.athlete.sex === sexFilter;
+      }).map((activity, index) => ({
+        ...activity,
+        rank: index + 1,
+      })),
+    }
+  : undefined;
+
+  const handleSexFilterChange = (newSex: SexFilter) => {
+    const params = new URLSearchParams(searchParams);
+    if (newSex === "all") {
+      params.delete("sex");
+    } else {
+      params.set("sex", newSex);
+    }
+    navigate({ search: params.toString() }, { replace: true });
+  };
 
   return (
     <>
@@ -95,6 +132,12 @@ export const HugelBoard: FC = () => {
           link to your Hügel activity.
         </Text>
       </Flex>
+      {(allowSexFilter) && (
+        <SexFilterButtons 
+            value={sexFilter} 
+            onChange={handleSexFilterChange} 
+          />
+      )}
       { yearNumber === 2025 ? (
         <Container maxW="7xl" pt={5}>
           <Alert borderRadius={"md"} backgroundColor={"#c05621"}>
@@ -119,7 +162,7 @@ export const HugelBoard: FC = () => {
             <TabPanel key="gallery">
               <HugelBoardGallery
                 disableSuperlatives={disableSuperlatives}
-                data={hugelLeaderboard}
+                data={filteredData}
                 error={hugelLeaderboardError}
                 isLoading={hugelLoading}
                 isFetched={hugelFetched}
@@ -127,7 +170,7 @@ export const HugelBoard: FC = () => {
             </TabPanel>
             <TabPanel key="table">
               <HugelBoardTable
-                data={hugelLeaderboard}
+                data={filteredData}
                 error={hugelLeaderboardError}
                 isLoading={hugelLoading}
                 isFetched={hugelFetched}
