@@ -74,7 +74,7 @@ export const HugelBoard: FC = () => {
   const disableSuperlatives = year !== "2024";
   const lite = searchParams.get("lite") === "true";
   const sexFilter =  searchParams.get("sex") as SexFilter || "all";
-  const allowSexFilter = searchParams.get("sexBoards") === "true" || yearNumber > 2024;
+  const allowSexFilter = searchParams.get("sexboards") === "true" || yearNumber > 2024;
 
 
   const queryKey = ["hugel-leaderboard", year, lite];
