@@ -284,7 +284,7 @@ type HugelActivities2024 struct {
 	Efforts          HugelSegmentEfforts `db:"efforts" json:"efforts"`
 }
 
-type HugelActivity struct {
+type HugelActivities2025 struct {
 	ActivityID       int64               `db:"activity_id" json:"activity_id"`
 	AthleteID        int64               `db:"athlete_id" json:"athlete_id"`
 	SegmentIds       interface{}         `db:"segment_ids" json:"segment_ids"`
@@ -292,7 +292,23 @@ type HugelActivity struct {
 	Efforts          HugelSegmentEfforts `db:"efforts" json:"efforts"`
 }
 
+type HugelActivity struct {
+	ActivityID       int64               `db:"activity_id" json:"activity_id"`
+	AthleteID        int64               `db:"athlete_id" json:"athlete_id"`
+	SegmentIds       []string            `db:"segment_ids" json:"segment_ids"`
+	TotalTimeSeconds int64               `db:"total_time_seconds" json:"total_time_seconds"`
+	Efforts          HugelSegmentEfforts `db:"efforts" json:"efforts"`
+}
+
 type LiteHugelActivities2024 struct {
+	ActivityID       int64       `db:"activity_id" json:"activity_id"`
+	AthleteID        int64       `db:"athlete_id" json:"athlete_id"`
+	SegmentIds       interface{} `db:"segment_ids" json:"segment_ids"`
+	TotalTimeSeconds int64       `db:"total_time_seconds" json:"total_time_seconds"`
+	Efforts          []byte      `db:"efforts" json:"efforts"`
+}
+
+type LiteHugelActivities2025 struct {
 	ActivityID       int64       `db:"activity_id" json:"activity_id"`
 	AthleteID        int64       `db:"athlete_id" json:"athlete_id"`
 	SegmentIds       interface{} `db:"segment_ids" json:"segment_ids"`

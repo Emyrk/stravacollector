@@ -107,6 +107,9 @@ func main() {
 		"s/SELECT.*;//g",
 		// Removes multiple newlines.
 		"/^$/N;/^\\n$/D",
+		// Remove \restrict
+		"/^\\\\restrict/d",
+		"/^\\\\unrestrict/d",
 	} {
 		cmd := exec.Command("sed", "-e", sed)
 		cmd.Stdin = bytes.NewReader(output.Bytes())

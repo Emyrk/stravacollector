@@ -127,13 +127,14 @@ export const HugelBoardGallery: FC<HugelBoardProps> = ({
         {data?.activities.slice(3).map((activity, index) => {
           return (
             <GridItem
-              key={`activity-${index}`}
+              key={`activity-${index}-${activity.athlete_id}`}
               colSpan={{
                 base: 3,
                 lg: 1,
               }}
             >
               <GalleryCard
+                key={`activity-card-${index}-${activity.athlete_id}`}
                 activity={activity}
                 position={index + 4}
                 superlatives={athSuperlatives(activity)}
