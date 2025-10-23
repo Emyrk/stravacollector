@@ -105,7 +105,6 @@ type HugelLeaderBoardActivity struct {
 	ActivityTotalElevationGain float64   `json:"activity_total_elevation_gain"`
 	ActivitySufferScore        int       `json:"activity_suffer_score"`
 	ActivityAchievementCount   int       `json:"activity_achievement_count"`
-	Sex                        string    `json:"sex"`
 }
 
 type SuperHugelLeaderBoard struct {
