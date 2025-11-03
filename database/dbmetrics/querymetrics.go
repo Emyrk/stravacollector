@@ -59,20 +59,6 @@ func (m queryMetricsStore) Close() error {
 	return m.dbMetrics.Close()
 }
 
-func (m queryMetricsStore) RefreshHugelActivities(ctx context.Context) error {
-	start := time.Now()
-	r0 := m.s.RefreshHugelActivities(ctx)
-	m.queryLatencies.WithLabelValues("RefreshHugelActivities").Observe(time.Since(start).Seconds())
-	return r0
-}
-
-func (m queryMetricsStore) RefreshHugelLiteActivities(ctx context.Context) error {
-	start := time.Now()
-	r0 := m.s.RefreshHugelLiteActivities(ctx)
-	m.queryLatencies.WithLabelValues("RefreshHugelLiteActivities").Observe(time.Since(start).Seconds())
-	return r0
-}
-
 func (m queryMetricsStore) AllCompetitiveRoutes(ctx context.Context) ([]database.CompetitiveRoute, error) {
 	start := time.Now()
 	r0, r1 := m.s.AllCompetitiveRoutes(ctx)
