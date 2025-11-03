@@ -257,13 +257,13 @@ const NAV_ITEMS: Array<NavItem> = [
         href: "/results",
         children: [
           {
-            label: "2024 Das Hügel Results",
-            href: "/hugelboard/2024",
+            label: "2025 Das Hügel Results",
+            href: "/hugelboard/2025",
           },
           {
-            label: "2024 Das Hügel Lite Results",
+            label: "2025 Das Hügel Lite Results",
             // subLabel: "See how you did on the Tour Das Hügel",
-            href: "/hugelboard/2024?lite=true",
+            href: "/hugelboard/2025?lite=true",
           },
           {
             label: "Other Results",

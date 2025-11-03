@@ -8,6 +8,7 @@ import (
 var CentralTimeZone *time.Location
 var Year2023 Dates
 var Year2024 Dates
+var Year2025 Dates
 
 type Dates struct {
 	Start time.Time
@@ -32,5 +33,11 @@ func init() {
 	Year2024 = Dates{
 		Start: start2024,
 		End:   start2024.Add(time.Hour * 24 * 3),
+	}
+
+	start2025 := time.Date(2025, 11, 7, 0, 0, 0, 0, CentralTimeZone)
+	Year2025 = Dates{
+		Start: start2025,
+		End:   start2025.Add(time.Hour * 24 * 3),
 	}
 }

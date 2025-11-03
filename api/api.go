@@ -49,10 +49,15 @@ type API struct {
 	Events       *webhooks.ActivityEvents
 	RiverManager *river.Manager
 
-	SuperHugelBoardCache    *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]
-	HugelBoard2023Cache     *gencache.LazyCache[[]database.HugelLeaderboardRow]
+	SuperHugelBoardCache *gencache.LazyCache[[]database.SuperHugelLeaderboardRow]
+
+	HugelBoard2023Cache *gencache.LazyCache[[]database.HugelLeaderboardRow]
+
 	HugelBoard2024Cache     *gencache.LazyCache[[]database.HugelLeaderboardRow]
 	HugelBoard2024LiteCache *gencache.LazyCache[[]database.HugelLeaderboardRow]
+
+	HugelBoard2025Cache     *gencache.LazyCache[[]database.HugelLeaderboardRow]
+	HugelBoard2025LiteCache *gencache.LazyCache[[]database.HugelLeaderboardRow]
 
 	HugelRouteCache     *gencache.LazyCache[database.GetCompetitiveRouteRow]
 	HugelLiteRouteCache *gencache.LazyCache[database.GetCompetitiveRouteRow]
@@ -129,6 +134,27 @@ func New(ctx context.Context, opts Options) (*API, error) {
 				AthleteID: -1,
 				After:     database.Timestamp(hugeldate.Year2024.Start),
 				Before:    database.Timestamp(hugeldate.Year2024.End),
+			},
+		})
+	})
+	api.HugelBoard2024Cache = gencache.New(ctx, time.Minute*15, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
+			RouteYear: 2025,
+			HugelLeaderboardParams: database.HugelLeaderboardParams{
+				AthleteID: -1,
+				After:     database.Timestamp(hugeldate.Year2025.Start),
+				Before:    database.Timestamp(hugeldate.Year2025.End),
+			},
+		})
+	})
+	api.HugelBoard2024LiteCache = gencache.New(ctx, time.Minute*15, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
+			RouteYear: 2025,
+			Lite:      true,
+			HugelLeaderboardParams: database.HugelLeaderboardParams{
+				AthleteID: -1,
+				After:     database.Timestamp(hugeldate.Year2025.Start),
+				Before:    database.Timestamp(hugeldate.Year2025.End),
 			},
 		})
 	})
