@@ -137,7 +137,7 @@ func New(ctx context.Context, opts Options) (*API, error) {
 			},
 		})
 	})
-	api.HugelBoard2024Cache = gencache.New(ctx, time.Minute*15, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+	api.HugelBoard2025Cache = gencache.New(ctx, time.Minute*15, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
 		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
 			RouteYear: 2025,
 			HugelLeaderboardParams: database.HugelLeaderboardParams{
@@ -147,7 +147,7 @@ func New(ctx context.Context, opts Options) (*API, error) {
 			},
 		})
 	})
-	api.HugelBoard2024LiteCache = gencache.New(ctx, time.Minute*15, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+	api.HugelBoard2025LiteCache = gencache.New(ctx, time.Minute*15, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
 		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
 			RouteYear: 2025,
 			Lite:      true,
