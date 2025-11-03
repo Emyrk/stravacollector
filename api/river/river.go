@@ -108,7 +108,15 @@ func New(ctx context.Context, opts Options) (*Manager, error) {
 			},
 			&river.PeriodicJobOpts{RunOnStart: true, ID: "strava_resume"},
 		),
-		// TODO: When hugel goes live, this needs to be updated more frequently
+		river.NewPeriodicJob(
+			halfHourly, // Latest hugel neesd to be updated more frequently
+			func() (river.JobArgs, *river.InsertOpts) {
+				return RefreshViewsArgs{
+					Latest: true,
+				}, nil
+			},
+			&river.PeriodicJobOpts{RunOnStart: false, ID: "refresh_views_latest"},
+		),
 		river.NewPeriodicJob(
 			sixly,
 			func() (river.JobArgs, *river.InsertOpts) {

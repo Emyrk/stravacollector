@@ -27,6 +27,8 @@ func (m *Manager) EnqueueRefreshViews(ctx context.Context, opts ...func(j *river
 }
 
 type RefreshViewsArgs struct {
+	// Latest indicates to only update the latest hugel view
+	Latest bool
 }
 
 func (RefreshViewsArgs) Kind() string { return "refresh_views" }
@@ -36,7 +38,7 @@ func (RefreshViewsArgs) InsertOpts() river.InsertOpts {
 		Priority: PriorityHighest,
 		UniqueOpts: river.UniqueOpts{
 			ByArgs:   true,
-			ByPeriod: time.Minute * 45,
+			ByPeriod: time.Minute * 15,
 		},
 	}
 }
@@ -51,6 +53,8 @@ func (*RefreshViewsWorker) Middleware(job *rivertype.JobRow) []rivertype.WorkerM
 }
 
 func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshViewsArgs]) error {
+	latest := job.Args.Latest
+
 	logger := jobLogFields(w.mgr.logger, job)
 
 	wg := sync.WaitGroup{}
@@ -61,15 +65,6 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 
 	wg.Add(1)
 	go func() {
-		hugel2024LiteErr = w.mgr.db.RefreshHugel2024Activities(ctx)
-
-		hugelLiteErr = w.mgr.db.RefreshHugelLite2024Activities(ctx)
-		hugel2024Done = time.Since(start)
-		wg.Done()
-	}()
-
-	wg.Add(1)
-	go func() {
 		hugelErr = w.mgr.db.RefreshHugel2025Activities(ctx)
 
 		hugelLiteErr = w.mgr.db.RefreshHugelLite2025Activities(ctx)
@@ -77,23 +72,35 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 		wg.Done()
 	}()
 
-	wg.Add(1)
-	go func() {
-		superErr = w.mgr.db.RefreshSuperHugelActivities(ctx)
-		superDone = time.Since(start)
-		wg.Done()
-	}()
+	if !latest {
+		wg.Add(1)
+		go func() {
+			hugel2024LiteErr = w.mgr.db.RefreshHugel2024Activities(ctx)
 
-	wg.Add(1)
-	go func() {
-		hugel2023Err = w.mgr.db.RefreshHugel2023Activities(ctx)
-		hugel2023Done = time.Since(start)
-		wg.Done()
-	}()
+			hugelLiteErr = w.mgr.db.RefreshHugelLite2024Activities(ctx)
+			hugel2024Done = time.Since(start)
+			wg.Done()
+		}()
+
+		wg.Add(1)
+		go func() {
+			superErr = w.mgr.db.RefreshSuperHugelActivities(ctx)
+			superDone = time.Since(start)
+			wg.Done()
+		}()
+
+		wg.Add(1)
+		go func() {
+			hugel2023Err = w.mgr.db.RefreshHugel2023Activities(ctx)
+			hugel2023Done = time.Since(start)
+			wg.Done()
+		}()
+	}
 
 	wg.Wait()
 
 	logger.Info().
+		Bool("latest", latest).
 		AnErr("super_err", superErr).
 		AnErr("hugel_err", hugelErr).
 		AnErr("hugel2023_err", hugel2023Err).
@@ -109,6 +116,7 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 		Msg("refresh views")
 
 	_ = river.RecordOutput(ctx, map[string]any{
+		"latest":             latest,
 		"super_err":          superErr,
 		"hugel_err":          hugelErr,
 		"hugel2023_err":      hugel2023Err,
