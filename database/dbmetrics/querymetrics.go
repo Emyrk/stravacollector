@@ -59,6 +59,20 @@ func (m queryMetricsStore) Close() error {
 	return m.dbMetrics.Close()
 }
 
+func (m queryMetricsStore) RefreshHugelActivities(ctx context.Context) error {
+	start := time.Now()
+	r0 := m.s.RefreshHugelActivities(ctx)
+	m.queryLatencies.WithLabelValues("RefreshHugelActivities").Observe(time.Since(start).Seconds())
+	return r0
+}
+
+func (m queryMetricsStore) RefreshHugelLiteActivities(ctx context.Context) error {
+	start := time.Now()
+	r0 := m.s.RefreshHugelLiteActivities(ctx)
+	m.queryLatencies.WithLabelValues("RefreshHugelLiteActivities").Observe(time.Since(start).Seconds())
+	return r0
+}
+
 func (m queryMetricsStore) AllCompetitiveRoutes(ctx context.Context) ([]database.CompetitiveRoute, error) {
 	start := time.Now()
 	r0, r1 := m.s.AllCompetitiveRoutes(ctx)
@@ -290,17 +304,31 @@ func (m queryMetricsStore) RefreshHugel2023Activities(ctx context.Context) error
 	return r0
 }
 
-func (m queryMetricsStore) RefreshHugelActivities(ctx context.Context) error {
+func (m queryMetricsStore) RefreshHugel2024Activities(ctx context.Context) error {
 	start := time.Now()
-	r0 := m.s.RefreshHugelActivities(ctx)
-	m.queryLatencies.WithLabelValues("RefreshHugelActivities").Observe(time.Since(start).Seconds())
+	r0 := m.s.RefreshHugel2024Activities(ctx)
+	m.queryLatencies.WithLabelValues("RefreshHugel2024Activities").Observe(time.Since(start).Seconds())
 	return r0
 }
 
-func (m queryMetricsStore) RefreshHugelLiteActivities(ctx context.Context) error {
+func (m queryMetricsStore) RefreshHugel2025Activities(ctx context.Context) error {
 	start := time.Now()
-	r0 := m.s.RefreshHugelLiteActivities(ctx)
-	m.queryLatencies.WithLabelValues("RefreshHugelLiteActivities").Observe(time.Since(start).Seconds())
+	r0 := m.s.RefreshHugel2025Activities(ctx)
+	m.queryLatencies.WithLabelValues("RefreshHugel2025Activities").Observe(time.Since(start).Seconds())
+	return r0
+}
+
+func (m queryMetricsStore) RefreshHugelLite2024Activities(ctx context.Context) error {
+	start := time.Now()
+	r0 := m.s.RefreshHugelLite2024Activities(ctx)
+	m.queryLatencies.WithLabelValues("RefreshHugelLite2024Activities").Observe(time.Since(start).Seconds())
+	return r0
+}
+
+func (m queryMetricsStore) RefreshHugelLite2025Activities(ctx context.Context) error {
+	start := time.Now()
+	r0 := m.s.RefreshHugelLite2025Activities(ctx)
+	m.queryLatencies.WithLabelValues("RefreshHugelLite2025Activities").Observe(time.Since(start).Seconds())
 	return r0
 }
 
