@@ -85,7 +85,6 @@ export const HugelBoard: FC = () => {
     isFetched: hugelFetched,
   } = useQuery({
     queryKey,
-    enabled: yearNumber !== 2025,
     queryFn: () => {
       return getHugelLeaderBoard(yearNumber, lite);
     },
@@ -137,22 +136,7 @@ const filteredData = hugelLeaderboard
             value={sexFilter} 
             onChange={handleSexFilterChange} 
           />
-      )}
-      { yearNumber === 2025 ? (
-        <Container maxW="7xl" pt={5}>
-          <Alert borderRadius={"md"} backgroundColor={"#c05621"}>
-            <Box>
-              <AlertTitle>2025 Das Hügel is not live yet!</AlertTitle>
-              <AlertDescription>
-                The 2025 Das Hügel event will be live on November 8th, 2025.
-                Ride will meet at 7:00 AM with a 7:15 AM rollout.
-                <br />
-                Please check back then to see the results and leaderboards.
-              </AlertDescription>
-            </Box>
-          </Alert>
-        </Container>
-      ) : (
+      )} 
         <Tabs isFitted align="center" p="0 1rem">
           <TabList>
             <Tab>🖼️ Gallery</Tab>
@@ -178,8 +162,7 @@ const filteredData = hugelLeaderboard
             </TabPanel>
           </TabPanels>
         </Tabs>
-        )
-      }
+
     </>
   );
 };
