@@ -224,7 +224,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               pt="15px"
               pb="15px"
             >
-              <Link href="https://www.strava.com/routes/3287834903479380952">
+              <Link href="https://www.strava.com/routes/3420097742339142512">
                 <Flex
                   direction={"row"}
                   alignItems={"center"}
@@ -236,10 +236,10 @@ export const ChallengeRoute: FC<{}> = ({}) => {
                     src={"/logos/stravalogo.png"}
                     mr="5px"
                   />
-                  <Text color="brand.stravaOrange">2024 Official Route</Text>
+                  <Text color="brand.stravaOrange">2025 Official Route</Text>
                 </Flex>
               </Link>
-              <Link href="https://www.strava.com/routes/3288659325860289186">
+              <Link href="https://www.strava.com/routes/3420231166589154376">
                 <Flex
                   direction={"row"}
                   alignItems={"center"}
@@ -251,13 +251,13 @@ export const ChallengeRoute: FC<{}> = ({}) => {
                     src={"/logos/stravalogo.png"}
                     mr="5px"
                   />
-                  <Text color={LiteRouteColor}>2024 Official Lite Route</Text>
+                  <Text color={LiteRouteColor}>2025 Official Lite Route</Text>
                 </Flex>
               </Link>
             </Flex>
 
             <Text>
-              When: Saturday, November 9, 2024 7 a.m. Meetup and 7:15 a.m.
+              When: Saturday, November 8, 2025 7 a.m. Meetup and 7:15 a.m.
               Rollout
             </Text>
             <Text>
