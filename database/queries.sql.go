@@ -1734,21 +1734,39 @@ func (q *sqlQuerier) RefreshHugel2023Activities(ctx context.Context) error {
 	return err
 }
 
-const refreshHugelActivities = `-- name: RefreshHugelActivities :exec
+const refreshHugel2024Activities = `-- name: RefreshHugel2024Activities :exec
 REFRESH MATERIALIZED VIEW hugel_activities_2024
 `
 
-func (q *sqlQuerier) RefreshHugelActivities(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, refreshHugelActivities)
+func (q *sqlQuerier) RefreshHugel2024Activities(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, refreshHugel2024Activities)
 	return err
 }
 
-const refreshHugelLiteActivities = `-- name: RefreshHugelLiteActivities :exec
+const refreshHugel2025Activities = `-- name: RefreshHugel2025Activities :exec
+REFRESH MATERIALIZED VIEW hugel_activities_2025
+`
+
+func (q *sqlQuerier) RefreshHugel2025Activities(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, refreshHugel2025Activities)
+	return err
+}
+
+const refreshHugelLite2024Activities = `-- name: RefreshHugelLite2024Activities :exec
 REFRESH MATERIALIZED VIEW lite_hugel_activities_2024
 `
 
-func (q *sqlQuerier) RefreshHugelLiteActivities(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, refreshHugelLiteActivities)
+func (q *sqlQuerier) RefreshHugelLite2024Activities(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, refreshHugelLite2024Activities)
+	return err
+}
+
+const refreshHugelLite2025Activities = `-- name: RefreshHugelLite2025Activities :exec
+REFRESH MATERIALIZED VIEW lite_hugel_activities_2025
+`
+
+func (q *sqlQuerier) RefreshHugelLite2025Activities(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, refreshHugelLite2025Activities)
 	return err
 }
 

@@ -48,8 +48,10 @@ type sqlcQuerier interface {
 	MissingSegments(ctx context.Context, activitiesID int64) ([]string, error)
 	NeedsARefresh(ctx context.Context) ([]NeedsARefreshRow, error)
 	RefreshHugel2023Activities(ctx context.Context) error
-	RefreshHugelActivities(ctx context.Context) error
-	RefreshHugelLiteActivities(ctx context.Context) error
+	RefreshHugel2024Activities(ctx context.Context) error
+	RefreshHugel2025Activities(ctx context.Context) error
+	RefreshHugelLite2024Activities(ctx context.Context) error
+	RefreshHugelLite2025Activities(ctx context.Context) error
 	RefreshSuperHugelActivities(ctx context.Context) error
 	StarSegments(ctx context.Context, arg StarSegmentsParams) error
 	SuperHugelLeaderboard(ctx context.Context, athleteID interface{}) ([]SuperHugelLeaderboardRow, error)

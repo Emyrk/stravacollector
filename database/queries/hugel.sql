@@ -1,7 +1,13 @@
--- name: RefreshHugelActivities :exec
+-- name: RefreshHugel2025Activities :exec
+REFRESH MATERIALIZED VIEW hugel_activities_2025;
+
+-- name: RefreshHugelLite2025Activities :exec
+REFRESH MATERIALIZED VIEW lite_hugel_activities_2025;
+
+-- name: RefreshHugel2024Activities :exec
 REFRESH MATERIALIZED VIEW hugel_activities_2024;
 
--- name: RefreshHugelLiteActivities :exec
+-- name: RefreshHugelLite2024Activities :exec
 REFRESH MATERIALIZED VIEW lite_hugel_activities_2024;
 
 -- name: RefreshHugel2023Activities :exec

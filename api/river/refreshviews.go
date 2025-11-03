@@ -56,14 +56,23 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 	wg := sync.WaitGroup{}
 	start := time.Now()
 
-	var hugelDone, hugel2023Done, superDone time.Duration
-	var hugelErr, hugel2023Err, superErr, hugelLiteErr error
+	var hugelDone, hugel2024Done, hugel2023Done, superDone time.Duration
+	var hugelErr, hugel2024Err, hugel2024LiteErr, hugel2023Err, superErr, hugelLiteErr error
 
 	wg.Add(1)
 	go func() {
-		hugelErr = w.mgr.db.RefreshHugelActivities(ctx)
+		hugel2024LiteErr = w.mgr.db.RefreshHugel2024Activities(ctx)
 
-		hugelLiteErr = w.mgr.db.RefreshHugelLiteActivities(ctx)
+		hugelLiteErr = w.mgr.db.RefreshHugelLite2024Activities(ctx)
+		hugel2024Done = time.Since(start)
+		wg.Done()
+	}()
+
+	wg.Add(1)
+	go func() {
+		hugelErr = w.mgr.db.RefreshHugel2025Activities(ctx)
+
+		hugelLiteErr = w.mgr.db.RefreshHugelLite2025Activities(ctx)
 		hugelDone = time.Since(start)
 		wg.Done()
 	}()
@@ -89,8 +98,13 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 		AnErr("hugel_err", hugelErr).
 		AnErr("hugel2023_err", hugel2023Err).
 		AnErr("hugel_lite_err", hugelLiteErr).
+		AnErr("hugel2024_lite_err", hugel2024LiteErr).
+		AnErr("hugel2024_err", hugel2024Err).
+		AnErr("hugel2025_lite_err", hugelLiteErr).
+		AnErr("hugel2025_err", hugelErr).
 		Str("super_duration", fmt.Sprintf("%.3fs", superDone.Seconds())).
 		Str("hugel_duration", fmt.Sprintf("%.3fs", hugelDone.Seconds())).
+		Str("hugel2024_duration", fmt.Sprintf("%.3fs", hugel2024Done.Seconds())).
 		Str("hugel2023_duration", fmt.Sprintf("%.3fs", hugel2023Done.Seconds())).
 		Msg("refresh views")
 
@@ -98,9 +112,12 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 		"super_err":          superErr,
 		"hugel_err":          hugelErr,
 		"hugel2023_err":      hugel2023Err,
+		"hugel2024_lite_err": hugel2024LiteErr,
 		"hugel_lite_err":     hugelLiteErr,
+
 		"super_duration":     fmt.Sprintf("%.3fs", superDone.Seconds()),
 		"hugel_duration":     fmt.Sprintf("%.3fs", hugelDone.Seconds()),
+		"hugel2024_duration": fmt.Sprintf("%.3fs", hugel2023Done.Seconds()),
 		"hugel2023_duration": fmt.Sprintf("%.3fs", hugel2023Done.Seconds()),
 	})
 	return nil
