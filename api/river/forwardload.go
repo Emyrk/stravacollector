@@ -132,7 +132,7 @@ func (w *ForwardLoadWorker) Work(ctx context.Context, job *river.Job[ForwardLoad
 		}
 
 		w.bumpLoad(ctx, job, now.Add(time.Hour*7))
-		return err
+		return fmt.Errorf("get activities: %w", err)
 	}
 
 	// Insert rows
@@ -302,7 +302,8 @@ func (w *ForwardLoadWorker) stravaCheck(ctx context.Context, logger zerolog.Logg
 func (w *ForwardLoadWorker) getActivities(ctx context.Context, cli *strava.Client, athlete int64, params strava.GetActivitiesParams) ([]strava.ActivitySummary, error) {
 	activities, err := cli.GetActivities(ctx, params)
 	if err != nil {
-		if se := strava.IsAPIError(err); se != nil {
+		se := strava.IsAPIError(err)
+		if se != nil {
 			if se.Response.StatusCode == http.StatusTooManyRequests {
 				return nil, w.mgr.StravaSnooze(ctx)
 			}
@@ -318,17 +319,14 @@ func (w *ForwardLoadWorker) getActivities(ctx context.Context, cli *strava.Clien
 				return nil, getActivitiesUnauthenticated
 			}
 
-			if se.Response.StatusCode == http.StatusBadRequest &&
-				(strings.Contains(string(se.Body), `"field":"refresh_token"`) && strings.Contains(string(se.Body), `"code":"invalid"}`)) {
-				// TODO: JSON decode and proper handle
-				// {"message":"Bad Request","errors":[{"resource":"RefreshToken","field":"refresh_token","code":"invalid"}]}
+			if se.IsRefreshTokenError() {
 				_ = w.mgr.db.DeleteAthleteLogin(ctx, athlete)
 				_ = river.RecordOutput(ctx, fmt.Sprintf("refresh_token invalid: %s", getActivitiesUnauthenticated.Error()))
 				return nil, getActivitiesUnauthenticated
 			}
 		}
 
-		_ = river.RecordOutput(ctx, fmt.Sprintf("failed to fetch activities: %s", err.Error()))
+		_ = river.RecordOutput(ctx, fmt.Sprintf("failed to fetch strava activities, strava_error=%T: %s", se != nil, err.Error()))
 		return nil, err
 	}
 
