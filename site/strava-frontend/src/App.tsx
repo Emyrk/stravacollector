@@ -40,6 +40,7 @@ import { AthletePage } from "./pages/AthletePage/AthletePage";
 import { EddingtonPage } from "./pages/EddingtonPage/EddingtonPage";
 import { Results } from "./pages/Results/Results";
 import { AnnouncementBanner } from "./components/AnnouncementBanner/AnnouncementBanner";
+import { Legal } from "./pages/Legal/Legal";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,6 +71,7 @@ export const App = () => {
                 <Route path="/activity/:activity_id" element={<Activity />} />
                 <Route path="/route/:name" element={<ChallengeRoute />} />
                 <Route path="/signed-out" element={<SignedOut />} />
+                <Route path="/legal" element={<Legal />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Route>

@@ -122,6 +122,16 @@ export const Footer: FC = () => {
             Steven Masley
           </Link>
         </Text>
+
+        {/* Legal disclaimer */}
+        <Link 
+          href="/legal" 
+          fontSize="xs" 
+          opacity={0.6}
+          _hover={{ opacity: 1, color: "brand.stravaOrange" }}
+        >
+          Legal Disclaimer
+        </Link>
       </Flex>
     </Box>
   );
