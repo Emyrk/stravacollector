@@ -78,28 +78,50 @@ export const Footer: FC = () => {
       <Flex
         paddingTop={"5px"}
         justifyContent={"center"}
-        direction="row"
+        direction="column"
         alignItems={"center"}
+        gap={2}
       >
-        <Link
-          marginRight={"20px"}
-          href="https://github.com/Emyrk/stravacollector"
+         {/* Build info and email */}
+        <Flex
+          paddingTop={"5px"}
+          justifyContent={"center"}
+          direction="row"
+          alignItems={"center"}
         >
-          <chakra.img
-            src="/img/github-mark-white.svg"
-            height={"1.75rem"}
-            width={"1.75rem"}
-          />
-        </Link>
+          <Link
+            marginRight={"20px"}
+            href="https://github.com/Emyrk/stravacollector"
+          >
+            <chakra.img
+              src="/img/github-mark-white.svg"
+              height={"1.75rem"}
+              width={"1.75rem"}
+            />
+          </Link>
 
-        <Text fontSize={"sm"} textAlign={"center"}>
-          © 2023 {gitTag}@{gitCommit}
-          <br />
-          Updated on {buildTime}{" "}
+          <Text fontSize={"sm"} textAlign={"center"}>
+            © 2023 {gitTag}@{gitCommit}
+            <br />
+            Updated on {buildTime}{" "}
+          </Text>
+          <Link marginLeft={"20px"} href="mailto: help@dashugel.bike">
+            <FontAwesomeIcon size="2x" icon={faEnvelope} />
+          </Link> 
+        </Flex>
+
+        {/* Personal credit */}
+        <Text fontSize={"xs"} opacity={0.6}>
+          Built by{" "}
+          <Link 
+            href="https://www.strava.com/athletes/2661162" 
+            target="_blank"
+            textDecoration="underline"
+            _hover={{ color: "brand.stravaOrange" }}
+          >
+            Steven Masley
+          </Link>
         </Text>
-        <Link marginLeft={"20px"} href="mailto: help@dashugel.bike">
-          <FontAwesomeIcon size="2x" icon={faEnvelope} />
-        </Link>
       </Flex>
     </Box>
   );
