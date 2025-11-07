@@ -7,6 +7,7 @@ import {
   Flex,
   useColorModeValue,
   Link,
+  HStack,
 } from "@chakra-ui/react";
 import { FC } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -76,7 +77,7 @@ export const Footer: FC = () => {
         <Logo />
       </Flex>
       <Flex
-        paddingTop={"5px"}
+        paddingTop={"3px"}
         justifyContent={"center"}
         direction="column"
         alignItems={"center"}
@@ -110,28 +111,33 @@ export const Footer: FC = () => {
           </Link> 
         </Flex>
 
-        {/* Personal credit */}
-        <Text fontSize={"xs"} opacity={0.6}>
-          Built by{" "}
-          <Link 
-            href="https://www.strava.com/athletes/2661162" 
-            target="_blank"
+        {/* Credits & Legal */}
+        <HStack spacing={3} gap={2} fontSize="xs" opacity={0.6} divider={<Text>•</Text>}>
+          <Text>
+            Built by{" "}
+            <Link
+              href="https://www.strava.com/athletes/2661162"
+              target="_blank"
+              textDecoration="underline"
+              _hover={{ color: "brand.stravaOrange" }}
+            >
+              Steven Masley
+            </Link>
+          </Text>
+
+          <Link
+            href="/legal"
             textDecoration="underline"
             _hover={{ color: "brand.stravaOrange" }}
           >
-            Steven Masley
+            Legal Disclaimer
           </Link>
-        </Text>
+        </HStack>
 
-        {/* Legal disclaimer */}
-        <Link 
-          href="/legal" 
-          fontSize="xs" 
-          opacity={0.6}
-          _hover={{ opacity: 1, color: "brand.stravaOrange" }}
-        >
-          Legal Disclaimer
-        </Link>
+        {/* Short Disclaimer */}
+        <Text fontSize={"xs"} opacity={0.5} textAlign="center" maxW="600px">
+          This is an unofficial results tracker. Ride at your own risk.
+        </Text>
       </Flex>
     </Box>
   );
