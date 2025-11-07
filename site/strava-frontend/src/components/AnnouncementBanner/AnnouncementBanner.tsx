@@ -7,7 +7,11 @@ export const AnnouncementBanner: FC = () => {
   const bgColor = useColorModeValue("brand.stravaOrange", "orange.600");
   const textColor = "white";
 
-  if (!isOpen) {
+   // Hide banner after 9am Central on November 8, 2024
+  const cutoffDate = new Date("2025-11-08T09:00:00-06:00"); // -06:00 is Central Time
+  const now = new Date();
+  
+  if (now >= cutoffDate || !isOpen) {
     return null;
   }
 
