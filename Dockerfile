@@ -9,7 +9,7 @@ RUN npm install react-scripts@3.4.1 -g --silent
 RUN make site-install
 RUN make site
 
-FROM golang:1.23.2-alpine3.20
+FROM golang:1.25.4-alpine3.22
 
 RUN apk --no-cache add make git
 
