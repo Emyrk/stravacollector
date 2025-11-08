@@ -70,8 +70,7 @@ export const HugelBoard: FC = () => {
   const { year } = useParams();
   // Default to this year
   const yearNumber = parseInt(year || "2024");
-  // TODO: Remove this disable when 2024 ride is complete.
-  const disableSuperlatives = year !== "2024";
+  const disableSuperlatives = yearNumber < 2024;
   const lite = searchParams.get("lite") === "true";
   const sexFilter =  searchParams.get("sex") as SexFilter || "all";
   const allowSexFilter = searchParams.get("sexboards") === "true" || yearNumber > 2024;

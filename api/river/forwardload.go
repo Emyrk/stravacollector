@@ -344,7 +344,7 @@ func canBeHugelLite(summary strava.ActivitySummary) bool {
 }
 
 func onHugelDate(summary strava.ActivitySummary) bool {
-	if summary.StartDate.Year() == 2024 && summary.StartDate.Month() == time.November {
+	if summary.StartDate.Year() == 2025 && summary.StartDate.Month() == time.November {
 		if summary.StartDate.Day() > 7 && summary.StartDate.Day() < 12 {
 			return true
 		}
