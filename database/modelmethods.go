@@ -15,6 +15,6 @@ func DistanceToMiles(distance float64) float64 {
 	return distance / 1609.34
 }
 
-func DistanceToFeet(distance float64) float64 {
-	return distance / 3.28084
+func DistanceToFeet(distanceMeters float64) float64 {
+	return distanceMeters * 3.28084
 }
