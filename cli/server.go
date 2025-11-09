@@ -121,6 +121,8 @@ func serverCmd() *cobra.Command {
 					return eddington(ctx, db, logger)
 				case "resume_clean":
 					return removeResumes(ctx, db, dbURL, logger)
+				case "refetch_activities":
+					return refetchActivities(ctx, db, dbURL, logger)
 				case "fetch_clean":
 					return removeDuplicateFetches(ctx, db, dbURL, logger)
 				default:

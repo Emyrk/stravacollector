@@ -104,6 +104,74 @@ func (q *sqlQuerier) GetActivityDetail(ctx context.Context, id int64) (ActivityD
 	return i, err
 }
 
+const getActivitySummariesByDate = `-- name: GetActivitySummariesByDate :many
+SELECT
+	id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate, download_count
+FROM
+	activity_summary
+WHERE
+	start_date > $1
+`
+
+func (q *sqlQuerier) GetActivitySummariesByDate(ctx context.Context, startDate pgtype.Timestamptz) ([]ActivitySummary, error) {
+	rows, err := q.db.Query(ctx, getActivitySummariesByDate, startDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ActivitySummary
+	for rows.Next() {
+		var i ActivitySummary
+		if err := rows.Scan(
+			&i.ID,
+			&i.AthleteID,
+			&i.UploadID,
+			&i.ExternalID,
+			&i.Name,
+			&i.Distance,
+			&i.MovingTime,
+			&i.ElapsedTime,
+			&i.TotalElevationGain,
+			&i.ActivityType,
+			&i.SportType,
+			&i.WorkoutType,
+			&i.StartDate,
+			&i.StartDateLocal,
+			&i.Timezone,
+			&i.UtcOffset,
+			&i.AchievementCount,
+			&i.KudosCount,
+			&i.CommentCount,
+			&i.AthleteCount,
+			&i.PhotoCount,
+			&i.MapID,
+			&i.Trainer,
+			&i.Commute,
+			&i.Manual,
+			&i.Private,
+			&i.Flagged,
+			&i.GearID,
+			&i.AverageSpeed,
+			&i.MaxSpeed,
+			&i.DeviceWatts,
+			&i.HasHeartrate,
+			&i.PrCount,
+			&i.TotalPhotoCount,
+			&i.UpdatedAt,
+			&i.AverageHeartrate,
+			&i.MaxHeartrate,
+			&i.DownloadCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getActivitySummary = `-- name: GetActivitySummary :one
 SELECT
 	id, athlete_id, upload_id, external_id, name, distance, moving_time, elapsed_time, total_elevation_gain, activity_type, sport_type, workout_type, start_date, start_date_local, timezone, utc_offset, achievement_count, kudos_count, comment_count, athlete_count, photo_count, map_id, trainer, commute, manual, private, flagged, gear_id, average_speed, max_speed, device_watts, has_heartrate, pr_count, total_photo_count, updated_at, average_heartrate, max_heartrate, download_count

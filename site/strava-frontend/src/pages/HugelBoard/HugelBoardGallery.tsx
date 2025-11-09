@@ -221,7 +221,12 @@ const GalleryCard: React.FC<{
             }}
           />
           <Box>
-            <Text fontWeight="bold" textAlign="left">
+            <Text 
+              isTruncated
+              maxW="170px"
+              fontWeight="bold" 
+              textAlign="left"
+              >
               {firstname} {lastname}
             </Text>
             <Text

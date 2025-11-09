@@ -25,6 +25,7 @@ type sqlcQuerier interface {
 	DeleteWebhookDump(ctx context.Context, id pgtype.UUID) error
 	EddingtonActivities(ctx context.Context, athleteID int64) ([]EddingtonActivitiesRow, error)
 	GetActivityDetail(ctx context.Context, id int64) (ActivityDetail, error)
+	GetActivitySummariesByDate(ctx context.Context, startDate pgtype.Timestamptz) ([]ActivitySummary, error)
 	GetActivitySummary(ctx context.Context, id int64) (ActivitySummary, error)
 	GetAthlete(ctx context.Context, athleteID int64) (Athlete, error)
 	GetAthleteEddington(ctx context.Context, athleteID int64) (AthleteEddington, error)

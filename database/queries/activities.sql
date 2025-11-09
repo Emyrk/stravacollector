@@ -39,6 +39,14 @@ FROM
 WHERE
     id = $1;
 
+-- name: GetActivitySummariesByDate :many
+SELECT
+	*
+FROM
+	activity_summary
+WHERE
+	start_date > $1;
+
 -- name: UpdateActivityName :exec
 UPDATE activity_summary
 SET

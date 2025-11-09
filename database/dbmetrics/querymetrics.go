@@ -136,6 +136,13 @@ func (m queryMetricsStore) GetActivityDetail(ctx context.Context, id int64) (dat
 	return r0, r1
 }
 
+func (m queryMetricsStore) GetActivitySummariesByDate(ctx context.Context, startDate pgxpgtype.Timestamptz) ([]database.ActivitySummary, error) {
+	start := time.Now()
+	r0, r1 := m.s.GetActivitySummariesByDate(ctx, startDate)
+	m.queryLatencies.WithLabelValues("GetActivitySummariesByDate").Observe(time.Since(start).Seconds())
+	return r0, r1
+}
+
 func (m queryMetricsStore) GetActivitySummary(ctx context.Context, id int64) (database.ActivitySummary, error) {
 	start := time.Now()
 	r0, r1 := m.s.GetActivitySummary(ctx, id)
