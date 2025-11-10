@@ -8,7 +8,7 @@ import (
 
 func HugelOngoing(now time.Time) bool {
 	now = now.In(hugeldate.CentralTimeZone)
-	if now.Month() == time.November && (now.Day() >= 7 && now.Day() <= 12) {
+	if now.Month() == time.November && (now.Day() >= 7 && now.Day() <= 10) {
 		return true
 	}
 
