@@ -244,6 +244,9 @@ type CompetitiveRoute struct {
 	DisplayName string  `db:"display_name" json:"display_name"`
 	Description string  `db:"description" json:"description"`
 	Segments    []int64 `db:"segments" json:"segments"`
+	Year        int32   `db:"year" json:"year"`
+	// The course name for the competitive route is used to differentiate between different versions of the same route, such as "lite" or "full".
+	Course string `db:"course" json:"course"`
 }
 
 // A table to store failed job information for potential debugging.

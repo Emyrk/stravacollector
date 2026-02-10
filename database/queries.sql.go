@@ -1998,7 +1998,7 @@ func (q *sqlQuerier) UpsertMapData(ctx context.Context, arg UpsertMapDataParams)
 }
 
 const allCompetitiveRoutes = `-- name: AllCompetitiveRoutes :many
-SELECT name, display_name, description, segments FROM competitive_routes
+SELECT name, display_name, description, segments, year, course FROM competitive_routes
 `
 
 func (q *sqlQuerier) AllCompetitiveRoutes(ctx context.Context) ([]CompetitiveRoute, error) {
@@ -2015,6 +2015,8 @@ func (q *sqlQuerier) AllCompetitiveRoutes(ctx context.Context) ([]CompetitiveRou
 			&i.DisplayName,
 			&i.Description,
 			&i.Segments,
+			&i.Year,
+			&i.Course,
 		); err != nil {
 			return nil, err
 		}
