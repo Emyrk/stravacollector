@@ -1,0 +1,181 @@
+{
+  "athletes": [
+    {
+      "athlete_id": 1000001,
+      "first_name": "Alex",
+      "last_name": "Rodriguez",
+      "gender": "M",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000001/12345/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000002,
+      "first_name": "Sarah",
+      "last_name": "Chen",
+      "gender": "F",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000002/12346/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000003,
+      "first_name": "Marcus",
+      "last_name": "Johnson",
+      "gender": "M",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000003/12347/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000004,
+      "first_name": "Emily",
+      "last_name": "Thompson",
+      "gender": "F",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000004/12348/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000005,
+      "first_name": "David",
+      "last_name": "Martinez",
+      "gender": "M",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000005/12349/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000006,
+      "first_name": "Jessica",
+      "last_name": "Lee",
+      "gender": "F",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000006/12350/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000007,
+      "first_name": "Ryan",
+      "last_name": "Williams",
+      "gender": "M",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000007/12351/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000008,
+      "first_name": "Amanda",
+      "last_name": "Garcia",
+      "gender": "F",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000008/12352/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000009,
+      "first_name": "Chris",
+      "last_name": "Brown",
+      "gender": "M",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000009/12353/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000010,
+      "first_name": "Olivia",
+      "last_name": "Davis",
+      "gender": "F",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000010/12354/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000011,
+      "first_name": "James",
+      "last_name": "Wilson",
+      "gender": "M",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000011/12355/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000012,
+      "first_name": "Sophia",
+      "last_name": "Miller",
+      "gender": "F",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000012/12356/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000013,
+      "first_name": "Michael",
+      "last_name": "Anderson",
+      "gender": "M",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000013/12357/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000014,
+      "first_name": "Isabella",
+      "last_name": "Taylor",
+      "gender": "F",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000014/12358/1/large.jpg"
+    },
+    {
+      "athlete_id": 1000015,
+      "first_name": "Daniel",
+      "last_name": "Moore",
+      "gender": "M",
+      "profile_pic": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/1000015/12359/1/large.jpg"
+    }
+  ],
+  "segment_efforts": {
+    "7654321": [
+      {"athlete_id": 1000001, "elapsed_time": 178.5, "kom_rank": 1},
+      {"athlete_id": 1000002, "elapsed_time": 195.2, "kom_rank": 1},
+      {"athlete_id": 1000003, "elapsed_time": 182.3, "kom_rank": 3},
+      {"athlete_id": 1000004, "elapsed_time": 201.8, "kom_rank": 2},
+      {"athlete_id": 1000005, "elapsed_time": 185.7, "kom_rank": 5}
+    ],
+    "7654322": [
+      {"athlete_id": 1000001, "elapsed_time": 245.3, "kom_rank": 2},
+      {"athlete_id": 1000002, "elapsed_time": 278.6, "kom_rank": 1},
+      {"athlete_id": 1000003, "elapsed_time": 241.9, "kom_rank": 1},
+      {"athlete_id": 1000004, "elapsed_time": 285.4, "kom_rank": 3},
+      {"athlete_id": 1000007, "elapsed_time": 250.2, "kom_rank": 4}
+    ],
+    "7654323": [
+      {"athlete_id": 1000001, "elapsed_time": 312.7, "kom_rank": 1},
+      {"athlete_id": 1000002, "elapsed_time": 341.5, "kom_rank": 1},
+      {"athlete_id": 1000005, "elapsed_time": 325.8, "kom_rank": 3},
+      {"athlete_id": 1000006, "elapsed_time": 349.2, "kom_rank": 2},
+      {"athlete_id": 1000009, "elapsed_time": 331.4, "kom_rank": 6}
+    ],
+    "7654324": [
+      {"athlete_id": 1000003, "elapsed_time": 567.8, "kom_rank": 1},
+      {"athlete_id": 1000004, "elapsed_time": 612.3, "kom_rank": 1},
+      {"athlete_id": 1000005, "elapsed_time": 578.9, "kom_rank": 2},
+      {"athlete_id": 1000008, "elapsed_time": 625.7, "kom_rank": 3},
+      {"athlete_id": 1000011, "elapsed_time": 589.2, "kom_rank": 5}
+    ],
+    "7654325": [
+      {"athlete_id": 1000001, "elapsed_time": 421.3, "kom_rank": 2},
+      {"athlete_id": 1000002, "elapsed_time": 459.8, "kom_rank": 1},
+      {"athlete_id": 1000003, "elapsed_time": 418.7, "kom_rank": 1},
+      {"athlete_id": 1000006, "elapsed_time": 467.2, "kom_rank": 2},
+      {"athlete_id": 1000009, "elapsed_time": 435.6, "kom_rank": 4}
+    ],
+    "7654326": [
+      {"athlete_id": 1000001, "elapsed_time": 189.4, "kom_rank": 1},
+      {"athlete_id": 1000002, "elapsed_time": 212.7, "kom_rank": 1},
+      {"athlete_id": 1000005, "elapsed_time": 195.8, "kom_rank": 3},
+      {"athlete_id": 1000010, "elapsed_time": 221.5, "kom_rank": 4},
+      {"athlete_id": 1000013, "elapsed_time": 198.3, "kom_rank": 5}
+    ],
+    "7654327": [
+      {"athlete_id": 1000001, "elapsed_time": 678.9, "kom_rank": 1},
+      {"athlete_id": 1000002, "elapsed_time": 745.2, "kom_rank": 1},
+      {"athlete_id": 1000003, "elapsed_time": 691.5, "kom_rank": 2},
+      {"athlete_id": 1000004, "elapsed_time": 758.7, "kom_rank": 3},
+      {"athlete_id": 1000007, "elapsed_time": 705.3, "kom_rank": 4}
+    ],
+    "7654328": [
+      {"athlete_id": 1000005, "elapsed_time": 398.2, "kom_rank": 1},
+      {"athlete_id": 1000006, "elapsed_time": 432.9, "kom_rank": 1},
+      {"athlete_id": 1000007, "elapsed_time": 405.6, "kom_rank": 2},
+      {"athlete_id": 1000008, "elapsed_time": 445.3, "kom_rank": 2},
+      {"athlete_id": 1000011, "elapsed_time": 418.7, "kom_rank": 5}
+    ],
+    "7654329": [
+      {"athlete_id": 1000001, "elapsed_time": 267.3, "kom_rank": 2},
+      {"athlete_id": 1000002, "elapsed_time": 289.7, "kom_rank": 1},
+      {"athlete_id": 1000003, "elapsed_time": 264.8, "kom_rank": 1},
+      {"athlete_id": 1000004, "elapsed_time": 295.2, "kom_rank": 2},
+      {"athlete_id": 1000009, "elapsed_time": 278.6, "kom_rank": 4}
+    ],
+    "7654330": [
+      {"athlete_id": 1000001, "elapsed_time": 345.6, "kom_rank": 1},
+      {"athlete_id": 1000002, "elapsed_time": 378.9, "kom_rank": 1},
+      {"athlete_id": 1000005, "elapsed_time": 356.3, "kom_rank": 3},
+      {"athlete_id": 1000006, "elapsed_time": 389.2, "kom_rank": 3},
+      {"athlete_id": 1000013, "elapsed_time": 365.7, "kom_rank": 5}
+    ]
+  }
+}
