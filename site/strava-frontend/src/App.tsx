@@ -41,6 +41,7 @@ import { EddingtonPage } from "./pages/EddingtonPage/EddingtonPage";
 import { Results } from "./pages/Results/Results";
 import { AnnouncementBanner } from "./components/AnnouncementBanner/AnnouncementBanner";
 import { Legal } from "./pages/Legal/Legal";
+import { KingQueenAustin } from "./pages/KingQueenAustin";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,6 +71,7 @@ export const App = () => {
                 <Route path="/results" element={<Results />} />
                 <Route path="/activity/:activity_id" element={<Activity />} />
                 <Route path="/route/:name" element={<ChallengeRoute />} />
+                <Route path="/king-queen-austin" element={<KingQueenAustin />} />
                 <Route path="/signed-out" element={<SignedOut />} />
                 <Route path="/legal" element={<Legal />} />
               </Route>
