@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"strings"
 )
 
@@ -15,24 +16,27 @@ type YearlyHugelLeaderboardParams struct {
 	Lite      bool
 }
 
+const temporary2026RouteYear = 2025
+
+func hugelActivitiesView(routeYear int, lite bool) string {
+	view := "hugel_activities"
+	if lite {
+		view = "lite_hugel_activities"
+	}
+
+	switch routeYear {
+	case 2023, 2024, 2025:
+		return view + "_" + fmt.Sprint(routeYear)
+	case 2026:
+		// The 2026 route is not finalized yet. Use the 2025 materialized view until it is.
+		return view + "_" + fmt.Sprint(temporary2026RouteYear)
+	default:
+		return view
+	}
+}
+
 func (q *sqlQuerier) YearlyHugelLeaderboard(ctx context.Context, arg YearlyHugelLeaderboardParams) ([]HugelLeaderboardRow, error) {
-	query := hugelLeaderboard
-
-	if arg.RouteYear == 2023 {
-		query = strings.ReplaceAll(query, "hugel_activities", "hugel_activities_2023")
-	}
-
-	if arg.RouteYear == 2024 {
-		query = strings.ReplaceAll(query, "hugel_activities", "hugel_activities_2024")
-	}
-
-	if arg.RouteYear == 2025 {
-		query = strings.ReplaceAll(query, "hugel_activities", "hugel_activities_2025")
-	}
-
-	if arg.Lite {
-		query = strings.ReplaceAll(query, "hugel_activities", "lite_hugel_activities")
-	}
+	query := strings.ReplaceAll(hugelLeaderboard, "hugel_activities", hugelActivitiesView(arg.RouteYear, arg.Lite))
 
 	rows, err := q.db.Query(ctx, query, arg.After, arg.Before, arg.AthleteID)
 	if err != nil {

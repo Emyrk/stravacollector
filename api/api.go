@@ -59,6 +59,9 @@ type API struct {
 	HugelBoard2025Cache     *gencache.LazyCache[[]database.HugelLeaderboardRow]
 	HugelBoard2025LiteCache *gencache.LazyCache[[]database.HugelLeaderboardRow]
 
+	HugelBoard2026Cache     *gencache.LazyCache[[]database.HugelLeaderboardRow]
+	HugelBoard2026LiteCache *gencache.LazyCache[[]database.HugelLeaderboardRow]
+
 	HugelRouteCache     *gencache.LazyCache[database.GetCompetitiveRouteRow]
 	HugelLiteRouteCache *gencache.LazyCache[database.GetCompetitiveRouteRow]
 
@@ -155,6 +158,27 @@ func New(ctx context.Context, opts Options) (*API, error) {
 				AthleteID: -1,
 				After:     database.Timestamp(hugeldate.Year2025.Start),
 				Before:    database.Timestamp(hugeldate.Year2025.End),
+			},
+		})
+	})
+	api.HugelBoard2026Cache = gencache.New(ctx, time.Minute*15, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
+			RouteYear: 2026,
+			HugelLeaderboardParams: database.HugelLeaderboardParams{
+				AthleteID: -1,
+				After:     database.Timestamp(hugeldate.Year2026.Start),
+				Before:    database.Timestamp(hugeldate.Year2026.End),
+			},
+		})
+	})
+	api.HugelBoard2026LiteCache = gencache.New(ctx, time.Minute*15, func(ctx context.Context) ([]database.HugelLeaderboardRow, error) {
+		return api.Opts.DB.YearlyHugelLeaderboard(ctx, database.YearlyHugelLeaderboardParams{
+			RouteYear: 2026,
+			Lite:      true,
+			HugelLeaderboardParams: database.HugelLeaderboardParams{
+				AthleteID: -1,
+				After:     database.Timestamp(hugeldate.Year2026.Start),
+				Before:    database.Timestamp(hugeldate.Year2026.End),
 			},
 		})
 	})

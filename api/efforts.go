@@ -233,6 +233,14 @@ func (api *API) hugelboard(rw http.ResponseWriter, r *http.Request) {
 			}
 			beforeTime = hugeldate.Year2025.Start
 			afterTime = hugeldate.Year2025.End
+		case 2026:
+			if lite {
+				activities, err = api.HugelBoard2026LiteCache.Load(ctx)
+			} else {
+				activities, err = api.HugelBoard2026Cache.Load(ctx)
+			}
+			beforeTime = hugeldate.Year2026.Start
+			afterTime = hugeldate.Year2026.End
 		default:
 			httpapi.Write(ctx, rw, http.StatusBadRequest, modelsdk.Response{
 				Message: fmt.Sprintf("Invalid year %d", year),

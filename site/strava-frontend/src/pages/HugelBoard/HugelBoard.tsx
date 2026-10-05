@@ -49,6 +49,11 @@ import { HugelBoardTable } from "./HugelBoardTable";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { SexFilterButtons } from "../../components/SexFilter/SexFilter";
 
+import {
+  CURRENT_HUGEL_ROUTE_YEAR,
+  CURRENT_HUGEL_YEAR,
+} from "../../hugel";
+
 export interface HugelBoardProps {
   disableSuperlatives?: boolean;
   data?: TypesGen.HugelLeaderBoard | TypesGen.SuperHugelLeaderBoard;
@@ -69,7 +74,7 @@ export const HugelBoard: FC = () => {
 
   const { year } = useParams();
   // Default to this year
-  const yearNumber = parseInt(year || "2024");
+  const yearNumber = parseInt(year || CURRENT_HUGEL_YEAR.toString());
   const disableSuperlatives = yearNumber < 2024;
   const lite = searchParams.get("lite") === "true";
   const sexFilter =  searchParams.get("sex") as SexFilter || "all";
@@ -124,6 +129,14 @@ const filteredData = hugelLeaderboard
         <Heading>
           {year} Das Hügel {lite && "Lite"} Results
         </Heading>
+        {yearNumber === CURRENT_HUGEL_YEAR &&
+          CURRENT_HUGEL_ROUTE_YEAR !== CURRENT_HUGEL_YEAR && (
+            <Text color="orange.300" pt="5px">
+              The {CURRENT_HUGEL_YEAR} leaderboard is temporarily using the{" "}
+              {CURRENT_HUGEL_ROUTE_YEAR} route while the {CURRENT_HUGEL_YEAR}{" "}
+              route is finalized.
+            </Text>
+          )}
         <Text color="gray.400" pt="5px">
           If your ride is not showing after 24hrs, please email{" "}
           <a href="mailto: help@dashugel.bike">help@dashugel.bike</a> with the
