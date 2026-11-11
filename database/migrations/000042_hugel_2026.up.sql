@@ -58,8 +58,8 @@ WHERE (merged.segment_ids @> ARRAY
 							  FROM competitive_routes
 							  WHERE (competitive_routes.name = 'das-hugel-2026'::text))) WITH NO DATA;
 
--- The unversioned full route follows the current year. Lite is unconfirmed
--- for 2026 and deliberately continues to use lite_hugel_activities_2025.
+-- The unversioned full route follows the current year. The confirmed 2026 Lite
+-- segments are unchanged, so Lite continues to use lite_hugel_activities_2025.
 CREATE OR REPLACE VIEW hugel_activities AS SELECT * FROM hugel_activities_2026;
 
 COMMIT;

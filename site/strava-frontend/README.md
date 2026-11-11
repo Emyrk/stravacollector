@@ -60,4 +60,4 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## Route map tiles
 
-The route map uses OpenStreetMap tiles by default. To use the custom Mapbox style, set `REACT_APP_MAPBOX_ACCESS_TOKEN` at build time to a URL-restricted public Mapbox token. This value is included in the browser bundle; never use a secret token.
+The route map uses the existing custom Mapbox style and public browser token by default. To override the token, set `REACT_APP_MAPBOX_ACCESS_TOKEN` at build time to a URL-restricted public Mapbox token. This value is included in the browser bundle; never use a secret token.

@@ -36,7 +36,7 @@ func TestHugel2026Migration(t *testing.T) {
 	want := []int64{629046, 811022, 42516497, 6744304, 3145259}
 	exec(`UPDATE competitive_routes SET segments=$1 WHERE name='das-hugel'`, old)
 	// Lite is an independently maintained route. The migration must not change it.
-	exec(`INSERT INTO competitive_routes VALUES ('lite-das-hugel', 'Lite', 'Unconfirmed for 2026', ARRAY[629046]::bigint[])
+	exec(`INSERT INTO competitive_routes VALUES ('lite-das-hugel', 'Lite', 'Unchanged for 2026', ARRAY[629046]::bigint[])
        ON CONFLICT (name) DO UPDATE SET segments=EXCLUDED.segments`)
 	var oldLiteView string
 	require.NoError(t, pool.QueryRow(ctx, `SELECT pg_get_viewdef('lite_hugel_activities_2025')`).Scan(&oldLiteView))

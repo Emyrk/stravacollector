@@ -1,4 +1,4 @@
-import { CURRENT_HUGEL_ROUTE_URL, CURRENT_HUGEL_YEAR } from "../../hugel";
+import { CURRENT_HUGEL_ROUTE_URL, CURRENT_HUGEL_LITE_ROUTE_URL, CURRENT_HUGEL_YEAR } from "../../hugel";
 import {
   FC,
   useRef,
@@ -130,7 +130,9 @@ export const ChallengeRoute: FC<{}> = ({}) => {
     return <NotFound />;
   }
 
-  const mapboxAccessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
+  // Public browser token. Deployments may override it with their own public token.
+  const mapboxAccessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN ||
+    "pk.eyJ1IjoiZW15cmsiLCJhIjoiY2wweW93ZnYzMGp0OTNvbzN5a2VvNWVldyJ9.QyM0MUn75YqHqMUvMlMaag";
   const mapboxStyleID = "clhebqdem028w01p85pnzcsch";
   const mapboxUsername = "emyrk";
 
@@ -237,7 +239,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
                   <Text color="brand.stravaOrange">{CURRENT_HUGEL_YEAR} Official Route</Text>
                 </Flex>
               </Link>
-              <Link href="https://www.strava.com/routes/3420231166589154376">
+              <Link href={CURRENT_HUGEL_LITE_ROUTE_URL}>
                 <Flex
                   direction={"row"}
                   alignItems={"center"}
@@ -249,7 +251,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
                     src={"/logos/stravalogo.png"}
                     mr="5px"
                   />
-                  <Text color={LiteRouteColor}>2025 Official Lite Route</Text>
+                  <Text color={LiteRouteColor}>{CURRENT_HUGEL_YEAR} Official Lite Route</Text>
                 </Flex>
               </Link>
             </Flex>
