@@ -257,7 +257,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
             </Flex>
 
             <Text>
-              When: Saturday, November 8, 2025 7 a.m. Meetup and 7:15 a.m.
+              When: Saturday, November 14, 2026 7 a.m. Meetup and 7:15 a.m.
               Rollout
             </Text>
             <Text>

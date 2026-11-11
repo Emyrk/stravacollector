@@ -42,7 +42,8 @@ func init() {
 		End:   start2025.Add(time.Hour * 24 * 3),
 	}
 
-	start2026 := time.Date(2026, 11, 6, 0, 0, 0, 0, CentralTimeZone)
+	// November 14 event, with the surrounding Friday and Sunday included.
+	start2026 := time.Date(2026, 11, 13, 0, 0, 0, 0, CentralTimeZone)
 	Year2026 = Dates{
 		Start: start2026,
 		End:   start2026.Add(time.Hour * 24 * 3),
