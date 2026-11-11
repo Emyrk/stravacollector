@@ -57,3 +57,7 @@ You can learn more in the
 [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## Route map tiles
+
+The route map uses OpenStreetMap tiles by default. To use the custom Mapbox style, set `REACT_APP_MAPBOX_ACCESS_TOKEN` at build time to a URL-restricted public Mapbox token. This value is included in the browser bundle; never use a secret token.

@@ -1,3 +1,6 @@
+-- name: RefreshHugel2026Activities :exec
+REFRESH MATERIALIZED VIEW hugel_activities_2026;
+
 -- name: RefreshHugel2025Activities :exec
 REFRESH MATERIALIZED VIEW hugel_activities_2025;
 
@@ -170,7 +173,7 @@ FROM
 WHERE
 	id = ANY(
 		select unnest(segments) as data
-		from (SELECT segments FROM competitive_routes WHERE name = 'das-hugel') as hugel
+		from (SELECT segments FROM competitive_routes WHERE name = 'das-hugel-2026') as hugel
 		except
 		select segment_id as data
 		from segment_efforts WHERE

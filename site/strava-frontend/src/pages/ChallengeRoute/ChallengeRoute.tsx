@@ -1,3 +1,4 @@
+import { CURRENT_HUGEL_ROUTE_URL, CURRENT_HUGEL_YEAR } from "../../hugel";
 import {
   FC,
   useRef,
@@ -129,8 +130,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
     return <NotFound />;
   }
 
-  const mapboxAccessToken =
-    "pk.eyJ1IjoiZW15cmsiLCJhIjoiY2wweW93ZnYzMGp0OTNvbzN5a2VvNWVldyJ9.QyM0MUn75YqHqMUvMlMaag";
+  const mapboxAccessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
   const mapboxStyleID = "clhebqdem028w01p85pnzcsch";
   const mapboxUsername = "emyrk";
 
@@ -192,8 +192,6 @@ export const ChallengeRoute: FC<{}> = ({}) => {
 
   //mapbox://styles/emyrk/clhe4rd8l027g01pa3bdh5u4v
   // https://www.paigeniedringhaus.com/blog/render-multiple-colored-lines-on-a-react-map-with-polylines
-  // pk.eyJ1IjoiZW15cmsiLCJhIjoiY2xoZTR6YjAxMWh0ODNqbzc5NjRxdzBxbCJ9._SlRHXQG5-DqZTucbZUagA
-  // https://api.mapbox.com/styles/v1/emyrk/clhe4rd8l027g01pa3bdh5u4v.html?title=view&access_token=pk.eyJ1IjoiZW15cmsiLCJhIjoiY2xoZTR6YjAxMWh0ODNqbzc5NjRxdzBxbCJ9._SlRHXQG5-DqZTucbZUagA&zoomwheel=true&fresh=true#7.5/42.2/9.1
   return (
     <>
       <Flex
@@ -224,7 +222,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               pt="15px"
               pb="15px"
             >
-              <Link href="https://www.strava.com/routes/3420097742339142512">
+              <Link href={CURRENT_HUGEL_ROUTE_URL}>
                 <Flex
                   direction={"row"}
                   alignItems={"center"}
@@ -236,7 +234,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
                     src={"/logos/stravalogo.png"}
                     mr="5px"
                   />
-                  <Text color="brand.stravaOrange">2025 Official Route</Text>
+                  <Text color="brand.stravaOrange">{CURRENT_HUGEL_YEAR} Official Route</Text>
                 </Flex>
               </Link>
               <Link href="https://www.strava.com/routes/3420231166589154376">
@@ -314,8 +312,12 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               liteRoute={liteRoute}
             />
             <TileLayer
-              attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
-              url={`https://api.mapbox.com/styles/v1/${mapboxUsername}/${mapboxStyleID}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`}
+              attribution={mapboxAccessToken
+                ? 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
+                : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}
+              url={mapboxAccessToken
+                ? `https://api.mapbox.com/styles/v1/${mapboxUsername}/${mapboxStyleID}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`
+                : "https://tile.openstreetmap.org/{z}/{x}/{y}.png"}
             />
           </MapContainer>
         </Flex>

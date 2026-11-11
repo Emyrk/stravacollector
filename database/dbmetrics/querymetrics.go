@@ -311,6 +311,13 @@ func (m queryMetricsStore) RefreshHugel2025Activities(ctx context.Context) error
 	return r0
 }
 
+func (m queryMetricsStore) RefreshHugel2026Activities(ctx context.Context) error {
+	start := time.Now()
+	r0 := m.s.RefreshHugel2026Activities(ctx)
+	m.queryLatencies.WithLabelValues("RefreshHugel2026Activities").Observe(time.Since(start).Seconds())
+	return r0
+}
+
 func (m queryMetricsStore) RefreshHugelLite2024Activities(ctx context.Context) error {
 	start := time.Now()
 	r0 := m.s.RefreshHugelLite2024Activities(ctx)

@@ -25,6 +25,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LandingCard } from "../Landing/Landing";
+import { CURRENT_HUGEL_YEAR } from "../../hugel";
+
 export const Results: FC<{}> = ({}) => {
   return (
     <Flex
@@ -54,22 +56,22 @@ export const Results: FC<{}> = ({}) => {
           </Text>
           <Stack spacing={6} direction={{ base: "column", md: "row" }}>
             <LandingCard
-              heading={"2025 Das Hügel"}
+              heading={`${CURRENT_HUGEL_YEAR} Das Hügel`}
               icon={<Image src="/img/icons/Results2.png" />}
               description={
                 "See how you did on the Hügel this year and find out who won our superlatives."
               }
               hrefText={"Results"}
-              href={"/hugelboard/2025"}
+              href={`/hugelboard/${CURRENT_HUGEL_YEAR}`}
             />
             <LandingCard
-              heading={"2025 Hügel Lite"}
+              heading={`${CURRENT_HUGEL_YEAR} Hügel Lite`}
               icon={<Image src="/img/icons/Results1.png" />}
               description={
                 "Full Hügel not in the cards this year? See how you did on the first 40 miles!"
               }
               hrefText={"Results"}
-              href={"/hugelboard/2025?lite=true"}
+              href={`/hugelboard/${CURRENT_HUGEL_YEAR}?lite=true`}
             />
             {/* <LandingCard
               heading={"Super Hügel"}
@@ -93,6 +95,26 @@ export const Results: FC<{}> = ({}) => {
               lineHeight={"110%"}
             >
               Tour Das Hügel Hall of Fame
+            </Heading>
+            {/* 2025 */}
+            <Heading
+              fontWeight={400}
+              fontSize={{ base: "xl" }}
+              lineHeight={"110%"}
+            >
+              <Link as={RouteLink} to={"/hugelboard/2025"}>
+                <Button variant={"link"} color="brand.stravaOrange" size={"xl"}>
+                  2025 Das Hügel
+                </Button>
+              </Link>
+
+              &nbsp;/&nbsp;
+
+              <Link as={RouteLink} to={"/hugelboard/2025?lite=true"}>
+                <Button variant={"link"} color="brand.stravaOrange" size={"xl"}>
+                  2025 Das Hügel Lite
+                </Button>
+              </Link>
             </Heading>
             {/* 2024 */}
             <Heading
