@@ -15,7 +15,7 @@ RETURNING *
 -- name: MissingSegments :one
 with diff_data as (
 	select unnest(segments) as data
-	from (SELECT segments FROM competitive_routes WHERE name = 'das-hugel') as hugel
+	from (SELECT segments FROM competitive_routes WHERE name = 'das-hugel-2026') as hugel
 	except
 	select segment_id as data
 	from segment_efforts WHERE activities_id = $1

@@ -183,7 +183,10 @@ func New(ctx context.Context, opts Options) (*API, error) {
 		})
 	})
 	api.HugelRouteCache = gencache.New(ctx, time.Hour*4, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {
-		return api.Opts.DB.GetCompetitiveRoute(ctx, "das-hugel")
+		route, err := api.Opts.DB.GetCompetitiveRoute(ctx, "das-hugel-2026")
+		// The storage row is versioned, but the public route identity is stable.
+		route.Name = "das-hugel"
+		return route, err
 	})
 	api.HugelLiteRouteCache = gencache.New(ctx, time.Hour*4, func(ctx context.Context) (database.GetCompetitiveRouteRow, error) {
 		return api.Opts.DB.GetCompetitiveRoute(ctx, "lite-das-hugel")

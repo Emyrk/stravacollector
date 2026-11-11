@@ -61,11 +61,15 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 	start := time.Now()
 
 	var hugelDone, hugel2024Done, hugel2023Done, superDone time.Duration
-	var hugelErr, hugel2024Err, hugel2024LiteErr, hugel2023Err, superErr, hugelLiteErr error
+	var hugel2025Err, hugelErr, hugel2024Err, hugel2024LiteErr, hugel2023Err, superErr, hugelLiteErr error
 
 	wg.Add(1)
 	go func() {
-		hugelErr = w.mgr.db.RefreshHugel2025Activities(ctx)
+		hugelErr = w.mgr.db.RefreshHugel2026Activities(ctx)
+
+		// Lite still uses the 2025 definition and excludes 2025 full finishers.
+		// Refresh its dependency even in latest-only jobs.
+		hugel2025Err = w.mgr.db.RefreshHugel2025Activities(ctx)
 
 		hugelLiteErr = w.mgr.db.RefreshHugelLite2025Activities(ctx)
 		hugelDone = time.Since(start)
@@ -75,9 +79,9 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 	if !latest {
 		wg.Add(1)
 		go func() {
-			hugel2024LiteErr = w.mgr.db.RefreshHugel2024Activities(ctx)
+			hugel2024Err = w.mgr.db.RefreshHugel2024Activities(ctx)
 
-			hugelLiteErr = w.mgr.db.RefreshHugelLite2024Activities(ctx)
+			hugel2024LiteErr = w.mgr.db.RefreshHugelLite2024Activities(ctx)
 			hugel2024Done = time.Since(start)
 			wg.Done()
 		}()
@@ -108,7 +112,8 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 		AnErr("hugel2024_lite_err", hugel2024LiteErr).
 		AnErr("hugel2024_err", hugel2024Err).
 		AnErr("hugel2025_lite_err", hugelLiteErr).
-		AnErr("hugel2025_err", hugelErr).
+		AnErr("hugel2025_err", hugel2025Err).
+		AnErr("hugel2026_err", hugelErr).
 		Str("super_duration", fmt.Sprintf("%.3fs", superDone.Seconds())).
 		Str("hugel_duration", fmt.Sprintf("%.3fs", hugelDone.Seconds())).
 		Str("hugel2024_duration", fmt.Sprintf("%.3fs", hugel2024Done.Seconds())).
@@ -119,6 +124,8 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 		"latest":             latest,
 		"super_err":          superErr,
 		"hugel_err":          hugelErr,
+		"hugel2025_err":      hugel2025Err,
+		"hugel2026_err":      hugelErr,
 		"hugel2023_err":      hugel2023Err,
 		"hugel2024_lite_err": hugel2024LiteErr,
 		"hugel_lite_err":     hugelLiteErr,

@@ -34,3 +34,8 @@ sql:
               import: ""
               package: ""
               type: "HugelSegmentEfforts"
+          - column: "hugel_activities_2026.efforts"
+            go_type:
+              import: ""
+              package: ""
+              type: "HugelSegmentEfforts"

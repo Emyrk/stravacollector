@@ -50,7 +50,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { SexFilterButtons } from "../../components/SexFilter/SexFilter";
 
 import {
-  CURRENT_HUGEL_ROUTE_YEAR,
+  CURRENT_HUGEL_LITE_ROUTE_YEAR,
   CURRENT_HUGEL_YEAR,
 } from "../../hugel";
 
@@ -129,12 +129,12 @@ const filteredData = hugelLeaderboard
         <Heading>
           {year} Das Hügel {lite && "Lite"} Results
         </Heading>
-        {yearNumber === CURRENT_HUGEL_YEAR &&
-          CURRENT_HUGEL_ROUTE_YEAR !== CURRENT_HUGEL_YEAR && (
+        {lite && yearNumber === CURRENT_HUGEL_YEAR &&
+          CURRENT_HUGEL_LITE_ROUTE_YEAR !== CURRENT_HUGEL_YEAR && (
             <Text color="orange.300" pt="5px">
-              The {CURRENT_HUGEL_YEAR} leaderboard is temporarily using the{" "}
-              {CURRENT_HUGEL_ROUTE_YEAR} route while the {CURRENT_HUGEL_YEAR}{" "}
-              route is finalized.
+              The {CURRENT_HUGEL_YEAR} Lite leaderboard is temporarily using the{" "}
+              {CURRENT_HUGEL_LITE_ROUTE_YEAR} route while the {CURRENT_HUGEL_YEAR}{" "}
+              Lite route is confirmed.
             </Text>
           )}
         <Text color="gray.400" pt="5px">

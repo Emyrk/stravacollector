@@ -11,7 +11,7 @@ func TestHugelActivitiesView(t *testing.T) {
 	}{
 		{name: "2025 full", routeYear: 2025, want: "hugel_activities_2025"},
 		{name: "2025 lite", routeYear: 2025, lite: true, want: "lite_hugel_activities_2025"},
-		{name: "2026 full temporarily uses 2025", routeYear: 2026, want: "hugel_activities_2025"},
+		{name: "2026 full", routeYear: 2026, want: "hugel_activities_2026"},
 		{name: "2026 lite temporarily uses 2025", routeYear: 2026, lite: true, want: "lite_hugel_activities_2025"},
 		{name: "current full view", want: "hugel_activities"},
 		{name: "current lite view", lite: true, want: "lite_hugel_activities"},

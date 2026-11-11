@@ -16,7 +16,7 @@ type YearlyHugelLeaderboardParams struct {
 	Lite      bool
 }
 
-const temporary2026RouteYear = 2025
+const temporary2026LiteRouteYear = 2025
 
 func hugelActivitiesView(routeYear int, lite bool) string {
 	view := "hugel_activities"
@@ -28,8 +28,11 @@ func hugelActivitiesView(routeYear int, lite bool) string {
 	case 2023, 2024, 2025:
 		return view + "_" + fmt.Sprint(routeYear)
 	case 2026:
-		// The 2026 route is not finalized yet. Use the 2025 materialized view until it is.
-		return view + "_" + fmt.Sprint(temporary2026RouteYear)
+		// The 2026 Lite route is unconfirmed; only the full route has changed.
+		if lite {
+			return view + "_" + fmt.Sprint(temporary2026LiteRouteYear)
+		}
+		return "hugel_activities_2026"
 	default:
 		return view
 	}
