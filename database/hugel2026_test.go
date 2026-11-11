@@ -107,3 +107,26 @@ func TestHugel2026Migration(t *testing.T) {
 	require.NoError(t, pool.QueryRow(ctx, `SELECT activity_id FROM hugel_activities`).Scan(&currentID))
 	require.Equal(t, int64(25), currentID)
 }
+
+// All migrations must leave the current leaderboard readable without a worker run.
+func TestHugel2026PopulatedAfterMigrations(t *testing.T) {
+	url, cleanup, err := postgres.Open()
+	require.NoError(t, err)
+	t.Cleanup(cleanup)
+	ctx := context.Background()
+	pool, err := pgxpool.New(ctx, url)
+	require.NoError(t, err)
+	t.Cleanup(pool.Close)
+	var populated bool
+	require.NoError(t, pool.QueryRow(ctx, `SELECT ispopulated FROM pg_matviews WHERE matviewname='hugel_activities_2026'`).Scan(&populated))
+	require.True(t, populated)
+	// Also repair a deployment that already ran migration 42 without a refresh.
+	_, err = pool.Exec(ctx, `REFRESH MATERIALIZED VIEW hugel_activities_2026 WITH NO DATA`)
+	require.NoError(t, err)
+	sql, err := os.ReadFile("migrations/000043_populate_hugel_2026.up.sql")
+	require.NoError(t, err)
+	_, err = pool.Exec(ctx, string(sql))
+	require.NoError(t, err)
+	var count int64
+	require.NoError(t, pool.QueryRow(ctx, `SELECT count(*) FROM hugel_activities`).Scan(&count))
+}
