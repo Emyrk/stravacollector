@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Emyrk/strava/api/hugelhelp"
 	"github.com/Emyrk/strava/database"
 	"github.com/Emyrk/strava/strava"
 	"github.com/Emyrk/strava/strava/stravalimit"
@@ -344,13 +345,7 @@ func canBeHugelLite(summary strava.ActivitySummary) bool {
 }
 
 func onHugelDate(summary strava.ActivitySummary) bool {
-	if summary.StartDate.Year() == 2025 && summary.StartDate.Month() == time.November {
-		if summary.StartDate.Day() > 7 && summary.StartDate.Day() < 12 {
-			return true
-		}
-
-	}
-	return false
+	return hugelhelp.HugelOngoing(summary.StartDate)
 }
 
 // isBikeRide covers the weird stuff like "VirtualRide", "EBikeRide", "MountainBikeRide"

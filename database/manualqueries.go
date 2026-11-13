@@ -41,7 +41,12 @@ func hugelActivitiesView(routeYear int, lite bool) string {
 func (q *sqlQuerier) YearlyHugelLeaderboard(ctx context.Context, arg YearlyHugelLeaderboardParams) ([]HugelLeaderboardRow, error) {
 	query := strings.ReplaceAll(hugelLeaderboard, "hugel_activities", hugelActivitiesView(arg.RouteYear, arg.Lite))
 
-	rows, err := q.db.Query(ctx, query, arg.After, arg.Before, arg.AthleteID)
+	// Yearly windows are instants, independent of the PostgreSQL session timezone.
+	// Keep the generated generic leaderboard's timestamp API unchanged.
+	query = strings.ReplaceAll(query, ":: timestamp", ":: timestamptz")
+	query = strings.ReplaceAll(query, "start_date <=", "start_date <")
+
+	rows, err := q.db.Query(ctx, query, Timestamptz(arg.After.Time), Timestamptz(arg.Before.Time), arg.AthleteID)
 	if err != nil {
 		return nil, err
 	}

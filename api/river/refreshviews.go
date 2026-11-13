@@ -2,6 +2,7 @@ package river
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -135,5 +136,6 @@ func (w *RefreshViewsWorker) Work(ctx context.Context, job *river.Job[RefreshVie
 		"hugel2024_duration": fmt.Sprintf("%.3fs", hugel2023Done.Seconds()),
 		"hugel2023_duration": fmt.Sprintf("%.3fs", hugel2023Done.Seconds()),
 	})
-	return nil
+	// Propagate failures so River retries rather than marking stale views successful.
+	return errors.Join(hugelErr, hugel2025Err, hugelLiteErr, hugel2024Err, hugel2024LiteErr, hugel2023Err, superErr)
 }
