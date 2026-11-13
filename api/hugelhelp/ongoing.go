@@ -7,10 +7,7 @@ import (
 )
 
 func HugelOngoing(now time.Time) bool {
-	now = now.In(hugeldate.CentralTimeZone)
-	if now.Month() == time.November && (now.Day() >= 7 && now.Day() <= 10) {
-		return true
-	}
-
-	return false
+	// Use the current leaderboard's event dates, including Friday and Sunday,
+	// with an exclusive end. Comparisons work for both UTC and Central timestamps.
+	return !now.Before(hugeldate.Year2026.Start) && now.Before(hugeldate.Year2026.End)
 }
