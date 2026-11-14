@@ -152,6 +152,9 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 	cli := strava.NewOAuthClient(w.mgr.oauthCfg.Client(ctx, athlete.OAuthToken()))
 	activity, err := cli.GetActivity(ctx, args.ActivityID, true)
 	if err != nil {
+		if retryableActivityFetchError(err) {
+			return err
+		}
 		se := strava.IsAPIError(err)
 		if se != nil && se.Response.StatusCode != http.StatusTooManyRequests {
 			// Kill the job, since we can't fetch this activity due to some other error.
@@ -203,8 +206,8 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 	if len(activity.SegmentEfforts) == 0 && database.DistanceToMiles(activity.Distance) > 5 {
 		summary, err := w.mgr.db.GetActivitySummary(ctx, activity.ID)
 		if err == nil {
-			if summary.DownloadCount == 0 {
-				// If 0 segment efforts, and has never been redownloaded. Retry in 1hr.
+			if shouldRefetchZeroSegments(activity, summary.DownloadCount) {
+				// The insert already counted this first download. Retry once in 2hr.
 				// This might be correct, but we should check again.
 				_, err := w.mgr.EnqueueFetchActivity(ctx, FetchActivityArgs{
 					Source:         database.ActivityDetailSourceZeroSegmentRefetch,
@@ -231,6 +234,26 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 		"segments": len(activity.SegmentEfforts),
 		"link":     fmt.Sprintf("https://www.strava.com/activities/%d", activity.ID),
 	})
+}
+
+// retryableActivityFetchError leaves maintenance and rate-limit responses on
+// their existing snooze paths. Other server failures must not complete the job.
+func retryableActivityFetchError(err error) bool {
+	se := strava.IsAPIError(err)
+	if se == nil || se.Response == nil {
+		return false
+	}
+	status := se.Response.StatusCode
+	if status == 597 || (status == http.StatusBadGateway && strings.Contains(string(se.Body), "Strava is temporarily unavailable")) {
+		return false
+	}
+	return status >= 500 && status < 600
+}
+
+func shouldRefetchZeroSegments(activity strava.DetailedActivity, downloadCount int32) bool {
+	// Called after insert increments download_count: 1 is the initial fetch,
+	// 2 or more means the bounded refetch has already been used.
+	return len(activity.SegmentEfforts) == 0 && database.DistanceToMiles(activity.Distance) > 5 && downloadCount == 1
 }
 
 func (w *FetchActivityWorker) insert(ctx context.Context, activity strava.DetailedActivity, athlete database.AthleteLogin, args FetchActivityArgs) error {

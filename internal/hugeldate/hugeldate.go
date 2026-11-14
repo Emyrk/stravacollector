@@ -1,8 +1,9 @@
 package hugeldate
 
 import (
-	"log"
 	"time"
+	// Embed timezone data for minimal runtime images without /usr/share/zoneinfo.
+	_ "time/tzdata"
 )
 
 var CentralTimeZone *time.Location
@@ -20,8 +21,8 @@ func init() {
 	var err error
 	CentralTimeZone, err = time.LoadLocation("US/Central")
 	if err != nil {
-		log.Printf("error loading central timezone: %v", err)
-		CentralTimeZone = time.Local
+		// Never serve results with silently shifted event boundaries.
+		panic("load Central timezone: " + err.Error())
 	}
 
 	start2023 := time.Date(2023, 11, 10, 0, 0, 0, 0, CentralTimeZone)

@@ -53,6 +53,11 @@ func (c *LazyCache[T]) RunEagerLoader(ctx context.Context) {
 }
 
 func (c *LazyCache[T]) Touch(ctx context.Context, window time.Duration) {
+	// Check freshness under the same lock as the fetch, so concurrent callers
+	// neither race with updates nor queue redundant refreshes of stale data.
+	c.Lock()
+	defer c.Unlock()
+
 	stale := c.Stale
 	// Errors should not persist for very long
 	if c.lastError != nil {
@@ -60,7 +65,10 @@ func (c *LazyCache[T]) Touch(ctx context.Context, window time.Duration) {
 	}
 
 	if time.Since(c.fetched) > stale-window {
-		c.updateCache(ctx)
+		val, err := c.Fetch(ctx)
+		c.lastError = err
+		c.lastVal = val
+		c.fetched = time.Now()
 	}
 }
 
@@ -70,14 +78,4 @@ func (c *LazyCache[T]) Load(ctx context.Context) (T, error) {
 	c.RLock()
 	defer c.RUnlock()
 	return c.lastVal, c.lastError
-}
-
-func (c *LazyCache[T]) updateCache(ctx context.Context) {
-	c.Lock()
-	defer c.Unlock()
-
-	val, err := c.Fetch(ctx)
-	c.lastError = err
-	c.lastVal = val
-	c.fetched = time.Now()
 }
