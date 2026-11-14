@@ -39,6 +39,7 @@ import { AthleteAvatarDropdown } from "./AthleteAvatarDropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrophy, faBars } from "@fortawesome/free-solid-svg-icons";
 import { ColorModeSwitcher } from "../ColorModeSwitcher/ColorModeSwitcher";
+import { CURRENT_HUGEL_YEAR } from "../../hugel";
 
 const Navbar: React.FC = () => {
   const { isOpen, onToggle } = useDisclosure();
@@ -257,13 +258,13 @@ const NAV_ITEMS: Array<NavItem> = [
         href: "/results",
         children: [
           {
-            label: "2025 Das Hügel Results",
-            href: "/hugelboard/2025",
+            label: `${CURRENT_HUGEL_YEAR} Das Hügel Results`,
+            href: `/hugelboard/${CURRENT_HUGEL_YEAR}`,
           },
           {
-            label: "2025 Das Hügel Lite Results",
+            label: `${CURRENT_HUGEL_YEAR} Das Hügel Lite Results`,
             // subLabel: "See how you did on the Tour Das Hügel",
-            href: "/hugelboard/2025?lite=true",
+            href: `/hugelboard/${CURRENT_HUGEL_YEAR}?lite=true`,
           },
           {
             label: "Other Results",
