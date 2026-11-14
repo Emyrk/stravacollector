@@ -116,7 +116,7 @@ func (w *FetchActivityWorker) Work(ctx context.Context, job *river.Job[FetchActi
 		}
 	}
 
-	err := w.mgr.jobStravaCheck(logger, 1, adjustInt, adjustDaily)
+	err := w.mgr.jobStravaCheck(logger, 1, adjustInt, adjustDaily, hugelEventDailyReserve(now, args.HugelPotential)...)
 	if err != nil {
 		return w.mgr.StravaSnooze(ctx)
 	}
@@ -400,5 +400,15 @@ func (w *FetchActivityWorker) insert(ctx context.Context, activity strava.Detail
 		return fmt.Errorf("in tx: %w", err)
 	}
 
+	return nil
+}
+
+// Temporary November 14 allowance, automatically expires at midnight Central.
+// Webhook arrivals are potential rides too; their segments are not known yet.
+func hugelEventDailyReserve(now time.Time, potential bool) []int64 {
+	local := now.In(hugeldate.CentralTimeZone)
+	if potential && local.Year() == 2026 && local.Month() == time.November && local.Day() == 14 {
+		return []int64{100}
+	}
 	return nil
 }
