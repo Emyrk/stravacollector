@@ -53,7 +53,7 @@ func (a ForwardLoadArgs) InsertOpts() river.InsertOpts {
 		Tags:        []string{fmt.Sprintf("%d", a.AthleteID)},
 		Queue:       riverBackloadQueue,
 		Priority:    PriorityDefault,
-		MaxAttempts: 5,
+		MaxAttempts: 2,
 		UniqueOpts: river.UniqueOpts{
 			ByArgs: true,
 		},

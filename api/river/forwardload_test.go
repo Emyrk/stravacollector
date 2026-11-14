@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+func TestForwardLoadMaxAttempts(t *testing.T) {
+	require.Equal(t, 2, (ForwardLoadArgs{}).InsertOpts().MaxAttempts)
+}
+
 func TestOnHugelDate2026(t *testing.T) {
 	for _, tc := range []struct {
 		date string
