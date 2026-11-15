@@ -1,6 +1,5 @@
-// import { Box } from "@chakra-ui/react";
-import { FC } from "react";
-// import { useEffect, useRef } from "react";
+import { Box } from "@chakra-ui/react";
+import { FC, useEffect, useRef } from "react";
 
 declare global {
   interface Window {
@@ -13,9 +12,6 @@ interface AdSenseAdProps {
 }
 
 export const AdSenseAd: FC<AdSenseAdProps> = ({ slot }) => {
-  // AdSense temporarily disabled. Keep initialization and markup for re-enabling.
-  return null;
-  /*
   const initialized = useRef(false);
 
   useEffect(() => {
@@ -40,5 +36,4 @@ export const AdSenseAd: FC<AdSenseAdProps> = ({ slot }) => {
       />
     </Box>
   );
-  */
 };

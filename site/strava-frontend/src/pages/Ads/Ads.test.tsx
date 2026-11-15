@@ -6,12 +6,11 @@ beforeEach(() => {
   window.adsbygoogle = [];
 });
 
-test("keeps the test page accessible without serving ads", () => {
+test("renders the production AdSense test unit", () => {
   const { container } = render(<Ads />);
 
   expect(
     screen.getByRole("heading", { name: "AdSense Test" })
   ).toBeInTheDocument();
-  expect(container.querySelector('[data-ad-slot="9118265430"]')).not.toBeInTheDocument();
-  expect(window.adsbygoogle).toHaveLength(0);
+  expect(container.querySelector('[data-ad-slot="9118265430"]')).toBeInTheDocument();
 });

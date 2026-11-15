@@ -8,7 +8,8 @@ export const Ads: FC = () => {
       <VStack spacing={8} align="stretch">
         <Heading>AdSense Test</Heading>
         <Text>
-          Google AdSense is temporarily disabled.
+          This page is used to verify that responsive Google ads render correctly
+          in production.
         </Text>
         <AdSenseAd slot="9118265430" />
       </VStack>
