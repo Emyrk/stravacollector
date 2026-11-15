@@ -91,7 +91,7 @@ func (api *API) verifyRoute(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, have := range stravaRoute.Segments {
-		delete(required, have.ID)
+		delete(required, routeRequirementID(have.ID, lite))
 	}
 
 	missingArr := make([]modelsdk.SegmentSummary, 0, len(required))
@@ -368,4 +368,13 @@ func convertHugelActivity(activity database.HugelLeaderboardRow) modelsdk.HugelL
 		ActivitySufferScore:        int(activity.SufferScore),
 		ActivityAchievementCount:   int(activity.AchievementCount),
 	}
+}
+
+// The public full route follows 2026 scoring; Lite and historical views do not
+// inherit its Cat Mountain equivalence.
+func routeRequirementID(segmentID int64, lite bool) int64 {
+	if !lite && segmentID == 784585 {
+		return 891091
+	}
+	return segmentID
 }
