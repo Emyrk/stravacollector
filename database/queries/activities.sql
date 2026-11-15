@@ -17,7 +17,7 @@ with diff_data as (
 	select unnest(segments) as data
 	from (SELECT segments FROM competitive_routes WHERE name = 'das-hugel-2026') as hugel
 	except
-	select segment_id as data
+	select CASE WHEN segment_id = 784585 THEN 891091::bigint ELSE segment_id END as data
 	from segment_efforts WHERE activities_id = $1
 )
 select array_agg(data order by data) :: text[]  as diff

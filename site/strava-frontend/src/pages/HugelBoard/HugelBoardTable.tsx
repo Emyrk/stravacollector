@@ -1,3 +1,4 @@
+import { catMountainAlternativeName } from "../../hugel";
 import { FC, PropsWithChildren, useEffect } from "react";
 import {
   Grid,
@@ -314,7 +315,7 @@ const EffortPair: FC<{
         const name =
           segmentSummaries && segmentSummaries[effort.segment_id]
             ? segmentSummaries[effort.segment_id].name
-            : "????";
+            : catMountainAlternativeName(effort.segment_id) || "????";
 
         return (
           <Tooltip

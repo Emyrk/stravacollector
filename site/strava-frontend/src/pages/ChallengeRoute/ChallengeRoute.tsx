@@ -1,3 +1,4 @@
+import { CatMountainAlternatives } from "./CatMountainAlternatives";
 import { CURRENT_HUGEL_ROUTE_URL, CURRENT_HUGEL_LITE_ROUTE_URL, CURRENT_HUGEL_YEAR } from "../../hugel";
 import {
   FC,
@@ -216,6 +217,7 @@ export const ChallengeRoute: FC<{}> = ({}) => {
               showcases the challenging terrain around the city. To qualify as a
               Hügel, you must complete all of the following segments.
             </Text>
+            {name === "das-hugel" && <CatMountainAlternatives />}
             <Flex
               direction={"row"}
               alignItems={"center"}
