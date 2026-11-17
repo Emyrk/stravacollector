@@ -30,7 +30,7 @@ type AthleteSyncSummary struct {
 
 // Tracks loading athlete activities. Must be an authenticated athlete.
 type AthleteLoad struct {
-	AthleteID int64 `json:"athlete_id"`
+	AthleteID StringInt `json:"athlete_id"`
 	// Timestamp start of the last activity loaded. Future ones are not loaded.
 	ActivityTimeAfter time.Time `json:"activity_time_after"`
 	// Timestamp of the last time the athlete was attempted to be loaded.
@@ -143,7 +143,7 @@ type MinAthlete struct {
 }
 
 type Eddington struct {
-	AthleteID        int64     `json:"athlete_id"`
+	AthleteID        StringInt `json:"athlete_id"`
 	MilesHistogram   []int32   `json:"miles_histogram"`
 	CurrentEddington int32     `json:"current_eddington"`
 	LastCalculated   time.Time `json:"last_calculated"`

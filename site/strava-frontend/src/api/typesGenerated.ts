@@ -32,7 +32,7 @@ export interface AthleteHugelActivity {
 
 // From modelsdk/athlete.go
 export interface AthleteLoad {
-    athlete_id: number;
+    athlete_id: string;
     activity_time_after: string;
     last_load_attempt: string;
     last_load_complete: boolean;
@@ -116,7 +116,7 @@ export interface DetailedSegment {
 
 // From modelsdk/athlete.go
 export interface Eddington {
-    athlete_id: number;
+    athlete_id: string;
     miles_histogram: number[];
     current_eddington: number;
     last_calculated: string;
