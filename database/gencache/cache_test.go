@@ -77,3 +77,19 @@ func TestTouchFreshnessAndErrorRetry(t *testing.T) {
 	c.Touch(ctx, time.Second*30)
 	require.Equal(t, 3, calls, "eager window should refresh nearly stale values")
 }
+
+func TestInvalidate(t *testing.T) {
+	ctx := context.Background()
+	calls := 0
+	cache := New(ctx, time.Minute, func(context.Context) (int, error) { calls++; return calls, nil })
+	value, err := cache.Load(ctx)
+	require.NoError(t, err)
+	require.Equal(t, 1, value)
+	cache.Invalidate()
+	value, err = cache.Load(ctx)
+	require.NoError(t, err)
+	require.Equal(t, 2, value)
+	value, err = cache.Load(ctx)
+	require.NoError(t, err)
+	require.Equal(t, 2, value, "loads after invalidation should share the refreshed value")
+}

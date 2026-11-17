@@ -257,6 +257,8 @@ func (api *API) Routes() chi.Router {
 				httpmw.Authenticated(api.Auth, false),
 			)
 			r.Get("/whoami", api.whoAmI)
+			r.With(httpmw.AuthenticatedAs(2661162)).Post("/refresh-athlete/{athlete_id}", api.refreshAthlete)
+
 			r.Route("/fetch-activity", func(r chi.Router) {
 				r.Use(httpmw.AuthenticatedAsAdmins())
 				r.Get("/{athlete_id}-{activity_id}", api.manualFetchActivity)

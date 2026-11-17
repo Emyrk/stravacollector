@@ -22,3 +22,40 @@ This websites serves as a ribbon to finishers. A medal to the competitive. And a
 The website polls Strava user's cycling activities, and uses Strava's segments feature to determine if any given activity classifies as a Hugel. If it does, only the climbs are included in the finisher's result time. This ignores things like waiting at stop lights, bombing descents, or other activities that would encourage unsafe riding practices.
 
 
+
+## Admin: refresh a Strava athlete profile
+
+After deployment, Steven (Strava athlete ID `2661162`) can force a profile refresh:
+
+```http
+POST /api/v1/refresh-athlete/67733138
+```
+
+While signed into dashugel.bike, run this in the browser's developer console:
+
+```js
+const response = await fetch('/api/v1/refresh-athlete/67733138', {
+  method: 'POST',
+  credentials: 'same-origin',
+});
+console.log(response.status, await response.json());
+```
+
+For command-line requests, send your dashugel session JWT, not a Strava access token:
+
+```sh
+curl --fail-with-body -X POST \
+  -H "Strava-Auth-JWT: ${DASHUGEL_SESSION_JWT}" \
+  https://dashugel.bike/api/v1/refresh-athlete/67733138
+```
+
+The endpoint uses the target athlete's stored Strava authorization, refreshes and
+saves rotated OAuth credentials when necessary, and updates the profile from
+Strava. A successful response contains the refreshed profile. Leaderboard caches
+on the serving instance are invalidated immediately; other instances retain their
+normal cache expiry. This does not re-download activities or change Strava data.
+
+Missing authorization returns `404`. Invalid or revoked authorization requires the
+athlete to reconnect and returns `502`, as do other Strava fetch failures. Strava
+profile rate limits return `429`; database failures return `500`. Error responses
+do not include OAuth credentials.

@@ -79,3 +79,10 @@ func (c *LazyCache[T]) Load(ctx context.Context) (T, error) {
 	defer c.RUnlock()
 	return c.lastVal, c.lastError
 }
+
+// Invalidate makes the next load fetch fresh data. It serializes with in-flight fetches.
+func (c *LazyCache[T]) Invalidate() {
+	c.Lock()
+	defer c.Unlock()
+	c.fetched = time.Time{}
+}

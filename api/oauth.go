@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -65,36 +66,8 @@ func (api *API) stravaOAuth2(rw http.ResponseWriter, r *http.Request) {
 			return fmt.Errorf("upsert login for %d: %w", athlete.ID, err)
 		}
 
-		if len(athlete.Clubs) == 0 || string(athlete.Clubs) == "" {
-			athlete.Clubs = []byte("{}")
-		}
-
-		api.Opts.Logger.Info().
-			Int64("athlete_id", athlete.ID).
-			Msg("athlete_login")
-
-		_, err = store.UpsertAthlete(ctx, database.UpsertAthleteParams{
-			ID:                    athlete.ID,
-			CreatedAt:             database.Timestamptz(athlete.CreatedAt),
-			UpdatedAt:             database.Timestamptz(athlete.UpdatedAt),
-			Summit:                athlete.Summit || athlete.Premium,
-			Username:              athlete.Username,
-			Firstname:             athlete.Firstname,
-			Lastname:              athlete.Lastname,
-			Sex:                   athlete.Sex,
-			City:                  athlete.City,
-			State:                 athlete.State,
-			Country:               athlete.Country,
-			FollowCount:           int32(athlete.FollowerCount),
-			FriendCount:           int32(athlete.FriendCount),
-			MeasurementPreference: athlete.MeasurementPreference,
-			Ftp:                   athlete.Ftp,
-			Weight:                athlete.Weight,
-			Clubs:                 athlete.Clubs,
-			ProfilePicLink:        athlete.Profile,
-			ProfilePicLinkMedium:  athlete.ProfileMedium,
-		})
-		if err != nil {
+		api.Opts.Logger.Info().Int64("athlete_id", athlete.ID).Msg("athlete_login")
+		if _, err := upsertStravaAthlete(ctx, store, athlete); err != nil {
 			return fmt.Errorf("upsert athlete: %w", err)
 		}
 
@@ -169,4 +142,32 @@ func (api *API) logout(rw http.ResponseWriter, r *http.Request) {
 
 	// TODO: Pull redirect url from query param if present.
 	http.Redirect(rw, r, "/signed-out", http.StatusSeeOther)
+}
+
+// upsertStravaAthlete keeps login and administrative refreshes consistent.
+func upsertStravaAthlete(ctx context.Context, store database.Store, athlete strava.Athlete) (database.Athlete, error) {
+	if len(athlete.Clubs) == 0 {
+		athlete.Clubs = []byte("{}")
+	}
+	return store.UpsertAthlete(ctx, database.UpsertAthleteParams{
+		ID:                    athlete.ID,
+		CreatedAt:             database.Timestamptz(athlete.CreatedAt),
+		UpdatedAt:             database.Timestamptz(athlete.UpdatedAt),
+		Summit:                athlete.Summit || athlete.Premium,
+		Username:              athlete.Username,
+		Firstname:             athlete.Firstname,
+		Lastname:              athlete.Lastname,
+		Sex:                   athlete.Sex,
+		City:                  athlete.City,
+		State:                 athlete.State,
+		Country:               athlete.Country,
+		FollowCount:           int32(athlete.FollowerCount),
+		FriendCount:           int32(athlete.FriendCount),
+		MeasurementPreference: athlete.MeasurementPreference,
+		Ftp:                   athlete.Ftp,
+		Weight:                athlete.Weight,
+		Clubs:                 athlete.Clubs,
+		ProfilePicLink:        athlete.Profile,
+		ProfilePicLinkMedium:  athlete.ProfileMedium,
+	})
 }
