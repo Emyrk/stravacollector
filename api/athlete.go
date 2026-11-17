@@ -152,7 +152,7 @@ func (api *API) syncSummary(rw http.ResponseWriter, r *http.Request) {
 			HugelCount:           int(detailedLoad.HugelCount),
 		},
 		Load: modelsdk.AthleteLoad{
-			AthleteID:         load.AthleteID,
+			AthleteID:         modelsdk.StringInt(load.AthleteID),
 			ActivityTimeAfter: load.ActivityTimeAfter.Time,
 			LastLoadAttempt:   load.LastTouched.Time,
 			LastLoadComplete:  load.LastLoadComplete,
@@ -363,7 +363,7 @@ func (api *API) eddingtonNumber(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	httpapi.Write(ctx, rw, http.StatusOK, modelsdk.Eddington{
-		AthleteID:        eddington.AthleteID,
+		AthleteID:        modelsdk.StringInt(eddington.AthleteID),
 		MilesHistogram:   eddington.MilesHistogram,
 		CurrentEddington: eddington.CurrentEddington,
 		LastCalculated:   eddington.LastCalculated.Time,
